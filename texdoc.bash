@@ -1,0 +1,9 @@
+#!/bin/bash
+for f in *.tex
+do
+	echo $f
+	cat $f | egrep "^\\\\section|^\\\\subsection|^\\\\chapter|^\\\\document|\{document\}|^\\\\input|^%%%|^\{\}|^$" | sed "s/%%%.*/&\}/g" | sed -e "s/%%%/\\\\textit\{/g" > ./doc/$f
+done
+cd doc
+pdflatex -interaction=batchmode document.tex
+

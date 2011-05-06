@@ -1,0 +1,148 @@
+%%This is a very basic article template.
+%%There is just one section and two subsections.
+\documentclass{report}
+
+\title{Component Dependency Resolution}
+
+\begin{document}
+
+\chapter{Introduction}
+%%%The introduction gives examples leading to the idea of component development.
+
+%TODO good quote about breaking a problem into smaller simpiler parts
+When confronted with a large complex system, the first instinct, in an attempt to understand it, is to break it into smaller, simpler units, 
+then examine each part individually while trying to understand the relationships between them.
+Through doing this a complex system as a whole is able to be grasped through layers of abstraction.
+Looking at the human anatomy, we can look at the nervous system, the cardiovascular system, the muscles, the skeleton \ldots,
+each individual part with a distinct function and interactions with other parts.
+Understanding a system as a set of units and interactions gives us tools for the study and maintenance of problems.  
+
+In complex software systems, understanding the entire system as a set of parts with relationships has many of the same benefits analogous to the anatomy example.
+%Specialization, Maintenance and problem detection, concurrent development, effect analysis
+It allows specialization, 
+by splitting the system into parts experts in those parts can focus on their own domain and only have to know how it interacts with other parts.
+
+This same method is used when creating complex systems, first we divide the parts into individual functional units,
+then define the relationships between the units.
+
+
+Component Software consoldates code into units
+
+
+\section{Overview of Thesis}
+First Background,
+Then define what a component is based on literature and examples
+
+\chapter{Background}
+
+\section{What is a Component?}
+Discuss what a component is and who defines it as such
+
+Give examples of OSGi Bundles, Eclipse Plugins, DS
+Spring DM
+Debian Packages
+Maven POM
+CUDF
+
+Discuss differences and commonalities
+Multiple package installations Maven Debain No, OSGi Eclipse DS and CUDF yes
+Focus on interface not implementation dependence, Maven no, Debian Community defined virtual packages, 
+OSGi kind of package name space related to installation, Eclipse Yes DS Yes.
+Version Control, All Yes
+Run time replacement Dynamic Dependence, Maven no (no runtime), Eclipse Kind of a bit buggy requires restarts,
+OSGI DS Debian Yes, CUDF is abstract so has no real implementation
+Conflicts, Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
+Reccommendation, ??
+
+\section{Component Evolution}
+Versioning is the main mechanism in which components evolve.
+There is also branching, and environment specific altering.
+
+Versioning components has significant research behind it.
+
+Branching is when a difference in opinion or idealogy on how a component should proceed into the future
+causes the project to take two different routes given the same base code or idea.
+
+Spring DM takes libraries and makes them OSGi compatable, 
+Debian package can be compiled for different CPU architectures.
+
+
+\section{Component System Evolution}
+Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
+Add, remove, upgrade, downgrade components in the system while it is running.
+
+There are some problems that must be solved within the component model like making sure that during the change,
+the system is never invalid or unstable. 
+This is a scheduling problem as described by %TODO
+
+The composer must also make sure that all dependencies are meet 
+
+\chapter{Component Dependency Resolution}
+Now we know the problems
+\section{Formal Definition}
+
+\section{Optimisation Notation}
+%Lexicographic operator
+
+%formal Definition with Optimisation constraints
+\section{CUDF}
+
+\section{CUDF Mapping}
+
+\chapter{Implementation}
+
+\section{SAT Solver}
+\subsection{DPLL}
+\subsection{CHAFF Watched Literals}
+\subsection{Conflict Learning}
+\subsection{Literal Order}
+
+\section{Optimisation Representation}
+
+\chapter{Component Models}
+\section{Ubuntu Component Model}
+\subsection{Mapping to CUDF}
+
+\section{OSGi Component Model}
+\subsection{Mapping to CUDF}
+
+\section{Comparison}
+
+\chapter{Investigations}
+
+\section{Search Space Size}
+%How big a search space are we looking at here
+
+\section{SAT Optimisation}
+%What is necessary in SAT
+\subsection{Literal Order}
+\subsection{Learning Choices}
+
+\input{simulation}
+
+\section{User Survey}
+\section{Log analysis}
+
+\section{Criteria}
+
+\section{Heuristics}
+%Page Rank
+%Predictive Use
+%Trendy
+%P2
+%Custom Beast
+
+\section{Experiment}
+\section{Results}
+\section{Analysis}
+\section{Experiment Conclusions}
+
+\chapter{Conclusion}
+\section{Related Work}
+\section{Future Work}
+
+\section{Glossary}
+Composer: The user who creates or alters component systems (compositions)
+
+Versioning Model: A method to define and compare versions
+\end{document}

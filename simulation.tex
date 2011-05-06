@@ -1,0 +1,70 @@
+\chapter{Simulation}
+{}To evaluate different strategies to evolve a component system, we simulate the environment in which this evolution occurs.
+{}This simulation models the user-interaction, the repository, and the system
+{}to draw conclusions on the benefits and draw backs of a particular evolution strategy.
+{}To ensure that the model is credible we use a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
+{}The data that is used was extracted from logs of real users, a user survey conducted on a popular Internet forum, 
+{}component and temporal information collected from repositories, and from a Google API.
+
+{}In this chapter we first describe our motivation for using a simulation,
+{}then we present it following our methodology by
+{}first describing our formulation of the problem,
+{}our reasons and methods for the collection of data,
+{}discuss our models validity when compared to the real world,
+{}describe our implementation and validity of the simulation model.
+{}The design of the experiments are then described and the variables assigned values,
+{}finally we present the results from this simulation.
+ 
+\section{Why Simulate?}
+%%%Why are we using a simulation instead of real systems
+To evaluate an evolution strategy we could either look at a set of actual systems with real users and collect data,
+or we could simulate the necessary aspects as realistically as possible, then study the results.
+As using real users with real systems will always return more valid results to simulating,
+why would we opt to simulate?
+
+%%%Because users dont trust the ``experimental" implementations
+The main reason for simulating is that finding enough users
+who would allow an experimental component resolution algorithm to alter their real system would be extremely difficult.
+A user will likely not trust a newly released resolver, as their system is important to them and even the slightest error can cause
+a system to become unstable. 
+To gain the trust of possible users the experimental resolvers would have to be thoroughly tested through a repositories development cycle and be well maintained.
+Moving a package through this cycle can be itself a massive undertaking lasting several months. 
+For Eclipse Plug-ins it involves going a component going through four phases 
+Proposal, Incubation, Mature, and Top-Level \footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
+similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable \footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
+After it has been through this cycle maintenance of the resolver is still required; 
+for instance the resolver apt-get since its initial release has created more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
+The users trust is hard earned and this effort to use real users may outway the actual benefits when simulation is a cheaper alternative.
+
+%%%Instead we can simulate, which is an approximation of the real world
+%%%When drawing conclusions the accuracy of this approximation must be considered
+Simulation is a surrogate of the real system, such that it representes only the aspects that are core to the problem, 
+the evolution of component systems.
+As it is only an approximation of the real world, 
+the accuracy to which it actually represents the real world is not 100\%.
+The goal is then to make it a close enough approximation so that the conclusions drawn from it are valid in the real world.
+So when analyising the results and forming conclusions, we must take into account the simulations accuracy. 
+So the effort of creating a simulation has two aspects, the experimentation and the validation of the simulation.
+
+\section{Objectives}
+ 
+
+\section{Design and Implementation}
+For this 
+
+\subsection{Drawbacks if this Simulation}
+The installation of different packages are not independant of each other.
+
+The selection of popular packages has a few drawbacks.
+
+\section{Data Collection}
+
+\subsection{Survey}
+
+\subsection{Log Analysis}
+
+\subsection{Repository Collection}
+
+
+\subsection{Validation}
+
