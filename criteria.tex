@@ -1,40 +1,78 @@
-\section{Criteria}
-The two main criteria considered during component system evolution are to maximise the versions of individual components, 
-while minimising the change caused by the evolution to the system. 
-These two criteria are conflicting as increasing the version of a component is a change to the system.
-They are also not strictly defined, as the version of the components must be aggregated to measure the entire system,
-and the amount a system is changed can be measured in different ways.
-The way in which the criteria relate to each other is different for different users.
-For example, a server administrator will likely change as little as possible rather than risk a fault, 
-where a developer/debugger will always wants the newest versions of components to stay up to date.
+\chapter{Criteria}
+{}The two core criteria considered during component system evolution are the maximisation of the versions of individual components, 
+{}and the minimisation of the change caused by the evolution to the system.
+{}Together these two criteria express that a system wants to be as up to date as possible, while changing as little as possible.
+{}Although these criteria must be considered in a CDR algorithm,
+{}they are not strictly defined, conflicting and for different users relate in different ways.
+{}In this chapter we explore the nature and definitions of the two criteria,
+{}and show that there is a significant gap between what is currently known and what we intend to explore. 
 
-\subsection{Version vs. Minimal Change}
-\quote{Why is having the newest version of a component important?}
 
-A newer version exists because the component has changed to be better in some way.
-This may be through a bug being fixed, a security hole being patched, or the functionality being extended.
-Having a newer version of a component in the system, may also make all of the other components that depend on it better as well,
-causing a propagation of system improvement with the upgrading of one component.
+\section{New Versions and Minimal Change}
+\begin{quotation}
+Motion or change, and identity or rest, are the first and second secrets of nature: Motion and Rest. 
+The whole code of her laws may be written on the thumbnail, or the signet of a ring.
 
-\quote{Why would you not want the newest version then?}
+Ralph Waldo Emerson in "Nature", Essays, Second Series (1844)
+\end{quotation}
 
-The change to the system that is caused when a newer version is installed may cause harm to your system.
-In the same way that a version upgrade can propagate benefits through the system, 
-friction or errors can propagate and cause a faulty or not functional system.
+%%%This is a general problem in nature, the force and resistance to change.
+Changing to what is newer and better, but being wary of the change because of cost and risk is a conflicting problem in many domains.
+For instance, in politics, conservitism is the philosophy that emphasises minimal and gradual change in society, %TODO cite
+where progressivism promotes change and reform to governments.
+These two conflicting ideaologies must be resolved, if a government is to function. 
+As with component systems, 
+the forces of change brought about by newer versions of components and the resistance to change brought about by the harm it may cause
+are competing forces that must be resolved for a system to evolve.
+In this section we discuss the nature of these criteria, why they are important to consider and how they conflict.
 
-\subsection{Definitions}
-\quote{How can we measure the version of a system from the versions of installed components?}
 
-To answer this question over a set of components that are probably versioned differently, 
-we need to explore functions that can aggregate the versions of different components together in a meaningful way.
+\subsection{Versions}
+%%%What is a version
+A version is the mechanism through which individual components evolve.
+It is a unique marker which is compariable to other versions such that they are ordered.
 
-Each component must be versioned to conform to a versioning model defined by the component model, 
-however the way in which a developer uses this model to version their component is not usually strictly defined.
+%%%How are components versioned
+The syntax and semantics of a version is usually defined within the component model.
+This forces all components that are developed for this model to follow the same general guidelines.
+
+%%%Versions between components
+Although component must be versioned to conform to a versioning model defined by the component model, 
+the way in which a developer uses this model to version their component is not usually strictly defined.
 Each component is designed to be an independent unit, as such developers of components are separate from one another,
 and the way in which they version their components can be different.
 Therefore, version comparison is only useful between different versions of the same component;
 e.g. a spell-checker component can be version 10 but a separate and superior spell-checker component may be only version 1.
 This makes using component versions to decide between components impossible.
+
+%%%Why does a version exist
+As with the evolution of entire software systems, evolution of components requires constant maintenance.
+Bugs can be found, features can be added, and code can be refactored all which make the component better.
+
+%%%A version of a component that is greater than another version of that component is assumed to be better in some way
+%%%Therefore installing it is seen as a good idea
+A newer version exists because the component has changed to be better in some way.
+This may be through a bug being fixed, a security hole being patched, or the functionality being extended.
+Having a newer version of a component in the system, may also make all of the other components that depend on it better as well,
+causing a propagation of system improvement with the upgrading of one component.
+
+In Belief Revision, one must maintain the newest set of information while only changing the minimal amount of previous knowledge. 
+
+The change to the system that is caused when a newer version is installed may cause harm to your system.
+In the same way that a version upgrade can propagate benefits through the system, 
+friction or errors can propagate and cause a faulty or not functional system.
+
+
+\subsection{Minimal Change}
+%%%How are these criteria currently defined, how can we define these criteria?
+They are also not strictly defined as the mechanisms to either compare two systems versions or the change from a system,
+can be measured in different ways.
+
+The measure to use when determining version of a system from the versions of installed components varies.
+As a set of components can be versioned differently, 
+we need to explore functions that can aggregate the versions of different components together in a meaningful way.
+
+
 
 
 The Mancoosi organisation uses a metric that minimises the number of components in a system that have better versions, 
@@ -47,8 +85,10 @@ The measurement of change that a system goes through during evolution is also di
 The added, removed, updated, total changed, have all been considered as metrics before. 
 As with the version metrics, none of these consider the dependencies when looking at the change that is performed on the system.
 
+\subsection{Versions, Minimality and Users}
+%%%How do different users view these criteria
 
-\subsection{The Gap}
+\section{The Gap}
 Each time a user decides to evolve a component system, the decision must be made about the risks of the evolution.
 In an environment which is mission critical, all risk is eliminated and an unecessary change to the system is too risky.
 In a development environment where the user may be trying to fix potential problem, 
