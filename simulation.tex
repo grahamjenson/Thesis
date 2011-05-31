@@ -4,10 +4,12 @@
 {}to draw conclusions on the benefits and draw backs of a particular evolution strategy.
 {}To ensure that the model is credible we use a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
 {}The data that is used was extracted from logs of real users, a user survey conducted on a popular Internet forum, 
-{}component and temporal information collected from repositories, and from a Google API.
+{}component and temporal information collected from repositories, meta-information about those repositories.
+
+{}In this simulation we take a component system and evolve it over time using real and approximate information and look at the resulting systems.
 
 {}In this chapter we first describe our motivation for using a simulation,
-{}then we present it following our methodology by
+{}then we present our methodology
 {}first describing our formulation of the problem,
 {}our reasons and methods for the collection of data,
 {}discuss our models validity when compared to the real world,
@@ -33,38 +35,215 @@ For Eclipse Plug-ins it involves going a component going through four phases
 Proposal, Incubation, Mature, and Top-Level \footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
 similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable \footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
 After it has been through this cycle maintenance of the resolver is still required; 
-for instance the resolver apt-get since its initial release has created more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
-The users trust is hard earned and this effort to use real users may outway the actual benefits when simulation is a cheaper alternative.
+for instance the resolver apt-get since its initial release has released more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
+This shows how much effort must be applied to earn a users trust, and this effort may outway the actual benefits when simulation is a cheaper alternative.
 
-%%%Instead we can simulate, which is an approximation of the real world
+%%%Instead we can simulate, which is an approximation of the real world.\\
 %%%When drawing conclusions the accuracy of this approximation must be considered
-Simulation is a surrogate of the real system, such that it representes only the aspects that are core to the problem, 
+Simulation is a surrogate of the real system, such that it represents the aspects core to the problem, 
 the evolution of component systems.
 As it is only an approximation of the real world, 
 the accuracy to which it actually represents the real world is not 100\%.
-The goal is then to make it a close enough approximation so that the conclusions drawn from it are valid in the real world.
-So when analyising the results and forming conclusions, we must take into account the simulations accuracy. 
-So the effort of creating a simulation has two aspects, the experimentation and the validation of the simulation.
+The goal is then to make it a ``close enough'' approximation so that the conclusions drawn from it are valid in the real world.
+So when analysing the results and forming conclusions, we must take into account the assumptions we have made creating the simulation to determine 
+the conclusions overall accuracy.
+Therefore, the majority of the effort when creating a simulation is gathering and using valid information when making assumptions.
 
-\section{Objectives}
- 
+\section{Methodology}
+%%%We use the methodology from `` Build a Valid and Credible Simulation'', this requires the definition of our probelm. 
+Creating a simulation that accurately represents the evolution of a component system so that we can 
+analyse the effect different evolution strategies have on a systems properties is the core objective of this simulation.
+To this end, we follow the a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
+This gives us a set of guidelines to follow when preparing a valid simulation including;
+specifically defining the problem,
+building a conceptual model,
+collecting data,
 
-\section{Design and Implementation}
-For this 
+\section{Conceptual Model}
+%We first define the problem to be modeled
+To create our conceptual model, we must first precisely describe the problem;
+{}When evolving a component-based system, different strategies can be employed by the user and the resolver.
+{}These strategies have unknown effects over a long period in which the user evolves the system.
+{}Through simulating and analysing these effects we can choose a strategy more effectively.
+{}There are two parts to these strategies, first how the user interacts with a resolver, secondly how the resolver handles these requests.
 
-\subsection{Drawbacks if this Simulation}
-The installation of different packages are not independant of each other.
+\subsection{Strategies}
+%%%How do users use different strategies when evolving a system when installing and updating their systems
+A user interacts with a resolver to evolve a system by installing, removing or updating packages.
+The way in which these interactions occur is usually related to the purpose of the system, and what the type of user.
+For instance, a server administrator is less likely to install a component into a system as the system has only one task and if it is working their is no need to change it, 
+however a desktop user will more likely install different packages because they use their system for many different tasks.
+How a user updates their system is also different along these lines, server admins. will likely only update when absolutely necessary as if it is not broken why fix it.
+Yet desktop users will update more frequently as they want the best system they can have, and new features or better performance are usually wanted.
 
-The selection of popular packages has a few drawbacks.
+%%%What different strategies are deployed by resolvers
+As described in previous chapters, dependency resolvers often try to minimise change and maximise the versions.
+These two objectives have been implemented in many different ways, how these interact with each other is the strategy a resolver employs.
+For instance, the trendy strategy from the Mancoosi organisation describes the strategy to minimise the removed components above all other criteria,
+this is a common strategy because removal of a component is seen as very risky.
 
-\section{Data Collection}
+\subsection{Effects}
+%%%What kind of effects are we looking at analysing?
+%%%Static
+%%%Dynamic
+%%%Change Propogation
+%%%Graph Analysis
+%%%Coupling and Instability defined by JDepend
 
-\subsection{Survey}
+\subsection{Configuration}
+%%%A configuration is the set of parameters of the simulation.
+A configuration is the set of variables which define the parameters of the simulation.
+How these variables are defined are derived from what goals the simulation has.
+As the goal of this simulation is to look at different resolver and user strategies,
+these are the core changes that are made.
+Given that we want to look at the effects of many different possible ways a system can evolve,
+we also change the packages that are selected to be installed by the user.
+The variables like, what repositories are used, and over what time period are seen as not being relevant to our eventual analysis,
+therefore we do not change them and leave them static
 
-\subsection{Log Analysis}
+Given this simulation is looking at the effects of the strategies employed by users and resolvers on the component systems,
+we must look at different resolvers, and different user strategies.
+What packages the simulated user selects to install and 
 
-\subsection{Repository Collection}
+%%%The resolvers we are testing
+We are testing resolver strategies P2, trendy, Hamming + max version, PageRank,\ldots 
+
+%%%We are changing the distributions of user installaion, and the period between updates
+The user installs different amount of packages per day, and updates at different intervals. 
+
+%%%We are selecting different packages to install
+We are selecting the packages to install that are different.
+
+%%%The repository over which it runs changes over time
+Time, We have decided not to 
+
+\section{Data-sets}
+%%%Data collection is an important aspect of a simulations validity, where have we collected data from, and why have we collected it
+The most complex and difficult part of this (or any) simulation is the human component, the user,
+as such that is where much of our data collection focused.
+Data has been collected from
+a user survey which was performed on a popular Internet forum,
+user logs from resolvers were collected with the survey.
+The Ubuntu popularity contest is used to determine package popularity,
+as well as a user forum thread where users posted their top ten packages.
+A package that contains a list of applications in the Ubuntu repository was included.
+The entire Ubuntu repository, with relevant date information about packages was used.
+
+%%%User Survey, What they are, where they are from, what information we can get from them, problems with that information
+A user survey was conducted online via a popular Internet forum http://reddit.com/r/ubuntu, this involved nearly 60 participants. %TODO attach survey to appendix. 
+The survey focused on user interaction with a resolver and the lifecycle that is associated with their component system.
+The results are summarised below, %Summarise results
+
+%%%User Logs, What they are, where they are from, what information we can get from them, problems with that information
+Resolvers often keep logs of their activites, these usually only include the changes to the systems that are made, and not what the usre requested.
+Therefore, some of the information that can be obtained
+
+%%%PopCon, What it is, where it is from, what information we can get from it, problems with that information
+The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
+Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
+
+%%%User Forum top 10 posts,What it is, where it is from, what information we can get from it, problems with that information
 
 
-\subsection{Validation}
+%%%app-install-data package
+The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
+This is useful for applications to use that help users search for and find an application that they may wish to install, like the Ubuntu Software Center.
+%TODO how do they get this list
+This comprehensive list currently\footnote{May 24th 2011} contains 2393 applications.
+
+%%%Ubuntu Repositories
+The Ubuntu Repository, as with most open and free software, is freely downloadable.
+It contains all the packages that have ever been in the repository with the information of when the package was added.
+We used a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as previsouly described in section. %TODO referecne
+As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
+
+%%%Ubuntu installation
+One of the aspects that is critical to a simulation is a time over which it is occuring, 
+so the starting system is important aspect for this simulation.
+Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
+then the month in which it was released, e.g. 10.04 is the release in April 2010.
+Given that we are running this simulation over the course of a year, we are selecting that year to be 
+
+
+%%%The user can install a single package, or update all, removing other more complex but rarely used actions
+In our abstraction of reality the user has two actions with the resolver, either to install a new package or to try upgrade the entire system.  
+In reality the user can do much more fine grained actions, where they can remove packages, 
+upgrade individual packages or even create complex queries for the resolver to solve. 
+These additional actions, along with being difficult to simulate, are rarely performed by a user, as found with our user survey. %TODO reference
+How often a user installs a new package is found through looking at user logs, %TODO ref user logs
+and how often a user updates a system is found through our user survey.
+These pieces of information allow us to approximately represent real users.
+
+
+\section{User Approximation}
+Installation Distributions from the Logs, Actions and life cycle from the survey.
+
+\section{Package Popularity}
+{}Determining the probability a user will select a package to be installed is difficult given the enormous amount of factors this relies on.
+{}The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
+{}Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
+{}what packages may a user select to install and how likely would a user select to install these.
+{}We attempt to answer these questions through using the set of packages listed in the package app-install-package
+{}weighted with their popularity from the Ubuntu popularity contest.
+{}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
+{}However, by limiting our approach we have answered these questions without sacrificing much simulation integrity.
+
+%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
+Many of the packages in a repository are not ones which a user would directly select to install.
+Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
+A user would not likely install these as they do not directly allow the user to complete tasks in the system.
+The list of applications from the package app-install-data is used to answer the first question, what packages may a user select to install.
+
+%%%How likely would a user will select to install a package can be gathered from popcon, by looking at how many systems have that package installed
+The second question is then answered through analysing the data-set and determining the probability a user will have a particular package installed.
+The reason why we cannot use this information to also answer the first question is that many of the most packages installed are there because they are depended on by many different applications,
+e.g. a media library that decodes a stream may be used by many different media playing applications therefore installed on many users systems, 
+ranking it high in the popularity contest but it was never directly installed by the user.
+
+
+%%%We validate this by comparing it against the list of users top 10's and stating that the pacakages that more than 5% of the users voted for is 90% accurate
+This relies on the fact that a user would like to 
+
+%%The core problem with this list is that more experienced users may install packages that are not applications, build-essential
+Although a user will more likely install this list can be assumed to be a complete list of applications 
+the main problem is that more experienced users may directly select to install packages that are not deemed applications.
+For instance, the package build-essential includes tools in which a user can build their own Debian packages,
+this is a task for many users, though not deemed an application therefore not included.
+
+%%%The core problem with this probability, is that it doesnt measure corrolation between packages being installed
+The core problem with this probability, is that it doesnt measure corrolation between packages being installed.
+For instance, i
+
+
+\subsection{Failed Attempts at ranking}
+%%%We know popcon is an accurate and broad measure of users systems, we attempted to solve its problems through other measures with no sucess
+In creating this set packages weighted to their popularity, we also  know the Ubuntu popularity contest is an excellent accurate and broad data-set of information with one main draw back of having superfluous packages,
+we attempted to use other means to eliminate these packages and then  
+
+%%%Method google completeion API
+To estimate the popularity of a package, the Google API for automated search completion is used.
+When given a query, this API returns an estimate of the amount this query has been searched for by other users,
+it also returns a list of related searches that users have searched for.
+What query is used is the most important aspect of this approach,
+searching merely for the name of the package may return user queries from other domains, e.g. searching for the package ``wine'' may return oenophile sites.
+Also using multiple different queries can allow for a more robust heuristic as it allows measuring their popularity from different perspectives,
+as one query may not be used when users search for a particular package.
+
+%%%How we validate the heurisitic? Via a list of popular packages from a popular forum
+This is a very general approach, it involves many aspects that effect the results making them possibly inaccurate.
+Therefore, the estimates are validated against a popular Ubuntu forums thread\footnote{http://ubuntuforums.org/showthread.php?t=35208} 
+that asks the user to post the top packages they install in their ubunutu systems. 
+The results of this thread are tallied to compare against the google approach.
+
+%%%The queries we use and the way that we aggregate them
+We have selected three queries to build our heuristic:
+``apt-get install``, ``ubuntu'' and ``install'', 
+
+%%%Corrolation, as google API returns similar values we can estimate the corrolation of packages
+
+\section{Repository}
+The collection, mapping and use of the Ubuntu Repositories.
+Version mapping
+
+
 
