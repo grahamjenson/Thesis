@@ -1,0 +1,64 @@
+\chapter{Background}
+%%%The history of components, a small summary of the intro of the Szypersky book
+
+\section{What is a Component?}
+%%%Discuss what a component is and how it is defined by its goals and not it's properties.
+
+A component is best defined as
+\quote{A unit that can be composed}
+This is a complete, but useless definition for our purposes, 
+as Szyperski noted, a natural concept such as component is best defined by its goals not it's properties. %TODO
+
+
+Give examples of OSGi Bundles, Eclipse Plugins, DS
+Spring DM
+Debian Packages
+Maven POM
+CUDF
+
+Discuss differences and commonalities
+Multiple package installations Maven Debain No, OSGi Eclipse DS and CUDF yes
+Focus on interface not implementation dependence, Maven no, Debian Community defined virtual packages, 
+OSGi kind of package name space related to installation, Eclipse Yes DS Yes.
+Version Control, All Yes
+Run time replacement Dynamic Dependence, Maven no (no runtime), Eclipse Kind of a bit buggy requires restarts,
+OSGI DS Debian Yes, CUDF is abstract so has no real implementation
+Conflicts, Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
+Reccommendation, ??
+
+\section{Component Models}
+%%%We are focusing on two of the most popular component models, the OSGi and Debian component models
+
+\subsection{Debian}
+
+\subsection{OSGi}
+
+\section{Component Evolution}
+%%%Component evolution, changing components to newer versions
+Versioning is the main mechanism in which components evolve.
+There is also branching, and environment specific altering.
+
+Versioning components has significant research behind it.
+
+Branching is when a difference in opinion or idealogy on how a component should proceed into the future
+causes the project to take two different routes given the same base code or idea.
+
+Spring DM takes libraries and makes them OSGi compatable, 
+Debian package can be compiled for different CPU architectures.
+
+
+\section{Component System Evolution}
+%%%Changing the component in the component systems, talk about DLL Hell, and the problems it has caused
+Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
+Add, remove, upgrade, downgrade components in the system while it is running.
+
+There are some problems that must be solved within the component model like making sure that during the change,
+the system is never invalid or unstable. 
+This is a scheduling problem as described by %TODO
+
+The composer must also make sure that all dependencies are meet
+
+\section{Component Dependency Resolution}
+%%%The problems caused when Evolving component systems can be solved with Component Dependency Resolution.
+%%%These have been used at Development time and Run time, some examples
+

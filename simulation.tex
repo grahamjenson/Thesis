@@ -12,8 +12,7 @@
 {}then we present our methodology
 {}first describing our formulation of the problem,
 {}our reasons and methods for the collection of data,
-{}discuss our models validity when compared to the real world,
-{}describe our implementation and validity of the simulation model.
+{}discuss our simulation model validity when compared to the real world.
 {}The design of the experiments are then described and the variables assigned values,
 {}finally we present the results from this simulation.
  
@@ -37,6 +36,10 @@ similar to Debian's process of moving through the phases Unstable, Testing, Froz
 After it has been through this cycle maintenance of the resolver is still required; 
 for instance the resolver apt-get since its initial release has released more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
 This shows how much effort must be applied to earn a users trust, and this effort may outway the actual benefits when simulation is a cheaper alternative.
+
+%%%Why not use virtual machines, why abstract further.
+We could use a case study of users where users evolve systems in a monitored environment.
+This is also probalematic because
 
 %%%Instead we can simulate, which is an approximation of the real world.\\
 %%%When drawing conclusions the accuracy of this approximation must be considered
@@ -93,7 +96,7 @@ this is a common strategy because removal of a component is seen as very risky.
 \subsection{Configuration}
 %%%A configuration is the set of parameters of the simulation.
 A configuration is the set of variables which define the parameters of the simulation.
-How these variables are defined are derived from what goals the simulation has.
+How these variables are defined are derived from what goals of the simulation.
 As the goal of this simulation is to look at different resolver and user strategies,
 these are the core changes that are made.
 Given that we want to look at the effects of many different possible ways a system can evolve,
