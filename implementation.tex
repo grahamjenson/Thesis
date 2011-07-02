@@ -1,0 +1,39 @@
+\chapter{Implementation}
+
+\section{Common Upgradeability Description Format}
+
+\section{Debian Model to CUDF mapping}
+The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar. 
+However, there are a few instances where the Debian semantic causes complication with the CUDF format, and in this section we describe these in detail.
+The first of these complications occuurs with versioning, as in Debian the version model is different to the CUDF model.
+The second instance is because of the special relationships that virtual packages have in the Debian model, 
+these must be intergrated into the CUDF mapping. 
+Lastly the priority ranking, recommends, suggests and other extra information that is not standard in the CUDF format,
+but with CUDF's extencibility can be represented and used in the resolution process.
+
+The versions in Debian follow a model that first describes the epoch,
+the upstream version, then the Debian revision (further described in the Debian policy manual). %TODO cite debian package manager
+When comparing two versions these values are compared lexicographically such that
+if the epoch is equal then the upstream versions are compared, 
+and if these are equal then the Debian revision is compared.
+As the CUDF version model is merely a single integer number, 
+the Debian versions are not easily mapped.
+To map these versions we order all Debian versions that are referenced in a repository into a single list, 
+such that the least version has the index 0, and the last element in the list is the greatest version.
+The index of the a Debian version in this list is then used as the CUDF version.
+
+A virtual package in
+
+
+\section{OSGi Component Model}
+\subsection{Mapping to CUDF}
+
+\section{Comparison}
+
+\chapter{Investigations}
+
+\section{Search Space Size}
+%How big a search space are we looking at here
+
+
+
