@@ -1,5 +1,5 @@
 \chapter{Component Dependency Resolution}
-%%%Component Dependency Resolution is a necessity in component model 
+{}The strict definitions of the relationships between components can not only be used to find  
 
 \section{Formal Definition}
 
@@ -10,19 +10,45 @@
 \subsection{Nuget} 
 %%%-- C\#
 
+\subsection{bundles}
+%%% RUBY
+
 \subsection{Nimble}
-\subsection{OBR}
+\subsection{OSGi Bundle Repostiory}
+%%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
+
 \subsection{Apt-get}
 \subsection{Aptitude}
 
 
 \section{Implementation}
 
-\section{SAT Solver}
-\subsection{DPLL}
+\section{Boolean Satisfiability (SAT) Solver}
+%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
+
+%%%First we define the SAT problem
+
+%%%Then discuss its Complexity (NP complete if it the problem satisfies some criteria)
+
+
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+
+%%%Some improvements over tie
+
 \subsection{CHAFF Watched Literals}
+
 \subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly) constraints
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+
 \subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+
 
 \section{Optimisation Representation}
 
