@@ -1,14 +1,27 @@
 \chapter{Background}
-%%%The history of components, a small summary of the intro of the Szypersky book
+{}The use of components in software is a natural extension when build of systems, as it allows software engineers to so many benefits that other engineering diciplines have.
+{}The critical problem of having component be a "natural" concept is that the specific definition of what a sotfware component is, remains ambigious.
+This leads to many disagreements of what a component is, and what a software unit requires to be upgraded to "component".
+For instance Szyperski and Meyer in Dr. Dobbs magazine discuss over a series of articles what a component is and this leads to disagreements even amoung the leaders in the field. %TODO cite dobbs
+
+{}To avoid these issues of semantics, we will first define a component in an egotistical way, in the terms of the problem we are trying to solve.
+We give examples of such components and their models that fit our definition, this may not be exactly what other people have defined.
+For the purposes of consistency, when we refeer to "software component" or "component" we refer to our definition.
+
+We then take a few examples of such component models, OSGi and Debian Packages, and describe them in more depth, looking at their similarities and differences of the symantics of their models.
+
+We then go over the background of this, component evolution and component system evolution.
+Finally, we discuss the development and use of component dependency resolution in current component models.
 
 \section{What is a Component?}
-%%%Discuss what a component is and how it is defined by its goals and not it's properties.
+%%%Discuss what a component is in relation to our problem. Give a few examples of 
 
-A component is best defined as
+A component is most broadly defined as
 \quote{A unit that can be composed}
-This is a complete, but useless definition for our purposes, 
-as Szyperski noted, a natural concept such as component is best defined by its goals not it's properties. %TODO
+This is a complete, but useless definition, as it encompasses to large a range of possiblilities. 
+Szyperski noted, a natural concept such as component is best defined by the properties required to attain it's goals. %TODO
 
+The goals a component requires in this study are that of being able to be evolved.
 
 Give examples of OSGi Bundles, Eclipse Plugins, DS
 Spring DM
