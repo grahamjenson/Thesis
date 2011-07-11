@@ -1,28 +1,69 @@
 \chapter{Component Dependency Resolution}
-%%%Component Dependency Resolution is a necessity in component model 
+{}The strict definitions of the relationships between components can not only be used to find  
 
 \section{Formal Definition}
+%%%The formal definition of CDR is done using constarints
 
+%%%We extend this definition to include the possiblility of optimisation
+
+\section{Optimisation}
+%%%How we should define and
 
 \section{Current Implementations}
-\subsection{Maven}
+%%%We break the set of implementations into 2 groups, design time dependency resolvers, and run time dependency resolvers.
+%%%We further break the set of runtime implementaions into
+
+\subsection{Apache Maven}
+%%%Maven is a design time project and build automation tool, that can resolve library dependencies
 
 \subsection{Nuget} 
 %%%-- C\#
 
-\subsection{Nimble}
-\subsection{OBR}
+\subsection{RubyGems bundler}
+%%% Bundler is a package dependency manager for RUBY gems, similar to 
+
+
+\subsection{Paremus Nimble}
+%%%Nimble is a OSGi bundle resolver, built to alter systems at runtime
+
+\subsection{OSGi Bundle Repostiory}
+%%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
+
 \subsection{Apt-get}
+%%%Apt-get is the core application for package management in Debian based GNU/linux distributions
+
 \subsection{Aptitude}
+%%%Aptitude is a competitor to apt-get which has some more advanced features
+
+\section{Implementation with Boolean Satisfiability (SAT) Solvers}
+%%%The implementation to these solvers is sometimes ad-hoc, though in recent times they have been moving to a more standard solution, the SAT solver.
+
+%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
+
+%%%First we define the SAT problem
+
+%%%Then discuss its Complexity (NP complete if it the problem satisfies some criteria)
 
 
-\section{Implementation}
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
 
-\section{SAT Solver}
-\subsection{DPLL}
+%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
+
 \subsection{CHAFF Watched Literals}
-\subsection{Conflict Learning}
-\subsection{Literal Order}
+%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced.
 
-\section{Optimisation Representation}
+\subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly) constraints
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+\subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+\section{Optimisation with SAT solvers}
+%%%Optimisation of SAT solvers it typically done through extending their possible constraints to include Psuedo Boolean inequalities
+
+%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solutino is found
 

@@ -28,28 +28,23 @@ A car requires a body, electrical system, interior, suspension and steering, eng
 The engine can be further broken into other parts like cooling, oil system, exhaust and intake systems, fuel, and so on.
 Each of these parts have relationships that lead to complex dependencies, for instance the carburetor blends the air from the intake with petrol from the fuel system.
 
-%%%Generally we break apart systems for understanding, specialization, maintenance, extension, problem detection, and concurrent development.
-The are many reasons for breaking these systems apart, including understanding, specialization, maintenance, problem detection, and concurrent development.
+%%%Generally we break apart systems for the benefits gained during design, implementation, maintenance and evolution. 
+The benefits of breaking a system apart are gained through the entire product process; design, implementation, deployment, maintenance and evolution.
 
-%%%Understanding a system working as a whole allows us to convey information that may otherwise be difficult to grasp
+%%%During Design, planning, understanding the big picture,
 
-%%%Specialization allows individual people to focus on their proficiencies when building a part of the system.
-It allows specialization, by splitting the system into parts experts in those parts can focus on their own domain and only have to know how it interacts with other parts.
+%%%During implementation, specialization, concurent development, testing each part separtly
 
-%%%The ability to maintain the system is increased as individual parts can be removed and replaced without changing the rest 
+%%%During maintenance with well defined interactions a part can be replace without side effects, 
+%%%or a problem can be detected and solved given its location in the system 
 The apocryphal story of George Washington's axe which has three times had its handle replaces and twice its head replaced deomstrates the power of maintence on a system of parts.
 
-%%%Being able to extend a system by adding new parts, as it will only effect the local parts of the system
-
-%%%If a system has well defined relationships in it, detecting a problem and finding where it occurs is a much easier task
-
-%%%Concurrent development allows different parts of the system to be developed and constructed simitaneously lowering time for development.
+%%%During Evolution, replacing an inferrior part with a superior part can be accomplished as long as it fits the required specifications
 
 \section{Software Components}
-%%%There are more reasons for the use of components in software systems, additional benifits.
-%%%Software components can be reused, replaced ``on the fly" without interruption to the system, validated for correctness, 
-%%%and automatically building or modifying a system through dependency resolution.
-Component Software consolidates code into units
+{}There are more reasons for the use of components in software systems, additional benifits over their use in physical systems.
+{}Software components can be reused, replaced ``on the fly" without interruption to the system, validated for correctness, 
+{}and automatically building or modifying a system through resolving their defined dependencies.
 
 %%%The reuse of services supplied by software components is a key driving force for use
 In a physical car there are pumps which accomplish many different tasks, in a software system such replication is uneccesary so a single component can provide the servie to pump.
@@ -68,65 +63,28 @@ While then driving this car your requirements change, then the car changes parts
 This is the power that dependency resolution offers component systems, automatic resolution of a users requirements.
 
 \section{Research Goals}
-%%%Our research is in the area of dependency resolution, the finding valid systems, more specifically on the impact of its use during system evolution
-
+{}The part of this vast research area we look at is the final point made in the previous section, 
+{}the automatic composition of parts through resolving component dependencies and it's effects on a component system.
 
 
 \section{Overview of Thesis}
-First Background,
-Then define what a component is based on literature and examples
-
+%%%This section just has an outline, and breif description of each of the chapters.
 
 \input{background}
 
 \input{cdr}
 
+\input{implementation}
+
+\input{investigations}
+
 \input{criteria}
-
-
-
-
-
-
-%Lexicographic operator
-
-%formal Definition with Optimisation constraints
-\section{CUDF}
-
-\section{CUDF Mapping}
-
-
-
-\chapter{Component Models}
-
-\section{Common Upgradeability Description Format}
-
-\section{Ubuntu Component Model Mapping to CUDF}
-
-\section{OSGi Component Model}
-\subsection{Mapping to CUDF}
-
-\section{Comparison}
-
-\chapter{Investigations}
-
-\section{Search Space Size}
-%How big a search space are we looking at here
-
-\section{SAT Optimisation}
-%What is necessary in SAT
-\subsection{Literal Order}
-\subsection{Learning Choices}
 
 \input{simulation}
 
+\input{conclusion}
 
-\chapter{Conclusion}
-\section{Related Work}
-\section{Future Work}
+\input{appendix}
 
-\section{Glossary}
-Composer: The user who creates or alters component systems (compositions)
 
-Versioning Model: A method to define and compare versions
 \end{document}

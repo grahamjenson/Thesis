@@ -1,4 +1,8 @@
-\section{Debian to CUDF mapping}
+\chapter{Implementation}
+
+\section{Common Upgradeability Description Format}
+
+\section{Debian Model to CUDF mapping}
 The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar. 
 However, there are a few instances where the Debian semantic causes complication with the CUDF format, and in this section we describe these in detail.
 The first of these complications occuurs with versioning, as in Debian the version model is different to the CUDF model.
@@ -19,5 +23,13 @@ such that the least version has the index 0, and the last element in the list is
 The index of the a Debian version in this list is then used as the CUDF version.
 
 A virtual package in
+
+
+\section{OSGi Component Model}
+\subsection{Mapping to CUDF}
+
+\section{Comparison}
+
+
 
 
