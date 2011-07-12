@@ -1,8 +1,16 @@
 \chapter{Implementation}
+%%%In this chapter we discuss our specific implementation of CDR, which is based on the P2CUDF implementation of a CUDF solver 
 
 \section{Common Upgradeability Description Format}
+%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+
+\subsection{CUDF Syntax}
+
+\subsection{CUDF Semantics}
+
 
 \section{Debian Model to CUDF mapping}
+%%%The modelling of Debain packages to CUDF is very similar 
 The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar. 
 However, there are a few instances where the Debian semantic causes complication with the CUDF format, and in this section we describe these in detail.
 The first of these complications occuurs with versioning, as in Debian the version model is different to the CUDF model.
@@ -10,7 +18,9 @@ The second instance is because of the special relationships that virtual package
 these must be intergrated into the CUDF mapping. 
 Lastly the priority ranking, recommends, suggests and other extra information that is not standard in the CUDF format,
 but with CUDF's extencibility can be represented and used in the resolution process.
+The one difference we have from the Debian semantic is the ability to have multiple versions of the same package installed, this is impossible in debian, but we see it as a simplification of the problem.
 
+%%%How versions are handeled in this mapping, ordering all versions in a list and giving them the version of their index
 The versions in Debian follow a model that first describes the epoch,
 the upstream version, then the Debian revision (further described in the Debian policy manual). %TODO cite debian package manager
 When comparing two versions these values are compared lexicographically such that
@@ -22,14 +32,35 @@ To map these versions we order all Debian versions that are referenced in a repo
 such that the least version has the index 0, and the last element in the list is the greatest version.
 The index of the a Debian version in this list is then used as the CUDF version.
 
+%%%Virtual Packages must be handeled, there are some specific debian semantics that are particularly important
 A virtual package in
 
+%%%Priority ranking also must be handeled, as some packages are absolutly required to be in a system, these can be maked similarly in CUDF
 
-\section{OSGi Component Model}
-\subsection{Mapping to CUDF}
+%%%We allow multiple versions of the same package to be installed, this is different from the debian 
 
-\section{Comparison}
+\section{OSGi Component Model to CUDF Mapping}
 
+%%%How versions are handeled, similar to the Debian model
 
+\section{P2CUDF based implementation}
+%%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
+The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
+One implementation of note is the P2CUDF implementation, that uses SAT
+
+\subsection{Changes}
+%%%The back end model for this solver though was OSGi specific, and as most of our problems are Debian, we decided to replace the back model.
+
+%%%Our model, expressed as a UML class diagram
+
+%%%We have altered the parser to our model
+
+%%%We have changed the mapping of their model to SAT, to our model to SAT
+
+%%%We also refactored SAT4J, to SlimSAT, this is identicle to SAT4J, except we removed significant portions of unused code, retained for competitions 
+%%%(i.e. MaxSat instances, and unused constraint implementation)
+
+\subsection{Validation}
+%%%We entered this solver into a Mancoosi MiSC competition, it was tested against other solvers and altough errors were found generally found equivilent results (just a bit slower).
 
 

@@ -76,9 +76,6 @@ The measure to use when determining version of a system from the versions of ins
 As a set of components can be versioned differently, 
 we need to explore functions that can aggregate the versions of different components together in a meaningful way.
 
-
-
-
 The Mancoosi organisation uses a metric that minimises the number of components in a system that have better versions, 
 e.g. a system $a-1,b-1$ if $a-2$ exists is $1$ out of date. 
 The Eclipse P2 implementation counts the amount of versions that are better for each component,
@@ -92,10 +89,13 @@ As with the version metrics, none of these consider the dependencies when lookin
 \subsection{Versions, Minimality and Users}
 %%%How do different users view these criteria
 
-\section{The Gap}
+\section{The Middle Gap}
+%%%Both extremes of criteria are repensented with current implementation, either very conservative or very progressive, but there are few implementations looking at the middle.
 Each time a user decides to evolve a component system, the decision must be made about the risks of the evolution.
 In an environment which is mission critical, all risk is eliminated and an unecessary change to the system is too risky.
 In a development environment where the user may be trying to fix potential problem, 
 or test different packages, then the risk is accepted as the system is essentially disposable, and a complete re-installation is not out of the question.
-These two strategies are represented in by the current strategies used, however very little middle ground is avaiable for the customisation of applications.
-The user may want 
+These two strategies are represented in by the current depenceny resolution implementations, however very little middle ground is available for the customisation of applications.
+This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
+
+

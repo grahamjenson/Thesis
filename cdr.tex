@@ -1,17 +1,83 @@
 \chapter{Component Dependency Resolution}
-{}The strict definitions of the relationships between components can not only be used to find  
+%%%In this chapter we aim to first formally define CDR, discuss how its commonly implemented, finally giving examples of its use in different contexts
 
 \section{Formal Definition}
-%%%The formal definition of CDR is done using constarints
+%%%The formal definition of CDR is an expansion from our CBSE 2011 paper
+First we denote the space of components as $\mathbb{C}$, each described by a name and version, such that no two components can have the same name and version.
+We then define CDR as the function $C_R: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
+such that it takes a set of user-requested components $X$ (an individual request is denoted $\Delta$),
+and returns a set of components that satisfy all the constraints $R$.
+For instance, given $X = \{a\}$ and a set of component constraints $R$,
+$C_R(X)$ would try to resolve a set of components that contain $a$ while satisfying $R$.
+The user-requested components must be in the system i.e. $X \subseteq C_R(X)$ as the user requirements are mandatory.
+The returned set of components is seen as the resulting system of installed components, e.g. if $a \in C_R(X)$ then $a$ is installed.
 
-%%%We extend this definition to include the possiblility of optimisation
+The constraints in $R$ can be either: 
+\begin{itemize}
+  \item dependency requirements in the form $a \rightarrow c_1 \vee \ldots \vee c_n$ e.g. $a \rightarrow b \vee c$ means $a$ depends on $b$ or $c$
+  \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
+\end{itemize}
+These constraints are defined semantically such that
+a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in C_R(X)$ then $c_1 \in C_R(X)$ or \ldots or $c_n \in C_R(X)$,
+and a conflict constraint $a \rightarrow \neg c$ means if $a \in C_R(X)$ then $c \not \in C_R(X)$.
+These types of constraints are expressive enough to describe many CDR problems.
+
+%%%We extend this definition to include the possibility of optimisation
+CDR is expressed w.r.t. a heuristic using a distance function $d(\mathbb{C}_1,\mathbb{C}_2)$ 
+that returns a measure of distance between two sets of components as a non-negative real number.
+Given a set of user-requests $X$, a system $C_R(X)$ and new user-request $\Delta$,
+$C_R(X \cup \Delta) = \mathbb{C}_1$ iff there does not exist another system $\mathbb{C}_2$ such that $X \subset \mathbb{C}_2$, $\mathbb{C}_2$ satisfies $R$, 
+and $d(C_R(X),\mathbb{C}_2) < d(C_R(X),\mathbb{C}_1)$.
+That is, if two possible systems exist that $C_R$ could return, the system with the least distance from the original system is returned. 
+By defining $d$ we can alter CDR w.r.t. our heuristics.
 
 \section{Optimisation}
-%%%How we should define and
+%%%Here we formalise notation of how we combine heuristics to create multi-criteria problem, this is a reduction (remove lattices, leave order theory) of our APSEC 2011 paper
 
-\section{Current Implementations}
+
+\section{Implementation with Boolean Satisfiability (SAT) Solvers}
+%%%The implementation to these solvers is sometimes ad-hoc, though in recent times they have been moving to a more standard solution, the SAT solver.
+Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
+This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
+The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependcy resolution, and suggested that they were a satisfactory solution.
+Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
+
+%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
+
+%%%First we define the SAT problem with respect to the formal definition, this is straight forward.
+
+%%%Then discuss its Complexity (NP complete to find a solution, NP-Hard to find an optimal solution)
+
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+
+%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
+
+\subsection{CHAFF Watched Literals}
+%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
+%TODO cite
+
+\subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly) constraints
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+
+\subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+
+\subsection{Optimisation with SAT solvers}
+%%%Optimisation of SAT solvers it typically done through extending their possible constraints to include Psuedo Boolean inequalities
+
+%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+
+%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+
+
+\section{Current Dependency Resolvers}
 %%%We break the set of implementations into 2 groups, design time dependency resolvers, and run time dependency resolvers.
-%%%We further break the set of runtime implementaions into
 
 \subsection{Apache Maven}
 %%%Maven is a design time project and build automation tool, that can resolve library dependencies
@@ -35,35 +101,4 @@
 \subsection{Aptitude}
 %%%Aptitude is a competitor to apt-get which has some more advanced features
 
-\section{Implementation with Boolean Satisfiability (SAT) Solvers}
-%%%The implementation to these solvers is sometimes ad-hoc, though in recent times they have been moving to a more standard solution, the SAT solver.
-
-%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
-
-%%%First we define the SAT problem
-
-%%%Then discuss its Complexity (NP complete if it the problem satisfies some criteria)
-
-
-\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
-%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
-
-%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
-
-\subsection{CHAFF Watched Literals}
-%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced.
-
-\subsection{Conflict Learning}
-%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly) constraints
-
-%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
-
-%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
-\subsection{Literal Order}
-%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
-
-\section{Optimisation with SAT solvers}
-%%%Optimisation of SAT solvers it typically done through extending their possible constraints to include Psuedo Boolean inequalities
-
-%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solutino is found
 

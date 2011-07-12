@@ -17,10 +17,11 @@
 {}finally we present the results from this simulation.
  
 \section{Why Simulate?}
-%%%Why are we using a simulation instead of real systems
+%%%Why are we using a simulation instead of real systems, or a controlled environment
 To evaluate an evolution strategy we could either look at a set of actual systems with real users and collect data,
-or we could simulate the necessary aspects as realistically as possible, then study the results.
-As using real users with real systems will always return more valid results to simulating,
+we could create a controlled environment in which users are given tasks and monitored the outcomes,
+or we could realistically simulate the necessary aspects, then study the results and implications.
+As using real users with real systems will always return more valid results to simulating, as would a controlled study of users,
 why would we opt to simulate?
 
 %%%Because users dont trust the ``experimental" implementations
@@ -35,11 +36,14 @@ Proposal, Incubation, Mature, and Top-Level \footnote{http://www.eclipse.org/pro
 similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable \footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
 After it has been through this cycle maintenance of the resolver is still required; 
 for instance the resolver apt-get since its initial release has released more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
-This shows how much effort must be applied to earn a users trust, and this effort may outway the actual benefits when simulation is a cheaper alternative.
+This shows how much effort must be applied to earn a users trust, and this effort may outweigh the actual benefits when simulation is a cheaper alternative.
 
-%%%Why not use virtual machines, why abstract further.
-We could use a case study of users where users evolve systems in a monitored environment.
-This is also probalematic because
+%%%Because getting enough users of different types would be difficult, and in a controlled environment the results may vary.
+We could create a case study of users where users evolve systems in a monitored environment, where they select packages and we use these to create systems and analyse implications.
+As with the real simulation, getting a broad enough user group that we can monitor is logistically difficult and impractical when compared to the benefits.
+Any controlled environment would alter the state of how the user interacts with their "control" system, making the results similarly less reliable.
+The one aspect that would be improved over simulation would be the possible more realistic user model, 
+however as a user typically researches a package before having installing it because it would have real implications, in a controlled environment these implications are removed so the selection would still be of questionable validity.
 
 %%%Instead we can simulate, which is an approximation of the real world.\\
 %%%When drawing conclusions the accuracy of this approximation must be considered
@@ -87,28 +91,33 @@ this is a common strategy because removal of a component is seen as very risky.
 
 \subsection{Effects}
 %%%What kind of effects are we looking at analysing?
+
 %%%Static
+
 %%%Dynamic
+
 %%%Change Propogation
+
 %%%Graph Analysis
+
 %%%Coupling and Instability defined by JDepend
 
 \subsection{Configuration}
-%%%A configuration is the set of parameters of the simulation.
+%%%A configuration is the set of parameters of the simulation. What are these parameters which we must consider.
 A configuration is the set of variables which define the parameters of the simulation.
 How these variables are defined are derived from what goals of the simulation.
-As the goal of this simulation is to look at different resolver and user strategies,
+As the goal of this simulation is to look at different resolver criteria and user strategies,
 these are the core changes that are made.
 Given that we want to look at the effects of many different possible ways a system can evolve,
 we also change the packages that are selected to be installed by the user.
 The variables like, what repositories are used, and over what time period are seen as not being relevant to our eventual analysis,
-therefore we do not change them and leave them static
+therefore we do not change them and leave them static.
 
 Given this simulation is looking at the effects of the strategies employed by users and resolvers on the component systems,
 we must look at different resolvers, and different user strategies.
 What packages the simulated user selects to install and 
 
-%%%The resolvers we are testing
+%%%The criteria we are testing
 We are testing resolver strategies P2, trendy, Hamming + max version, PageRank,\ldots 
 
 %%%We are changing the distributions of user installaion, and the period between updates
@@ -150,7 +159,7 @@ The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an e
 Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
 
 %%%User Forum top 10 posts,What it is, where it is from, what information we can get from it, problems with that information
-
+People submit multiple times, some people submit more than 10, some less, package sanitisation, had to change names to fit package names
 
 %%%app-install-data package
 The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
@@ -161,7 +170,7 @@ This comprehensive list currently\footnote{May 24th 2011} contains 2393 applicat
 %%%Ubuntu Repositories
 The Ubuntu Repository, as with most open and free software, is freely downloadable.
 It contains all the packages that have ever been in the repository with the information of when the package was added.
-We used a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as previsouly described in section. %TODO referecne
+We created a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as precariously described in section. %TODO referecne
 As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
 
 %%%Ubuntu installation
@@ -182,10 +191,33 @@ and how often a user updates a system is found through our user survey.
 These pieces of information allow us to approximately represent real users.
 
 
-\section{User Approximation}
-Installation Distributions from the Logs, Actions and life cycle from the survey.
+\section{User Model}
+{}The user model involves many aspects, including the lifecycle of specific actions, the probability of actions being taken, and also the parameters of an action.
+{}Given the three actions update, install and remove, how often are these actions executed, and what are they executed on.
+{}To answer these questions we first look at the analysis of our survey to find the lifecycle of these values, we further refine these values by looking at the submitted user logs.
 
-\section{Package Popularity}
+\subsection{Survey analysis}
+%%%The questions we want to answer are which actions are routinely performed and at what frequency?
+%%%What life cycle specific actions are performed?
+
+%%%Description of the Survey
+
+%%%Results from the Survey
+
+%%%Analysis of these results and how they apply to the user model
+
+\subsection{Log Analysis}
+%%%The question we want to answer is "How often do you install packages?"
+
+%%%The distribution of actions, specifically installation, is difficult to ask a user, "How often do you install?", therefore we extract this information from logs, and bootstrap the distributions.
+
+%%%How we analyised these logs, our main assumption that daily actions are independent, and that we group actions every few hours 
+%TODO look at script to get specific values
+
+%%%What are the drawbacks of this model? Mostly that the log information from non-apt-get resolvers had to be grouped.
+
+
+\subsection{Package Popularity}
 {}Determining the probability a user will select a package to be installed is difficult given the enormous amount of factors this relies on.
 {}The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
 {}Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
@@ -222,7 +254,7 @@ The core problem with this probability, is that it doesnt measure corrolation be
 For instance, i
 
 
-\subsection{Failed Attempts at ranking}
+\subsubsection{Failed Attempts at ranking}
 %%%We know popcon is an accurate and broad measure of users systems, we attempted to solve its problems through other measures with no sucess
 In creating this set packages weighted to their popularity, we also  know the Ubuntu popularity contest is an excellent accurate and broad data-set of information with one main draw back of having superfluous packages,
 we attempted to use other means to eliminate these packages and then  
@@ -248,9 +280,38 @@ We have selected three queries to build our heuristic:
 
 %%%Corrolation, as google API returns similar values we can estimate the corrolation of packages
 
-\section{Repository}
-The collection, mapping and use of the Ubuntu Repositories.
-Version mapping
+\section{Repository Model}
+{}The model of the repository is complicated by the fact that our simulation takes into account the date, this means that the repository should only contain packages that existed at a certain date.
+{}This is simplified by only using a single repository, the ubuntu repository, and only using a single date 10.2009-10.2010
+
+%%%We create a repository for each different day and use that based on what day we are at
+
+%%%The repository is selected because it has significant amount of users, so results will be applicable, and a significant amount of components.
+
+%%%The dates are selected as they are between two major releases and over a year
+
+%%%Analysis of the repository between the dates, number of changes, additions, different versions of the same components.
+
+%%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
+
+\section{Criteria}
+%%%What criteria are we using, Yet to be decided though likely contain P2, Hamming, PageRank, Trendy
 
 
+\section{Simulation implementation}
+%%%Here we describe how our simulation is implemented, specifics that are not previously mentioned, and the variables not yet defined
+
+\section{Results}
+%%%Here we describe results from our simulation
+
+\section{Analysis}
+%%%Analysis of the results, and the simulation
+
+%%%Results analysis
+
+\subsection{Simulation analysis}
+%%%By comparing the results back to the user submitted logs we can partially validate the output.
+
+\section{Conclusions}
+%%%Discuss the overall conclusions. Bullet point the points most surprising, and useful for further study.
 
