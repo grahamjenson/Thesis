@@ -1,0 +1,43 @@
+\chapter{Component Model Comparisons}
+\label{comparison}
+%%%These investigations outline the first investigations into the structure of component dependencies
+{}Two of the leading component models that CDR is currently used with are OSGi and the Debian Package system.
+{}The differences that occur because of their differences will effect the dependencies and relationships between components,
+{}and then affect the properties of CDR or the way it is used.
+{}To generalise any results, or to analyse the effects of different CDR criteria we must first compare them.
+{}We first give specific differences and then use dependency graph and constraint analysis to explore their consequences.
+{}We find %TODO   
+
+
+\section{Differences}
+{}Different aspects of a component model and its use can effect the dependencies and relationships between components,
+{}therefore affect the properties of CDR or the way it is used.
+{}Aspects such as, developer communities and conventions, what is allowed in the syntax of the meta-data expressing the dependencies,
+{}and the semantics of the component model will affect CDR.  
+
+%%%Developer conventions like in eclipse depending explicitly on component, vs. OSGi where it is prefeered to depend on packages
+
+%%%Metadata syntax will allow certain constraints to be defined, in eclipse the only conflict is in a singleton relationship.
+
+%%%Component model Semantics, how dependencies are manifested, 
+	
+	
+
+The semantics of a component model will effect how the components are defined and used within that model.
+This will effect the relationships between components and therefore CDR will be effected by these changes.
+
+\section{Detailed comparison of OSGi and Debian}
+%%%Here we will discuss various static graph analysis, between the OSGi component model and the Debian component model
+
+\section{Dependency Graph analysis}
+%%%Distributions of dependencies...
+
+\section{Constraint analysis}
+%%%Here we analyise the size of the possible search spaces of both OSGi and Debian, through the simple mechanism of brute force search
+
+%TODO This maybe
+%\section{SAT solver optimisation}
+%We change some of the different variables in the SAT solver (constraint resolution, oredering, ...) and analize the domain specific results
+
+\section{Conclusions}
+%%%Here we can go over the similarities and differences between the two component models (hopefuly the are similar enough)
