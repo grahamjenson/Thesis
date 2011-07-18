@@ -2,9 +2,23 @@
 %%There is just one section and two subsections.
 \documentclass{report}
 
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+
+\usepackage{amssymb}
+\usepackage{listings} 
+\usepackage{alltt}
+
+
 \title{Component Dependency Resolution}
 
 \begin{document}
+
+%%%This document is an outline of the thesis.\\
+%%%All words in italic are summarries (generally of a paragraph to be included).\\ 
+%%%All non-italic words (generally introductory paragraphs) will be included in the final thesis\\
+%%%\hline
+
 
 \chapter{Introduction}
 
@@ -69,21 +83,49 @@ is automatically built for you.
 While then driving this car your requirements change, you want to drive off road, then the car changes parts to adapt to your new requirements, new tires, engine, gearbox\ldots
 This is the power that dependency resolution offers component systems, automatic resolution of a users requirements.
 
-\section{Research Goals}
+\section{Research Goals and Overview}
 {}The aspect of the vast research areas of software components we will look at throughout this thesis is the final point made in the previous section, 
 {}the automatic composition of software components through resolving component dependencies.
-{}Specifically we will look at the requirements necessary for a component model to provide dependency resolution,
-{}how to implement such functionality, the criteria that it must consider, and finally the effects that using dependency resolution (with different criteria) has on a system. 
+{}Specifically we will try to answer the question:\\
+{}When using \{Component Dependency Resolution (CDR)\}$^1$ \{optimising for different Criteria\}$^2$, what are the \{consequences to the component system\}$^3$? \\
 
-%%%The requirements a component model needs to provide dependency resolution at design time, and at runtime, explicit requirements
+{}For this to be answered first many other questions must be discussed:
 
-%%%The implementation of component resolution, how it is a NP-Complete constraint problem
+{}\begin{table}[h!]
+{}\begin{tabular}{|c|c|}
+{} Question & Chapter \\ \hline
+{}What is necessary of a component model for CDR? & Background chapter \ref{background}\\
+{}What is CDR and why use it? & CDR chapter \ref{cdr}\\
+{}How do we Define CDR? & CDR chapter \ref{cdr}\\
+{}How do we implement CDR? & Implementation chapter \ref{implementation}
+{}\end{tabular}
+{}\caption{Component Dependency Resolution (CDR)}
+{}\label{cdr}
+{}\end{table}
 
-%%%The criteria that make Dependency resolution from a NP-Complete to NP-Hard constraint problem
+{}\begin{table}[h!]
+{}\begin{tabular}{|c|c|}
+{} Question & Chapter \\ \hline
+{}How do we represent optimisation in CDR? & CDR chapter \ref{cdr}\\
+{}How do we optimise for criteria? & Implementation chapter \ref{implementation}\\
+{}What criteria are important? & Criteria chapter \ref{criteria}
+{}\end{tabular}
+{}\caption{optimisting for different Criteria}
+{}\label{cdr}
+{}\end{table}
 
-
-\section{Overview of Thesis}
-%%%This section just has an outline, and brief description of each of the chapters.
+{}\begin{table}[h!]
+{}\begin{tabular}{|c|c|}
+{} Question & Chapter \\ \hline
+{}What consequences are we looking for? & Criteria chapter \ref{criteria}\\
+{}How similar are component systems? & Investigations chapter \ref{comparison}\\
+{}Are they similar enough to generalise our results? & Investigations chapter \ref{comparison}\\
+{}What consequences are important to measure? & Simulation chapter \ref{simulation}\\
+{}How can we measure the consequences of criteria? & Simulation chapter \ref{simulation}
+{}\end{tabular}
+{}\caption{Consequences to the Component System}
+{}\label{cdr}
+{}\end{table}
 
 \input{background}
 
@@ -91,9 +133,9 @@ This is the power that dependency resolution offers component systems, automatic
 
 \input{implementation}
 
-\input{investigations}
-
 \input{criteria}
+
+\input{comparison}
 
 \input{simulation}
 

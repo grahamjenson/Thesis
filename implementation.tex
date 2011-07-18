@@ -1,12 +1,47 @@
 \chapter{Implementation}
+\label{implementation}
 %%%In this chapter we discuss our specific implementation of CDR, which is based on the P2CUDF implementation of a CUDF solver 
 
-\section{Common Upgradeability Description Format}
-%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+\section{Implementation with Boolean Satisfiability (SAT) Solvers}
+%%%The implementation to these solvers is sometimes ad-hoc, though in recent times they have been moving to a more standard solution, the SAT solver.
+Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
+This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
+The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependcy resolution, and suggested that they were a satisfactory solution.
+Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
 
-\subsection{CUDF Syntax}
+%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
 
-\subsection{CUDF Semantics}
+%%%First we define the SAT problem with respect to the formal definition, this is straight forward.
+
+%%%Then discuss its Complexity (NP complete to find a solution, NP-Hard to find an optimal solution)
+
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+
+%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
+
+\subsection{CHAFF Watched Literals}
+%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
+%TODO cite
+
+\subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly) constraints
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+
+\subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+
+\subsection{Optimisation with SAT solvers}
+%%%Optimisation of SAT solvers it typically done through extending their possible constraints to include Psuedo Boolean inequalities
+
+%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+
+%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+
 
 
 \section{Debian Model to CUDF mapping}
