@@ -6,4 +6,7 @@ do
 done
 cd doc
 pdflatex -interaction=batchmode document.tex
+bibtex document
+pdflatex -interaction=batchmode document.tex
+pdflatex -interaction=batchmode document.tex
 

@@ -1,6 +1,40 @@
 \chapter{Component Dependency Resolution}
 \label{cdr}
 %%%In this chapter we aim to first formally define CDR, discuss how its commonly implemented, finally giving examples of its use in different contexts
+Suppose a user wants to install a new text editor component ($c_t$) into their resource constrained system.
+The selected text editor has a dependency on a spell checker;
+this means a spell checker component must be installed for the text editor to be functional.
+There are three spell checker components available that satisfy this dependency ($c_1, c_2, c_3$).
+The problem then becomes the selection of the best solution where dependencies are satisfied.
+
+The first step toward finding optimal solutions is to define the criteria.
+The first criterion of a valid component solution is whether it has all its dependencies resolved,
+this can be tested by extracting information about dependencies from component meta-data.
+Suppose the user has also defined their preference for free and open source components;
+this is the second criterion where the licences of the components can be checked to match with this preference.
+Further suppose the system is in a resource constrained environment where size matters, 
+this motivates the final criterion to minimise solution size.
+
+These criteria must now have their relationships to each other defined.
+Having all component dependencies resolved is the first and most important aspect of this problem;
+e.g., any solution that has its dependencies satisfied is better than any that do not. 
+This relationship is defined as a lexicographical, or alphabetical, order which states that a solution is better than another if 
+its first element is better; or if the first elements are equal, the second must be better.
+The size and licence criteria are of equal importance to this problem, 
+where a solution is better than another if it is smaller and has a more open licence. 
+This is a product order, where for a solution to be better than another, all aspects must be better.
+
+Given their preference for free and open software licences they have ranked the licences as such.
+The order given by the user for preferences over software licences is a partial order,
+where using GNU based licences is best, 
+Creative Commons (CC) and Berkeley Software Distribution (BSD) are neither better nor worse than the other,
+and all other licences are worse.
+This type of definition is an ontology, a domain with relationships, and could have been elicited from the user through a number of methods.
+
+These types of problems occur often in component selection.
+A company may have strict rankings on what kind of licence they should use, 
+or a mobile device is resource constrained and wants to minimise size.
+Being able to represent and solve these problems is then seen as important issue for dependency resolution.
 
 \section{Formal Definition}
 %%%The formal definition of CDR is an expansion from our CBSE 2011 paper
@@ -32,11 +66,266 @@ and $d(C_R(X),\mathbb{C}_2) < d(C_R(X),\mathbb{C}_1)$.
 That is, if two possible systems exist that $C_R$ could return, the system with the least distance from the original system is returned. 
 By defining $d$ we can alter CDR w.r.t. our heuristics.
 
-\section{Optimisation}
+\section{Criteria Composition}
 %%%Here we formalise notation of how we combine heuristics to create multi-criteria problem, this is a reduction (remove lattices, leave order theory) of our APSEC 2011 paper
+Optimising additional criteria proposes some challenges; firstly criteria may have different domains and orders, 
+e.g., minimising the size in bytes while maximising percentages of reliability. 
+Some criteria may have partial orders where two solutions can be incomparable,
+e.g., one licence may not be better or worse than another.
+Criteria may have arbitrary rankings, 
+e.g., preferences for licences can differ significantly between users.
+A criterion could also be more important than another, 
+e.g., correct functionality of a system will always be more important than its size.
+
+A common approach to selecting an optimal solution is to
+maximise the versions of components while minimising the number of components.
+The problem with the first criterion is that the version information does not tell us what quality improves, 
+how much it improves or if that quality is relevant to the user or system.
+Optimising for fewer components in a solution can be against many component system goals, like reuse or extensibility.
+For example, this heuristics optimal solution would be a monolithic component with redundant functionality, over 
+a set of more specific components. 
+
+The better approach to this selection is to optimise other information that can be gained from the solution and its components. 
+This information can be obtained from component meta-data (e.g., size, vendor and licence),
+component contracts and composition testing (e.g., reliability and speed) and community sourced meta-data stored in repositories (e.g., popularity).
+Together with user preferences (e.g., speed over precision) and system constraints (e.g., amount of memory) 
+we can then create a function to define an optimal solution.
+
+A naive solution for this problem is to create a function to map each of the properties to a real number.
+Then by aggregating these numbers (through addition or multiplication) with user defined weightings 
+(to express their preferences on properties), we create a single fitness function.
+Using this function we can search for optimal solutions.
+
+This method has some significant drawbacks;
+we lose some information in the conversion to the totally ordered real numbers,
+making aspects like Pareto fronts \cite{pareto1964cours} (where multiple solutions are incomparable) impossible to represent.
+The relationships between criteria are also difficult to define 
+as complicated functions must be created to maintain proper ordering of solutions.
+Asking users to assign preferences of criteria with arbitrary weights is not intuitive,
+e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information to the user about their weighting decision.
+
+The formal approach to solve this problem is to use orders over sets, 
+where each criterion is a set ($A$) with an order ($\leq$).
+Each criterion is then a partially ordered set (the order must be reflexive, antisymmetric and transitive).
+Furthermore we require that any set of elements in a criterion must be bounded, 
+i.e. have a least upper bound and a greatest lower bound, 
+as the use of certain algorithms (notably branch and bound) require this.
+A complete lattices satisfies these requirements, therefore is used as our representation which is 
+discussed further in Section \ref{sec:framework}. 
+
+This framework defines criteria as a ranking system over a complete lattice.
+The ranking system describes a mechanism in which to rank a solution to a complete lattice. 
+The complete lattice gives an order to the solutions based on their ranking.
+By combining these criteria (ranking systems and complete lattices) multi-criteria problems can be composed.
+Then using a general algorithm that can search these structures, 
+optimal solutions for any defined problem can be found.
+
+\subsection{Complete Lattice}
+Complete lattices are an effective abstraction to represent rankings,
+and have been used before when describing such criteria \cite{Bistarelli1997,Fernandez}.
+They can represent problems that involve partial orders,
+be combined into new lattices,
+and be easily visualised and presented using Hasse diagrams \cite{davey1990introduction}.
+They also have strict bounding, which enables general methods, such as branch and bound \cite{Land1960}, to find solutions.
+
+A complete lattice is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound.
+Formally we define:
+\begin{defs}
+A complete lattice is a pair $L = \langle A, \leq \rangle$ where $A$ is a non empty set 
+and $\leq \subseteq A \times A$ is a relation such that:
+\begin{itemize}
+  \item $\leq$ is a partial order
+  \item for all subsets of $A$ there exists a unique least upper bound (join or $\vee$) and a unique greatest lower bound (meet or $\wedge$)
+\end{itemize}
+\end{defs}
+
+The domain of the complete lattice ($A$) defines the value space (e.g., probability, cost, \ldots) 
+that is used to rank solutions. 
+The core attribute of a complete lattice is that all subsets of the lattice have both a unique least upper bound (join or $\vee$) 
+and a unique greatest lower bound (meet or $\wedge$).
+Using these operators we can define the greatest ($1$) and least ($0$) elements as
+the join of the entire domain ($\bigvee A = 1$) and the meet of the domain ($\bigwedge A = 0$).
+
+\subsection{Ranking and Solution}
+An optimal solution can now be defined through a ranking system with respect to complete lattices.
+
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$; we define 
+a ranking system over this lattice as a triple $RS = \langle L, D, V \rangle$, 
+where $V$ is a finite set of variables and $D$ is their finite domain.
+\end{defs}
+
+Given this paper is specifically solving the component dependency resolution problem,
+this abstract definition of a ranking system can be further defined.
+Within dependency resolution, 
+each variable in this problem is a component and their domain is whether they are included or excluded from the final solution.
+Therefore, $D = \{F,T\}$ and $V = C$, where $C$ is the set of components in the problem.
+
+\begin{defs}
+A solution is a variable binding $\gamma: V \rightarrow D$, a mapping of each variable to an element in the domain,
+and $\Gamma$ is the set of all solution functions.
+\end{defs}
+
+This definition of solution does not take order into account, where a solution could be the worst possible solution.
+
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$ and a ranking system $RS = \langle L, D, V \rangle$.
+A ranking function ($Rank$) maps solutions to elements from $A$,
+$Rank: \Gamma \rightarrow A$.
+\end{defs}
+
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$, a ranking system $RS = \langle L, D, V \rangle$ and a ranking function $Rank$.
+The set of optimal solutions ($OSol \subseteq \Gamma$) is the set of solutions where there is no other solution whose rank is better,
+such that $OSol = \{ s \in \Gamma : \nexists s' \mbox{ such that } Rank(s) < Rank(s')\}$
+\end{defs}
+
+The set of optimal solutions only includes the highest ranked solutions,
+as with the definition of solutions, these optimal solutions could be undesirable.
+For instance given a problem which is ranked with either $Correct$ or $Incorrect$, 
+the optimal solution could be $Incorrect$ if there exists no solutions that are $Correct$. 
+
+\subsection{Composition of Complete Lattices}
+\label{sec:composition}
+As a complete lattice with a ranking system is the representation of a criterion,
+the composition of criteria is the way of expressing their relationships to one another. 
+We first define two separate composition operators of complete lattices resulting in the product and lexicographic orders.
+
+Here we prove that the lexicographical and product compositions of complete lattices result in a complete lattice,
+this enables any combination of these orders to be used and remain within our framework.
+This is proven by deriving the join (unique least upper bound) and meet (unique greatest lower bound) operations,
+and showing there exists a least element ($0$) within the lattice \cite{davey1990introduction}. 
+
+We then define how the ranking systems are composed with these orderings.
+
+\begin{defs}
+\label{def:product_order}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
+$L_1 \otimes L_2$ creates a product composition $L_P = \langle A_1 \times A_2, \leq_P \rangle$
+where $\leq_P$ is a product order; 
+$(a,b) \leq_{P} (a',b') \mbox{ iff } a \leq_{1} a' \mbox{ and } b \leq_{2} b'$.
+\end{defs}
+
+The product order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
+composed with its self is given in the diagram in Figure \ref{fig:product}.
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[height=.1\textheight]{productorder.png}
+  \caption{Hasse diagram of the product composition of classical lattices}
+  \label{fig:product}
+\end{center}
+\end{figure}
+
+The product order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
+\begin{prop}
+The product composition of two complete lattices is a complete lattice.  
+\end{prop}
+\begin{prof}
+For any two points $(a,b)$ and $(a',b')$;
+their join is the join of each element $(a \vee a', b \vee b')$, 
+inversely their meet is the meet of each element $(a \wedge a', b \wedge b')$.
+This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
+$\Box$\end{prof}
+
+\begin{defs}
+\label{def:lex_order}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
+$L_1 \odot L_2$ creates a lexicographical composition  $L_L = \langle A_1 \times A_2, \leq_L \rangle$
+where $\leq_L$ is a lexicographic order;
+$(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
+\end{defs}
+
+The lexicographic order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
+composed with its self is given in the diagram in Figure \ref{fig:lex}.
+%\begin{figure}[htp]
+%\begin{center}
+%  \includegraphics[height=.1\textheight]{lexicograhicorder.png}
+%  \caption{Hasse diagram of the lexicographical composition of classical lattices}
+%  \label{fig:lex}
+%\end{center}
+%\end{figure}
+
+The lexicographical order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
+\begin{prop}
+The lexicographical composition of two complete lattices is a complete lattice.
+\end{prop}
+\begin{prof}
+Consider two points $(a,b)$ and $(a',b')$; 
+the join of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a <_1 a'$,
+$(a,b)$ if $a' <_1 a$,
+$(a, b \vee b')$ if $a = a'$,
+or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \vee a', 0_2)$
+as this is an upper bound, and any other upper bound must be bigger than this.
+The meet is defined dually where the meet of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a' <_1 a$,
+$(a,b)$ if $a <_1 a'$,
+$(a, b \wedge b')$ if $a = a'$,
+or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \wedge a',1_2)$
+as this is a lower bound, and any other lower bound must be smaller than this.
+
+This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
+$\Box$\end{prof}
+
+There are two things to note about the lexicographical composition; 
+first it does not create a distributive lattice i.e. $\wedge_L$ does not distribute over $\vee_L$.
+\begin{prop}
+The lexicographic composition does not result in a distributive lattice.
+\end{prop}
+\begin{prof}
+Consider two pairs $(a,b)$ and $(a', b') \in L_1 \odot L_2$ where $a || a'$ and $a = a''$ and $a' || a''$,
+then $(a,b) \wedge_{L} ((a', b') \vee_{L} (a'', b'')) = (a,b)$,
+where under the same conditions $((a,b) \wedge_{L} (a', b')) \vee_{L} ((a,b) \wedge_{L} (a'', b'')) = (a,b \wedge_2 b'')$.
+$\Box$\end{prof}
+
+Secondly, two lattices (not complete lattices) lexicographically combined together may not be a lattice. 
+This is another reason for the choice of complete lattices as the structure of representation.
+\begin{prop}
+The lexicographic composition of two lattices may not result in a lattice.
+\end{prop}
+\begin{prof}
+Suppose a lattice $K$ has a non linear order, and a lattice $L$ has no least bound ($0_L$). 
+For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ are incomparable.
+This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
+$\Box$\end{prof}
+
+In figure \ref{fig:stacking} is presented some examples of how our composition operators can be stacked
+by using a classical lattice ($L = \langle \{T,F\}, \leq \rangle$) composed in different ways.
+In these examples we have simplified the domain for brevity, 
+e.g., $\langle T, \langle T,T\rangle\rangle$ is represented with $\langle T,T,T\rangle$
+%\begin{figure}[htp]
+%\begin{center}
+%  \includegraphics[width=.45\textwidth]{all.png}
+%  \caption{Hasse diagrams of the composition of a classical complete lattice}
+%  \label{fig:stacking}
+%\end{center}
+%\end{figure}
+
+The composition of the ranking systems is defined as:
+\begin{defs}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2,\leq_2 \rangle$ and
+the ranking systems over them $RS_1 = \langle L_1,D,V \rangle $ and $RS_2 = \langle L_2,D,V \rangle$,
+with defined ranking functions as $Rank_1: \Gamma \rightarrow A_1 $ and $Rank_2: \Gamma \rightarrow A_2$.
+The combination $RS_1 \odot RS_2$ (resp. $RS_1 \otimes RS_2$) results in the ranking system 
+$RS = \langle L_1 \odot L_2, D, V \rangle$ (resp. $RS = \langle L_1 \otimes L_2, D, V \rangle$), 
+and the combination of the ranking functions is 
+$Rank: \Gamma \rightarrow A_1 \times A_2$ where $Rank(\gamma) = \langle Rank_1(\gamma), Rank_2(\gamma) \rangle$.
+\end{defs}
+
+The main point in this definition is that to combine ranking systems they must have the same set of variables 
+and the same domain.
+
+\subsection{Semi-ring constraint incompatibility}
+Instances of different complete lattices used for constraint solving can be found in a similar framework based on c-semirings, 
+by Bistarelli et al. \cite{Bistarelli1997}.
+They prove that all instances of their framework are complete lattices, and their $+$ operator coincides with join
+and if their $\times$ operator is idempotent, it coincides with meet.
+Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
+In their framework $\times$ must distribute over $+$, this gives a distributive lattice,
+since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
+The c-semiring framework is still greatly useful as c-semirings are complete lattices all instances of this framework will work in ours.
 
 \section{Common Upgradeability Description Format}
 %%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+{}\cite{treinen2009common}
 
 \subsection{CUDF Syntax}
 

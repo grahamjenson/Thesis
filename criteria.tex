@@ -102,6 +102,68 @@ This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
 \section{Criteria}
 %%%Here we specifically define different criteria/heuristics from academia (Mancoosi), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
 %%%All defined formally, and ready for use for the simulation in the next chapter
+Here we define four different criteria types:
+\begin{enumerate}
+  \item Hamming, based on the Hamming distance
+  \item Paranoid, optimisation function defined for the Mancoosi project
+  \item P2, used in the Eclipse IDE platform
+  \item PageRank, defined with the PageRank with priors algorithm
+\end{enumerate}
+
+The \textbf{Hamming} distance \cite{hamming1950error} is used here to define minimality of component systems.
+This distance is defined as the size of the symmetric difference of two sets $C_1,C_2$, 
+i.e. $d_H(C_1,C_2) = |C_1 \ominus C_2|$.
+This is a greedy search for minimality, 
+as selecting the minimal system based only on the component changes from the current system may result in more changes over the long term.
+
+The \textbf{Paranoid} distance function, 
+defined by the Mancoosi (\textit{MANaging the COmplexity of the Open Source Infrastructure}) project\footnote{http://www.mancoosi.org/}, 
+is the lexicographic composition of two distance functions $removed$ and $changed$.
+It is defined such that each component has a name $C \rightarrow Name$,
+where the function $V: 2^C \times Name \rightarrow 2^C$ returns all components with a name in a set of components 
+(these are the different versions of a component).
+They are defined such that $removed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name) $ is nonempty and $V(C_2,name)$ is empty $\}|$,
+and $changed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name)$ is different to $V(C_2,name)\}|$.
+The removed function therefore only considers when all components of a name are removed. 
+
+The distance function is then defined $d_P(C_1,C_2)$ to return a pair $(a,b)$ such that $a = removed(C_1,C_2)$ and $b = changed(C_1,C_2)$.
+The distance order $\leq_{P}$ is lexicographically defined with respect to $C_R(X)$ as given two models $C_1,C_2$,
+$(a,b)$ equals $d_P(C_R(X),C_1)$ and $(a',b')$ equals $d_P(C_R(X),C_2)$ then
+$C_1 \leq_{P} C_2 $ iff $a < a' \vee (a = a' \wedge b \leq b')$.
+This definition states that removing a component is infinitely worse than adding one, 
+therefore we should expect this to generate larger solutions.
+
+Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
+Its optimisation function minimises the removed components, while maximising the version of installed components, 
+we denote it's distance function as $d_{P2}$.
+This function is fully described by Le Berre and Parrin in \cite{leBerre2010}.
+The goal of combining these two criteria is to simultaneously update components while altering the system.
+This strategy can be seen as a preemptive change, so that a user will not need to later update currently installed components,
+therefore minimising future change.
+As this is the only minimal criteria that includes the goal to maximise the currently installed version 
+we expect more change during evolution.
+
+A components dependence on another component creates a tangible connection that should be considered when evolving a system.
+This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
+or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
+This should be considered when making the choice to either remove or add a component to a system.
+By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+
+The structure of component dependencies can be abstracted to a graph, 
+and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
+we attempt to quantify the value of a component in a system.
+PageRank with priors estimates the probability of stopping on a node in a random walk over a directed graph given a set of starting nodes.
+We see this as an approximation to the probability that a component is depended on in a system.
+A directed graph $G = (V,E)$ is generated from the
+dependency rules such that $V$ is the set of components, and $(a,b) \in E$ iff there is a dependency constraint in $R$ 
+where $a \rightarrow c_1 \vee \ldots \vee c_n$ where $b = c_i$ for some $i$.
+The function $PR(a)$ denotes the PageRank of $a$,
+so given the set $C_R(X) \cup \{\Delta\}$ is the starting set of nodes, and the generated graph $G$,
+the distance function $d_{PR}(C_1,C_2) = \sum_{a \in (C_1 \ominus C_2)} PR(a)$,
+i.e. the distance is the sum of the PageRank values in the symmetric difference of the systems.
+This distance is the only one to consider the components relationships when calculating the effect of removing or adding them.
+Our hope is that by minimising the impact on the structure of the system, 
+this will minimise the necessary changes over a long period of time.
 
 %%%Static Criteria
 Coupling
