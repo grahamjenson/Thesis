@@ -23,7 +23,7 @@ this motivates the final criterion to minimise solution size.
 %%%This leaves a space open for exploration and experimentation of their defintion and relationships.
 
 
-\section{Cutting Edge vs. Minimal Change}
+\section{Progressive vs. Conservative}
 \begin{quotation}
 Motion or change, and identity or rest, are the first and second secrets of nature: Motion and Rest. 
 The whole code of her laws may be written on the thumbnail, or the signet of a ring.
@@ -41,15 +41,16 @@ the forces of change brought about by newer versions of components and the resis
 are competing forces that must be resolved for a system to evolve.
 In this section we discuss the nature of these criteria, why they are important to consider and how they conflict.
 
-%%%Both forces are caused because of risk, risk of change introducing new problems, risk o
+%%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old bugs there
 
-\subsection{Cutting Edge}
 %%%The reasons for keeping a system up-to-date, firstly the fixing of bugs security,small, secondly the adding of functionality, 
 
-%%%The reasons for not staying up to date, is that through change unknown bugs could be introduced.
+%%%The reasons for minimal change, is that through change unknown bugs could be introduced.
 
-\subsection{Minimal Change}
-%%%How are these criteria currently defined, how can we define these criteria?
+%%%Problems with defining version based or change based criteria
+
+%%%How Different users define and see these criteria (e.g. server admins like minimal change, developers like cutting edge)
+
 They are also not strictly defined as the mechanisms to either compare two systems versions or the change from a system,
 can be measured in different ways.
 
@@ -66,9 +67,6 @@ Both of these take into account only the component and not the components that d
 The measurement of change that a system goes through during evolution is also difficult to define.
 The added, removed, updated, total changed, have all been considered as metrics before. 
 As with the version metrics, none of these consider the dependencies when looking at the change that is performed on the system.
-
-\subsection{Versions, Minimality and Users}
-%%%How do different users view these criteria
 
 \subsection{The Gap in the Middle}
 %%%Both extremes of criteria are repensented with current implementation, either very conservative or very progressive, but there are few implementations looking at the middle.
@@ -92,19 +90,28 @@ we can then create a function to define an optimal solution.
 \section{Criteria}
 %%%Here we specifically define different criteria/heuristics from academia (Mancoosi), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
 %%%All defined formally, and ready for use for the simulation in the next chapter
-Here we define four different criteria types:
-\begin{enumerate}
-  \item Hamming, based on the Hamming distance
-  \item Paranoid, optimisation function defined for the Mancoosi project
-  \item P2, used in the Eclipse IDE platform
-  \item PageRank, defined with the PageRank with priors algorithm
-\end{enumerate}
 
+\subsection{Simple}
+%%%Hamming
 The \textbf{Hamming} distance \cite{hamming1950error} is used here to define minimality of component systems.
 This distance is defined as the size of the symmetric difference of two sets $C_1,C_2$, 
 i.e. $d_H(C_1,C_2) = |C_1 \ominus C_2|$.
 This is a greedy search for minimality, 
 as selecting the minimal system based only on the component changes from the current system may result in more changes over the long term.
+
+
+\subsection{Mancoosi Criteria}
+%%%Here we define the criteria from Mancoosi
+
+%%%not up to date
+
+%%%removed
+
+%%%new
+
+%%%Reccommends
+
+%%%Trendy which is lex(removed, not up to date, reccommends, new)
 
 The \textbf{Paranoid} distance function, 
 defined by the Mancoosi (\textit{MANaging the COmplexity of the Open Source Infrastructure}) project\footnote{http://www.mancoosi.org/}, 
@@ -123,6 +130,12 @@ $C_1 \leq_{P} C_2 $ iff $a < a' \vee (a = a' \wedge b \leq b')$.
 This definition states that removing a component is infinitely worse than adding one, 
 therefore we should expect this to generate larger solutions.
 
+\subsection{JDepend}
+%%%Coupling 
+
+%%%Instability
+
+\subsection{P2}
 Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
 Its optimisation function minimises the removed components, while maximising the version of installed components, 
 we denote it's distance function as $d_{P2}$.
@@ -133,12 +146,15 @@ therefore minimising future change.
 As this is the only minimal criteria that includes the goal to maximise the currently installed version 
 we expect more change during evolution.
 
+\subsection{Propogation}
+%%%We can create more informative criteria by analyising progation effects
 A components dependence on another component creates a tangible connection that should be considered when evolving a system.
 This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
 or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
 This should be considered when making the choice to either remove or add a component to a system.
 By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
 
+%%%Can use page rank as a metric
 The structure of component dependencies can be abstracted to a graph, 
 and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
 we attempt to quantify the value of a component in a system.
@@ -155,8 +171,4 @@ This distance is the only one to consider the components relationships when calc
 Our hope is that by minimising the impact on the structure of the system, 
 this will minimise the necessary changes over a long period of time.
 
-%%%Static Criteria
-Coupling
-
-%%%Dynamic Criteria
-Change
+%%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
