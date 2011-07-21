@@ -18,9 +18,8 @@
 
 %%%We look at P2CUDF, an implementation by LeBerre and Rapicult using SAT with PBO to solve CUDF problems. 
 
-%%%Using this knowledge SAT solvers with PBO, and the format CUDF we were able to implement our own solver inspired by P2CUDF, we discuss the differences and their effect
-
-
+%%%Finally, using this knowledge SAT solvers with PBO, and the format CUDF we were able to implement our own solver inspired by P2CUDF.
+%%%We discuss its implementation, its differences from P2CUDF, and its validation in the MISC competition (August TODO)
 
 \section{Boolean Satisfiability (SAT) Solvers}
 %%%The definition of SAT has been around for a while, they were the first problem to be define and complexity NP-Complete (with caveats)
@@ -68,16 +67,27 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 \subsection{Product and Lexicographic orders in Pseudo-Boolean Optimisation}
 %%%Here we descirbe the mapping from our Optimisation framework to PBO, product order is easy, lexicographic requires some muddling
 
+\subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping, real numbers must be truncated to fit the integer representation, 
 
-%%%only one solutin can be chosen so product orders are random to a degree,
+%%%only one solutin can be chosen so product orders are randomly selected to a degree, this can be mitigated by having no stochastic elements in the algorithm
 
 %%%no criterion can be of a partial order though through product composition the problem can be a partial order
 
+%%%The only aggregation of numbers between integers is addition.
+
+%%%It is too expencive to recalculate cardinalities for each component given a specific solution, therefore the cardinalities of a component should be solution independant
+
+%%%These simplifications are mostly necessary for this problem as it keeps the problem pragmatically managable,
+%%%and including all aspects of our formal optimisation framwork would be practically impossible
+
 \section{Other Methods}
 \subsection{Integer Programming}
+%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
 \subsection{SMT Solvers}
+%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
 \subsection{Constraint Solver}
+%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
 \section{Common Upgradeability Description Format}
 %%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
@@ -102,7 +112,7 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 
 %%%It must be simple enough so that people can quickly understand and modify existing solvers to be able to compete in MISC competitions
 
-%%%It must be broad enough to 
+%%%It must be broad enough to define and solve real world problems 
 
 \subsection{Debian Model to CUDF mapping}
 %%%The modelling of Debain packages to CUDF is very similar 
@@ -141,6 +151,7 @@ A virtual package in
 
 
 \section{Solvers}
+%%%Here we first discuss the specific implementation of P2CUDF then our implementation.
 
 \section{P2CUDF implementation}
 %%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
@@ -160,6 +171,8 @@ One implementation of note is the P2CUDF implementation, that uses SAT
 %%%(i.e. MaxSat instances, and unused constraint implementation)
 
 \subsection{Validation}
-%%%We entered this solver into a Mancoosi MiSC competition, it was tested against other solvers and altough errors were found generally found equivilent results (just a bit slower).
-
+%%%We entered this solver into a Mancoosi MISC competition, speed doesn't matter for these results, but the returned and quality of the solutions does.
+%%%MISC competitions delibratly create very difficult problems, so I doubt we will get the best solutions in most, and may fail a few. 
+%%%What I expect are consistent results that are comparable to other better solvers.
+ 
 
