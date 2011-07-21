@@ -8,8 +8,46 @@
 {}In this chapter we explore the nature and definitions of the two criteria,
 {}and show that there is a significant gap between what is currently known and what we intend to explore. 
 
+The first step toward finding optimal solutions is to define the criteria.
+The first criterion of a valid component solution is whether it has all its dependencies resolved,
+this can be tested by extracting information about dependencies from component meta-data.
+Suppose the user has also defined their preference for free and open source components;
+this is the second criterion where the licences of the components can be checked to match with this preference.
+Further suppose the system is in a resource constrained environment where size matters, 
+this motivates the final criterion to minimise solution size.
+
+These criteria must now have their relationships to each other defined.
+Having all component dependencies resolved is the first and most important aspect of this problem;
+e.g., any solution that has its dependencies satisfied is better than any that do not. 
+This relationship is defined as a lexicographical, or alphabetical, order which states that a solution is better than another if 
+its first element is better; or if the first elements are equal, the second must be better.
+The size and licence criteria are of equal importance to this problem, 
+where a solution is better than another if it is smaller and has a more open licence. 
+This is a product order, where for a solution to be better than another, all aspects must be better.
+
+Given their preference for free and open software licences they have ranked the licences as such.
+The order given by the user for preferences over software licences is a partial order,
+where using GNU based licences is best, 
+Creative Commons (CC) and Berkeley Software Distribution (BSD) are neither better nor worse than the other,
+and all other licences are worse.
+This type of definition is an ontology, a domain with relationships, and could have been elicited from the user through a number of methods.
+
+These types of problems occur often in component selection.
+A company may have strict rankings on what kind of licence they should use, 
+or a mobile device is resource constrained and wants to minimise size.
+Being able to represent and solve these problems is then seen as important issue for dependency resolution.
+
+
+%%%Other Criteria can be accessed from locations, however we are trying to stay component model agnostic and some of these criteria are component model dependent
+The better approach to this selection is to optimise other information that can be gained from the solution and its components. 
+This information can be obtained from component meta-data (e.g., size, vendor and licence),
+component contracts and composition testing (e.g., reliability and speed) and community sourced meta-data stored in repositories (e.g., popularity).
+Together with user preferences (e.g., speed over precision) and system constraints (e.g., amount of memory) 
+we can then create a function to define an optimal solution.
+
+
 \section{Optimisation Notation}
-%%%Pretext of how we are giong to note our optimistaion framework
+%%%Go over the notation agin from chapter CDR
 
 
 
@@ -67,6 +105,14 @@ The change to the system that is caused when a newer version is installed may ca
 In the same way that a version upgrade can propagate benefits through the system, 
 friction or errors can propagate and cause a faulty or not functional system.
 
+%%%Drawbacks of sleecint versions, they dont tell waht changes between,
+A common approach to selecting an optimal solution is to
+maximise the versions of components while minimising the number of components.
+The problem with the first criterion is that the version information does not tell us what quality improves, 
+how much it improves or if that quality is relevant to the user or system.
+Optimising for fewer components in a solution can be against many component system goals, like reuse or extensibility.
+For example, this heuristics optimal solution would be a monolithic component with redundant functionality, over 
+a set of more specific components. 
 
 \subsection{Minimal Change}
 %%%How are these criteria currently defined, how can we define these criteria?

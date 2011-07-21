@@ -75,9 +75,9 @@ The core requirement of a component that enables the use of component dependency
 %%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
 Being able to use dependencies in order to find a system that fulfils all component requirements is not entirely useful unless there exists mechanisms in which to build or change a system.
 
-%%%A short, incomplete enumeration of undefined aspects of what a component is, with a discussion on how they are ultimatly superfluos e.g. semantics of composition  
+%%%A short, incomplete enumeration of undefined aspects of what a component is, with a discussion on how they are ultimatly superfluos e.g. semantics of composition, distribution  
 Composition can be ignored because although the dependencies express a semantic purpose, that is not necessary for the resolver to know.
-How the 
+How the components are distributed is also superfluous, as the selection of the component is where we live
 
 \section{Component Models}
 %%%We go over some component models, but end focusing two of the most popular component models, OSGi and Debian
@@ -264,7 +264,7 @@ Eclipse already is
 the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
 
 \section{Comparison of functionality}
-%%%The comparisons of these resolvers will focus on functions that they allow to change the composition.
+%%%The comparisons of these resolvers will focus on the functionality that they provide given their component model, not their implementation
 
 %%%Multiple package installations Maven Debain No, OSGi Eclipse DS and CUDF yes
 

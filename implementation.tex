@@ -1,19 +1,41 @@
 \chapter{Implementation}
 \label{implementation}
-%%%In this chapter we discuss our specific implementation of CDR, which is based on the P2CUDF implementation of a CUDF solver 
+%%%The implementation of CDR is also a very important aspect of the problem, as the queries can be very large and complex to solve given its NP-Hard nature
 
-\section{Implementation with Boolean Satisfiability (SAT) Solvers}
-%%%The implementation to these solvers is sometimes ad-hoc, though in recent times they have been moving to a more standard solution, the SAT solver.
+%%%The implementation to these solvers is sometimes ad-hoc, this is bad because the problem is similar across different domains, so it becoms difficult to share knowledge and solutions and extend
+
+%%%An efficient mechanism to find optimal solutions that is gaining popularity is through using a Boolean Satisfiability Solver (SAT)
+
+%%%We have already reduced the problem to a SAT problem in the previous chapter to show the problem is NP-Complete
+
+%%%Through a slight modification of these solvers to allow constraints with inequalities and cardinalities, Psuedo Boolean constraints,
+%%%we can include optimisation for the required criteria using Pseudo Boolean Optimisation (PBO)
+
+%%%There are other methods to find a solution, some faster but SAT was chosen because of its simplicity and clear mapping to the core problem.
+
+%%%We discuss the format specified by the Mancoosi project, Common Upgradeability Description Format (CUDF),
+%%%which gives us a unified syntax and semantics to map many real world problems, like Debian and OSGi, to our formal definition.
+
+%%%We look at P2CUDF, an implementation by LeBerre and Rapicult using SAT with PBO to solve CUDF problems. 
+
+%%%Using this knowledge SAT solvers with PBO, and the format CUDF we were able to implement our own solver inspired by P2CUDF, we discuss the differences and their effect
+
+
+
+\section{Boolean Satisfiability (SAT) Solvers}
+%%%The definition of SAT has been around for a while, they were the first problem to be define and complexity NP-Complete (with caveats)
+
+%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
 Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
 This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
-The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependcy resolution, and suggested that they were a satisfactory solution.
+The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
 Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
 
-%%%In this chapeter we describe an effecient and popular solution to the CDR problem, the SAT solver (EDOS PAPER)
+%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
 
-%%%First we define the SAT problem with respect to the formal definition, this is straight forward.
+%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
 
-%%%Then discuss its Complexity (NP complete to find a solution, NP-Hard to find an optimal solution)
+%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
@@ -34,17 +56,55 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 \subsection{Literal Order}
 %%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
 
+%%%The selection of a literal can be broken into two stages for modularity, selecitng a variable that is very volitle, then selecting a phase (negative or positive) assumtion of that variable
 
-\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
-%%%Optimisation of SAT solvers it typically done through extending their possible constraints to include Psuedo Boolean inequalities
+\section{Pseudo-Boolean Optimisation of SAT Solvers}
+%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
 
 %%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
 
 %%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
 
+\subsection{Product and Lexicographic orders in Pseudo-Boolean Optimisation}
+%%%Here we descirbe the mapping from our Optimisation framework to PBO, product order is easy, lexicographic requires some muddling
 
+%%%There are a few drawbacks to this mapping, real numbers must be truncated to fit the integer representation, 
 
-\section{Debian Model to CUDF mapping}
+%%%only one solutin can be chosen so product orders are random to a degree,
+
+%%%no criterion can be of a partial order though through product composition the problem can be a partial order
+
+\section{Other Methods}
+\subsection{Integer Programming}
+\subsection{SMT Solvers}
+\subsection{Constraint Solver}
+
+\section{Common Upgradeability Description Format}
+%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+{}\cite{treinen2009common}
+
+%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
+
+%%%In both regards it has succeded, there have been many competitions run, 
+%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
+
+\subsection{CUDF Syntax}
+%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML as it is probably too complex)
+
+%%%Package Formulaes are the standard mechanism of dependence
+
+%%%Versions as Integers
+
+%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
+
+\subsection{CUDF Semantics}
+%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
+
+%%%It must be simple enough so that people can quickly understand and modify existing solvers to be able to compete in MISC competitions
+
+%%%It must be broad enough to 
+
+\subsection{Debian Model to CUDF mapping}
 %%%The modelling of Debain packages to CUDF is very similar 
 The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar. 
 However, there are a few instances where the Debian semantic causes complication with the CUDF format, and in this section we describe these in detail.
@@ -74,16 +134,20 @@ A virtual package in
 
 %%%We allow multiple versions of the same package to be installed, this is different from the debian 
 
-\section{OSGi Component Model to CUDF Mapping}
+\subsection{OSGi Component Model to CUDF Mapping}
 
 %%%How versions are handeled, similar to the Debian model
 
-\section{P2CUDF based implementation}
+
+
+\section{Solvers}
+
+\section{P2CUDF implementation}
 %%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
 The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
 One implementation of note is the P2CUDF implementation, that uses SAT
 
-\subsection{Changes}
+\section{Our Solver}
 %%%The back end model for this solver though was OSGi specific, and as most of our problems are Debian, we decided to replace the back model.
 
 %%%Our model, expressed as a UML class diagram
