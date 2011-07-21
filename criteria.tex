@@ -136,6 +136,7 @@ therefore we should expect this to generate larger solutions.
 %%%Instability
 
 \subsection{P2}
+%%%Looiking at the criteria from the P2 solver
 Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
 Its optimisation function minimises the removed components, while maximising the version of installed components, 
 we denote it's distance function as $d_{P2}$.
@@ -170,5 +171,7 @@ i.e. the distance is the sum of the PageRank values in the symmetric difference 
 This distance is the only one to consider the components relationships when calculating the effect of removing or adding them.
 Our hope is that by minimising the impact on the structure of the system, 
 this will minimise the necessary changes over a long period of time.
+
+%%%HITS, where we can identify hubs and authorities of packages and use this as criteria
 
 %%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
