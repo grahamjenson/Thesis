@@ -69,9 +69,9 @@ For component dependency resolution to be used the component model must require 
 and include mechanisms in which the composition of components can be altered.
 This definition leaves undefined many aspects in the space of component software, however these are superfluous when discussing dependency resolution therefore are ignored.
 
-%%%A component must have explict (computer readable) requirements on the context in which it can be used.
+%%%A component must have explict (computer readable) requirements on the context in which it can be used. Different from COTS requirements which are meant to be human readable.
 The core requirement of a component that enables the use of component dependency resolution, is the explicit definition of what context a component can be executed under.
-
+ 
 %%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
 Being able to use dependencies in order to find a system that fulfils all component requirements is not entirely useful unless there exists mechanisms in which to build or change a system.
 
@@ -88,6 +88,8 @@ With respect to our definition of a software component, we examine some current 
 %%%Maven POM
 
 %%%JavaBeans
+
+%%%RPM
 
 \subsection{Debian}
 %%%The debian component model, used in Debain based GNU/Linux distributions
@@ -256,6 +258,9 @@ The most mature implementation of OBR client is offered by Apache, it is bundled
 The largest public OBR implementation is the federated repository provided by the OSGi alliance,
 currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
 There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
+
+\subsection{yum}
+%%%Red hat package manager
 
 \subsection{Apt-get}
 %%%Apt-get is the core application for package management in Debian based GNU/linux distributions

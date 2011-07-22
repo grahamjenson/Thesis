@@ -96,11 +96,22 @@ These two objectives have been implemented in many different ways, how these int
 For instance, the trendy strategy from the Mancoosi organisation describes the strategy to minimise the removed components above all other criteria,
 this is a common strategy because removal of a component is seen as very risky.
 
-\subsection{Effects}
-%%%The core effects that we are looking for are the relationships between the resulting system via evolution, which can be measured with the criteria, 
-%%%compared to the strategies that are involved.
+\subsection{Consequences}
+%%%The core consequences of using a strategy that we are looking at come from the dependencies between the strategy and the resulting metrics of critiera 
 
-%%%Essentially what we want is a table with the strategies laid out in the columns and with how they effect different criteria
+%%%Essentially what we want is a table with the strategies laid out in the columns and with how they effect different criteria in rows.
+
+%%%This will show the dependence between the different strategies and what their effects are
+
+%%%We will then have control strategies that do not require criteria, 
+%%%the first is install the system and never do anything. Clearly very quickly it will become out of date, how quickly is an interesting question.
+%%%The second and thrid control strategies will be a strategy of updateing once a week and once a day. How much change does this require,
+%%%is updating once a week enough for a system with nothing extra installed. Does coupling increase, like Lehamn would predict under such a strategy?
+
+%%%After this we can add criteria, and installation strategies. How about updating daily, installing by-daily, with X strategy, compare to installing weekly.
+%%%If you install daily v.s. weekly with X strategy and updating daily, have much of an effect on your system?
+
+%%%And so on, by altering the variables in the configuration, we can answer questions that currently have no answer.
 
 \subsection{Configuration}
 %%%A configuration is the set of parameters of the simulation. What are these parameters which we must consider.
@@ -304,6 +315,10 @@ We have selected three queries to build our heuristic:
 
 \section{Simulation implementation}
 %%%Here we describe how our simulation is implemented, specifics that are not previously mentioned, and the variables not yet defined
+
+%%%What happens when a install is required that is then not able to be accomplished.
+
+%%%Scripts and such are in the appendix, some code is here though, particularly interesting or critical code.
 
 \section{Results}
 %%%Here we describe results from our simulation
