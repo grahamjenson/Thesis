@@ -31,7 +31,7 @@ The whole code of her laws may be written on the thumbnail, or the signet of a r
 Ralph Waldo Emerson in "Nature", Essays, Second Series (1844)
 \end{quotation}
 
-%%%The problem of staying up-to-date while not chaning is a general problem in nature, the force and resistance to change.
+%%%The force and resistance to change is a natural problem, here we use the metaphor of politics to show this.
 Changing to what is newer and better, but being wary of the change because of cost and risk is a conflicting problem in many domains.
 For instance, in politics, conservitism is the philosophy that emphasises minimal and gradual change in society, %TODO cite
 where progressivism promotes change and reform to governments.
@@ -41,7 +41,10 @@ the forces of change brought about by newer versions of components and the resis
 are competing forces that must be resolved for a system to evolve.
 In this section we discuss the nature of these criteria, why they are important to consider and how they conflict.
 
-%%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old bugs there
+%%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old problems linger
+
+\subsection{Updating vs. Minimal Change}
+%%%These forces must also be resolved in software as well, where the 
 
 %%%The reasons for keeping a system up-to-date, firstly the fixing of bugs security,small, secondly the adding of functionality, 
 
@@ -77,14 +80,6 @@ or test different packages, then the risk is accepted as the system is essential
 These two strategies are represented in by the current depenceny resolution implementations, however very little middle ground is available for the customisation of applications.
 This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
 
-\subsection{Other Criteria}
-%%%There are many other types of criteria, however these criteria maybe component model dependenct,
-%%%we are trying to stay component model agnostic and some of these criteria are component model dependent
-The better approach to this selection is to optimise other information that can be gained from the solution and its components. 
-This information can be obtained from component meta-data (e.g., size, vendor and licence),
-component contracts and composition testing (e.g., reliability and speed) and community sourced meta-data stored in repositories (e.g., popularity).
-Together with user preferences (e.g., speed over precision) and system constraints (e.g., amount of memory) 
-we can then create a function to define an optimal solution.
 
 
 \section{Criteria}
@@ -136,7 +131,7 @@ therefore we should expect this to generate larger solutions.
 %%%Instability
 
 \subsection{P2}
-%%%Looiking at the criteria from the P2 solver
+%%%Looking at the criteria from the P2 solver
 Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
 Its optimisation function minimises the removed components, while maximising the version of installed components, 
 we denote it's distance function as $d_{P2}$.
@@ -147,15 +142,15 @@ therefore minimising future change.
 As this is the only minimal criteria that includes the goal to maximise the currently installed version 
 we expect more change during evolution.
 
-\subsection{Propogation}
+\subsection{Propagation Criteria}
 %%%We can create more informative criteria by analyising progation effects
-A components dependence on another component creates a tangible connection that should be considered when evolving a system.
-This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
-or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
-This should be considered when making the choice to either remove or add a component to a system.
-By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+{}A components dependence on another component creates a tangible connection that should be considered when evolving a system.
+{}This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
+{}or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
+{}This should be considered when making the choice to either remove or add a component to a system.
+{}By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
 
-%%%Can use page rank as a metric
+%%%Page rank as a metric, calculate page rank value for all 
 The structure of component dependencies can be abstracted to a graph, 
 and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
 we attempt to quantify the value of a component in a system.
@@ -175,3 +170,17 @@ this will minimise the necessary changes over a long period of time.
 %%%HITS, where we can identify hubs and authorities of packages and use this as criteria
 
 %%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
+
+\section{Other Criteria}
+{}There are many other types of criteria that can be considered when judging the optimality of a solution.
+{}As we are trying to stay component model agnostic, the only information that can be used comes from the definition of components and component models laid out in chapter \ref{background}.
+{}However, there are other criteria that maybe component model dependent from information in component meta-data (e.g., size, vendor and licence),
+{}component contracts and composition testing (e.g., reliability and speed),
+{}and community sourced meta-data stored in repositories (e.g., popularity).
+
+%%%Discuss information from component met-data
+
+%%%Discuss information from component testing (e.g. treaty, junit)
+
+%%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
+

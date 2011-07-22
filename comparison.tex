@@ -1,45 +1,68 @@
 \chapter{Component Model Comparisons w.r.t. Component Dependency Resolution}
 \label{comparison}
-%%%An important issue when looking at this problem of CDR  can criteria from one be generalisable to another.
-
-%%%These investigations outline the first investigations into the structure of component dependencies, for the possible generalisation of our results
-{}Two of the leading component models that CDR is currently used with are OSGi and the Debian Package system.
-{}The differences that occur because of their differences will effect the dependencies and relationships between components,
-{}and then affect the properties of CDR or the way it is used.
-{}To generalise any results, or to analyse the effects of different CDR criteria we must first compare them.
-{}We first give specific differences and then use dependency graph and constraint analysis to explore their consequences.
-{}We find \ldots%TODO   
-
-
-\section{Differences}
+%%%An important issue when looking at this problem of CDR can information gained through studying one instance be generalisable to another.
 {}Different aspects of a component model and its use can effect the dependencies and relationships between components,
 {}therefore affect the properties of CDR or the way it is used.
 {}Aspects such as, developer communities and conventions, what is allowed in the syntax of the meta-data expressing the dependencies,
-{}and the semantics of the component model will affect CDR.  
+{}and the semantics of the component model will affect CDR.
+{}This will clearly affect the study of CDR and its results, and whether they are generalisable.
+{}Developer conventions created by communities, component model semantics, goals of the component model can all effect the constraints on the system thus CDR's solutions.
 
 %%%Developer conventions like in eclipse depending explicitly on component, vs. OSGi where it is prefeered to depend on packages
 
-%%%Metadata syntax will allow certain constraints to be defined, in eclipse the only conflict is in a singleton relationship.
+%%%Component model semantics, how dependencies are manifested, some can have multiple version of the same component installed with complex wiring standards,
+%%%some certain constraints to be defined, in eclipse the only conflict is in a singleton relationship.
 
-%%%Component model Semantics, how dependencies are manifested, 
-	
-	
+%%%The goals of the component model, whether adpatability is the core goal or a precisly defined system
 
-The semantics of a component model will effect how the components are defined and used within that model.
-This will effect the relationships between components and therefore CDR will be effected by these changes.
+%%%We use two methods to compare and analyise these possible effects on the component models, graph and constraint analysis, 
+%%%to ultimatly determine if through studying one of these component models the results can be generalised.
 
-\section{Detailed comparison of OSGi and Debian}
-%%%Here we will discuss various static graph analysis, between the OSGi component model and the Debian component model
+%%%We study and compare two leading component model, OSGI and Debian, using thee methods.
+Two of the leading component models that CDR is currently used with are OSGi and the Debian Package system.
+The differences that occur because of their differences will effect the dependencies and relationships between components,
+and then affect the properties of CDR or the way it is used.
+To generalise any results, or to analyse the effects of different CDR criteria we must first compare them.
+We first give specific differences and then use dependency graph and constraint analysis to explore their consequences.
+We find \ldots%TODO   
+
+%%%Clearly these results themselves cannot be generalised, but through this method we hope that other component models can be checked to see if our results will be consistent.
+
+\section{OSGi and Debian}
+%%%Here we will discuss various differences between the OSGi component model and the Debian component model, their goals communities of developer
+
+\subsection{Debain}
+%%%repackaging
+
+%%%Upstream developers
+
+\subsection{OSGi}
+%%%Rebundling libraries
+
 
 \section{Dependency Graph analysis}
-%%%Distributions of dependencies...
+%%%Distributions of dependencies, graph propeties, small world? What does their internal graph structure look like?
+
+\subsection{Critieria}
+%%%We can use some of the previously defined criteria to analyise the graphs
+
+%%%Page rank distributions
+
+%%%HITs distributions
+
+%%%Coupling and instability
 
 \section{Constraint analysis}
+%%%The graph removes some of the details, i.e. constraints, thus it is a broad view of their structure
+
+%%%By analyising the constraints created by the components, e.g. number of conflicts, distributions of dependency sizes\ldots, we can gain finer grained information
+
+\subsection{Search Space Size}
 %%%Here we analyise the size of the possible search spaces of both OSGi and Debian, through the simple mechanism of brute force search
 
-%TODO This maybe
-%\section{SAT solver optimisation}
-%We change some of the different variables in the SAT solver (constraint resolution, oredering, ...) and analize the domain specific results
+%%%Relative to their size, we can analyise their distributions of search space
 
 \section{Conclusions}
-%%%Here we can go over the similarities and differences between the two component models (hopefuly the are similar enough)
+%%%Here we can go over the similarities and differences between the two component models, hopefuully they are the same
+
+%%%If they are very different, accounting for their relative sizes and maturity, we can eliminate the idea that our other results are generalisable (which is useful but not preffered)

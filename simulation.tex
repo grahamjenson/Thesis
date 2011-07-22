@@ -58,7 +58,7 @@ the conclusions overall accuracy.
 Therefore, the majority of the effort when creating a simulation is gathering and using valid information when making assumptions.
 
 \section{Methodology}
-%%%We use the methodology from `` Build a Valid and Credible Simulation'', this requires the definition of our probelm. 
+%%%We use the methodology from `` Build a Valid and Credible Simulation''
 Creating a simulation that accurately represents the evolution of a component system so that we can 
 analyse the effect different evolution strategies have on a systems properties is the core objective of this simulation.
 To this end, we follow the a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
@@ -67,9 +67,15 @@ specifically defining the problem,
 building a conceptual model,
 collecting data,
 
+%%%Why do we use this methodology and how is it relevant
+
+%%%Where else hasa this methodology been used.
+
+%%%What are the artifacts and their goals that are required from this methodology
+
+%%%How do we differ, what are we ignoring as aspects that do not occur in our simulation.
 \section{Conceptual Model}
-%We first define the problem to be modeled
-To create our conceptual model, we must first precisely describe the problem;
+{}To create our conceptual model, we must first precisely describe the problem;
 {}When evolving a component-based system, different strategies can be employed by the user and the resolver.
 {}These strategies have unknown effects over a long period in which the user evolves the system.
 {}Through simulating and analysing these effects we can choose a strategy more effectively.
@@ -84,24 +90,17 @@ however a desktop user will more likely install different packages because they 
 How a user updates their system is also different along these lines, server admins. will likely only update when absolutely necessary as if it is not broken why fix it.
 Yet desktop users will update more frequently as they want the best system they can have, and new features or better performance are usually wanted.
 
-%%%What different strategies are deployed by resolvers
+%%%What strategies are currently used, a 
 As described in previous chapters, dependency resolvers often try to minimise change and maximise the versions.
 These two objectives have been implemented in many different ways, how these interact with each other is the strategy a resolver employs.
 For instance, the trendy strategy from the Mancoosi organisation describes the strategy to minimise the removed components above all other criteria,
 this is a common strategy because removal of a component is seen as very risky.
 
 \subsection{Effects}
-%%%What kind of effects are we looking at analysing?
+%%%The core effects that we are looking for are the relationships between the resulting system via evolution, which can be measured with the criteria, 
+%%%compared to the strategies that are involved.
 
-%%%Static
-
-%%%Dynamic
-
-%%%Change Propogation
-
-%%%Graph Analysis
-
-%%%Coupling and Instability defined by JDepend
+%%%Essentially what we want is a table with the strategies laid out in the columns and with how they effect different criteria
 
 \subsection{Configuration}
 %%%A configuration is the set of parameters of the simulation. What are these parameters which we must consider.
@@ -298,6 +297,10 @@ We have selected three queries to build our heuristic:
 \section{Criteria}
 %%%What criteria are we using, Yet to be decided though likely contain P2, Hamming, PageRank, Trendy
 
+\section{Simulation Validation}
+%%%With the methodology there are many pionts at which we validate individual parts/models, and their overall composition.
+%%%The main validation method is the inviewing of different stakeholders, this for our method was discussions with supervisors, at conferences, and throught the survey.
+
 
 \section{Simulation implementation}
 %%%Here we describe how our simulation is implemented, specifics that are not previously mentioned, and the variables not yet defined
@@ -310,8 +313,8 @@ We have selected three queries to build our heuristic:
 
 %%%Results analysis
 
-\subsection{Simulation analysis}
-%%%By comparing the results back to the user submitted logs we can partially validate the output.
+\subsection{Results Validation}
+%%%The final validation phase is done by comparing the results back to the user submitted logs we collected, this can be used to validate the output and our final results
 
 \section{Conclusions}
 %%%Discuss the overall conclusions. Bullet point the points most surprising, and useful for further study.
