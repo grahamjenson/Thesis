@@ -44,11 +44,11 @@ In this section we discuss the nature of these criteria, why they are important 
 %%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old problems linger
 
 \subsection{Updating vs. Minimal Change}
-%%%These forces must also be resolved in software as well, where the 
+%%%These forces must also be resolved in software as well
 
-%%%The reasons for keeping a system up-to-date, firstly the fixing of bugs security,small, secondly the adding of functionality, 
+%%%The reasons for keeping a system up-to-date; the fixing of bugs security, the adding of functionality, 
 
-%%%The reasons for minimal change, is that through change unknown bugs could be introduced.
+%%%The reasons for minimal change; through change unknown bugs could be introduced, the act of changing can create bugs, the effort of changing can consume resources  (e.g. network traffic).
 
 %%%Problems with defining version based or change based criteria
 
@@ -71,8 +71,15 @@ The measurement of change that a system goes through during evolution is also di
 The added, removed, updated, total changed, have all been considered as metrics before. 
 As with the version metrics, none of these consider the dependencies when looking at the change that is performed on the system.
 
-\subsection{The Gap in the Middle}
-%%%Both extremes of criteria are repensented with current implementation, either very conservative or very progressive, but there are few implementations looking at the middle.
+\subsection{The Relationship between Criteria}
+%%%There are extremist views on both sides of these criteria; server admin will change a system reluctantly where developers will constantly stay up-to date.
+
+%%%The actual relationships between these criteria though are unknown, thus the reasons for either view is based on intuition or assumption and not fact. 
+
+%%%How fast will a system fall behind if a user never upgrades, or how much risk is introduced by continually upgrading?
+
+%%%These questions can be answered by looking at the dependencies and relationships between criteria.
+
 Each time a user decides to evolve a component system, the decision must be made about the risks of the evolution.
 In an environment which is mission critical, all risk is eliminated and an unecessary change to the system is too risky.
 In a development environment where the user may be trying to fix potential problem, 
@@ -83,7 +90,7 @@ This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
 
 
 \section{Criteria}
-%%%Here we specifically define different criteria/heuristics from academia (Mancoosi), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
+%%%Here we specifically define different criteria/heuristics from academia (Mancoosi, Lehman), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
 %%%All defined formally, and ready for use for the simulation in the next chapter
 
 \subsection{Simple}
@@ -125,6 +132,9 @@ $C_1 \leq_{P} C_2 $ iff $a < a' \vee (a = a' \wedge b \leq b')$.
 This definition states that removing a component is infinitely worse than adding one, 
 therefore we should expect this to generate larger solutions.
 
+\subsection{Lehman}
+%%%Lehman has outlined laws of evolution though empirical research, we can adapt these laws to see if they hold true and to what degree in component systems
+
 \subsection{JDepend}
 %%%Coupling 
 
@@ -142,8 +152,8 @@ therefore minimising future change.
 As this is the only minimal criteria that includes the goal to maximise the currently installed version 
 we expect more change during evolution.
 
-\subsection{Propagation Criteria}
-%%%We can create more informative criteria by analyising progation effects
+\subsection{Propagation Based Criteria}
+%%%We can create more informative criteria by analyising progation effects.\\
 {}A components dependence on another component creates a tangible connection that should be considered when evolving a system.
 {}This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
 {}or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
@@ -171,16 +181,19 @@ this will minimise the necessary changes over a long period of time.
 
 %%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
 
+\section{Optimisation}
+%%%What can be optimised? Here we go over these criteria and discuss given the limitation that PBO imposes on optimisation, how we can optimise.
+
 \section{Other Criteria}
 {}There are many other types of criteria that can be considered when judging the optimality of a solution.
-{}As we are trying to stay component model agnostic, the only information that can be used comes from the definition of components and component models laid out in chapter \ref{background}.
+{}As we are trying to stay component model agnostic, the only information that can be used comes from the definition of components and component models laid out in Chapter \ref{background}.
 {}However, there are other criteria that maybe component model dependent from information in component meta-data (e.g., size, vendor and licence),
 {}component contracts and composition testing (e.g., reliability and speed),
 {}and community sourced meta-data stored in repositories (e.g., popularity).
 
 %%%Discuss information from component met-data
 
-%%%Discuss information from component testing (e.g. treaty, junit)
+%%%Discuss information from component testing (e.g. treaty, unit tests)
 
 %%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
 

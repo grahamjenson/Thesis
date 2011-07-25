@@ -5,3 +5,9 @@ Search pdf for "?"
 
 dataset ---> data-set
 metadata --> meta-data
+metamodel -->meta-model
+
+chapter --> Chapter
+section --> Section
+singular criteria --> criterion
+ 

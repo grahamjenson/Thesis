@@ -3,8 +3,8 @@
 {}Component-based software engineering is considered by many to be the future for development of software systems \cite{Szyperski2002},
 {}where instead of developing a monolithic system, 
 {}many small reusable units of execution are developed and composed into a single system.
-{}A component model gives the specification of how components are defined and used to create a system.
-{}This model can also support the evolution of the whole component system, by defining mechanisms to add, remove and replace components in that system.
+{}The specification of how these components are defined and used to create a system is given in the \textbf{component model}.
+{}This model can also support the evolution of the component systems by defining mechanisms to add, remove and replace components in that system.
 
 %%%Manually evolving a system can be tedious, so we use component dependency resolution
 Evolving a system through individually adding and removing components can be tedious task 
@@ -15,6 +15,8 @@ Satisfying all these dependencies manually is a recursive, time-consuming and er
 However, as most modern component models require components to explicitly state their dependencies; 
 this enables component dependency resolution to build systems where all dependencies are satisfied.
 
+%%%A small example of such a problem.
+
 In this chapter we go over the what a component is, and the difficulty in defining it.
 We then discuss what a component model is, giving and comparing current examples of them.
 Then discuss the evolution of individual components and component-based systems.
@@ -23,12 +25,12 @@ Finally we give and compare different examples of component dependency resolvers
  
  
 \section{What is a Component?}
-%%%Give a bit of history to software components mentioning McIlroys 1969 paper
-Software components ideals can be traced to M. D. McIlroy's paper \cite{mcilroy_mass_1969}, where he described his ideas industrializing software engineering through a software component sub-industry. 
+%%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
+Software components ideals can be traced to M. D. McIlroy's paper \cite{McIlroy1969}, where he described his ideas industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
 However there is still much debate over how to define what a software component is, and what features it should have.\\
 
-%%%Discuss articles where Szyperski and Meyers discuss their different definitions of what a component is.
+%%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
 Dr Dobb's magazine published a set of articles by two leading researchers in software engineering, Bertrand Meyer, originator of the design by contract methodology, 
 and Clemens Szyperski, author of ``Component Software: Beyond Object-Oriented Programming''. 
 These articles \cite{szyperski_components_2000, szyperski_point_2000, meyer_what_2000,meyer_significance_1999} discuss the
@@ -54,15 +56,16 @@ In the Dr Dobb's articles Szyperski defended his position against Meyers own enu
 \end{enumerate}
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
-%%%Propse our egotystical view of components, that if we define them with relation to Component Dependency Resolution, we can enumerate what they require for us to use them 
-{}As noted by Szyperski in \cite{szyperski_component_2002}, formal concept analysis \cite{ganter_formal_1999} is the observation that it is impossible to
+%%%Our egotistical view of components is defined with relation to Component Dependency Resolution.\\
+{}As noted by Szyperski in \cite{Szyperski2002}, 
+{}formal concept analysis \cite{Ganter1999} is the observation that it is impossible to
 {}``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
-{}A definition can be found however, not by feature enumeration, but through stating the intention for the concept and exploring the 
-{}technically inevitable consequences. 
-{}As our intention is to investigate component dependency resolution, we will define what a component is with respect to the function of component dependency resolution.
+{}A definition can be found however, not by feature enumeration, but through stating the intention for the concept and exploring the technically inevitable consequences. 
+{}As our intention is to investigate component dependency resolution, we will define what a component is with respect our goal of using component dependency resolution.
 
-{}This view of a software components definition will not agree with every persons view of what a software component is, but then no view can.
-{}By only looking at aspects that are necessary for our topic we eliminate arguments over unnecessary semantics to focus on the core aspects of component dependency resolution. 
+%%%This will not fit all views of what a component is (no definition will), but it eliminates unnecessary arguments so we can focus on CDR
+This view of a software components definition will not agree with every persons view of what a software component is, but then no view can.
+By only looking at aspects that are necessary for our topic we eliminate arguments over unnecessary semantics to focus on the core aspects of component dependency resolution. 
 
 \subsection{A Software Component with respect to Component Dependency Resolution}
 For component dependency resolution to be used the component model must require the explicit definition of dependencies of all components
@@ -75,12 +78,12 @@ The core requirement of a component that enables the use of component dependency
 %%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
 Being able to use dependencies in order to find a system that fulfils all component requirements is not entirely useful unless there exists mechanisms in which to build or change a system.
 
-%%%A short, incomplete enumeration of undefined aspects of what a component is, with a discussion on how they are ultimatly superfluos e.g. semantics of composition, distribution  
+%%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).    
 Composition can be ignored because although the dependencies express a semantic purpose, that is not necessary for the resolver to know.
 How the components are distributed is also superfluous, as the selection of the component is where we live
 
 \section{Component Models}
-%%%We go over some component models, but end focusing two of the most popular component models, OSGi and Debian
+%%%We go over some component models with their goals, syntax, semantics but end focusing on the component models, OSGi, Debian and CUDF
 With respect to our definition of a software component, we examine some current component models, focusing on to popular models OSGi and Debian.
 
 %%%Fractal
@@ -92,14 +95,18 @@ With respect to our definition of a software component, we examine some current 
 %%%RPM
 
 \subsection{Debian}
-%%%The debian component model, used in Debain based GNU/Linux distributions
+%%%The debian component model is used in Debain based GNU/Linux distributions
 
-%%%Some feel that this is not truly a component model as it has no formal definition of composition
+%%%Some feel that this is not truly a component model as it has no formal definition of composition.\\
+
 %%%However it fits our criteria of a component as given in previous sections
 
 \subsection{OSGi}
-{}OSGi is a mature component model from the OSGi Alliance that has a significant presence in industry \cite{kriens_osgi_2008} 
+{}OSGi is a mature component model from the OSGi Alliance that has a significant presence in industry \cite{Kriens2008} 
 {}from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
+
+\subsection{CUDF}
+%%%Here we give a brief introduction to CUDF, later in chapter \ref{implementation} we describe it more in depth
 
 \subsection{Comparison}
 %%%The comparison of component models focusses on their semantic definitions of dependencies and requirements,
@@ -107,11 +114,11 @@ With respect to our definition of a software component, we examine some current 
 
 \section{Evolution}
 %%%Evolution is an important core aspect of Software Engineering and examining it in realtion to Component Systems is beneficial to the community\\
-{}A software engineers goals towards software is to have continual satisfactory execution with maximum confidence at minimal cost and delay in this changing world \cite{lehman_software_2006}, 
-{}while maintaining intellectual control over the complexity of design \cite{brooks_mythical_1975}.
+{}A software engineers goals towards software is to have continual satisfactory execution with maximum confidence at minimal cost and delay in this changing world \cite{Lehman2006}, 
+{}while maintaining intellectual control over the complexity of design \cite{Brooks1975}.
 {}Component systems aim to manage complexity through decomposition of systems into well defined components, and the evolution of such components through well defined mechanisms.
 
-%%%Evolving a component system requires less change (whch represents risk) when evolving a monolithic system.
+%%%Evolving a component system requires less change when compared to evolving a monolithic system.
 Evolving component-based software requires only altering a minimal set of parts of the system, 
 where as evolving a monolithic piece of software is achieved by replacing the entire system.
 This comparison is described by Szyperski \cite{Szyperski2002} as ``evolution not revolution''.
@@ -121,22 +128,24 @@ This risk occurs due to side effects that are caused by change,
 and changing large parts of a system incurs more side effects versus altering only specific parts of a system.
 Therefore, lessening the change lowers the risk, and this is a very attractive feature of using and developing component-based software.
 
-%%%A component model should then support the evolution of individual components, and the evolution and change of the entire system
+%%%A component model should support the evolution of individual components, and the evolution and change of the entire system
 
 {}In this section we first discuss the support provided by a component model through the evolution of individual components and component systems.
 
 \subsection{Component Evolution}
-%%%Component evolution, i.e. the modification of components to create newer versions or branch exisiting versions, is discussed\\
+%%%Component evolution, i.e. the modification of components to create newer versions or branch existing versions.\\
 
-%%%What is a version
+%%%What is a version?
 A version is the mechanism through which individual components evolve.
 It is a unique marker which is compariable to other versions such that they are ordered.
+As with the evolution of entire software systems, evolution of components requires constant maintenance.
+Bugs can be found, features can be added, and code can be refactored all which make the component better.
 
-%%%How are components versioned
+%%%How are components versioned?
 The syntax and semantics of a version is usually defined within the component model.
 This forces all components that are developed for this model to follow the same general guidelines.
 
-%%%Versions between components
+%%%Versions between components?
 Although component must be versioned to conform to a versioning model defined by the component model, 
 the way in which a developer uses this model to version their component is not usually strictly defined.
 Each component is designed to be an independent unit, as such developers of components are separate from one another,
@@ -145,12 +154,7 @@ Therefore, version comparison is only useful between different versions of the s
 e.g. a spell-checker component can be version 10 but a separate and superior spell-checker component may be only version 1.
 This makes using component versions to decide between components impossible.
 
-%%%Why does a version exist
-As with the evolution of entire software systems, evolution of components requires constant maintenance.
-Bugs can be found, features can be added, and code can be refactored all which make the component better.
-
-%%%A version of a component that is greater than another version of that component is assumed to be better in some way
-%%%Therefore installing it is seen as a good idea
+%%%A version of a component that is greater than another version of that component is assumed to be better in some way.
 A newer version exists because the component has changed to be better in some way.
 This may be through a bug being fixed, a security hole being patched, or the functionality being extended.
 Having a newer version of a component in the system, may also make all of the other components that depend on it better as well,
@@ -162,7 +166,7 @@ The change to the system that is caused when a newer version is installed may ca
 In the same way that a version upgrade can propagate benefits through the system, 
 friction or errors can propagate and cause a faulty or not functional system.
 
-%%%Drawbacks of sleecint versions, they dont tell waht changes between,
+%%%Drawbacks of versions, they don't tell what changes
 A common approach to selecting an optimal solution is to
 maximise the versions of components while minimising the number of components.
 The problem with the first criterion is that the version information does not tell us what quality improves, 
@@ -189,6 +193,10 @@ Debian package can be compiled for different CPU architectures.
 Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
 Add, remove, upgrade, downgrade components in the system while it is running.
 
+%%%How is this achieved?
+
+%%%Problems with versioning a component system is different combinations of components, with different versions.
+
 There are some problems that must be solved within the component model like making sure that during the change,
 the system is never invalid or unstable. 
 This is a scheduling problem as described by %TODO
@@ -211,20 +219,19 @@ for adding, removing and updating components in package based operating systems 
 %%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
 \section{Design Time Dependency Resolvers}
-%%%Design time dependency resolvers benefits are the
+%%%Design time dependency resolvers benefits the software engineer building a large complex system that can involve many libraries with complex relationships.
 
 \subsection{Apache Maven}
-%%%Maven is a design time project and build automation tool, that can resolve library dependencies
+%%%Maven is a design time project and build automation tool, that can resolve library dependencies from a repository (https://oss.sonatype.org/content/repositories/)
 
 \subsection{Nuget} 
-%%%A new distribution model from microsfot for .Net libraries
+%%%A new distribution model from microsfot for .Net libraries (http://nuget.codeplex.com/)
 
 \subsection{RubyGems bundler}
-%%% Bundler is a package dependency manager for RUBY gems, similar to 
+%%% Bundler is a package dependency manager for RUBY gems (http://gembundler.com/)
 
 \section{Run Time Dependency Resolvers}
-\subsection{Paremus Nimble}
-%%%Nimble is a OSGi bundle resolver, built to alter systems at runtime
+%%%Run time dependency resolvers benefit users of the component system, who would rather use a systems functionality than maintain a complex system of interacting components.
 
 \subsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
@@ -259,6 +266,12 @@ The largest public OBR implementation is the federated repository provided by th
 currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
 There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
 
+\subsection{OSGi Declarative Services}
+%%%DS is standardised in the OSGi standards
+
+\subsection{Spring Dynamic Modules}
+%%%Spring is a competitor to DS, such that it resolves service level dependencies
+
 \subsection{yum}
 %%%Red hat package manager
 
@@ -290,7 +303,7 @@ We also used and read the help documentation, contacted the author of the softwa
 the Debian developers reference for the specific implementation of the Debian repository.
 
 \subsection{Mancoosi MPM}
-%%%The mancoosi Modular Package Manager, currently going through the process in the Debian component repository
+%%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
 
 \subsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
@@ -314,19 +327,21 @@ Eclipse already is
 the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
 
 \section{Comparison of functionality}
-%%%The comparisons of these resolvers will focus on the functionality that they provide given their component model, not their implementation
+%%%The comparisons of these resolvers will focus on the functionality that they provide given their component model (we will not compare their implementations)
 
-%%%Multiple package installations Maven Debain No, OSGi Eclipse DS and CUDF yes
+%%%Multiple package installations 
+%Maven Debain No, OSGi Eclipse DS and CUDF yes
 
-%%%Focus on interface not implementation dependence, Maven no, Debian Community defined virtual packages, 
+%%%Focus on interface not implementation dependence 
+%Maven no, Debian Community defined virtual packages, 
 
-%%%OSGi kind of package name space related to installation, Eclipse Yes DS Yes.
+%%%Version Control
 
-%%%Version Control, All Yes
+%%%Run time replacement Dynamic Dependence
+%Maven no (no runtime), Eclipse Kind of a bit buggy requires restarts,
+%OSGI DS Debian Yes, CUDF is abstract so has no real implementation
 
-%%%Run time replacement Dynamic Dependence, Maven no (no runtime), Eclipse Kind of a bit buggy requires restarts,
-%%%OSGI DS Debian Yes, CUDF is abstract so has no real implementation
+%%%Conflicts
+%Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
 
-%%%Conflicts, Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
-
-%%%Reccommendation, ??
+%%%Reccommendation System, soft dependency (is this even a good idea)
