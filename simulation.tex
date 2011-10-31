@@ -72,7 +72,7 @@ Therefore, the majority of the effort when creating a simulation is gathering an
 
 %%%What is good about the simulation over the other two methods, speed at which results are generated, the cost to get the results, the control over the variables in the simulation.
 Simulation is superior to either using real users and real systems, or using a controlled environment in the speed at which hypotheses can be tested and evaluated,
-the cost to test and get results, and the control over the variables.
+the cost to test and get results, and the control over variables and configuration of the environment.
 
 %%%Speed at which results are generated
 As the speed increases at which a hypothesis can go from being an idea on paper to being tested in a real or simulated environment, increased the amount of meaningful information can be generated. 
@@ -84,7 +84,7 @@ Through simulation an idea can be tested almost immediately by simultaneously ev
 it may take days or months to generate the same amount of results.  
 
 %%%Cost
-The cost of using any of these methods can be measured in the amount of time it would take in setting up, organising and wasted time waiting, for the results to be collected.
+The cost of using any of these methods can be measured in the amount of time it would take in organising, measuring and wasted time, for the the results to be collected.
 Using a real user and system would involve an enormous amount of time validating and distributing the solvers (as discussed earlier), 
 and the controlled environment would require many hours of organisation and planning to gather the necessary users, and then measure their interactions with the system.
 However, with a simulation the main effort is ensuring that the models are accurate enough to gather meaningful results.
@@ -93,13 +93,44 @@ i.e. if more results are needed the simulation will not need to be re-validated.
 The other two methodologies do not have this property, as for each user tested and measured will be a duplicate effort. 
 
 %%%Control
-When analysing results one must be sure that any conclusions drawn must be based on a significant amount of information collected.
-Collecting the amount of information to make conclusions on  
+The control over the results that a simulation returns far exceeds the other methods as models can be altered and tested where a real user cannot. 
+This control allows the testing of extreme situations, the sensitivity analysis of different variables,
+and the generation of possibly optimal but 'out of the box' ideas. 
+For instance, the testing of the amount of days a user waits between updates can be tested through altering the times between updates, then running the simulation.
+If real users where used, the amount of users necessary to be collected would be enourmous to produce any significant results in this area.
+
+%%%Final words on why we simulate
+A simulation was used as it provides us with a cost/benefit ratio that is desirable, while potentially allowing an appropriate level of accuracy to draw meaningful conclusions.
+The main effort is then to create the simulation with valid models that will give us the desired accuracy.
 
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''
-{}To create a model that is credible and valid we follow a methodology outlined by \cite{Law2005}.
-{}In this simulation we take a component system and evolve it over time using real and approximate information and look at the resulting systems.
+{}To create a model that is credible and valid the methodology outlined by \cite{Law2005} in ``How to build valid and credible simulation models'' is followed.
+{}This methodology walks through the steps from collecting information, creating and validating models, and running the simulation.
+{}This method is used as it is applicable to the simulating component evolution, however some points must be changed to accommodate our limits, 
+{}to create the necessary artifacts for its execution.  
+
+%%%Why do we use this methodology and how is it relevant? Where else has this methodology been used?
+This methodology is
+
+%%%At what points do we differ from the method? Points that are outside the scope of this project.
+This methodology can be used for many different scales of project, for instance for motivation the example of the U.S.A. Department of Defence using simulations is given.
+As this project is smaller in scale in time and effort that many other simulation projects, some of the artifacts from this method have been restricted and some removed.
+One such artifact is meetings with stake holders are reduced to a single survey in order to build our conceptual model of the problem.
+This may reduce the validity of the end model, but these restrictions have been made when only necessary and done so in a manner that minimises the negative effects.
+
+%%%What are the artifacts and their goals that are required from this methodology?
+
+\section{Conceptual Model}
+{}To create our conceptual model, we must first precisely describe the problem;
+{}When evolving a component-based system, different strategies can be employed by the user and the resolver.
+{}These strategies have unknown effects over a long period in which the user evolves the system.
+{}Through simulating and analysing these effects we can choose a strategy more effectively.
+{}There are two parts to these strategies, first how the user interacts with a resolver;
+{}second, how the resolver handles these requests.
+
+{}This simulation takes a particular strategy a user employs to evolve a system,
+{}and simulates their decision over a period of time to and look at the intervening and resulting systems properties to find good strategies.
 
 Creating a simulation that accurately represents the evolution of a component system so that we can 
 analyse the effect different evolution strategies have on a systems properties is the core objective of this simulation.
@@ -109,21 +140,16 @@ specifically defining the problem,
 building a conceptual model,
 collecting data,
 
-%%%Why do we use this methodology and how is it relevant?
+\subsection{Survey analysis}
+%%%The questions we want to answer are which actions are routinely performed and at what frequency?
+%%%What life cycle specific actions are performed?
 
-%%%Where else hasa this methodology been used?
+%%%Description of the Survey
 
-%%%What are the artifacts and their goals that are required from this methodology?
+%%%Results from the Survey
 
-%%%At what points do we differ from the method? Points that are outside the scope of this project.
+%%%Analysis of these results and how they apply to the user model
 
-\section{Conceptual Model}
-{}To create our conceptual model, we must first precisely describe the problem;
-{}When evolving a component-based system, different strategies can be employed by the user and the resolver.
-{}These strategies have unknown effects over a long period in which the user evolves the system.
-{}Through simulating and analysing these effects we can choose a strategy more effectively.
-{}There are two parts to these strategies, first how the user interacts with a resolver;
-{}second, how the resolver handles these requests.
 
 \subsection{Strategies}
 %%%How do users use different strategies when evolving a system when installing and updating their systems
@@ -165,8 +191,11 @@ Given this simulation is looking at the effects of the strategies employed by us
 we must look at different resolvers, and different user strategies.
 What packages the simulated user selects to install and 
 
-%%%The criteria we are testing
-We are testing resolver strategies P2, trendy, Hamming + max version, PageRank,\ldots 
+%%%The criteria for updating and installation we are testing
+The most significant variable in the configuration is the criteria used by the solver to find optimum solutions. 
+As there are two separate actions the user can make, updating and installing, each of these can have different criteria associated with them.
+This is necessary because the optimum solution for these two actions should be different,
+as a user installing will probably not want to update their entire system when trying to install a single package.
 
 %%%We are changing the distributions of user installaion, and the period between updates
 The user installs different amount of packages per day, and updates at different intervals. 
@@ -193,11 +222,10 @@ and how often a user updates a system is found through our user survey.
 These pieces of information allow us to approximately represent real users.
 
 
-
-
 \section{Repository Model}
-{}The model of the repository is complicated by the fact that our simulation takes into account the date, this means that the repository should only contain packages that existed at a certain date.
-{}This is simplified by only using a single repository, the ubuntu repository, and only looking between two dates 10.2009-10.2010
+{}The repository model models the server which serves the packages to the client to be installed.
+{}Superfluous aspects of the repository, like the protocol used to transfer the packages, are ignored in this simulation.
+{}The model of the repository is complicated by the fact that our simulation takes into account what packages the repository had on a particular date.
 
 %%%We create a repository for each different day
 
@@ -209,8 +237,6 @@ These pieces of information allow us to approximately represent real users.
 
 %%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
 
-\section{Initial Analysis}
-{}The initial analysis of some aspects of this problem can be accomplished without 
 
 \subsection{Control User}
 {}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
