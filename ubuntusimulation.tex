@@ -1,0 +1,165 @@
+
+\chapter{Ubuntu Simulation}
+In this chapter we discuss the implementation, results and conclusions from executing our simulation against Ubuntu.
+
+{}our reasons and methods for the collection of data,
+{}discuss our simulation model validity when compared to the real world.
+{}The design of the experiments are then described and the variables assigned values,
+{}finally we present the results and analysis from this simulation.
+
+{}The data that is used was extracted from logs of real users, a user survey conducted on a popular Internet forum, 
+{}component and temporal information collected from repositories, meta-information about those repositories.
+
+\section{Data-sets}
+%%%Data collection is an important aspect of a simulations validity. 
+%%%For each data set we ask; What they are, where they are from, what information we can get from them, and what problems exist with that information.
+The most complex and difficult part of this (or any) simulation is the human component, the user,
+as such that is where much of our data collection focused.
+Data has been collected from
+a user survey which was performed on a popular Internet forum,
+user logs from resolvers were collected with the survey.
+The Ubuntu popularity contest is used to determine package popularity,
+as well as a user forum thread where users posted their top ten packages.
+A package that contains a list of applications in the Ubuntu repository was included.
+The entire Ubuntu repository, with relevant date information about packages was used.
+
+%%%User Survey 
+A user survey was conducted online via a popular Internet forum http://reddit.com/r/ubuntu, this involved nearly 60 participants. %TODO attach survey to appendix. 
+The survey focused on user interaction with a resolver and the lifecycle that is associated with their component system.
+The results are summarised below, %Summarise results
+
+%%%User Logs
+Resolvers often keep logs of their activites, these usually only include the changes to the systems that are made, and not what the usre requested.
+Therefore, some of the information that can be obtained
+
+%%%PopCon
+The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
+Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
+
+%%%User Forum top 10 posts
+People submit multiple times, some people submit more than 10, some less, package sanitisation, had to change names to fit package names
+
+%%%app-install-data package
+The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
+This is useful for applications to use that help users search for and find an application that they may wish to install, like the Ubuntu Software Center.
+%TODO how do they get this list
+This comprehensive list currently\footnote{May 24th 2011} contains 2393 applications.
+
+%%%Ubuntu Repositories
+The Ubuntu Repository, as with most open and free software, is freely downloadable.
+It contains all the packages that have ever been in the repository with the information of when the package was added.
+We created a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as precariously described in section. %TODO referecne
+As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
+
+%%%Ubuntu installation
+One of the aspects that is critical to a simulation is a time over which it is occuring, 
+so the starting system is important aspect for this simulation.
+Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
+then the month in which it was released, e.g. 10.04 is the release in April 2010.
+Given that we are running this simulation over the course of a year, we are selecting that year to be 
+
+
+\subsection{Survey analysis}
+%%%The questions we want to answer are which actions are routinely performed and at what frequency?
+%%%What life cycle specific actions are performed?
+
+%%%Description of the Survey
+
+%%%Results from the Survey
+
+%%%Analysis of these results and how they apply to the user model
+
+\subsection{Log Analysis}
+%%%The question we want to answer is "How often does a user install a package?", asking a user directly will be error prone, but by analysing logs we can extract real information.
+
+%%%There are a few problems with looking directly at the logs and counting their installations per day.
+
+%%%Firstly, some logs only record changes to the system and not what action the user took to change it, e.g. install package x, does not mean the user requested package x to be installed.
+
+%%%Secondly, many installations could be requested by the user for a single task, e.g. image manipulation. 
+%%%This means that the packages would be related and may be dependent on one another, which is very difficult to model.
+
+%%%To solve this we abstract from installation, to task, and set a time frame in which actions are dependent on one another.
+
+%%%The estimation of the time between tasks, is then the largest assumption we have, we attempt to validate it using a Poisson process to show independence.
+
+%%%Given we now have installation/task distributions, randomly select some real user distributions (bootstrap) for our user model.
+
+\subsection{Package Popularity}
+{}Determining the probability a user will select a package to be installed is difficult given the enormous amount of factors this relies on.
+{}The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
+{}Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
+{}what packages may a user select to install and how likely would a user select to install these.
+{}We attempt to answer these questions through using the set of packages listed in the package app-install-package
+{}weighted with their popularity from the Ubuntu popularity contest.
+{}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
+{}However, by limiting our approach we have answered these questions without sacrificing much simulation integrity.
+
+%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
+Many of the packages in a repository are not ones which a user would directly select to install.
+Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
+A user would not likely install these as they do not directly allow the user to complete tasks in the system.
+The list of applications from the package app-install-data is used to answer the first question, what packages may a user select to install.
+
+%%%How likely would a user will select to install a package can be gathered from popcon, by looking at how many systems have that package installed
+The second question is then answered through analysing the data-set and determining the probability a user will have a particular package installed.
+The reason why we cannot use this information to also answer the first question is that many of the most packages installed are there because they are depended on by many different applications,
+e.g. a media library that decodes a stream may be used by many different media playing applications therefore installed on many users systems, 
+ranking it high in the popularity contest but it was never directly installed by the user.
+
+
+%%%We validate this by comparing it against the list of users top 10's and stating that the pacakages that more than 5\% of the users voted for is 90\% accurate
+This relies on the fact that a user would like to 
+
+%%%The core problem with this list is that more experienced users may install packages that are not applications, build-essential
+Although a user will more likely install this list can be assumed to be a complete list of applications 
+the main problem is that more experienced users may directly select to install packages that are not deemed applications.
+For instance, the package build-essential includes tools in which a user can build their own Debian packages,
+this is a task for many users, though not deemed an application therefore not included.
+
+%%%The core problem with this probability, is that it doesnt measure corrolation between packages being installed
+The core problem with this probability, is that it doesnt measure corrolation between packages being installed.
+For instance, i
+
+
+\subsubsection{Failed Attempts at ranking}
+%%%While creating this set of popular packages we attempted other means in order to rank popularity. 
+%%%During validation of these attempts we found them not to be suitable.
+%%%We mention them here to A) show how difficult this problem is, and B) to show what doesn't work and why.
+In creating this set packages weighted to their popularity, we also  know the Ubuntu popularity contest is an excellent accurate and broad data-set of information with one main draw back of having superfluous packages,
+we attempted to use other means to eliminate these packages and then  
+
+%Method google completeion API
+To estimate the popularity of a package, the Google API for automated search completion is used.
+When given a query, this API returns an estimate of the amount this query has been searched for by other users,
+it also returns a list of related searches that users have searched for.
+What query is used is the most important aspect of this approach,
+searching merely for the name of the package may return user queries from other domains, e.g. searching for the package ``wine'' may return oenophile sites.
+Also using multiple different queries can allow for a more robust heuristic as it allows measuring their popularity from different perspectives,
+as one query may not be used when users search for a particular package.
+
+%How we validate the heurisitic? Via a list of popular packages from a popular forum
+This is a very general approach, it involves many aspects that effect the results making them possibly inaccurate.
+Therefore, the estimates are validated against a popular Ubuntu forums thread\footnote{http://ubuntuforums.org/showthread.php?t=35208} 
+that asks the user to post the top packages they install in their ubunutu systems. 
+The results of this thread are tallied to compare against the google approach.
+
+%The queries we use and the way that we aggregate them
+We have selected three queries to build our heuristic:
+``apt-get install``, ``ubuntu'' and ``install'', 
+
+%Corrolation, as google API returns similar values we can estimate the corrolation of packages
+
+\section{Strategies}
+%%%Of the massive amount of possible combinations of criteria and relationships with user models, which strategies have we selected to look at and why.
+
+\section{Results}
+%%%Here we describe results from our simulation
+
+\subsection{Results Validation}
+%%%The final validation phase is done by comparing the results back to the user submitted logs we collected, this can be used to validate the output and our final results
+
+\section{Analysis}
+%%%Analysis of the results, and the simulation
+
+%%%Results analysis

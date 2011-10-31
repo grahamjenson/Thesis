@@ -1,0 +1,35 @@
+digraph PBO
+{
+	
+	ranksep=.75; size = "7.5,7.5"
+	rankdir="TB"
+	node[width = 4, shape = rect]
+	s [label = "Start", shape = ellipse]
+	hc [label = "Encode Hard Constraints"]
+	sol [label = "Is there a Solution?", shape = diamond]
+	m  [label = "m = Solution"]
+	to  [label = "Is Timeout", shape = diamond]
+	e  [label = "encode better solution"]
+	
+	r  [label = "return m", shape = ellipse, width = 2]
+	
+	
+
+	edge[weight = 100]
+	
+	s -> hc
+	hc -> to
+	to -> sol [label = "No"]
+	
+	sol -> m [label = "Yes"]
+	m -> e
+	
+	edge[weight = 1]
+	to -> r [label = "Yes"]
+	sol -> r [label = "No"]
+	
+	edge[weight = 75]
+	e -> to
+	
+	{rank = same; r;sol;} 
+}
