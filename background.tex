@@ -218,6 +218,85 @@ for adding, removing and updating components in package based operating systems 
 
 %%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
+\section{Boolean Satisfiability (SAT) Solvers}
+%%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
+
+%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
+Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
+This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
+The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
+Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
+
+%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
+
+%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
+
+%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
+
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+
+%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
+
+\subsection{CHAFF Watched Literals}
+%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
+%TODO cite
+
+\subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly)
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+
+\subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+%%%The selection of a literal can be broken into two stages for modularity;
+%%%first selecting a variable that is very volatile,
+%%%second selecting a phase (negative or positive)
+
+\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
+%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
+
+%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+
+%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+
+\subsection{Other Methods}
+\subsubsection{Integer Programming}
+%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
+\subsubsection{SMT Solvers}
+%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
+\subsubsection{Constraint Solver}
+%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
+
+\section{Common Upgradeability Description Format}
+%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+{}\cite{treinen2009common}
+
+%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
+
+%%%In both regards it has succeded, there have been many competitions run, 
+%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
+
+\subsection{CUDF Syntax}
+%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
+
+%%%Package Formulas are the standard mechanism of dependence
+
+%%%Versions as Integers
+
+%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
+
+\subsection{CUDF Semantics}
+%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
+
+%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
+
+%%%It must be broad enough to define and solve real world problems
+
+
 \section{Design Time Dependency Resolvers}
 %%%Design time dependency resolvers benefits the software engineer building a large complex system that can involve many libraries with complex relationships.
 
@@ -325,6 +404,11 @@ The dependency resolver of P2 is based on SAT4J\footnote{http://www.sat4j.org/} 
 a provided fitness function, if a solution exists it is guaranteed to find it.\\  
 Eclipse already is
 the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
+
+\subsubsection{P2CUDF implementation}
+%%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
+The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
+One implementation of note is the P2CUDF implementation, that uses SAT
 
 \section{Comparison of functionality}
 %%%The comparisons of these resolvers will focus on the functionality that they provide given their component model (we will not compare their implementations)

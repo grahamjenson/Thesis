@@ -1,66 +1,106 @@
 \chapter{Simulation}
 \label{simulation}
-{}To evaluate different strategies when evolving a component system, we simulate the environment in which this evolution occurs.
-{}This simulation models the user-interaction, the repository, and the system
-{}to draw conclusions on the benefits and draw backs of a particular evolution strategy.
-{}To ensure that the model is credible we use a methodology outlined by \cite{Law2005}
-{}The data that is used was extracted from logs of real users, a user survey conducted on a popular Internet forum, 
-{}component and temporal information collected from repositories, meta-information about those repositories.
+{}To evaluate different strategies when evolving a component systems, the environment in which these evolutions occur is simulated.
+{}Through modelling then simulating the different aspects of a system; the user-interaction, the repository, and the resolver;
+{}conclusions can be drawn on the benefits and draw backs of a particular evolution strategy.
 
-{}In this simulation we take a component system and evolve it over time using real and approximate information and look at the resulting systems.
+{}The motivations for simulating and the methodology used to create the simulation are presented in this chapter.
+{}The result of this chapter is a simulation that can be used to predict how a component system will evolve given different variables of the user and the strategy they use.
 
-{}In this chapter we first describe our motivation for using a simulation,
-{}then we present our methodology;
-{}first describing our formulation of the problem,
-{}our reasons and methods for the collection of data,
-{}discuss our simulation model validity when compared to the real world.
-{}The design of the experiments are then described and the variables assigned values,
-{}finally we present the results and analysis from this simulation.
- 
 \section{Why Simulate?}
 %%%Why are we using a simulation instead of real systems, or a controlled environment
-To evaluate an evolution strategy we could either look at a set of actual systems with real users and collect data,
-we could create a controlled environment in which users are given tasks and monitored the outcomes,
-or we could realistically simulate the necessary aspects, then study the results and implications.
-As using real users with real systems will always return more valid results to simulating, as would a controlled study of users,
-why would we opt to simulate?
+To evaluate an evolution strategy some options include;
+using a set of actual systems with real users could be accessed to collect field data;
+creating a controlled environment in which users are given tasks and monitor the outcomes;
+simulating a systems evolution through creating models and altering environment variables to study their effects.
+In this section we discuss the positive and negative aspects of each of these approaches,
+and present the reasons for the selection of the simulation methodology for this research.
 
-%%%Users dont trust the ``experimental" implementations
-The main reason for simulating is that finding enough users
-who would allow an experimental component resolution algorithm to alter their real system would be extremely difficult.
+%%%The pros and cons of using real systems with real users
+Using real systems with real users would clearly produce real and valid data to be studied and analysed to find the best evolution strategies.
+Solvers could be developed and distributed to different users, each solver using different criteria 
+and as each user has different behaviours (amount they install, when they update)
+these results could be analysed to find strategies that produce good systems. 
+
+%%%Now the cons
+This approach will create very accurate research, however it has some significant drawbacks,
+it will take significant periods of time to create meaningful results, for each day of results you have to wait a day.
+Finding the way a particular strategy effects a system over an entire year, will mean waiting a year.
+More significantly, finding users that will trust an experimental system to alter their real system would be extremely difficult.   
 A user will likely not trust a newly released resolver, as their system is important to them and even the slightest error can cause
-a system to become unstable. 
+a system to become unstable.
+
+%%%Users trust is difficult to gain
 To gain the trust of possible users the experimental resolvers would have to be thoroughly tested through a repositories development cycle and be well maintained.
 Moving a package through this cycle can be itself a massive undertaking lasting several months. 
-For Eclipse Plug-ins it involves going a component going through four phases 
-Proposal, Incubation, Mature, and Top-Level \footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
-similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable \footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
-After it has been through this cycle maintenance of the resolver is still required; 
-for instance the resolver apt-get since its initial release has released more than 2 versions a month \footnote{http://changelogs.ubuntu.com/}.
-This shows how much effort must be applied to earn a users trust, and this effort may outweigh the actual benefits when simulation is a cheaper alternative.
+For example Eclipse Plug-ins it involves going a component going through four phases 
+Proposal, Incubation, Mature, and Top-Level\footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
+similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable\footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
+After it has been through this cycle, maintenance of the resolver is still required; 
+for instance the Ubuntu package ``apt'' has released about 2 changes a month\footnote{http://changelogs.ubuntu.com/} to it or related packages since its initial release.
+This shows how much effort must be applied to earn a users trust, and this effort will likely outweigh the actual benefits.
 
-%%%Getting enough users of different types would be difficult to get generalisable results.
-We could create a case study of users where users evolve systems in a monitored environment, where they select packages and we use these to create systems and analyse implications.
-As with the real simulation, getting a broad enough user group that we can monitor is logistically difficult and impractical when compared to the benefits.
-Any controlled environment would alter the state of how the user interacts with their "control" system, making the results similarly less reliable.
-The one aspect that would be improved over simulation would be the possible more realistic user model, 
-however as a user typically researches a package before having installing it because it would have real implications, in a controlled environment these implications are removed so the selection would still be of questionable validity.
+%%%The pros and cons of using real users with pseduo systems
+A study of users interacting with a system in a monitored and controlled environment could be executed.
+Each user could be given different strategies, e.g. solver criteria, and different tasks to perform on their system to approximate real interactions.
+This study could compress a years worth of interactions with a system into an hour, and produce results from real users. 
+Compared to the previous type of study using real users with real systems,
+this research removes the necessity of user trust as the user is altering a system that is not theirs,
+and results can be gained in hours not years. 
+However, it will also produce less valid results, as it is still an approximation of a real system, and the users know this.
+Any controlled environment would alter how the user interacts with their controlled system, making the results less reliable.
+For example, a user typically researches a package before selecting installing it because it would have real implications, 
+in a controlled environment these implications are removed so the selection would still be of questionable validity.
 
-%%%In a controlled environment the results may vary because of the short time frame the users have access to the system.
+The largest problem with this method is again finding enough users.
+With the previous method it was trust that would limit the user count, here it is the effort to find and monitor the amount of necessary users required.
+For example, given we want to test 10 different strategies with 5 different user types, each combination must contain multiple different test subjects to find statistically significant results, 
+and each subject taking upwards of an hour to complete the study. 
+This would be a significant effort to organise users, monitor interactions and collect results, so much so that that it may be logistically impractical when compared to the benefits.
 
-%%%Instead we can simulate, which is an approximation of the real world.\\
+%%%Instead we can simulate, with an approximation of the real world.\\ 
 %%%When drawing conclusions the accuracy of this approximation must be considered, therefore significant effort has gone into data collection and validation.
-Simulation is a surrogate of the real system, such that it represents the aspects core to the problem, 
-the evolution of component systems.
-As it is only an approximation of the real world, 
+A simulation is a surrogate of the real system, such that it represents the core aspects of a component systems evolution.
+This is accomplished through modelling the most important parts of the system, 
+and computationally creating and measuring the results. 
+As the simulation is only an approximation of the real world, 
 the accuracy to which it actually represents the real world is not 100\%.
 The goal is then to make it a ``close enough'' approximation so that the conclusions drawn from it are valid in the real world.
 So when analysing the results and forming conclusions, we must take into account the assumptions we have made creating the simulation to determine 
 the conclusions overall accuracy.
 Therefore, the majority of the effort when creating a simulation is gathering and using valid information when making assumptions.
 
+%%%What is good about the simulation over the other two methods, speed at which results are generated, the cost to get the results, the control over the variables in the simulation.
+Simulation is superior to either using real users and real systems, or using a controlled environment in the speed at which hypotheses can be tested and evaluated,
+the cost to test and get results, and the control over the variables.
+
+%%%Speed at which results are generated
+As the speed increases at which a hypothesis can go from being an idea on paper to being tested in a real or simulated environment, increased the amount of meaningful information can be generated. 
+When an idea is proposed as a possible solution to a problem, the quicker that idea can be eliminated or encouraged allows new ideas to be formed off of the original.
+These ideas themselves can then be tested, to see if they are suitable solutions.
+The faster this process is, the ideas can be tested, the better solutions and more information is generated.
+Using real users, or real systems, requires long periods of waiting, where if the actions and environment can be modeled and executed computationally there is little waiting.
+Through simulation an idea can be tested almost immediately by simultaneously evolving multiple simulated systems, where using a real user, 
+it may take days or months to generate the same amount of results.  
+
+%%%Cost
+The cost of using any of these methods can be measured in the amount of time it would take in setting up, organising and wasted time waiting, for the results to be collected.
+Using a real user and system would involve an enormous amount of time validating and distributing the solvers (as discussed earlier), 
+and the controlled environment would require many hours of organisation and planning to gather the necessary users, and then measure their interactions with the system.
+However, with a simulation the main effort is ensuring that the models are accurate enough to gather meaningful results.
+This time in validating the simulation and associated models is only necessary once, 
+i.e. if more results are needed the simulation will not need to be re-validated.
+The other two methodologies do not have this property, as for each user tested and measured will be a duplicate effort. 
+
+%%%Control
+When analysing results one must be sure that any conclusions drawn must be based on a significant amount of information collected.
+Collecting the amount of information to make conclusions on  
+
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''
+{}To create a model that is credible and valid we follow a methodology outlined by \cite{Law2005}.
+{}In this simulation we take a component system and evolve it over time using real and approximate information and look at the resulting systems.
+
 Creating a simulation that accurately represents the evolution of a component system so that we can 
 analyse the effect different evolution strategies have on a systems properties is the core objective of this simulation.
 To this end, we follow the a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
@@ -82,7 +122,8 @@ collecting data,
 {}When evolving a component-based system, different strategies can be employed by the user and the resolver.
 {}These strategies have unknown effects over a long period in which the user evolves the system.
 {}Through simulating and analysing these effects we can choose a strategy more effectively.
-{}There are two parts to these strategies, first how the user interacts with a resolver, secondly how the resolver handles these requests.
+{}There are two parts to these strategies, first how the user interacts with a resolver;
+{}second, how the resolver handles these requests.
 
 \subsection{Strategies}
 %%%How do users use different strategies when evolving a system when installing and updating their systems
@@ -136,58 +177,6 @@ We are selecting the packages to install that are different.
 %%%The repository over which it runs changes over time
 Time, We have decided not to 
 
-\subsection{Sensitivity Analysis}
-{}Through altering some of the configuration variables a small amounts then running the simulation, the variables that are most important will alter the results significantly.
-{}This is an important step in our simulation as it shows us the variables that we must exert more effort to get correct. 
-
-\section{Data-sets}
-%%%Data collection is an important aspect of a simulations validity. 
-%%%For each data set we ask; What they are, where they are from, what information we can get from them, and what problems exist with that information.
-The most complex and difficult part of this (or any) simulation is the human component, the user,
-as such that is where much of our data collection focused.
-Data has been collected from
-a user survey which was performed on a popular Internet forum,
-user logs from resolvers were collected with the survey.
-The Ubuntu popularity contest is used to determine package popularity,
-as well as a user forum thread where users posted their top ten packages.
-A package that contains a list of applications in the Ubuntu repository was included.
-The entire Ubuntu repository, with relevant date information about packages was used.
-
-%%%User Survey 
-A user survey was conducted online via a popular Internet forum http://reddit.com/r/ubuntu, this involved nearly 60 participants. %TODO attach survey to appendix. 
-The survey focused on user interaction with a resolver and the lifecycle that is associated with their component system.
-The results are summarised below, %Summarise results
-
-%%%User Logs
-Resolvers often keep logs of their activites, these usually only include the changes to the systems that are made, and not what the usre requested.
-Therefore, some of the information that can be obtained
-
-%%%PopCon
-The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
-Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
-
-%%%User Forum top 10 posts
-People submit multiple times, some people submit more than 10, some less, package sanitisation, had to change names to fit package names
-
-%%%app-install-data package
-The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
-This is useful for applications to use that help users search for and find an application that they may wish to install, like the Ubuntu Software Center.
-%TODO how do they get this list
-This comprehensive list currently\footnote{May 24th 2011} contains 2393 applications.
-
-%%%Ubuntu Repositories
-The Ubuntu Repository, as with most open and free software, is freely downloadable.
-It contains all the packages that have ever been in the repository with the information of when the package was added.
-We created a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as precariously described in section. %TODO referecne
-As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
-
-%%%Ubuntu installation
-One of the aspects that is critical to a simulation is a time over which it is occuring, 
-so the starting system is important aspect for this simulation.
-Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
-then the month in which it was released, e.g. 10.04 is the release in April 2010.
-Given that we are running this simulation over the course of a year, we are selecting that year to be 
-
 
 \section{User Model}
 {}The user model involves many aspects, including the life-cycle of specific actions, the probability of actions being taken, and also the parameters of an action.
@@ -204,100 +193,11 @@ and how often a user updates a system is found through our user survey.
 These pieces of information allow us to approximately represent real users.
 
 
-\subsection{Survey analysis}
-%%%The questions we want to answer are which actions are routinely performed and at what frequency?
-%%%What life cycle specific actions are performed?
 
-%%%Description of the Survey
-
-%%%Results from the Survey
-
-%%%Analysis of these results and how they apply to the user model
-
-\subsection{Log Analysis}
-%%%The question we want to answer is "How often does a user install a package?", asking a user directly will be error prone, but by analysing logs we can extract real information.
-
-%%%There are a few problems with looking directly at the logs and counting their installations per day.
-
-%%%Firstly, some logs only record changes to the system and not what action the user took to change it, e.g. install package x, does not mean the user requested package x to be installed.
-
-%%%Secondly, many installations could be requested by the user for a single task, e.g. image manipulation. 
-%%%This means that the packages would be related and may be dependent on one another, which is very difficult to model.
-
-%%%To solve this we abstract from installation, to task, and set a time frame in which actions are dependent on one another.
-
-%%%The estimation of the time between tasks, is then the largest assumption we have, we attempt to validate it using a Poisson process to show independence.
-
-%%%Given we now have installation/task distributions, randomly select some real user distributions (bootstrap) for our user model.
-
-\subsection{Package Popularity}
-{}Determining the probability a user will select a package to be installed is difficult given the enormous amount of factors this relies on.
-{}The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
-{}Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
-{}what packages may a user select to install and how likely would a user select to install these.
-{}We attempt to answer these questions through using the set of packages listed in the package app-install-package
-{}weighted with their popularity from the Ubuntu popularity contest.
-{}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
-{}However, by limiting our approach we have answered these questions without sacrificing much simulation integrity.
-
-%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
-Many of the packages in a repository are not ones which a user would directly select to install.
-Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
-A user would not likely install these as they do not directly allow the user to complete tasks in the system.
-The list of applications from the package app-install-data is used to answer the first question, what packages may a user select to install.
-
-%%%How likely would a user will select to install a package can be gathered from popcon, by looking at how many systems have that package installed
-The second question is then answered through analysing the data-set and determining the probability a user will have a particular package installed.
-The reason why we cannot use this information to also answer the first question is that many of the most packages installed are there because they are depended on by many different applications,
-e.g. a media library that decodes a stream may be used by many different media playing applications therefore installed on many users systems, 
-ranking it high in the popularity contest but it was never directly installed by the user.
-
-
-%%%We validate this by comparing it against the list of users top 10's and stating that the pacakages that more than 5\% of the users voted for is 90\% accurate
-This relies on the fact that a user would like to 
-
-%%%The core problem with this list is that more experienced users may install packages that are not applications, build-essential
-Although a user will more likely install this list can be assumed to be a complete list of applications 
-the main problem is that more experienced users may directly select to install packages that are not deemed applications.
-For instance, the package build-essential includes tools in which a user can build their own Debian packages,
-this is a task for many users, though not deemed an application therefore not included.
-
-%%%The core problem with this probability, is that it doesnt measure corrolation between packages being installed
-The core problem with this probability, is that it doesnt measure corrolation between packages being installed.
-For instance, i
-
-
-\subsubsection{Failed Attempts at ranking}
-%%%While creating this set of popular packages we attempted other means in order to rank popularity. 
-%%%During validation of these attempts we found them not to be suitable.
-%%%We mention them here to A) show how difficult this problem is, and B) to show what doesn't work and why.
-In creating this set packages weighted to their popularity, we also  know the Ubuntu popularity contest is an excellent accurate and broad data-set of information with one main draw back of having superfluous packages,
-we attempted to use other means to eliminate these packages and then  
-
-%Method google completeion API
-To estimate the popularity of a package, the Google API for automated search completion is used.
-When given a query, this API returns an estimate of the amount this query has been searched for by other users,
-it also returns a list of related searches that users have searched for.
-What query is used is the most important aspect of this approach,
-searching merely for the name of the package may return user queries from other domains, e.g. searching for the package ``wine'' may return oenophile sites.
-Also using multiple different queries can allow for a more robust heuristic as it allows measuring their popularity from different perspectives,
-as one query may not be used when users search for a particular package.
-
-%How we validate the heurisitic? Via a list of popular packages from a popular forum
-This is a very general approach, it involves many aspects that effect the results making them possibly inaccurate.
-Therefore, the estimates are validated against a popular Ubuntu forums thread\footnote{http://ubuntuforums.org/showthread.php?t=35208} 
-that asks the user to post the top packages they install in their ubunutu systems. 
-The results of this thread are tallied to compare against the google approach.
-
-%The queries we use and the way that we aggregate them
-We have selected three queries to build our heuristic:
-``apt-get install``, ``ubuntu'' and ``install'', 
-
-%Corrolation, as google API returns similar values we can estimate the corrolation of packages
 
 \section{Repository Model}
 {}The model of the repository is complicated by the fact that our simulation takes into account the date, this means that the repository should only contain packages that existed at a certain date.
-{}This is simplified by only using a single repository, the ubuntu repository, and only using a single date 10.2009-10.2010
+{}This is simplified by only using a single repository, the ubuntu repository, and only looking between two dates 10.2009-10.2010
 
 %%%We create a repository for each different day
 
@@ -309,8 +209,28 @@ We have selected three queries to build our heuristic:
 
 %%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
 
-\section{Strategies}
-%%%Of the massive amount of possible combinations of criteria and relationships with user models, which strategies have we selected to look at and why.
+\section{Initial Analysis}
+{}The initial analysis of some aspects of this problem can be accomplished without 
+
+\subsection{Control User}
+{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
+{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
+{}and the 
+
+\subsection{Update Criteria}
+{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
+{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
+{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
+
+The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
+The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
+This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
+Therefore, the returned system for any update command can be the initial system.
+This means that if a criteria, such as changed, or hamming where minimised as the most important  
+
+
+\section{Strategy Model}
+
 
 \section{Simulation Validation}
 %%%With the methodology there are many pionts at which we validate individual parts/models, and their overall composition.
@@ -320,20 +240,12 @@ We have selected three queries to build our heuristic:
 \section{Simulation implementation}
 %%%Here we describe how our simulation is implemented, specifics that are not previously mentioned, and the variables not yet defined
 
+%%%Preprocessing of the weighted components, removing all packages that are unable to be accomplished (e.g. skype)
+%%%When createing the CUDF files it removes install requests that are not in the system (e.g. if chromium was added to the repository in 2010 and it is requestied in 2009, it is just ignored.)
+
 %%%What happens when a install is required that is then not able to be accomplished.
 
 %%%Scripts and such are in the appendix, some code is here though, particularly interesting or critical code.
-
-\section{Results}
-%%%Here we describe results from our simulation
-
-\subsection{Results Validation}
-%%%The final validation phase is done by comparing the results back to the user submitted logs we collected, this can be used to validate the output and our final results
-
-\section{Analysis}
-%%%Analysis of the results, and the simulation
-
-%%%Results analysis
 
 \section{Conclusions}
 %%%Discuss the overall conclusions. Bullet point the points most surprising, and useful for further study.

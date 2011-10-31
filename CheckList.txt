@@ -1,5 +1,9 @@
 
-the word "must" is only used where it must be.
+the word "must" "always" is only used where it must be.
+the work "we" "I" must be chaged
+However --> However, 
+
+\ref should have a space and \footnote should not
 
 Search pdf for "?"
 

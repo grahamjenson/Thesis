@@ -88,6 +88,16 @@ These two strategies are represented in by the current depenceny resolution impl
 This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
 
 
+\subsection{Efficient Ordering of Criteria}
+%%%Conflicting criteria should be lexicographically last, as they have the hardest time optimising if it times out it will still have a pretty good solution
+
+%%%The last lex criteria should always be weighted such that it is availble for each component. The first half of the strategy guides the solution towards what is wanted.
+%%%An exmaple is we want to maximise pagerank in our solutions, +sum(pagerank) will work, but the optimal solution would then be to install as many components as possible.
+%%%So we minimise change first -change,+sum(pagerank), this will install as many components that have the same name. 
+%%%-changed,-newc,+sum(pagerank) will minimise change from original system, minimise the amount of new components that can be added, and then maximise pagerank, 
+%%%so only installing new components with the largest pagerank.
+
+%%%Criteria that group components are more efficient as they have smaller constraints, criteria should be ordered lexicographically as efficiently as possible.
 
 \section{Criteria}
 %%%Here we specifically define different criteria/heuristics from academia (Mancoosi, Lehman), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
