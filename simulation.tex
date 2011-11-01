@@ -105,50 +105,183 @@ The main effort is then to create the simulation with valid models that will giv
 
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''
-{}To create a model that is credible and valid the methodology outlined by \cite{Law2005} in ``How to build valid and credible simulation models'' is followed.
-{}This methodology walks through the steps from collecting information, creating and validating models, and running the simulation.
-{}This method is used as it is applicable to the simulating component evolution, however some points must be changed to accommodate our limits, 
-{}to create the necessary artifacts for its execution.  
+{}A goal of this study is to create a reusable simulation for future use, and to provide useful information on the process of component evolution. 
+{}This places validity and credibility of a simulation and the results it provides at a high priority.
+{}To create such a simulation the methodology outlined by \cite{Law2005} in ``How to build valid and credible simulation models'' is followed.
+{}This methodology is a guideline for defining the study, collecting information, creating and validating models, and running the simulation.
+{}In this section we introduce the methodology with its goals and how they are aligned to ours, 
+{}discuss the steps that it recommends to be taken to create a valid simulation, and how the simulation will be created and what it will produce for this study.
 
-%%%Why do we use this methodology and how is it relevant? Where else has this methodology been used?
-This methodology is
+\subsection{Validation and Credibility}
+%%%Why do we use this methodology and how is it relevant?
+This methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'',
+and that the validation may of only occurred only if there was money and time left at the end of the project.
+However, such simulations, that are not validated, can produce erroneous information that leads to incorrect, possibly costly and bad decisions being made.
+This reduces the credibility of the simulation to be used in future as a tool.
 
-%%%At what points do we differ from the method? Points that are outside the scope of this project.
-This methodology can be used for many different scales of project, for instance for motivation the example of the U.S.A. Department of Defence using simulations is given.
-As this project is smaller in scale in time and effort that many other simulation projects, some of the artifacts from this method have been restricted and some removed.
-One such artifact is meetings with stake holders are reduced to a single survey in order to build our conceptual model of the problem.
-This may reduce the validity of the end model, but these restrictions have been made when only necessary and done so in a manner that minimises the negative effects.
+%%%What is a valid simulation?
+A simulation is an abstraction and simplification of reality, usually created as using an actual system can be disruptive, not cost-effective, or simply impossible.
+In this context ``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.''
+So a valid simulation if an abstraction that accurately represents a system closely enough for an objective of a study to be completed.
+The later part is an important aspect of validation, as the accuracy of the simulation is directly dependent on the problem and questions the study addresses.
+A simulation that is 99\% accurate may cost significantly more to produce than one that is 90\%, but provide little additional benefit given the specific information wanting to be gained from it.
+Therefore an important aspect of the simulation is the definition of the problem, as it will lead to the definition and scope of the simulation.
 
-%%%What are the artifacts and their goals that are required from this methodology?
+%%%What is credible
+A simulation, and by extension its results, have \textit{credibility} if key stakeholders accept them as ``correct''.
+A credible model is not necessarily valid, and vice-versa, as it involves the input of a person who decides if level of accuracy and the goal the simulation have been obtained.
+This requires an understanding of the models and simulation by key personale and therefore their direct input and involvement with the project.
 
-\section{Conceptual Model}
-{}To create our conceptual model, we must first precisely describe the problem;
-{}When evolving a component-based system, different strategies can be employed by the user and the resolver.
-{}These strategies have unknown effects over a long period in which the user evolves the system.
-{}Through simulating and analysing these effects we can choose a strategy more effectively.
-{}There are two parts to these strategies, first how the user interacts with a resolver;
-{}second, how the resolver handles these requests.
+The simulation produced by this study to identify the effect of different strategies on the evolution of component systems must be validated to produce meaningful results,
+and must be credible for these results to be trusted.
 
-{}This simulation takes a particular strategy a user employs to evolve a system,
-{}and simulates their decision over a period of time to and look at the intervening and resulting systems properties to find good strategies.
 
-Creating a simulation that accurately represents the evolution of a component system so that we can 
-analyse the effect different evolution strategies have on a systems properties is the core objective of this simulation.
-To this end, we follow the a methodology outlined by, %TODO cite How to Build a Valid and Credible Simulation
-This gives us a set of guidelines to follow when preparing a valid simulation including;
-specifically defining the problem,
-building a conceptual model,
-collecting data,
+\subsection{7 Step Method}
+This methodology has a 7 step approach to creating a valid and credible simulation that will be described here.
+These steps are; formulating the problem; collecting information and data to construct a conceptual model; validating the conceptual model;
+implementing (programming) the model; validating the programmed model; designing, conducting and analysing experiments; and documenting and presenting the simulation results.
 
-\subsection{Survey analysis}
-%%%The questions we want to answer are which actions are routinely performed and at what frequency?
-%%%What life cycle specific actions are performed?
+\subsubsection{Step 1: Formulate the problem}
+The first step is to formulate the problem as clearly as possible, this is usually done with core stakeholders in a ``kick-off meeting''.
+The core artifacts from this step are the overall objectives of the study, specific question wanting to be answered, scope of the study,
+ and different configurations of the simulation with the measures used to evaluate their performance. 
 
-%%%Description of the Survey
+\subsubsection{Step 2: Collect information and Data to Construct Conceptual Model}
+The conceptual model is a description of how the simulation and system work, relative to the problems earlier defined.
+It is the most important artifact of the simulation, as it should be high level enough to be understood by the core stakeholders
+and be reused in future simulations.
+It is created through interviews with subject matter experts, collecting data like procedures and results from similar exiting systems, and other sources of relevant data.
+Problems like the data not being representative of the model, not being in the appropriate format or type, and containing errors must be handled before use.
 
-%%%Results from the Survey
+The conceptual model also contains all of model parameters including the documented assumptions. 
+It is defined to the level of detail given, project objective, performance measures, data availability, computer constraints, resource constraints.
 
-%%%Analysis of these results and how they apply to the user model
+\subsubsection{Step 3: Conceptual model Validation}
+The conceptual model is the most important aspect of the simulation, thus its validation will be through.
+The core method used to validate this model, is to discuss the it with core-stakeholders and subject matter experts.
+This provides feedback as to the direction of the conceptual model, ensuring that it will answer the questions posed in the study.
+
+\subsubsection{Step 4: Implement the Models}
+The implementation of the simulation models must also be executed and documented in a way that allows other to replicate and repeat the process.
+The artifacts created during this process must be verified to work correctly, this can be accomplished through test-cases and debugging.
+
+\subsubsection{Step 5: Validate Implementation}
+There is no completely definitive approach to validating the simulation,
+however, the most definitive test of a simulations validity is established by closely looking at the outputted results compared to that from an actual system \cite{Law2005}.
+
+This is done through:
+\begin{itemize}
+  \item \textbf{Results validation: } a comparable system is used to create results and compared with the results from the simulation for validation.
+  \item \textbf{Face Validation: } experts are given output of the simulation model and checked to see if it is consistent with how they percieve the system should operate.
+\end{itemize}
+
+Further validation of the implementation can be accomplished with sensitivity analysis,
+which is performed on the simulation to find the factors with the greatest impact on the performance and results.
+
+\subsubsection{Step 6: Design, Conduct and Analyse Experiments}
+For each of the configurations, decisions must be made about the time given to them, the number of independent runs to return statistically significant results.
+At the end of this step, after the results have been analysed a decision must be made if additional experiments are to be run,
+as either the results are inconclusive, or other aspects of interest have arisen.
+
+\subsubsection{Step 7: Document and Present Results}
+This step involves the presentation of the model to the core-stakeholders in a manner that describes the concept model, the simulation and the results.
+This step is critical for the future re-use of the model, as is the detailed description of the validation process to promote credibility.
+
+
+\subsection{Differences in methodology}
+To produce a valid and credible simulation study is the goal of using this methodology.
+However, this methodology has been created for industrial projects with of a larger scale; for instance the U.S.A. Department of Defence.
+As this study is smaller in scale in time and effort that many other simulation projects, some of the procedures recommended in this method have been restricted and some removed.
+The most significant difference to the methodology is the clear definition between decision-maker and simulation designer.
+In this project these all refer to a single person, therefore meetings between these people are superfluous.
+Other people in the project including subject-matter experts, core-stakeholders, simulation analysts consist of survey participants and
+project supervisors, because the limits of the projects resources excludes employment of experts.
+This may reduce the validity of the end model, but these restrictions have been made when only necessary,
+and done so in a manner that attempts to minimise negative effects.
+
+
+\section{Simulation artifacts}
+We have used this methodology to create a simulation that is independent of the component model and system we want to simulate in this study.
+This has been done to make the simulation reusable in different contexts in order to test if the conclusions drawn from this study are component model/system independent.
+As such in this chapter we describe the independent parts of the simulation, and leave the dependent parts for chapter \ref{ubunutsimulation}.
+
+The independent parts of this simulation include the problem definition, the conceptual model with it's component parts;
+the user model, the solver model and the repository model.
+The implementation of the simulation, the abstract configuration and what variable exist.
+
+\subsection{Problem Definition and Conceptual Model}
+To create our conceptual model, we must first precisely describe the problem;
+The problem addressed in this entire study is that of the effects of component evolution.
+The key question that are asked is
+``What effect does using component resolution given a set of criteria have on a component system?''.
+To answer this requires knowing about the criteria used to find the resolved systems, the repository where components are accessed,
+and the user and their actions.
+The conceptual model is then created from separate models, the user model, the solver model, and the repository model.
+
+\subsection{User Model}
+The user model involves many aspects, including the life-cycle of specific actions, the probability of actions being taken, and also the parameters of an action.
+A user can typically execute many different types of actions, install, remove or upgrade a component, upgrade the entire system,
+download a source for a component, change the status of a package, automatically remove package that are not necessary, or even format the system and start again.
+In our abstraction of reality the user has two actions with the resolver, either to install a new package or to try upgrade the entire system.
+These two action were selected as they represent the core interactions the user performs on the system.
+
+%%%Update
+Probably the most executed action by the user is the request to update the system.
+This involves looking at the repository and trying to find newer versions of currently installed packages to replace the current versions.
+This is done either because newer versions have increased functionality or have fixed bugs,
+however can become quite complex as newer versions of component may conflict with other packages, therefore are not able to be installed.
+The update action can happen at regular intervals as it is typically automated or part of a users routine.
+These intervals can be quite quick, daily for many users, 
+and they can be over an extended period of time, 
+as with server administrators not wanting to change a potentially critical system.
+In this abstraction, the core variable for a users update action is the cycle in which it occurs,
+e.g. every 3 days the user updates.
+
+%%%Install
+Installation if the request a user performs to extend the functionality of the system they are using.
+A user selects a package with the required functionality they desire, usually to complete a task,
+then the resolver installs a system that allows that package to be used.
+Determining the probability a user will select a component to be installed is difficult given the enormous amount of factors this relies on.
+The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
+Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
+what components may a user select to install and how likely would a user select to install these.
+This is represented by a weighted list of components, where the weights represent popularity,
+e.g. package ``A'' has a 10\% chance of being selected as the package to install, package ``B'' has a 5\% change \ldots
+
+
+The next question is what is the probability that a user will install a package, and how many packages?
+This is represented by a probability for the amount of packages that a user may install on a day,
+e.g. they have a 80\% chance of installing nothing, a 15\% chance of installing one pace
+
+A user model is then represented by 3 pieces of information,
+\begin{enumerate}
+  \item The cycle at which they update
+  \item The probability any package will be installed
+  \item The probability a user will select to install a package per day
+\end{enumerate}
+
+
+\section{Solver Model}
+The solver selected to resolve the package dependencies is an important aspect of this simulation.
+Throughout this thesis we have discussed the definition, implementation and extension of a component dependency resolver.
+The core aspect we have focused on is the variable criteria that can be used to find different optimal solutions given the requirements of a system.
+Given the users actions of update, and install have different objects the core varaibles for the solver are the criteria for these actions.
+
+
+\section{Repository Model}
+{}The repository model models the server which serves the packages to the client to be installed.
+{}Superfluous aspects of the repository, like the protocol used to transfer the packages, are ignored in this simulation.
+{}The model of the repository is complicated by the fact that our simulation takes into account what packages the repository had on a particular date.
+
+%%%We create a repository for each different day
+
+%%%The Ubuntu repository is selected because it has significant amount of users and a significant amount of components.
+
+%%%The initial date is selected as it is after a major release, and the time length is the median system age from the user survey
+
+%%%Analysis of the repository, summary from 
+
+%%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
 
 
 \subsection{Strategies}
@@ -207,55 +340,7 @@ We are selecting the packages to install that are different.
 Time, We have decided not to 
 
 
-\section{User Model}
-{}The user model involves many aspects, including the life-cycle of specific actions, the probability of actions being taken, and also the parameters of an action.
-{}Given the three actions update, install and remove, how often are these actions executed, and what are they executed on.
-{}To answer these questions we first look at the analysis of our survey to find the life-cycle of these values, we further refine these values by looking at the submitted user logs.
 
-%%%The user can install a single package or update all packages. Removing a package or other complex actions are rarely used, so they are ignored in this model.
-In our abstraction of reality the user has two actions with the resolver, either to install a new package or to try upgrade the entire system.  
-In reality the user can do much more fine grained actions, where they can remove packages, 
-upgrade individual packages or even create complex queries for the resolver to solve. 
-These additional actions, along with being difficult to simulate, are rarely performed by a user, as found with our user survey. %TODO reference
-How often a user installs a new package is found through looking at user logs, %TODO ref user logs
-and how often a user updates a system is found through our user survey.
-These pieces of information allow us to approximately represent real users.
-
-
-\section{Repository Model}
-{}The repository model models the server which serves the packages to the client to be installed.
-{}Superfluous aspects of the repository, like the protocol used to transfer the packages, are ignored in this simulation.
-{}The model of the repository is complicated by the fact that our simulation takes into account what packages the repository had on a particular date.
-
-%%%We create a repository for each different day
-
-%%%The Ubuntu repository is selected because it has significant amount of users and a significant amount of components.
-
-%%%The initial date is selected as it is after a major release, and the time length is the median system age from the user survey
-
-%%%Analysis of the repository, summary from 
-
-%%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
-
-
-\subsection{Control User}
-{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
-{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
-{}and the 
-
-\subsection{Update Criteria}
-{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
-{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
-{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
-
-The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
-The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
-This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
-Therefore, the returned system for any update command can be the initial system.
-This means that if a criteria, such as changed, or hamming where minimised as the most important  
-
-
-\section{Strategy Model}
 
 
 \section{Simulation Validation}

@@ -1,5 +1,6 @@
 
 \chapter{Ubuntu Simulation}
+\label{ubunutsimulation}
 In this chapter we discuss the implementation, results and conclusions from executing our simulation against Ubuntu.
 
 {}our reasons and methods for the collection of data,
@@ -13,6 +14,16 @@ In this chapter we discuss the implementation, results and conclusions from exec
 
 {}This is simplified by only using a single repository, the Ubuntu repository, and only looking between two dates 10.2009-10.2010
 
+
+\subsection{Survey analysis}
+%%%The questions we want to answer are which actions are routinely performed and at what frequency?
+%%%What life cycle specific actions are performed?
+
+%%%Description of the Survey
+
+%%%Results from the Survey
+
+%%%Analysis of these results and how they apply to the user model
 
 \section{Data-sets}
 %%%Data collection is an important aspect of a simulations validity. 
@@ -85,10 +96,6 @@ Given that we are running this simulation over the course of a year, we are sele
 %%%Given we now have installation/task distributions, randomly select some real user distributions (bootstrap) for our user model.
 
 \subsection{Package Popularity}
-{}Determining the probability a user will select a package to be installed is difficult given the enormous amount of factors this relies on.
-{}The users job, location, current tasks, previously installed software, favourite colour\ldots all may effect when and what package a user selects to install.
-{}Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
-{}what packages may a user select to install and how likely would a user select to install these.
 {}We attempt to answer these questions through using the set of packages listed in the package app-install-package
 {}weighted with their popularity from the Ubuntu popularity contest.
 {}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
@@ -148,6 +155,24 @@ We have selected three queries to build our heuristic:
 ``apt-get install``, ``ubuntu'' and ``install'', 
 
 %Corrolation, as google API returns similar values we can estimate the corrolation of packages
+
+
+\subsection{Control User}
+{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
+{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
+{}and the 
+
+\subsection{Update Criteria}
+{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
+{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
+{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
+
+The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
+The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
+This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
+Therefore, the returned system for any update command can be the initial system.
+This means that if a criteria, such as changed, or hamming where minimised as the most important  
+
 
 \section{Strategies}
 %%%Of the massive amount of possible combinations of criteria and relationships with user models, which strategies have we selected to look at and why.
