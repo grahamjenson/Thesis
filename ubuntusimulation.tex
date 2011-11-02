@@ -15,6 +15,45 @@ In this chapter we discuss the implementation, results and conclusions from exec
 {}This is simplified by only using a single repository, the Ubuntu repository, and only looking between two dates 10.2009-10.2010
 
 
+%%%Preprocessing of the weighted components, removing all packages that are unable to be accomplished (e.g. skype)
+%%%When createing the CUDF files it removes install requests that are not in the system (e.g. if chromium was added to the repository in 2010 and it is requestied in 2009, it is just ignored.)
+
+
+\subsection{Strategies}
+%%%How do users use different strategies when evolving a system when installing and updating their systems
+A user interacts with a resolver to evolve a system by installing, removing or updating packages.
+The way in which these interactions occur is usually related to the purpose of the system, and what the type of user.
+For instance, a server administrator is less likely to install a component into a system as the system has only one task and if it is working their is no need to change it, 
+however a desktop user will more likely install different packages because they use their system for many different tasks.
+How a user updates their system is also different along these lines, server admins. will likely only update when absolutely necessary as if it is not broken why fix it.
+Yet desktop users will update more frequently as they want the best system they can have, and new features or better performance are usually wanted.
+
+As described in previous chapters, dependency resolvers often try to minimise change and maximise the versions.
+These two objectives have been implemented in many different ways, how these interact with each other is the strategy a resolver employs.
+For instance, the trendy strategy from the Mancoosi organisation describes the strategy to minimise the removed components above all other criteria,
+this is a common strategy because removal of a component is seen as very risky.
+
+\subsection{Consequences}
+%%%The core consequences of using a strategy that we are looking at come from the dependencies between the strategy and the resulting metrics of critiera 
+
+%%%Essentially what we want is a table with the strategies laid out in the columns and with how they effect different criteria in rows.
+
+%%%This will show the dependence between the different strategies and what their effects are
+
+%%%We have three control strategies that do not require criteria or user models, one that never updates, another updates daily and updates weekly.
+
+%%%After this we can add criteria with different relationships, and installation strategies and observe the effects.
+
+
+
+%%%The Ubuntu repository is selected because it has significant amount of users and a significant amount of components.
+
+%%%The initial date is selected as it is after a major release, and the time length is the median system age from the user survey
+
+%%%Analysis of the repository, summary from 
+
+%%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
+
 \subsection{Survey analysis}
 %%%The questions we want to answer are which actions are routinely performed and at what frequency?
 %%%What life cycle specific actions are performed?
