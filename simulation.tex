@@ -1,6 +1,6 @@
 \chapter{Simulation}
 \label{simulation}
-{}To evaluate different strategies when evolving a component systems, the environment in which these evolutions occur is simulated.
+{}To evaluate different strategies when evolving a component system, the environment in which these evolutions occur is simulated.
 {}Through modelling then simulating the different aspects of a system; the user-interaction, the repository, and the resolver;
 {}conclusions can be drawn on the benefits and draw backs of a particular evolution strategy.
 
@@ -16,6 +16,7 @@ simulating a systems evolution through creating models and altering environment 
 In this section we discuss the positive and negative aspects of each of these approaches,
 and present the reasons for the selection of the simulation methodology for this research.
 
+\subsection{Using Real Users and Systems}
 %%%The pros and cons of using real systems with real users
 Using real systems with real users would clearly produce real and valid data to be studied and analysed to find the best evolution strategies.
 Solvers could be developed and distributed to different users, each solver using different criteria 
@@ -40,6 +41,7 @@ After it has been through this cycle, maintenance of the resolver is still requi
 for instance the Ubuntu package ``apt'' has released about 2 changes a month\footnote{http://changelogs.ubuntu.com/} to it or related packages since its initial release.
 This shows how much effort must be applied to earn a users trust, and this effort will likely outweigh the actual benefits.
 
+\subsection{Real users in a Controlled Environment}
 %%%The pros and cons of using real users with pseduo systems
 A study of users interacting with a system in a monitored and controlled environment could be executed.
 Each user could be given different strategies, e.g. solver criteria, and different tasks to perform on their system to approximate real interactions.
@@ -58,6 +60,8 @@ For example, given we want to test 10 different strategies with 5 different user
 and each subject taking upwards of an hour to complete the study. 
 This would be a significant effort to organise users, monitor interactions and collect results, so much so that that it may be logistically impractical when compared to the benefits.
 
+
+\subsection{Using a Simulation}
 %%%Instead we can simulate, with an approximation of the real world.\\ 
 %%%When drawing conclusions the accuracy of this approximation must be considered, therefore significant effort has gone into data collection and validation.
 A simulation is a surrogate of the real system, such that it represents the core aspects of a component systems evolution.
@@ -653,7 +657,7 @@ and changing the status of the components that are already installed in the syst
 It also changes the keep status of the components selected in the keeps list to \verb+package+, this will ensure that a version of this package is in the resulting system.
 It also generates the request for the CUDF from the selected packages to install in the installs, 
 and from the Boolean of whether to update or not.
-The algorithm to do this is presented in the 
+The algorithm to do this is presented in the figure \ref{generateCUDF}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -677,7 +681,7 @@ function generateCUDF:
     
     request = ``''
     if update:
-        request += ``update: *'' + endline
+        request += ``upgrade: *'' + endline
         
     if installs.length > 0:
         request += ``install: ''  + installs + endline
@@ -689,47 +693,122 @@ function generateCUDF:
 \end{figure}
 
 
-\subsection{The Output}
-The output of this simulation will be a series of CUDF files for each user when ever a change was made to a system over the time given.
-
-The specifics of the process to generate the different user files, then to execute their actions is complex, is complex and 
-has a few assumtions that require further explanation.
-
-
-
-\subsection{Generate CUDF}
-The generate CUDF script's input is:
-\begin{itemize}
-  \item a line from a user file 
-  \item a CUDF file of the current system
-  \item A set of repositories
-\end{itemize}
-
-%check to see if the requested installed package exists in the repository
-
-\subsection{Execute Simulation}
-The execute simulation script's parameters are:
-\begin{itemize}
-  \item a set of repositories
-  \item an initial system installation CUDF file
-  \item a user file to be executed
-  \item criteria used when installing a package
-  \item criteria used when updating the system
-\end{itemize}
-
-%%%What happens when a install is required that is then not able to be accomplished.
+\subsubsection{The Output}
+The ultimate output of this simulation will be a series of CUDF files that represent the system for each date over the time period.
+These files are accompanied with logs, that describe errors and the time it took to complete the operation of calculating that system.
+The CUDF files can then be processed to find the necessary data in order to answer questions about the simulation.
 
 \subsection{Optimisations}
-
-%%%Executing multiple users in a row
+The presented algorithms are abstractions of the actual scripts, executing in essentially the same way. 
+However, some practical changes were made in order to increase the decrease the resources consumed when the scripts are executed and make the scripts easier to use.
 
 %%%Upgrade command in CUDF altered to be upgrade: *
+The CUDF syntax and semantics, described in chapter \ref{background}, define the request section of the CUDF file.
+In this the upgrade command is described as being before a list of packages to upgrade,
+however in the generate CUDF pseudo code if the user selected to update the upgrade command is defined with ``*''.
+This syntax is a short hand used to upgrade all installed packages.
+As this script is called extensively throughout the simulation this shorthand saves writing the names of more than 1000 packages each time a CUDF is generated.
+This lowers can significantly lower the time to execute the entire simulation, but requires the solver understand and convert the shorthand to its original semantics.
+This is the only alteration to the CUDF syntax made throughout this research.
+
+%%%Generating multiple users 
+The generate user pseudo code algorithm in figure \ref{generateuser} requires individual variable definitions in order to generate a single user.
+By allowing sets of data to be inputted, sets of update cycles and user install distributions, multiple users can be generated simultaneously.
+As loading and processing of some of the data, notably package distributions, can be intensive on computer resources, 
+creating multiple users simultaneously lowers recreating this data.
+It also makes the script more usable as creating multiple users to execute and compare is typically the goal,
+creating them at the same time makes the task less tedious.
+
+%%%Executing multiple users in a row
+As with generating multiple users, using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
+This is simply done by iterating over a set of user files inputting one at a time into the algorithm.   
 
 \section{Simulation Validation}
-%%%With the methodology there are many pionts at which we validate individual parts/models, and their overall composition.
-%%%The main validation method is the inviewing of different stakeholders, this for our method was discussions with supervisors, at conferences, and throught the survey.
+%%%Validation of this simulation, what needs to be validated/why it should be validated
+The conceptual model and implementation of this simulation presented are an abstract description of the given problem.
+They describe the variables that effect component system evolution presented a configuration,
+and the processors used to execute the simulation given a configuration.
+If some significant aspect of the system was missed, or if some aspect was incorrectly defined, the simulation may produce results that are incomprehensible,
+or worse, misunderstood.
+Therefore, the validation of these artifacts is essential to move forward. 
+This validation was accomplished though regular stakeholder meetings, and an online survey with subject matter experts.
 
+\subsection{Stakeholder Meetings}
+%%%Weekly meetings with stakeholders (i.e. supervisors)
+As described in the methodology, one validation of these artifacts is done through meetings and a structured walk-through with the core stakeholders.
+In this simulation the core stakeholders are the project researcher and supervisors.
+These are the people who are asking the question and are impacted by through the outcome, therefore directly effected by the validity of the artifacts.
+Meetings where held at regular intervals to ensure the projects progress and direction where correct.
 
-\section{Conclusions}
-%%%Discuss the overall conclusions. Bullet point the points most surprising, and useful for further study.
+\subsection{Subject Matter Expert Survey}
+%%%The survey used to validate and refine the model
+An online survey was also completed, further described in chapter \ref{ubunutsimulation} with questions and results presented in appendix \ref{survey}.
+It was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
+This survey was completed by over 55 subject matter experts, who answered questions that assigned values to the configuration variables.
+%%%Results from what else should be asked, install stuff not from repository, installs break
+The most important aspect of this survey for the validation of this conceptual model is the question ``What other questions should have been asked?''.
+This allowed the expert to input what they thought was missing from the survey, and what should be asked when discussing this problem.
+The enlightening answers to this question are aggregated into two areas, installing packages that are not in the core repository and what happens if a system breaks during a change.
 
+%%%Install stuff not from the repository
+A few experts noted that they sometimes install obscure or untested components that are not included in the core repository.
+These components may change the systems structure through having dependencies on, or be depended on by components in the main repository.
+This is not a borderline case, as many component systems, including Ubuntu and Eclipse, use the idea of multiple repositories that users ``subscribe'' to in order to find and get packages.
+As an abstraction, this model has selected to only have one repository that all users can access components from.
+This is because the effect of having multiple repositories was seen as outside the scope of the problem.
+
+If multiple repositories where to be included in the simulation, where each user can access a different a subset of repositories, necessary alterations to the model could be made.
+These would include an extra step being added to the ``run simulation'' script, where the all the repositories at a given date are selected, and to the generate CUDF script where
+it aggregates these repositories into a single CUDF file for the problem to be solved.
+
+%%%
+Another aspect of this problem that was mentioned is that a system may break during a change, requiring a reversion to the previous stable system state.
+Simulating this effect was ultimately deemed outside the scope of the project as it is seen as a rare occurrence with modern systems.
+However, before it was eliminated, it was explored for possible inclusion.
+
+The core problem with including simulated faults in a component systems evolution, is that each component has a different likelihood of causing a fault.
+Different properties of a component like development process or complexity can impact this value.
+Therefore, the function to calculate the likelihood of a component failing could rely on many different properties.
+
+Instead of creating a function that tried to calculate the probability of failure per component,
+an effort to measure it was attempted through a small study of component bug reports was attempted.
+
+The feedback generated when a component causes a fault should ideally be a bug report, for the Ubuntu distribution these are filed on the project hosting server LaunchPad.
+By using the Launchpad API to extract bug information, we where able to count the amount of bugs per package in the system.
+It was initially assumed that the number of systems that a component was installed on would increase the number of bug reports generated,
+as more users means more eyes and systems to find bugs.
+The Ubuntu Debian popularity contest was used then to  
+Therefore to see if this relationship existed the graph in figure \ref{bugsvspop} was created.
+
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{simulationpics/bugsvspopularity}
+  \caption[Bugs v.s. Popularity]{A plot of the bugs a package has compared to its popularity, with notable outliers labeled}
+  \label{bugsvspop}
+\end{center}
+\end{figure}
+
+The first thing to note is that there seems to be very little relationship between the two variables, except the package with the most bug reports is also one of the most used components.
+The second thing to note is that the packages with the largest amount of bugs are ``apt'' and ``aptitude'' the two most popular package manages.
+This could be because those packages are very buggy, or it could be because problems caused by apt, e.g. trying and failing to install a faulty package, may be reported as a problem with apt. 
+The last thing to notice is that there are many less popular components that have many bug reports.
+When identifying the purposes of these packages many are used by developers, e.g. emacs21 is a popular text editor to develop in.
+The reason for their increased amount of bug reports may be that the users have prior experience and appreciation for the bug reports and the maintenance process, so file more bugs.
+
+Measuring a components likely hood of failure using bug reports is then hypothesised to be not possible,
+as a component purpose and a components users may affect the results.
+Other methods of finding a components likelihood of failure have not been further explored since this variable was eliminated from the configuration.
+Though, we expect this is an intractable problem that is likely impossible to simulate accurately.
+
+\subsection{Further Validation}
+The assignment of the configuration variables is a different stage in the validation of this simulation.
+Clearly if you create a configuration that is completely unrealistic, the saying ``garbage in, garbage out'' applies to the results.
+However, this is not a concern when validating the conceptual model, or the abstract processes.
+Further discussion of the validation of the assignment of the configuration variables is in chapter \ref{ubunutsimulation}.
+
+\section{Summary}
+{}This chapter has described the abstract definition of the proposed simulation used to study component system evolution.
+{}The methodology from Law \cite{Law2005} was used to guide us to a valid and credible simulation.
+{}From this methodology we defined a conceptual model of the user, repository and solver and described the implemented processes used to simulate a systems evolution over a time period.
+{}It was validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
+{}This simulation can, and will, be used to draw meaningful conclusions on component system evolution, though no
