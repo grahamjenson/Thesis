@@ -18,6 +18,102 @@ In this chapter we discuss the implementation, results and conclusions from exec
 %%%Preprocessing of the weighted components, removing all packages that are unable to be accomplished (e.g. skype)
 %%%When createing the CUDF files it removes install requests that are not in the system (e.g. if chromium was added to the repository in 2010 and it is requestied in 2009, it is just ignored.)
 
+\section{SCRIPTS}
+\subsection{Optimisations}
+
+%%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
+The practical use of this algorithm differs in a few aspects, that should be discussed.
+Firstly, given the random process introduced by the user install action,
+a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated in the actual script.
+This is also extended to allow multiple user update cycles, and multiple distributions for the probability the user installs a package.
+So the algorithm presented in the figure \ref{generateuser}, is wrapped allowing for the generation of mutiple users at a time for practicle reasons.   
+
+
+The presented algorithms are abstractions of the actual scripts, executing in essentially the same way. 
+However, some practical changes were made in order to increase the decrease the resources consumed when the scripts are executed and make the scripts easier to use.
+
+%%%Upgrade command in CUDF altered to be upgrade: *
+The CUDF syntax and semantics, described in chapter \ref{background}, define the request section of the CUDF file.
+In this the upgrade command is described as being before a list of packages to upgrade,
+however in the generate CUDF pseudo code if the user selected to update the upgrade command is defined with ``*''.
+This syntax is a short hand used to upgrade all installed packages.
+As this script is called extensively throughout the simulation this shorthand saves writing the names of more than 1000 packages each time a CUDF is generated.
+This lowers can significantly lower the time to execute the entire simulation, but requires the solver understand and convert the shorthand to its original semantics.
+This is the only alteration to the CUDF syntax made throughout this research.
+
+%%%Generating multiple users 
+The generate user pseudo code algorithm in figure \ref{generateuser} requires individual variable definitions in order to generate a single user.
+By allowing sets of data to be inputted, sets of update cycles and user install distributions, multiple users can be generated simultaneously.
+As loading and processing of some of the data, notably package distributions, can be intensive on computer resources, 
+creating multiple users simultaneously lowers recreating this data.
+It also makes the script more usable as creating multiple users to execute and compare is typically the goal,
+creating them at the same time makes the task less tedious.
+
+%%%Executing multiple users in a row
+As with generating multiple users, using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
+This is simply done by iterating over a set of user files inputting one at a time into the algorithm. 
+
+%%%The addition of the timeout
+One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best current solution.
+This is simply an integer representing the number of seconds that the solver is allowed to run for.
+The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
+
+\section{FILES}
+The method for storing and reading this configuration is trivial or previously defined cases like the definition of a CUDF file or the representation of an integer for the update cycle.
+However, for the probability a package will be installed and the probability a user will select a package to install more complex so have defined two file types in order for easy storage.
+These file types are shown in figure \ref{userprob} and \ref{packageprob}, the simulation reads and maps these files to create and run the various configurations
+
+In figure \ref{userprob} the file is laid out as a list of lines, each line with a list of real numbers separated by the delimiter ``,''.
+Each line represents a user, each list of real numbers is a users probability distribution.
+Therefore, each line represents an different $UI$ value.
+
+\begin{figure}[htp]
+\begin{center}
+75.0, 18.0, 5.0
+73.0, 18.0, 6.0, 1.0
+54.0, 34.0, 9.0, 2.0
+\caption[Install Distribution Example File]{An example of a users installation distributions}
+\label{userprob}
+\end{center}
+\end{figure}
+
+In figure \ref{packageprob} the file is laid out as a list of lines, each line is package name, then an integer separated by a comma.
+The integer is the weight which represents the likelihood the package will be selected to be installed.
+To convert this weight into the necessary probability, the individual package weight is divided by the the sum of all package weights. 
+Therefore, this file represents the variable $WP$.
+
+\begin{figure}[htp]
+\begin{center}
+synaptic,1840590
+firefox,1828354
+software-properties-gtk,1781797
+gnome-system-monitor,1771676
+gucharmap,1770369
+\caption[Weighted Package File Example]{An exmaple of a Weighted Package file, co }
+\label{packageprob}
+\end{center}
+\end{figure}
+
+The user file is a set of actions taken by the user of the time period, shown in figure \ref{userfile}.
+
+\begin{figure}[htp]
+\begin{center}
+1258110000.0;;;update
+1258196400.0;;;update
+1258282800.0;install:vinagre;;update
+1258369200.0;install:compiz-core;keep:vinagre;update
+1258455600.0;;keep:vinagre,compiz-core;update
+1258542000.0;install:gdebi;keep:vinagre,compiz-core;update
+  \caption[User File example]{An exmaple of a User file}
+  \label{userfile}
+\end{center}
+\end{figure}
+
+This user file follows the grammar ``time;[install:PACKAGE[,PACKAGE]*]?;[keep:PACKAGE[,PACKAGE]*]?;[update]?'',
+that is the time variable, an install action, a keep action, and an update action seperated by a delimiter of ``;''.
+The time variable here defines the date the actions are taken, given in milliseconds since the epoch.
+The install action is a list of packages the pseudo user has selected to install, separated by the delimiter ``,''. 
+
 \section{Questions}
 Given our methodology we want to answer specific questions using our defined simulation
 

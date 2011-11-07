@@ -1,94 +1,134 @@
 \chapter{Simulation}
 \label{simulation}
-{}To evaluate different strategies when evolving a component system, the environment in which these evolutions occur is simulated.
-{}Through modelling then simulating the different aspects of a system; the user-interaction, the repository, and the resolver;
-{}conclusions can be drawn on the benefits and draw backs of a particular evolution strategy.
+{}To evaluate different strategies when evolving a component system, the environment in which these evolutions occur must be studied.
+{}This study could be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
+{}Each of these options is discussed and weighed for their costs and benefits.
+{}The simulation method is selected as it has the best attributes required for this research.
 
-{}The motivations for simulating and the methodology used to create the simulation are presented in this chapter.
-{}The result of this chapter is a simulation that can be used to predict how a component system will evolve given different variables of the user and the strategy they use.
+{}The methodology used to create the simulation is then discussed.
+{}This methodlodology from \cite{Law2005} is an important element of this research as the validity of the simulation directly impacts the credibility of the results.   
+{}The basic artifact of this methodology is a ``conceptual model'', this is an simplified abstraction of reality.
+{}It describes the individual sub-models of the user, repository, and resolver; the variables in the configuration of the simulation;
+{}and the processes in which these variables are used to simulate reality.
+{}This chapter is finished with the discussion of the validation process of this conceptual model.
 
-\section{Why Simulate?}
-%%%Why are we using a simulation instead of real systems, or a controlled environment
-To evaluate an evolution strategy some options include;
-using a set of actual systems with real users could be accessed to collect field data;
-creating a controlled environment in which users are given tasks and monitor the outcomes;
-simulating a systems evolution through creating models and altering environment variables to study their effects.
+\section{Problem Definition}
+The problem addressed in this thesis is outlines by our thesis question,
+
+``What effect does using component resolution with different strategies have on system evolution?''.
+
+Component resolution, evolution strategies, and component system evolution have been reviewed in previous chapters, and are summarized as:
+\begin{itemize}
+  \item \textbf{Component Resolution} is a function that takes a set of component constraints and returns an optimal system given a set of criteria
+  \item An \textbf{Evolution Strategy} is the plan of action employed by a user through component resolution to evolve a system to attain the systems intents
+  \item \textbf{Component System Evolution} is the process by which a component system is changed for maintenance or extension 
+\end{itemize}
+
+%%%What is the effect being measured to answer the question
+Measuring the ``effect'' on the evolution of a component system when using different strategies is the result of the question. 
+Though, what is this ``effect''?
+An ``effect'' is a consequence caused by the action of using component dependency resolution to evolve a system.
+
+%%%The most important effects are related to the intent of the strategy
+The effects that are most closely studied are those that are a measurement of how effectively a strategy resolves its intents.
+For example, if a server administrator uses a particular strategy in order to be up to date with minimum change.
+The measurement of how up to date their system is per change made is an important effect to be measured.
+
+%%%There is also side effect, what unintended consequences occur because of the use of a strategy
+Other effects of the strategy are also important to measure.
+The unintended consequences, side effects, of using a strategy can be important as well.
+A given strategy may fulfill all its intents, though make the system worse through some other means.
+For example, the server administrators strategy may keep a system up to date with little change, 
+though it may increase internal complexity of the system making it unstable. 
+
+\section{How to answer our thesis question}
+%%%What we need to have to answer our question? A time line of systems created using different strategies.
+To study the effects of different strategies on component system evolution requires the study of the systems and how they change over a period of time given the strategy employed. 
+Each system along this evolutionary timeline can be studied and analysed for the effects of the strategy.
+For a given strategy multiple different timelines must be collected, to eliminate the effects from the choices of the user and not the strategy.
+These strategies can then be compared by the effects that are caused to the system.
+
+%%%How to get this timeline of systems
+To get this timeline of systems, real systems and users could be used and actual field data collected;
+a controlled environment could be created, where users employ strategies on a system that is monitored;
+or a simulation of a systems evolution is created, where different aspects are modelled and processed by an algorithm to generate the systems.
 In this section we discuss the positive and negative aspects of each of these approaches,
-and present the reasons for the selection of the simulation methodology for this research.
+and present the reasons for the selection of the simulation method for this research.
 
 \subsection{Using Real Users and Systems}
 %%%The pros and cons of using real systems with real users
-Using real systems with real users would clearly produce real and valid data to be studied and analysed to find the best evolution strategies.
-Solvers could be developed and distributed to different users, each solver using different criteria 
-and as each user has different behaviours (amount they install, when they update)
-these results could be analysed to find strategies that produce good systems. 
+Using real systems with real users would clearly produce real and valid data to analyse evolution strategies.
+Users could be recruited to employ different strategies on their actual systems, while software monitoring their system would collect data.
+Resolvers with strategy specific criteria would also have to be developed and distributed to the users.
+After a period of time the information of the systems evolution could be retrieved and analysed.
 
-%%%Now the cons
-This approach will create very accurate research, however it has some significant drawbacks,
-it will take significant periods of time to create meaningful results, for each day of results you have to wait a day.
-Finding the way a particular strategy effects a system over an entire year, will mean waiting a year.
-More significantly, finding users that will trust an experimental system to alter their real system would be extremely difficult.   
-A user will likely not trust a newly released resolver, as their system is important to them and even the slightest error can cause
-a system to become unstable.
+%%%Now the cons %How about incomparible users/ if they use different systems from differntn starting points will haveto be handeled
+This approach will create very accurate research, as the data would be real and the validity easily accessed. 
+However, it has significant drawbacks,
+it will take significant periods of time to create meaningful results, for each day of results a day has to pass.
+The most difficult hurdle will be finding users that will trust an experimental resolver to alter their real system.   
+As even the slightest error from a resolver can cause a system to become unstable, a user will likely not trust a resolver without a significant amount of validation.
 
 %%%Users trust is difficult to gain
-To gain the trust of possible users the experimental resolvers would have to be thoroughly tested through a repositories development cycle and be well maintained.
+To gain the trust of possible users the experimental resolvers would have to be thoroughly tested through a managed development cycle and be well maintained.
 Moving a package through this cycle can be itself a massive undertaking lasting several months. 
-For example Eclipse Plug-ins it involves going a component going through four phases 
+For example, the development of Eclipse Plug-ins involves a component going through four phases 
 Proposal, Incubation, Mature, and Top-Level\footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
 similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable\footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
-After it has been through this cycle, maintenance of the resolver is still required; 
-for instance the Ubuntu package ``apt'' has released about 2 changes a month\footnote{http://changelogs.ubuntu.com/} to it or related packages since its initial release.
+After it has been through this cycle, maintenance of the resolver will likely be required.
 This shows how much effort must be applied to earn a users trust, and this effort will likely outweigh the actual benefits.
 
-\subsection{Real users in a Controlled Environment}
+\subsection{Users in a Controlled Environment}
 %%%The pros and cons of using real users with pseduo systems
-A study of users interacting with a system in a monitored and controlled environment could be executed.
-Each user could be given different strategies, e.g. solver criteria, and different tasks to perform on their system to approximate real interactions.
+To remove the necessity for a users trust, and to increase the efficiency of collecting results, 
+a study of users interacting with a system in a monitored and controlled environment could be executed.
+Each user could be given different strategies and different tasks to perform on their system to approximate real interactions.
+
 This study could compress a years worth of interactions with a system into an hour, and produce results from real users. 
-Compared to the previous type of study using real users with real systems,
-this research removes the necessity of user trust as the user is altering a system that is not theirs,
-and results can be gained in hours not years. 
+This research also removes the necessity of user trust as the user is altering a system that is not theirs.
 However, it will also produce less valid results, as it is still an approximation of a real system, and the users know this.
 Any controlled environment would alter how the user interacts with their controlled system, making the results less reliable.
 For example, a user typically researches a package before selecting installing it because it would have real implications, 
 in a controlled environment these implications are removed so the selection would still be of questionable validity.
 
-The largest problem with this method is again finding enough users.
-With the previous method it was trust that would limit the user count, here it is the effort to find and monitor the amount of necessary users required.
-For example, given we want to test 10 different strategies with 5 different user types, each combination must contain multiple different test subjects to find statistically significant results, 
-and each subject taking upwards of an hour to complete the study. 
-This would be a significant effort to organise users, monitor interactions and collect results, so much so that that it may be logistically impractical when compared to the benefits.
+However, the largest problem with this method is the effort required to conduct the experiment on enough users to find significant results.
+Each user must be found and organised into a location for them to be monitored using a system.
+Given the amount of necessary users required, and the resources available to organise such an effort is a very limiting factor.
+For example, given we want to test 10 different strategies 30 times each to find statistically significant results, 
+and each subject taking upwards of an hour to complete the study.
+This would be 300 hours of effort, not including the organisation and preparation going into the study.
 
-
-\subsection{Using a Simulation}
+\subsection{Simulating the Problem}
 %%%Instead we can simulate, with an approximation of the real world.\\ 
 %%%When drawing conclusions the accuracy of this approximation must be considered, therefore significant effort has gone into data collection and validation.
-A simulation is a surrogate of the real system, such that it represents the core aspects of a component systems evolution.
+A simulation is a surrogate of the real system, 
+such that it represents the core aspects of the reality it represents while simplifying and abstracting away unnecessary detail.
 This is accomplished through modelling the most important parts of the system, 
 and computationally creating and measuring the results. 
-As the simulation is only an approximation of the real world, 
-the accuracy to which it actually represents the real world is not 100\%.
-The goal is then to make it a ``close enough'' approximation so that the conclusions drawn from it are valid in the real world.
-So when analysing the results and forming conclusions, we must take into account the assumptions we have made creating the simulation to determine 
-the conclusions overall accuracy.
-Therefore, the majority of the effort when creating a simulation is gathering and using valid information when making assumptions.
+The goal of a simulation is not to represent every aspect of the real world, 
+but to make a ``close enough'' approximation so that the conclusions drawn from it are valid while minimising complexity.
 
+When analysing the results and forming conclusions from a simulation, 
+the assumptions and abstractions made, must be taken into account.
+Therefore, the majority of the effort when creating a simulation is defining the problem in such a way that the reality is simplified, but not too simple.
+
+\subsubsection{Why Simulate?}
 %%%What is good about the simulation over the other two methods, speed at which results are generated, the cost to get the results, the control over the variables in the simulation.
-Simulation is superior to either using real users and real systems, or using a controlled environment in the speed at which hypotheses can be tested and evaluated,
-the cost to test and get results, and the control over variables and configuration of the environment.
+Simulation is superior method when compared to either using real users and systems, or using a controlled environment in the speed at which hypotheses can be tested and evaluated;
+the cost to test and get results; and the control over variables and configuration of the environment.
 
 %%%Speed at which results are generated
-As the speed increases at which a hypothesis can go from being an idea on paper to being tested in a real or simulated environment, increased the amount of meaningful information can be generated. 
+As the speed increases at which a hypothesis can go from being an idea on paper to being tested in a real or simulated environment, 
+increases the amount of meaningful information that can be generated. 
 When an idea is proposed as a possible solution to a problem, the quicker that idea can be eliminated or encouraged allows new ideas to be formed off of the original.
 These ideas themselves can then be tested, to see if they are suitable solutions.
-The faster this process is, the ideas can be tested, the better solutions and more information is generated.
-Using real users, or real systems, requires long periods of waiting, where if the actions and environment can be modeled and executed computationally there is little waiting.
-Through simulation an idea can be tested almost immediately by simultaneously evolving multiple simulated systems, where using a real user, 
-it may take days or months to generate the same amount of results.  
+Using real users, or real systems, requires long periods of waiting and preparation.
+If the actions and environment can be modeled and executed computationally these times of no progress are eliminated.
+Through simulation an idea can be tested almost immediately by simultaneously testing multiple strategies and measuring outcomes.
+The same cannot be said for using real users or system, where the turn around could be days or months to generate the same results.  
 
 %%%Cost
-The cost of using any of these methods can be measured in the amount of time it would take in organising, measuring and wasted time, for the the results to be collected.
+The cost of getting the neccessary results can be measured in the amount of time it would take in organising, measuring and wasted time, for the the results to be collected.
 Using a real user and system would involve an enormous amount of time validating and distributing the solvers (as discussed earlier), 
 and the controlled environment would require many hours of organisation and planning to gather the necessary users, and then measure their interactions with the system.
 However, with a simulation the main effort is ensuring that the models are accurate enough to gather meaningful results.
@@ -100,8 +140,8 @@ The other two methodologies do not have this property, as for each user tested a
 The control over the results that a simulation returns far exceeds the other methods as models can be altered and tested where a real user cannot. 
 This control allows the testing of extreme situations, the sensitivity analysis of different variables,
 and the generation of possibly optimal but 'out of the box' ideas. 
-For instance, the testing of the amount of days a user waits between updates can be tested through altering the times between updates, then running the simulation.
-If real users where used, the amount of users necessary to be collected would be enourmous to produce any significant results in this area.
+For instance, measuring the difference between the update cycles that users have can be tested through altering the times between updates, then running the simulation.
+If real users where used, the amount of users necessary to be found would be enormous to produce any significant results in this area.
 
 %%%Final words on why we simulate
 A simulation was used as it provides us with a cost/benefit ratio that is desirable, while potentially allowing an appropriate level of accuracy to draw meaningful conclusions.
@@ -109,45 +149,46 @@ The main effort is then to create the simulation with valid models that will giv
 
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''
-{}A goal of this study is to create a reusable simulation for future use, and to provide useful information on the process of component evolution. 
+{}The core hurdle in using a simulation is validating the results and conclusions, and assuring their credibility.
 {}This places validity and credibility of a simulation and the results it provides at a high priority.
 {}To create such a simulation the methodology outlined by \cite{Law2005} in ``How to build valid and credible simulation models'' is followed.
 {}This methodology is a guideline for defining the study, collecting information, creating and validating models, and running the simulation.
 {}In this section we introduce the methodology with its goals and how they are aligned to ours, 
-{}discuss the steps that it recommends to be taken to create a valid simulation, and how the simulation will be created and what it will produce for this study.
+{}discuss the steps that it states should be taken to create a valid simulation, and how the simulation will be created and what it will produce for this study.
 
 \subsection{Validation and Credibility}
 %%%Why do we use this methodology and how is it relevant?
-This methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'',
-and that the validation may of only occurred only if there was money and time left at the end of the project.
-However, such simulations, that are not validated, can produce erroneous information that leads to incorrect, possibly costly and bad decisions being made.
+This methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed''.
+That is even if validation was attempted, as it may of only occurred if there was money and time left at the end of the project.
+However, such simulations, that are not validated, can produce erroneous information that leads to bad, possibly costly decisions being made.
 This reduces the credibility of the simulation to be used in future as a tool.
 
 %%%What is a valid simulation?
-A simulation is an abstraction and simplification of reality, usually created as using an actual system can be disruptive, not cost-effective, or simply impossible.
-In this context ``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.''
-So a valid simulation if an abstraction that accurately represents a system closely enough for an objective of a study to be completed.
+A simulation is an abstraction and simplification of reality, often created as using an actual system can be disruptive, not cost-effective, or simply impossible.
+In this context,
+
+``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.''
+
 The later part is an important aspect of validation, as the accuracy of the simulation is directly dependent on the problem and questions the study addresses.
-A simulation that is 99\% accurate may cost significantly more to produce than one that is 90\%, but provide little additional benefit given the specific information wanting to be gained from it.
-Therefore an important aspect of the simulation is the definition of the problem, as it will lead to the definition and scope of the simulation.
+A simulation that is 99\% accurate may cost significantly more to produce than one that is 90\%, but provide little additional benefit given the specific information it is required to create.
+Therefore, the definition of the problem will directly lead to the modelling and scope of the simulation.
 
 %%%What is credible
 A simulation, and by extension its results, have \textit{credibility} if key stakeholders accept them as ``correct''.
-A credible model is not necessarily valid, and vice-versa, as it involves the input of a person who decides if level of accuracy and the goal the simulation have been obtained.
-This requires an understanding of the models and simulation by key personale and therefore their direct input and involvement with the project.
+A credible model is not necessarily valid, and vice-versa, as it involves the input of a person who decides if the goals of the simulation have been obtained.
+Credibility of a simulation is then only attainable if the key personale from the project understand and are involved directly with the project.
 
 The simulation produced by this study to identify the effect of different strategies on the evolution of component systems must be validated to produce meaningful results,
 and must be credible for these results to be trusted.
 
-
 \subsection{7 Step Method}
-This methodology has a 7 step approach to creating a valid and credible simulation that will be described here.
+This methodology has a 7 step approach to creating a valid and credible simulation.
 These steps are; formulating the problem; collecting information and data to construct a conceptual model; validating the conceptual model;
 implementing (programming) the model; validating the programmed model; designing, conducting and analysing experiments; and documenting and presenting the simulation results.
 
 \subsubsection{Step 1: Formulate the problem}
 The first step is to formulate the problem as clearly as possible, this is usually done with core stakeholders in a ``kick-off meeting''.
-The core artifacts from this step are the overall objectives of the study, specific question wanting to be answered, scope of the study,
+The core artifacts from this step are the overall objectives of the study, specific questions wanting to be answered, scope of the study,
  and different configurations of the simulation with the measures used to evaluate their performance. 
 
 \subsubsection{Step 2: Collect information and Data to Construct Conceptual Model}
@@ -157,12 +198,12 @@ and be reused in future simulations.
 It is created through interviews with subject matter experts, collecting data like procedures and results from similar exiting systems, and other sources of relevant data.
 Problems like the data not being representative of the model, not being in the appropriate format or type, and containing errors must be handled before use.
 
-The conceptual model also contains all of model parameters including the documented assumptions. 
-It is defined to the level of detail given, project objective, performance measures, data availability, computer constraints, resource constraints.
+The conceptual model also contains all of the parameters including the documented assumptions. 
+It is defined to the level of detail with respect to project objectives, performance measures, data availability, computer constraints, and resource constraints.
 
 \subsubsection{Step 3: Conceptual model Validation}
-The conceptual model is the most important aspect of the simulation, thus its validation will be through.
-The core method used to validate this model, is to discuss the it with core-stakeholders and subject matter experts.
+The conceptual model is the most important aspect of the simulation, thus its validation will be thorough.
+The core method used to validate this model, is to discuss it with core-stakeholders and subject matter experts.
 This provides feedback as to the direction of the conceptual model, ensuring that it will answer the questions posed in the study.
 
 \subsubsection{Step 4: Implement the Models}
@@ -183,9 +224,9 @@ Further validation of the implementation can be accomplished with sensitivity an
 which is performed on the simulation to find the factors with the greatest impact on the performance and results.
 
 \subsubsection{Step 6: Design, Conduct and Analyse Experiments}
-For each of the configurations, decisions must be made about the time given to them, the number of independent runs to return statistically significant results.
-At the end of this step, after the results have been analysed a decision must be made if additional experiments are to be run,
-as either the results are inconclusive, or other aspects of interest have arisen.
+For each of the experiments that are run, decisions about the time given to them and the number of independent runs to return statistically significant results must be made.
+At the end of this step, after the results have been analysed a decision must be made if additional experiments are to be run.
+As either the results are inconclusive, or other aspects of interest have arisen.
 
 \subsubsection{Step 7: Document and Present Results}
 This step involves the presentation of the model to the core-stakeholders in a manner that describes the concept model, the simulation and the results.
@@ -204,25 +245,24 @@ This may reduce the validity of the end model, but these restrictions have been 
 and done so in a manner that attempts to minimise negative effects.
 
 
-\section{Simulation artifacts}
-We have used this methodology to create a simulation that is independent of the component model and system we want to simulate in this study.
-This has been done to make the simulation reusable in different contexts in order to test if the conclusions drawn from this study are component model/system independent.
-As such in this chapter we describe the independent parts of the simulation, and leave the dependent parts for chapter \ref{ubunutsimulation}.
+\section{Conceptual Model}
+The methodology to create a simulation is used, and in this section we present the first artifact the ``conceptual model''.
+This models includes the description of the sub-models, the user model, the resolver model, and the repository model.
+This includes their variables and configuration in order to define the simulation.
 
-The independent parts of this simulation include the problem definition, the conceptual model with it's component parts;
-the user model, the solver model and the repository model.
-The results we are aiming to be generated
+The conceptual model also includes the processes that simulate the real life evolution of a component system.
+These processes are used to generate user actions and then take these actions to be processed into CUDF problems
+to be solved by a component dependency resolver with a strategies necessary criteria.
 
-\subsection{Problem Definition and Conceptual Model}
-To create our conceptual model, we must first precisely describe the problem;
-The problem addressed in this entire study is that of the effects of component evolution.
-The key question that are asked is
-``What effect does using component resolution given a set of criteria have on a component system?''.
-To answer this requires knowing about the criteria used to find the resolved systems, the repository where components are accessed,
-and the user and their actions.
-The conceptual model is then created from separate models, the user model, the solver model, and the repository model.
+\subsection{Sub-Models}
+The conceptual model is broken down into different models of reality, the user, the resolver, and the repository.
+These three aspects have been chosen as they have the most impact on component system evolution.
 
-\subsection{User Model}
+The way in which the user interacts with the resolver, how the resolver finds the optimal solution, and the set of components that are used in order to do so
+are represented and discussed here.
+
+
+\subsubsection{User Model}
 The user model involves many aspects, including the life-cycle of specific actions, the probability of actions being taken, and also the parameters of an action.
 A user can typically execute many different types of actions, install, remove or upgrade a component, upgrade the entire system,
 download a source for a component, change the status of a package, automatically remove package that are not necessary, or even format the system and start again.
@@ -274,7 +314,7 @@ A user model is then represented by 4 pieces of information,
 \end{enumerate}
 
 
-\subsection{Solver Model}
+\subsubsection{Resolver Model}
 The solver selected to resolve the package dependencies is an important aspect of this simulation.
 Throughout this thesis we have discussed the definition, implementation and extension of a component dependency resolver.
 The core aspect we have focused on is the variable criteria that can be used to find different optimal solutions given the requirements of a system.
@@ -289,7 +329,7 @@ The solver model then contains this information:
   \item The criteria to optimise for when the user installs a package
 \end{enumerate}
 
-\subsection{Repository Model}
+\subsubsection{Repository Model}
 The repository model is an abstraction of the server which contains and distributes the packages to the client to be installed.
 The repository is a key component in the study of component system evolution, 
 as the user actions, of update and install, are dependent on the repository and the solver model must consider all packages in the repository when finding the optimum system.
@@ -346,7 +386,7 @@ This model then contains one set of information:
   \item A time frame, start and finish, over which the simulation is run
 \end{enumerate}
 
-\subsection{Configuration}
+\subsubsection{Configuration}
 %%%A configuration is the set of parameters of the simulation. What are these parameters which we must consider.
 A configuration is the set of variables which define the parameters of the simulation.
 How these variables are defined are derived from what goals of the specific simulation.
@@ -366,45 +406,30 @@ In this conceptual model there have been defined 8 different dimensions to alter
 
 These variables can be altered in many different ways to answer important and relevant questions to do with component evolution.
 
-\subsection{Results}
-The results of this simulation should be clearly defined as these are the ultimate output of this process.
-As component system evolution is the process of changing one system into another, 
-the output simulation is in essence finding what the changes made to a system will be given a configuration.
-This then makes the results to be produce a set of resulting systems that created over a period of time given a configuration. 
 
-%%%How the results will differ among the dimensions
-These systems will differ along the dimensions of the configuration;
-for instance, changing the cycle the user updates will increase or decrease the number of resulting systems.
-The properties of the systems are unknown, as the great complexity of any component system makes them difficult to predict.
-Therefore gaining these results will enlighten on the properties of component system evolution.
-
-\section{Simulation implementation}
-%%%Here we describe how our simulation is implemented, the processes in which the implementation is executed
-The implementation of the simulation attempts to convert the conceptual model into an executable system for testing different configurations of the simulation.
-This simulation has been implemented using the conceptual model described above with a series of scripts written in BASH and Python.
-These scripts have been abstracted to pseudo code and presented here.
-
-The simulations input is then the configuration simulation describing the variables previously defined, 
-This is then processed through mimicking reality into a set of resulting systems that can then be analysed.
-How this simulation is implemented will effect its scalabliliy and the reusability, 
-therefore optimisations must be made to make it practical to execute.
+\subsection{Processes}
+These processes are attempts to abstract and simplify the reality of the component system evolution.
+The process that simulates the evolution of a component system takes a configuration and first generates a set of actions a pseudo user may take.
+These user actions are then iteratively applied to the initial system though generating CUDF problems that are solved using the resolver given its criteria.
+The results of this process is then a set of systems that are created through the user actions.
+ 
+The results from the execution of this process will be different along the dimensions of the configuration.
+Each configuration may create a different set of user actions, and using different criteria or repositories, will create different systems.
 
 \subsection{Input Configuration}
-The simulation variables, how we can alter the simulation to answer our questions, are described in the configuration.
-The format for many of these inputs have been defined in previously chapters;
-the initial system and the repository information will be store in the CUDF format, 
-the criteria to update and install will be defined in our modified MANCOOSI format defined in \ref{criteria}.
+The simulation configuration is a set of variables in which we can alter the simulation through.
+To treat these variables as a set of inputs, their format and constraints must be defined.
 
-Some inputs are trivial, 
-the update cycle is an integer representing days between updates,
-the time frame is defined as a start date given in seconds since the epoch (Jan. 1st 1970) and a length in days that the simulation should run for.
-These final inputs, the probability a package will be selected to be installed and the probability a user will select to install a package per day,
-are represented using a weighted list and a list of real numbers, respectively.
+The format for the initial system and criteria have been defined in previously chapters.
+The initial system and the repository information will be store in the CUDF format, as described in chapter \ref{background}. 
+The criteria to update and install will be defined in our modified MANCOOSI format defined in chapter \ref{criteria}.
 
-%%%The addition of the timeout
-One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best current solution.
-This is simply an integer representing the number of seconds that the solver is allowed to run for.
-The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
+Some inputs are trivially defined;
+the update cycle is an integer representing days between updates;
+the time frame is defined as the dates of the days (given in seconds since the epoch at Jan. 1st 1970) between a given start date and the number of days that the simulation should run for.
+
+These final inputs, the probability distributions of whether a package will be selected to be installed and how many packages a user will select to install on a given day,
+are represented using a set of pairs, each pair containing the action and the probability the action will be taken.
 
 These variables are formally defined as:
 \begin{itemize}
@@ -420,97 +445,53 @@ These variables are formally defined as:
   integer is the number of packages and real number is the probability that amount of packages will be installed, 
   e.g.  a set $UI = \{ (0,.8) , (1,.15), (2,.5)\}$ means the user has a 80\% chance of installing 0 packages, a 15\% chance of installing 1 package and a
   5\% chance of installing 2 packages.
-  \item the timeout variable $timeout$ is represented by a integer that is in seconds
 \end{itemize} 
 
-The method for storing and reading this configuration is trivial or previously defined cases like the definition of a CUDF file or the representation of an integer for the update cycle.
-However, for the probability a package will be installed and the probability a user will select a package to install more complex so have defined two file types in order for easy storage.
-These file types are shown in figure \ref{userprob} and \ref{packageprob}, the simulation reads and maps these files to create and run the various configurations
-
-In figure \ref{userprob} the file is laid out as a list of lines, each line with a list of real numbers separated by the delimiter ``,''.
-Each line represents a user, each list of real numbers is a users probability distribution.
-Therefore, each line represents an different $UI$ value.
-
-\begin{figure}[htp]
-\begin{center}
-75.0, 18.0, 5.0
-73.0, 18.0, 6.0, 1.0
-54.0, 34.0, 9.0, 2.0
-\caption[Install Distribution Example File]{An example of a users installation distributions}
-\label{userprob}
-\end{center}
-\end{figure}
-
-In figure \ref{packageprob} the file is laid out as a list of lines, each line is package name, then an integer separated by a comma.
-The integer is the weight which represents the likelihood the package will be selected to be installed.
-To convert this weight into the necessary probability, the individual package weight is divided by the the sum of all package weights. 
-Therefore, this file represents the variable $WP$.
-
-\begin{figure}[htp]
-\begin{center}
-synaptic,1840590
-firefox,1828354
-software-properties-gtk,1781797
-gnome-system-monitor,1771676
-gucharmap,1770369
-\caption[Weighted Package File Example]{An exmaple of a Weighted Package file, co }
-\label{packageprob}
-\end{center}
-\end{figure}
-
-
-\subsection{Processes}
-The process of this simulations implementation is in two stages; 
-first ``user files" are generated, these are an aggregation of some configuration information into a set of actions the user will take over the specified time period.
-Then for each of these users files with the remaining configuration each day is processed by simulating the given actions by producing a CUDF problem,
-then passing it to the solver with the appropriate criteria to find the resulting solution.
+\subsection{Algorithms}
+The algorithms of this simulation are executed in two stages; 
+first ``user actions" are generated, these are an aggregation of some configuration information into a set of actions the user will take over the specified time period.
+These users actions are then combined with the remaining configuration and processed by iteratively applying them to an initial system by producing a CUDF problem,
+then passing it to the resolver with the appropriate criteria to find the resulting solution.
 
 \subsubsection{User Actions}
 %%%Generate user scripts
-The user file is a set of actions taken by the user of the time period, shown in figure \ref{userfile}.
+A user action is defined as a tuple with four values,
+\begin{enumerate}
+  \item The time an action is taken in seconds since the epoch
+  \item The list of packages to install which can be empty
+  \item The list of package that have been previously installed (the keep list)
+  \item A Boolean value representing whether to update or not
+\end{enumerate}
 
-\begin{figure}[htp]
-\begin{center}
-1258110000.0;;;update
-1258196400.0;;;update
-1258282800.0;install:vinagre;;update
-1258369200.0;install:compiz-core;keep:vinagre;update
-1258455600.0;;keep:vinagre,compiz-core;update
-1258542000.0;install:gdebi;keep:vinagre,compiz-core;update
-  \caption[User File example]{An exmaple of a User file}
-  \label{userfile}
-\end{center}
-\end{figure}
-
-This user file follows the grammar ``time;[install:PACKAGE[,PACKAGE]*]?;[keep:PACKAGE[,PACKAGE]*]?;[update]?'',
-that is the time variable, an install action, a keep action, and an update action seperated by a delimiter of ``;''.
-The time variable here defines the date the actions are taken, given in milliseconds since the epoch.
-The install action is a list of packages the pseudo user has selected to install, separated by the delimiter ``,''. 
-The keep package list is a list of packages previously selected to be installed, this is used to ensure that packages are not removed once the user has selected them to be installed.
-The update action is just a Boolean variable, if it is there it means that the system has been selected to be updated.
-
-
+User actions are organised into a list ordered by the time the action occurs.
+This is generated through the algorithm presented as pseudo code in figure \ref{generateuser}
 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-\textbf{INPUT}:
+\textbf{INPUTS}:
 DATES
 UI
 WP
 UC
 
-function generateUser: 
-    UserActions = {}
+\textbf{OUTPUTS}
+UserActions
+
+function generateUserActions: 
+    UserActions = []
     keeps = []
     days = 0
     for d in DATES:
-        UserActions[d] = (``;'', ``;'', ``;'') 
-        //the install(0), keep(1) and update(2) actions
+        UserAction = (0, [], [], false) 
+        //the date(0), install(1), keep(2) and update(3) tuple
         
-        //Keep what packages?
+        //What is the date
+        UserAction[0] = d
+        
+        //What packages to keep
         if keeps.length > 0:
-            UserActions[d][1] = ``;keep:'' + keeps 
+            UserAction[2] = keeps 
             
         //What packages to install
         installs = []
@@ -522,108 +503,88 @@ function generateUser:
             keeps.append(package)
             
         if installs.length > 0:
-            UserActions[d][0] = ``;install:'' + installs 
+            UserAction[1] = installs 
         
-        //Update?
+        //Update or not
         if days mod UC == 0:
-            UserActions[d][2] = ``;update''
-        install = ``;''
+            UserAction[2] = true
         days++
+        UserActions.append(UserAction)
         
-for d in UserActions.keys().sort():
-    for install,keep,update in UserActions[d]:
-        print d + install + keep + update
+    return UserActions
 \end{alltt}
 \caption[generateUser script]{Pseudo code of the generate user script which}
 \label{generateuser}
 \end{center}
 \end{figure}
 
-To generate these files we use the ``generateUser" algorithm, shown in pseudo code in figure \ref{generateuser}.
-This algorithm takes the input from the configuration and creates the user file as defined above.
-It does this by iterating over every date in the time frame, and selecting what packages to install,
-what packages to keep and whether to update or not.
 
-The function \verb+randomSelect+ requires definition and discussion.
-This function takes a set of pairs, where the second item in the pair is the probability that item will be selected,
-and randomly selects, given this probabiity, and returns the first item.
-As both the probability a package is selected and the probability of the amount of package a user will install are defined in the same way this function is reusable.
-In the instance where the package is selected, to ensure that the see package is not selected repeatedly for install it is removed from the list of possible packages,
-with the operation \verb+WP.remove+, this will recalculate the distribution so that the sum of all probabilities equals 1 again.
 
 %%%Initialize the algorithm
-As you can see in the figure \ref{generateuser},
-the algorithm first initializes three variables, \verb+UserActions+,\verb+keeps+ and \verb+days+.
-The \verb+UserActions+ variable is a dictionary, that maps the dates to a triple that represents the actions taken by a user.
-The first value is the install action, the second value is the keep action, and the third value is the update action.
-Each iteration an empty triple is added that only contains the delimiter ``;'' for each action.
+The \verb+generateUserActions+ algorithm first initializes three variables, \verb+UserActions+,\verb+keeps+ and \verb+days+.
+The \verb+UserActions+ variable is the list of user actions of the user, this is returned at the end of the algorithm.
 
-The variable \verb+keeps+ is a list, initialised to empty, that contains a list of all the packages the user has selected to install.
-This list is later translated into a ``keep'' property of the installed package with defined semantics in the CUDF specification.
-This ensures that after a package has been selected to be installed by a user a package is not later removed by an action, e.g. an update,
-this list is defined.
+The variable \verb+keeps+ is a list, initialised to empty, that contains a list of all the packages the user has previously selected to install.
+This list is later translated into a ``keep: package'' property of the installed package with defined semantics in the CUDF specification.
+This ensures that after a package has been selected to be installed by a user a package is not later removed by an action, e.g. an update.
 
 The \verb+days+ variable keeps a count of the days in order to maintain the update cycle. 
 
 %%%Describe the Installation and keep
-For each iteration, the keep sees if there are any packages that need to be included, if there are it adds the keep action with the packages in \verb+keeps+.
-When adding a list of packages to a string in the presented code, the elements of the list are printed with a delimiter of ``,'' separating them.
-This also later occurs when adding \verb+installs+ list to the action.
+For each iteration, the keep list is first assigned, then the packages to install are assigned, finally to update or not to update is decided.
 
-The installation section of the code is executed to create a list of a length selected by randomly selecting a value from the $UI$ set.
+The keep list is first assigned as it is essentially a list of previously selected packages to install, and does not contain the list of packages currently selected to be installed.
+
+The code which builds the list of packages that are to be installed, is initialized by first randomly selecting a value from the $UI$ set for the number of components to be installed.
 If the length selected is 0 then this loop will not execute, and \verb+installs+ will remain empty.
 If 1 or greater is selected, then that amount of randomly selected packages is added to the \verb+installs+ list by randomly selecting them from the $WP$ set.
-Once a package has been found it is removed from the $WP$ set to stop it being selected again (as discussed above), it is also added to the \verb+keeps+ list to ensure that in future it is kept in the system.
+Once a package has been found it is removed from the $WP$ set to stop it being selected again.
+The selected packages are also added to the \verb+keeps+ list to ensure that in future it is kept in the system.
  
+The function \verb+randomSelect+ requires definition and discussion.
+This function takes a set of pairs, where the second item in the pair is the probability that item will be selected,
+and randomly selects and returns an item given its probability.
+As both the probability a package is selected and the probability of the amount of package a user will install are defined in the same way this function is reusable.
+In the instance where the package is selected, to ensure that the same package is not selected repeatedly for install it is removed from the list of possible packages
+with the operation \verb+WP.remove+.
+This function then must recalculate the distribution so that the sum of all probabilities equals 1 again.
+
 %%%Describe the Update
 The update action is included if the day modulus the update cycle $UC$ is equal to 0.
-This makes the update action occur at regular intervals during the time period, as if it was scripted as in the conceptual model.
+This makes the update action occur at regular intervals during the time period, as if it was scripted or part of a user routine.
 
 %%%Describe the output
-The final stage in this algorithm, it to output the \verb+UserActions+, this is done by selecting the keys ordered by date.
-This will then for every day in the time period deifned in the configuration out put the users actions.
-
-%%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
-The practical use of this algorithm differs in a few aspects, that should be discussed.
-Firstly, given the random process introduced by the user install action,
-a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated in the actual script.
-This is also extended to allow multiple user update cycles, and multiple distributions for the probability the user installs a package.
-So the algorithm presented in the figure \ref{generateuser}, is wrapped allowing for the generation of mutiple users at a time for practicle reasons.   
+The output of this algorithm is then the list of \verb+UserActions+, this can be used to simulate what a user will do to their system.
 
 \subsubsection{Execution}
 %%%Run the simulation
-The simulation execution takes a system, with the initial system defined in the configuration, and iteratively executes the actions defined in the user action file to create a new system.
-Each action is broken into two parts, the update and the installation, as each have a different set of criteria to optimise for.
+The simulation execution takes the initial system defined in the configuration, and iteratively executes the user actions previously created, to create a timeline of systems.
+Each iteration is broken into two parts, the update and the installation, as these are the core actions the user can take and have a different set of criteria to optimise for.
 This iteration is described in the figure \ref{executeSimulation}.
 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
 \textbf{INPUT}:
-UserFile
-IS //initial system
+UserActions
+IS
 UCRIT
 ICRIT
 R
-generateCUDF
-executeSolver
-FAIL
-timeout 
 
 function runSimulation:
     system = IS
-    for line in UserFile:
-        time,installs,keeps,update = parse(line)
+    for time,installs,keeps,update in UserActions:
         if update:
-            cudfFile = generateCUDF([],keeps,update,R(time),system)        
+            cudfFile = generateCUDF([],keeps,true,R(time),system)        
             outputCUDF  = time + "-update.cudf"
-            executeSolver(cudfFile, outputCUDF, UCRIT,timeout)
+            executeSolver(cudfFile, outputCUDF, UCRIT)
             if not FAIL(outputCUDF):
                 system = outputCUDF
         if installs.length > 0:
             cudfFile = generateCUDF(installs,keeps,false,R(time),system)        
             outputCUDF  = time + ".cudf"
-            executeSolver(cudfFile, outputCUDF, ICRIT,timeout)
+            executeSolver(cudfFile, outputCUDF, ICRIT)
             if not FAIL(outputCUDF):
                 system = outputCUDF
             
@@ -634,7 +595,7 @@ function runSimulation:
 \end{figure}
 
 %%%Undefined function generateCUDF, executeSolver and FAIL
-In figure \ref{executeSimulation} describing the algorithm to execute the simulation, there are three undefined functions, \verb+FAIL+, \verb+executeSolver+ and \verb+generateCUDF+.
+There are three additional undefined functions in this script, \verb+FAIL+, \verb+executeSolver+ and \verb+generateCUDF+.
 
 %%%Describing the FAIL function
 The \verb+FAIL+ function takes a location of a CUDF file and returns true if it is incorrect and false otherwise.
@@ -642,10 +603,11 @@ This is used in this situation to check if the solver has produced an output to 
 If it has not produced a correct output then the previous system is used, 
 this is similar to how a typical system will act if an action is unable to be accomplished it will be rolled back to the previous version.
 It also allows the continuing simulation without disruption, instead of stopping as soon as a user action is unable to be executed.
+This check does not check semantically that the CUDF file conforms to the constraints necessary, only that it has an output syntactically correct.
 
 %%%Describing the execute solver function
-The \verb+executeSolver+ function calls the solver to be executed on \verb+cudfFile+ and the output to be written to \verb+outputCUDF+, 
-optimising for the provided criteria (\verb+UCRIT+ or \verb+ICRIT+), returning a solution before the timeout time.
+The \verb+executeSolver+ function calls the resolver to be executed on \verb+cudfFile+ and the output to be written to \verb+outputCUDF+, 
+returning a solution that is optimised for the provided criteria (\verb+UCRIT+ or \verb+ICRIT+).
 This function is where all the results are generated for the simulation, it creates four files;
 the \verb+outputCUDF+ file, an error and log report, a save of the standard out, and file that contains the time and average memory usage of the process.
 These files can be used to solve problems and fix bugs, or analyse the results of the simulation.
@@ -698,35 +660,10 @@ The ultimate output of this simulation will be a series of CUDF files that repre
 These files are accompanied with logs, that describe errors and the time it took to complete the operation of calculating that system.
 The CUDF files can then be processed to find the necessary data in order to answer questions about the simulation.
 
-\subsection{Optimisations}
-The presented algorithms are abstractions of the actual scripts, executing in essentially the same way. 
-However, some practical changes were made in order to increase the decrease the resources consumed when the scripts are executed and make the scripts easier to use.
-
-%%%Upgrade command in CUDF altered to be upgrade: *
-The CUDF syntax and semantics, described in chapter \ref{background}, define the request section of the CUDF file.
-In this the upgrade command is described as being before a list of packages to upgrade,
-however in the generate CUDF pseudo code if the user selected to update the upgrade command is defined with ``*''.
-This syntax is a short hand used to upgrade all installed packages.
-As this script is called extensively throughout the simulation this shorthand saves writing the names of more than 1000 packages each time a CUDF is generated.
-This lowers can significantly lower the time to execute the entire simulation, but requires the solver understand and convert the shorthand to its original semantics.
-This is the only alteration to the CUDF syntax made throughout this research.
-
-%%%Generating multiple users 
-The generate user pseudo code algorithm in figure \ref{generateuser} requires individual variable definitions in order to generate a single user.
-By allowing sets of data to be inputted, sets of update cycles and user install distributions, multiple users can be generated simultaneously.
-As loading and processing of some of the data, notably package distributions, can be intensive on computer resources, 
-creating multiple users simultaneously lowers recreating this data.
-It also makes the script more usable as creating multiple users to execute and compare is typically the goal,
-creating them at the same time makes the task less tedious.
-
-%%%Executing multiple users in a row
-As with generating multiple users, using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
-This is simply done by iterating over a set of user files inputting one at a time into the algorithm.   
-
 \section{Simulation Validation}
 %%%Validation of this simulation, what needs to be validated/why it should be validated
-The conceptual model and implementation of this simulation presented are an abstract description of the given problem.
-They describe the variables that effect component system evolution presented a configuration,
+The conceptual model presented is a simplified abstraction of the reality in which users evolve component systems.
+It describes the variables that effect component system evolution presented a configuration,
 and the processors used to execute the simulation given a configuration.
 If some significant aspect of the system was missed, or if some aspect was incorrectly defined, the simulation may produce results that are incomprehensible,
 or worse, misunderstood.
@@ -737,7 +674,7 @@ This validation was accomplished though regular stakeholder meetings, and an onl
 %%%Weekly meetings with stakeholders (i.e. supervisors)
 As described in the methodology, one validation of these artifacts is done through meetings and a structured walk-through with the core stakeholders.
 In this simulation the core stakeholders are the project researcher and supervisors.
-These are the people who are asking the question and are impacted by through the outcome, therefore directly effected by the validity of the artifacts.
+These are the people who are asking the question and are impacted by the outcome, therefore directly effected by the validity of the results.
 Meetings where held at regular intervals to ensure the projects progress and direction where correct.
 
 \subsection{Subject Matter Expert Survey}
@@ -745,23 +682,37 @@ Meetings where held at regular intervals to ensure the projects progress and dir
 An online survey was also completed, further described in chapter \ref{ubunutsimulation} with questions and results presented in appendix \ref{survey}.
 It was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
 This survey was completed by over 55 subject matter experts, who answered questions that assigned values to the configuration variables.
+
 %%%Results from what else should be asked, install stuff not from repository, installs break
-The most important aspect of this survey for the validation of this conceptual model is the question ``What other questions should have been asked?''.
-This allowed the expert to input what they thought was missing from the survey, and what should be asked when discussing this problem.
-The enlightening answers to this question are aggregated into two areas, installing packages that are not in the core repository and what happens if a system breaks during a change.
+The two most important questions asked in this survey for the validation of this conceptual model are 
+``What frequency are your typical interactions?'' and ``What other questions should have been asked?''.
+The first question allowed us to gauge the necessary user actions and how they are represented,
+and the second allowed the expert to input what they thought was missing from the survey, and what should be asked when discussing this problem.
+
+%%%This showed that people interact mostly at regular intervals as an update 
+What frequency the user interacts with the resolver to evolve their system is important to find the most significant actions to include in the simulation.
+Due to this interaction, the user action to remove packages was ignored, as it seemed many of the users do not use this frequently.
+When they do select to remove a package it is often part of a more complex action, which includes installing a package and then rejecting its installation.
+
+This survey clearly shows that users update their systems at regular intervals, and install packages frequently as well.
+This was used to select these two actions as the most important to component system evolution. 
 
 %%%Install stuff not from the repository
+What aspects of the survey these experts thought was missing fell into mostly two groups,
+installing packages that are not in the core repository and what happens if a system breaks during a change.
+
 A few experts noted that they sometimes install obscure or untested components that are not included in the core repository.
 These components may change the systems structure through having dependencies on, or be depended on by components in the main repository.
 This is not a borderline case, as many component systems, including Ubuntu and Eclipse, use the idea of multiple repositories that users ``subscribe'' to in order to find and get packages.
 As an abstraction, this model has selected to only have one repository that all users can access components from.
-This is because the effect of having multiple repositories was seen as outside the scope of the problem.
+This is because the management of multiple repositories was seen as outside the scope of the problem.
+Also, aggregating the most popular repositories into a single set was significantly more simple, and could be done without losing much information.  
 
 If multiple repositories where to be included in the simulation, where each user can access a different a subset of repositories, necessary alterations to the model could be made.
 These would include an extra step being added to the ``run simulation'' script, where the all the repositories at a given date are selected, and to the generate CUDF script where
 it aggregates these repositories into a single CUDF file for the problem to be solved.
 
-%%%
+\subsection{Component Fault Exploration}
 Another aspect of this problem that was mentioned is that a system may break during a change, requiring a reversion to the previous stable system state.
 Simulating this effect was ultimately deemed outside the scope of the project as it is seen as a rare occurrence with modern systems.
 However, before it was eliminated, it was explored for possible inclusion.
@@ -809,6 +760,6 @@ Further discussion of the validation of the assignment of the configuration vari
 \section{Summary}
 {}This chapter has described the abstract definition of the proposed simulation used to study component system evolution.
 {}The methodology from Law \cite{Law2005} was used to guide us to a valid and credible simulation.
-{}From this methodology we defined a conceptual model of the user, repository and solver and described the implemented processes used to simulate a systems evolution over a time period.
+{}From this methodology we defined a conceptual model of the user, repository and solver and described the processes used to simulate a systems evolution over a time period.
 {}It was validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
-{}This simulation can, and will, be used to draw meaningful conclusions on component system evolution, though no
+{}This simulation can, and will, be used to draw meaningful conclusions on component system evolution.
