@@ -1,24 +1,41 @@
 
 \chapter{Ubuntu Simulation}
 \label{ubunutsimulation}
-In this chapter we discuss the implementation, results and conclusions from executing our simulation against Ubuntu.
-
-{}our reasons and methods for the collection of data,
-{}discuss our simulation model validity when compared to the real world.
-{}The design of the experiments are then described and the variables assigned values,
-{}finally we present the results and analysis from this simulation.
-
-{}The data that is used was extracted from logs of real users, a user survey conducted on a popular Internet forum, 
-{}component and temporal information collected from repositories, meta-information about those repositories.
+{}In this chapter the implementation and validation of the conceptual model and simulation is described.
+{}This implementation is then used to answer some questions related to component system evolution, where the results and conclusions are discussed.
 
 
-{}This is simplified by only using a single repository, the Ubuntu repository, and only looking between two dates 10.2009-10.2010
+{}This is simplified by only using a single repository, the Ubuntu repository, and only looking between two dates 
 
 
 %%%Preprocessing of the weighted components, removing all packages that are unable to be accomplished (e.g. skype)
 %%%When createing the CUDF files it removes install requests that are not in the system (e.g. if chromium was added to the repository in 2010 and it is requestied in 2009, it is just ignored.)
 
-\section{Repositories}
+\section{Simulation Implementation}
+The first stage in the implementation of the simulation is to describe the configuration invariants.
+
+\subsection{Invariants in the Configuration}
+
+%%%The Ubuntu repository is selected because it has significant amount of users and a significant amount of components.
+Firstly the component system that has been decided to be simulated is the Ubuntu GNU/Linux distribution.
+The Ubuntu Repository, as with most open and free software, is freely downloadable.
+It contains all the packages that have ever been in the repository with the information of when the package was added.
+We created a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as precariously described in section. %TODO referecne
+As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
+
+%%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
+time frame decided for in this simulation 
+
+%%%This time frame implies the initial system which is Ubuntu 10.09
+One of the aspects that is critical to a simulation is a time over which it is occuring, 
+so the starting system is important aspect for this simulation.
+Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
+then the month in which it was released, e.g. 10.04 is the release in April 2010.
+Given that we are running this simulation over the course of a year, we are selecting that year to be 
+
+\subsubsection{Repository function}
+%%%The repository function
+
 %%%Why we did not create the repositories and used real data
 A repository built through using algorithm would be difficult to validate as being an accurate representation of an actual repository.
 The amount of factors that would have to be considered to define an accurate representation, the algorithm to build such a repository,
@@ -27,9 +44,96 @@ are all difficult problems, and outside the scope of this study.
 Therefore, in this simulation it is recommended that a data from a real repository is used.
 This in itself is a difficult task to accomplish, especially as daily information on a repositories state means that accurate records have to of been kept on a artifact that is constantly in flux.
 
+\subsubsection{Probability a component will be selected}
+%%%The probability a component will be selected
+{}We attempt to answer these questions through using the set of packages listed in the package app-install-package
+{}weighted with their popularity from the Ubuntu popularity contest.
+{}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
+{}However, by limiting our approach we have answered these questions without sacrificing much simulation integrity.
 
-\section{SCRIPTS}
-\subsection{Optimisations}
+%%%PopCon
+The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
+Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
+
+
+%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
+Many of the packages in a repository are not ones which a user would directly select to install.
+Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
+A user would not likely install these as they do not directly allow the user to complete tasks in the system.
+The list of applications from the package app-install-data is used to answer the first question, what packages may a user select to install.
+
+%%%How likely would a user will select to install a package can be gathered from popcon, by looking at how many systems have that package installed
+The second question is then answered through analysing the data-set and determining the probability a user will have a particular package installed.
+The reason why we cannot use this information to also answer the first question is that many of the most packages installed are there because they are depended on by many different applications,
+e.g. a media library that decodes a stream may be used by many different media playing applications therefore installed on many users systems, 
+ranking it high in the popularity contest but it was never directly installed by the user.
+
+
+%%%We validate this by comparing it against the list of users top 10's and stating that the pacakages that more than 5\% of the users voted for is 90\% accurate
+This relies on the fact that a user would like to 
+
+%%%The core problem with this list is that more experienced users may install packages that are not applications, build-essential
+Although a user will more likely install this list can be assumed to be a complete list of applications 
+the main problem is that more experienced users may directly select to install packages that are not deemed applications.
+For instance, the package build-essential includes tools in which a user can build their own Debian packages,
+this is a task for many users, though not deemed an application therefore not included.
+
+%%%The core problem with this probability, is that it doesnt measure corrolation between packages being installed
+The core problem with this probability, is that it doesnt measure corrolation between packages being installed.
+For instance, i
+
+%%%User Forum top 10 posts
+People submit multiple times, some people submit more than 10, some less, package sanitisation, had to change names to fit package names
+
+%%%app-install-data package
+The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
+This is useful for applications to use that help users search for and find an application that they may wish to install, like the Ubuntu Software Center.
+%TODO how do they get this list
+This comprehensive list currently\footnote{May 24th 2011} contains 2393 applications.
+
+
+\subsection{Variables in the Configuration}
+The variables in the configuration are those that are considered to be part of the strategy employed by the user.
+
+\subsubsection{Criteria}
+
+\subsubsection{Update Cycle}
+
+%%%The questions we want to answer are which actions are routinely performed and at what frequency?
+%%%What life cycle specific actions are performed?
+%%%User Survey 
+A user survey was conducted online via a popular Internet forum http://reddit.com/r/ubuntu, this involved nearly 60 participants. %TODO attach survey to appendix. 
+The survey focused on user interaction with a resolver and the lifecycle that is associated with their component system.
+The results are summarised below, %Summarise results
+%%%Description of the Survey
+
+%%%Results from the Survey
+
+%%%Analysis of these results and how they apply to the user model
+
+\subsubsection{Probability a user will install a Component}
+%%%User Logs
+Resolvers often keep logs of their activites, these usually only include the changes to the systems that are made, and not what the usre requested.
+Therefore, some of the information that can be obtained
+
+%%%The question we want to answer is "How often does a user install a package?", asking a user directly will be error prone, but by analysing logs we can extract real information.
+
+%%%There are a few problems with looking directly at the logs and counting their installations per day.
+
+%%%Firstly, some logs only record changes to the system and not what action the user took to change it, e.g. install package x, does not mean the user requested package x to be installed.
+
+%%%Secondly, many installations could be requested by the user for a single task, e.g. image manipulation. 
+%%%This means that the packages would be related and may be dependent on one another, which is very difficult to model.
+
+%%%To solve this we abstract from installation, to task, and set a time frame in which actions are dependent on one another.
+
+%%%The estimation of the time between tasks, is then the largest assumption we have, we attempt to validate it using a Poisson process to show independence.
+
+%%%Given we now have installation/task distributions, randomly select some real user distributions (bootstrap) for our user model.
+
+
+\subsection{Scripts of Processes}
+\subsubsection{Optimisations}
 
 %%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
 The practical use of this algorithm differs in a few aspects, that should be discussed.
@@ -37,7 +141,6 @@ Firstly, given the random process introduced by the user install action,
 a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated in the actual script.
 This is also extended to allow multiple user update cycles, and multiple distributions for the probability the user installs a package.
 So the algorithm presented in the figure \ref{generateuser}, is wrapped allowing for the generation of mutiple users at a time for practicle reasons.   
-
 
 The presented algorithms are abstractions of the actual scripts, executing in essentially the same way. 
 However, some practical changes were made in order to increase the decrease the resources consumed when the scripts are executed and make the scripts easier to use.
@@ -68,7 +171,7 @@ One additional input is required, the timeout variable which allows the system t
 This is simply an integer representing the number of seconds that the solver is allowed to run for.
 The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
 
-\section{FILES}
+\subsubsection{File types}
 The method for storing and reading this configuration is trivial or previously defined cases like the definition of a CUDF file or the representation of an integer for the update cycle.
 However, for the probability a package will be installed and the probability a user will select a package to install more complex so have defined two file types in order for easy storage.
 These file types are shown in figure \ref{userprob} and \ref{packageprob}, the simulation reads and maps these files to create and run the various configurations
@@ -124,11 +227,23 @@ that is the time variable, an install action, a keep action, and an update actio
 The time variable here defines the date the actions are taken, given in milliseconds since the epoch.
 The install action is a list of packages the pseudo user has selected to install, separated by the delimiter ``,''. 
 
+
+\section{Simulation Validation}
+
+\subsection{Results Validation}
+
+\subsection{Face Validation}
+
+
 \section{Questions}
 Given our methodology we want to answer specific questions using our defined simulation
 
-\subsection{Strategies}
-%%%How do users use different strategies when evolving a system when installing and updating their systems
+\subsection{Control User}
+{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
+{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
+{}and the 
+
+\subsection{What update strategy is currently best for a given user type?}
 A user interacts with a resolver to evolve a system by installing, removing or updating packages.
 The way in which these interactions occur is usually related to the purpose of the system, and what the type of user.
 For instance, a server administrator is less likely to install a component into a system as the system has only one task and if it is working their is no need to change it, 
@@ -136,180 +251,8 @@ however a desktop user will more likely install different packages because they 
 How a user updates their system is also different along these lines, server admins. will likely only update when absolutely necessary as if it is not broken why fix it.
 Yet desktop users will update more frequently as they want the best system they can have, and new features or better performance are usually wanted.
 
-As described in previous chapters, dependency resolvers often try to minimise change and maximise the versions.
-These two objectives have been implemented in many different ways, how these interact with each other is the strategy a resolver employs.
-For instance, the trendy strategy from the Mancoosi organisation describes the strategy to minimise the removed components above all other criteria,
-this is a common strategy because removal of a component is seen as very risky.
 
-\subsection{Consequences}
-%%%The core consequences of using a strategy that we are looking at come from the dependencies between the strategy and the resulting metrics of critiera 
-
-%%%Essentially what we want is a table with the strategies laid out in the columns and with how they effect different criteria in rows.
-
-%%%This will show the dependence between the different strategies and what their effects are
-
-%%%We have three control strategies that do not require criteria or user models, one that never updates, another updates daily and updates weekly.
-
-%%%After this we can add criteria with different relationships, and installation strategies and observe the effects.
-
-
-
-%%%The Ubuntu repository is selected because it has significant amount of users and a significant amount of components.
-
-%%%The initial date is selected as it is after a major release, and the time length is the median system age from the user survey
-
-%%%Analysis of the repository, summary from 
-
-%%%This repository model differs from reality in the fact that we use all components, not just those available in the meta repository (ubuntu manacured)
-
-\subsection{Survey analysis}
-%%%The questions we want to answer are which actions are routinely performed and at what frequency?
-%%%What life cycle specific actions are performed?
-
-%%%Description of the Survey
-
-%%%Results from the Survey
-
-%%%Analysis of these results and how they apply to the user model
-
-\section{Data-sets}
-%%%Data collection is an important aspect of a simulations validity. 
-%%%For each data set we ask; What they are, where they are from, what information we can get from them, and what problems exist with that information.
-The most complex and difficult part of this (or any) simulation is the human component, the user,
-as such that is where much of our data collection focused.
-Data has been collected from
-a user survey which was performed on a popular Internet forum,
-user logs from resolvers were collected with the survey.
-The Ubuntu popularity contest is used to determine package popularity,
-as well as a user forum thread where users posted their top ten packages.
-A package that contains a list of applications in the Ubuntu repository was included.
-The entire Ubuntu repository, with relevant date information about packages was used.
-
-%%%User Survey 
-A user survey was conducted online via a popular Internet forum http://reddit.com/r/ubuntu, this involved nearly 60 participants. %TODO attach survey to appendix. 
-The survey focused on user interaction with a resolver and the lifecycle that is associated with their component system.
-The results are summarised below, %Summarise results
-
-%%%User Logs
-Resolvers often keep logs of their activites, these usually only include the changes to the systems that are made, and not what the usre requested.
-Therefore, some of the information that can be obtained
-
-%%%PopCon
-The Ubuntu Debian popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
-Each week this automated survey is submitted by nearly two million users including the currently installed packages they have on their system.
-
-%%%User Forum top 10 posts
-People submit multiple times, some people submit more than 10, some less, package sanitisation, had to change names to fit package names
-
-%%%app-install-data package
-The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
-This is useful for applications to use that help users search for and find an application that they may wish to install, like the Ubuntu Software Center.
-%TODO how do they get this list
-This comprehensive list currently\footnote{May 24th 2011} contains 2393 applications.
-
-%%%Ubuntu Repositories
-The Ubuntu Repository, as with most open and free software, is freely downloadable.
-It contains all the packages that have ever been in the repository with the information of when the package was added.
-We created a web scraper to download all the packages, and then we extracted their control files (the meta information file) and converted it to CUDF as precariously described in section. %TODO referecne
-As the date a package was uploaded, we used the extensible CUDF syntax to include what the date when they were uploaded.
-
-%%%Ubuntu installation
-One of the aspects that is critical to a simulation is a time over which it is occuring, 
-so the starting system is important aspect for this simulation.
-Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
-then the month in which it was released, e.g. 10.04 is the release in April 2010.
-Given that we are running this simulation over the course of a year, we are selecting that year to be 
-
-
-\section{Initial Analysis}
-{}The simulations models can be analyised without having to run the simulation, some aspects of the 
-{}The initial analysis of some aspects of this problem can be accomplished without 
-
-
-\subsection{Log Analysis}
-%%%The question we want to answer is "How often does a user install a package?", asking a user directly will be error prone, but by analysing logs we can extract real information.
-
-%%%There are a few problems with looking directly at the logs and counting their installations per day.
-
-%%%Firstly, some logs only record changes to the system and not what action the user took to change it, e.g. install package x, does not mean the user requested package x to be installed.
-
-%%%Secondly, many installations could be requested by the user for a single task, e.g. image manipulation. 
-%%%This means that the packages would be related and may be dependent on one another, which is very difficult to model.
-
-%%%To solve this we abstract from installation, to task, and set a time frame in which actions are dependent on one another.
-
-%%%The estimation of the time between tasks, is then the largest assumption we have, we attempt to validate it using a Poisson process to show independence.
-
-%%%Given we now have installation/task distributions, randomly select some real user distributions (bootstrap) for our user model.
-
-\subsection{Package Popularity}
-{}We attempt to answer these questions through using the set of packages listed in the package app-install-package
-{}weighted with their popularity from the Ubuntu popularity contest.
-{}This method has some draw backs, not all packages a user may install are listed and there is no correlation between packages selected for install.
-{}However, by limiting our approach we have answered these questions without sacrificing much simulation integrity.
-
-%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
-Many of the packages in a repository are not ones which a user would directly select to install.
-Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
-A user would not likely install these as they do not directly allow the user to complete tasks in the system.
-The list of applications from the package app-install-data is used to answer the first question, what packages may a user select to install.
-
-%%%How likely would a user will select to install a package can be gathered from popcon, by looking at how many systems have that package installed
-The second question is then answered through analysing the data-set and determining the probability a user will have a particular package installed.
-The reason why we cannot use this information to also answer the first question is that many of the most packages installed are there because they are depended on by many different applications,
-e.g. a media library that decodes a stream may be used by many different media playing applications therefore installed on many users systems, 
-ranking it high in the popularity contest but it was never directly installed by the user.
-
-
-%%%We validate this by comparing it against the list of users top 10's and stating that the pacakages that more than 5\% of the users voted for is 90\% accurate
-This relies on the fact that a user would like to 
-
-%%%The core problem with this list is that more experienced users may install packages that are not applications, build-essential
-Although a user will more likely install this list can be assumed to be a complete list of applications 
-the main problem is that more experienced users may directly select to install packages that are not deemed applications.
-For instance, the package build-essential includes tools in which a user can build their own Debian packages,
-this is a task for many users, though not deemed an application therefore not included.
-
-%%%The core problem with this probability, is that it doesnt measure corrolation between packages being installed
-The core problem with this probability, is that it doesnt measure corrolation between packages being installed.
-For instance, i
-
-
-\subsubsection{Failed Attempts at ranking}
-%%%While creating this set of popular packages we attempted other means in order to rank popularity. 
-%%%During validation of these attempts we found them not to be suitable.
-%%%We mention them here to A) show how difficult this problem is, and B) to show what doesn't work and why.
-In creating this set packages weighted to their popularity, we also  know the Ubuntu popularity contest is an excellent accurate and broad data-set of information with one main draw back of having superfluous packages,
-we attempted to use other means to eliminate these packages and then  
-
-%Method google completeion API
-To estimate the popularity of a package, the Google API for automated search completion is used.
-When given a query, this API returns an estimate of the amount this query has been searched for by other users,
-it also returns a list of related searches that users have searched for.
-What query is used is the most important aspect of this approach,
-searching merely for the name of the package may return user queries from other domains, e.g. searching for the package ``wine'' may return oenophile sites.
-Also using multiple different queries can allow for a more robust heuristic as it allows measuring their popularity from different perspectives,
-as one query may not be used when users search for a particular package.
-
-%How we validate the heurisitic? Via a list of popular packages from a popular forum
-This is a very general approach, it involves many aspects that effect the results making them possibly inaccurate.
-Therefore, the estimates are validated against a popular Ubuntu forums thread\footnote{http://ubuntuforums.org/showthread.php?t=35208} 
-that asks the user to post the top packages they install in their ubunutu systems. 
-The results of this thread are tallied to compare against the google approach.
-
-%The queries we use and the way that we aggregate them
-We have selected three queries to build our heuristic:
-``apt-get install``, ``ubuntu'' and ``install'', 
-
-%Corrolation, as google API returns similar values we can estimate the corrolation of packages
-
-
-\subsection{Control User}
-{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
-{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
-{}and the 
-
-\subsection{Update Criteria}
+\subsubsection{Update Criteria}
 {}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
 {}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
 {}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
@@ -321,16 +264,14 @@ Therefore, the returned system for any update command can be the initial system.
 This means that if a criteria, such as changed, or hamming where minimised as the most important  
 
 
-\section{Strategies}
-%%%Of the massive amount of possible combinations of criteria and relationships with user models, which strategies have we selected to look at and why.
+\subsection{Should the system be updated on or after a release?}
 
-\section{Results}
-%%%Here we describe results from our simulation
+\subsection{Can we create a criteria that only installs stable components?}
 
-\subsection{Results Validation}
-%%%The final validation phase is done by comparing the results back to the user submitted logs we collected, this can be used to validate the output and our final results
+\subsection{What effect does the update cycle have on the progressive and conservative strategies?}
 
-\section{Analysis}
-%%%Analysis of the results, and the simulation
+\subsection{What install criteria should our different strategies use?}
 
-%%%Results analysis
+
+\section{Summary}
+%%%A list of the answers gained from the questions
