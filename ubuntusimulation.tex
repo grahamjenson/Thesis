@@ -18,6 +18,16 @@ In this chapter we discuss the implementation, results and conclusions from exec
 %%%Preprocessing of the weighted components, removing all packages that are unable to be accomplished (e.g. skype)
 %%%When createing the CUDF files it removes install requests that are not in the system (e.g. if chromium was added to the repository in 2010 and it is requestied in 2009, it is just ignored.)
 
+\section{Repositories}
+%%%Why we did not create the repositories and used real data
+A repository built through using algorithm would be difficult to validate as being an accurate representation of an actual repository.
+The amount of factors that would have to be considered to define an accurate representation, the algorithm to build such a repository,
+and the method in which you can validate it's accuracy,
+are all difficult problems, and outside the scope of this study. 
+Therefore, in this simulation it is recommended that a data from a real repository is used.
+This in itself is a difficult task to accomplish, especially as daily information on a repositories state means that accurate records have to of been kept on a artifact that is constantly in flux.
+
+
 \section{SCRIPTS}
 \subsection{Optimisations}
 
