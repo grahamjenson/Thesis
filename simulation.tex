@@ -52,7 +52,7 @@ These strategies can then be compared by the effects that are caused to the syst
 To get this timeline of systems, real systems and users could be used and actual field data collected;
 a controlled environment could be created, where users employ strategies on a system that is monitored;
 or a simulation of a systems evolution is created, where different aspects are modelled and processed by an algorithm to generate the systems.
-In this section we discuss the positive and negative aspects of each of these approaches,
+In this section the positive and negative aspects of each of these approaches is discussed,
 and present the reasons for the selection of the simulation method for this research.
 
 \subsection{Using Real Users and Systems}
@@ -94,8 +94,8 @@ in a controlled environment these implications are removed so the selection woul
 However, the largest problem with this method is the effort required to conduct the experiment on enough users to find significant results.
 Each user must be found and organised into a location for them to be monitored using a system.
 Given the amount of necessary users required, and the resources available to organise such an effort is a very limiting factor.
-For example, given we want to test 10 different strategies 30 times each to find statistically significant results, 
-and each subject taking upwards of an hour to complete the study.
+For example, given 10 different strategies want to be tested each 30 times to find statistically significant results, 
+if an individual subject takes upwards of an hour to complete the study.
 This would be 300 hours of effort, not including the organisation and preparation going into the study.
 
 \subsection{Simulating the Problem}
@@ -153,7 +153,7 @@ The main effort is then to create the simulation with valid models that will giv
 {}This places validity and credibility of a simulation and the results it provides at a high priority.
 {}To create such a simulation the methodology outlined by \cite{Law2005} in ``How to build valid and credible simulation models'' is followed.
 {}This methodology is a guideline for defining the study, collecting information, creating and validating models, and running the simulation.
-{}In this section we introduce the methodology with its goals and how they are aligned to ours, 
+{}In this section the methodology with its goal and how they are aligned to ours is introduced, 
 {}discuss the steps that it states should be taken to create a valid simulation, and how the simulation will be created and what it will produce for this study.
 
 \subsection{Validation and Credibility}
@@ -293,17 +293,23 @@ This additional functionality could be to complete a given task, or as a future 
 The resolver takes the component selected to be installed, and attempts to install it and its dependencies, while maintaining system stability.
 When simulating, the information of what component a user will install and when will a user select to install it are needed. 
 
-%%%What package a user
+%%%What probability a package will be selected to be installed
 Determining the probability a user will select any component to be installed is difficult given the enormous amount of factors this relies on.
 The users job, location, current tasks, previously installed software, favourite colour\ldots 
 These may all effect what component the user selects to be installed.
-Given that all this information is impractical to simulate, we abstract this problem into the form of two questions;
+Given that all this information is impractical to simulate, this problem is abstracted into the form of two questions;
 \begin{itemize}
   \item What components may a user select to install
   \item How likely would a user select to install any of these
 \end{itemize}
 This is represented by a weighted list of components, where the weights represent popularity,
 e.g. component ``A'' has a 10\% chance of being selected as the component to install, component ``B'' has a 5\% chance.
+
+%%%The core problem with this is correlation between packages and user
+The core problem with this weighting of components is that it ignores the correlation between probability a component will be installed. 
+Two or more components may complement their functionality, thus making their installation together more likely.
+This is impossible to determine with a weighted list, however this type of information is very difficult to calculate.
+It would require the analysis of a significant amount of systems, which would probably cost more than the benefits gained.
 
 The next question is what is the probability that a user will install a component, and how many components?
 This is represented by a probability for the amount of components that a user may install on a day,
@@ -333,7 +339,7 @@ A user model is then represented by four pieces of information:
 
 \subsection{Resolver Model}
 How the resolver is configured to solve the component dependency problems is an important aspect of this simulation.
-Throughout this thesis we have discussed the definition, implementation and extension of a component dependency resolver.
+Throughout this thesis the definition, implementation and extension of a component dependency resolver has been described.
 The assumption is that the resolver is a valid CUDF problem solver, and that it can be configured using different criteria.
 
 The core aspect that is focused on is the variable criteria that can be used to find different optimal solutions given the requirements of a system.
@@ -413,7 +419,7 @@ This model then contains one set of information:
 \end{enumerate}
 
 \subsection{Configuration}
-The simulation configuration is a set of variables in which we can alter the simulation through.
+The simulation configuration is a set of variables in which the simulation can be altered through.
 To treat these variables as a set of inputs, their format and constraints must be defined.
 
 The format for the initial system and criteria have been defined in previously chapters.
@@ -688,8 +694,10 @@ This survey was completed by over 55 subject matter experts, who answered questi
 
 %%%Results from what else should be asked, install stuff not from repository, installs break
 The questions asked in this survey allowed us to gauge the necessity and frequency of user actions,
-so that we could select only the most important aspects of the problem to be simulated.
+so that only the most important aspects of the problem can be selected to be simulated.
 It also enlightened us to what was missing from the survey and model, giving us direction for exploration.
+
+%%%TODO why we ignore that users install lots initially
 
 \subsubsection{Frequency of User Actions}
 %%%This showed that people interact mostly at regular intervals as an update 
@@ -721,7 +729,7 @@ Instead of creating a function that tried to calculate the probability of failur
 an effort to measure it was attempted through a small study of component bug reports was attempted.
 
 The feedback generated when a component causes a fault should ideally be a bug report, for the Ubuntu distribution these are filed on the project hosting server LaunchPad.
-By using the Launchpad API to extract bug information, we where able to count the amount of bugs per component in the system.
+By using the Launchpad API to extract bug information, the amount of bugs per component in the system was able to be measured.
 It was initially assumed that the number of systems that a component was installed on would increase the number of bug reports generated,
 as more users means more eyes and systems to find bugs.
 The Ubuntu Debian popularity contest was used then to  
@@ -746,7 +754,7 @@ The reason for their increased amount of bug reports may be that the users have 
 Measuring a components likely hood of failure using bug reports is then hypothesised to be impractical if not impossible,
 as a component purpose and a components users may affect the results of the best measurement method available.
 Other methods of finding a components likelihood of failure have not been further explored since this variable was eliminated from the configuration.
-Though, we expect this is an intractable problem that is likely impossible to simulate accurately.
+Though, it is expected that this is an intractable problem that is likely impossible to simulate accurately.
 
 \subsection{Further Validation}
 The assignment of the configuration variables is a different stage in the validation of this simulation.
@@ -757,6 +765,6 @@ Further discussion of the validation of the assignment of the configuration vari
 \section{Summary}
 {}This chapter has described the abstract definition of the proposed simulation used to study component system evolution.
 {}The methodology from Law \cite{Law2005} was used to guide us to a valid and credible simulation.
-{}From this methodology we defined a conceptual model of the user, repository and solver and described the processes used to simulate a systems evolution over a time period.
+{}From this methodology a conceptual model of the user, repository and solver and the processes used to simulate a systems evolution over a time period is defined.
 {}It was validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
 {}This simulation can, and will, be used to draw meaningful conclusions on component system evolution.
