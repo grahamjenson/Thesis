@@ -5,10 +5,6 @@
 {}This is then validated through testing, and comparing the results generated to the output of an actual resolver. 
 {}This simulation is then used to answer some questions related to component system evolution, where the results and conclusions are discussed.
 
-\section{Simulation Implementation}
-The first stage in the implementation of this simulation is selecting the component system that will be used.
-
-%%%We select Ubuntu
 The selection of the component system for this simulation is probably the most important decision as it limits what information can be collected and used during the simulation.
 The selected component system should also contain enough information to the resolution necessary for all, or most, of the configuration elements.
 It should also not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
@@ -16,13 +12,14 @@ It should also not be trivially small or simple, as the results would then be ea
 For these reasons we have selected the Ubuntu GNU/Linux distribution for this simulation.
 This distribution contains a large and active repository of components, millions of users, and a lot of freely accessible information in order to study.
 
-The second stage is to then decide what the invariants are and assign them values, these are the elements in the configuration that are not changed between different runs of the simulation.
+\section{Simulation Implementation}
+There are two different aspects for the implementation of the simulation.
+First the assignment of the variables in the configuration, these fall into two categories, context variables which do not change, 
+and ranged variables which are changed to answer specific questions.
 
-The third stage is to describe the values variables in the configuration, giving them a range or different values.
-
-\subsection{Invariants in the Configuration}
-The invariants in the configuration are static points in the configuration that do not change across many different simulation runs.
-The first invariant to be assigned is the time frame over which the simulation executes.
+\subsection{Context Variables in the Configuration}
+The context variables in the configuration are static points in the configuration that do not change across many different simulation runs.
+The first context variable to be assigned is the time frame over which the simulation executes.
 This leads to the assignment of the initial system invariant.
 The repository function and the probability a package is selected be be installed are also invariants, and their complexity will be described.
 
@@ -95,7 +92,7 @@ This is a problem that was briefly described in chapter \ref{simulation}, where 
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 Therefore, this has been left out of the simulation. 
 
-\subsection{Variables in the Configuration}
+\subsection{Ranged Variables in the Configuration}
 How the configuration of the simulation is altered to answer the necessary questions is through is limited to a small set of varaibles.
 These variables include the criteria the resolver updates and installs packages with,
 the cycle at which the users update and the probability a user will install a package.
@@ -106,12 +103,8 @@ The aspects of these variables that will be considered is the range at which the
 
 \subsubsection{Criteria}
 %%%What criteria will be considered
-
-%%%APT get criteria
-
-%%%P2 Criteria
-
-%%%Mancoosi settings
+Which criteria are selected to be used by the resolver to install or update the system will effect the way the system is evolved.
+The specific criteria that will be selected will be those that best suit each question. 
 
 
 \subsubsection{Update Cycle}
@@ -136,56 +129,51 @@ When distributing the user survey their logs where asked for as this may help wi
 %%%We can either use these values to bootstrap to our simulation, or we can define our own values to stress test.
 
 \subsection{Scripts of Processes}
-\subsubsection{Optimisations}
+The processes described in chapter \ref{simulation} have been implemented using a set of BASH and Python scripts.
+First these scripts generate a user action files, which is a store for user actions so that they can be reused with different configurations.
+These are then used with the criteria for installation and updating by a script to generate CUDF problems and execute the simulation.
+
+\subsubsection{Generate User Script}
+%%%The process used to generate files
+The generate user script is an implementation of the process described in figure \ref{generateuser}, it takes in the configuration and generates a set of tuples, which are stored in the user file format.
+An example of a user file is shown in figure \ref{userfile}.
+
+%%%The User file
+\begin{figure}[htp]
+\begin{center}
+1258110000.0;;;update
+1258196400.0;;;update
+1258282800.0;install:vinagre;;update
+1258369200.0;install:compiz-core;keep:vinagre;update
+1258455600.0;;keep:vinagre,compiz-core;update
+1258542000.0;install:gdebi;keep:vinagre,compiz-core;update
+  \caption[User File example]{An example of a User file}
+  \label{userfile}
+\end{center}
+\end{figure}
+
+This user file follows the grammar ``time;[install:PACKAGE[,PACKAGE]*]?;[keep:PACKAGE[,PACKAGE]*]?;[update]?''.
+This directly maps to the user action tuple with a time variable, an install action, a keep action, and an update action separated by a delimiter of ``;''.
 
 %%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
 The practical use of this algorithm differs in a few aspects, that should be discussed.
-Firstly, given the random process introduced by the user install action,
+Firstly, given the random process introduced by probabilities in the configuration e.g. user package installation,
 a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated in the actual script.
-This is also extended to allow multiple user update cycles, and multiple distributions for the probability the user installs a package.
-So the algorithm presented in the figure \ref{generateuser}, is wrapped allowing for the generation of mutiple users at a time for practicle reasons.   
+This allows the input of multiple values from the configuration variables update probability, user install distribution.
 
-The presented algorithms are abstractions of the actual scripts, executing in essentially the same way. 
-However, some practical changes were made in order to increase the decrease the resources consumed when the scripts are executed and make the scripts easier to use.
+The generation of multiple user action files has two benefits, it lowers the loading and processing of some of the data, notably package distributions, which can be intensive on computer resources.
+Also it makes the script more usable as generating many different user action files individually can be a time consuming task.
 
-%%%Upgrade command in CUDF altered to be upgrade: *
-The CUDF syntax and semantics, described in chapter \ref{background}, define the request section of the CUDF file.
-In this the upgrade command is described as being before a list of packages to upgrade,
-however in the generate CUDF pseudo code if the user selected to update the upgrade command is defined with ``*''.
-This syntax is a short hand used to upgrade all installed packages.
-As this script is called extensively throughout the simulation this shorthand saves writing the names of more than 1000 packages each time a CUDF is generated.
-This lowers can significantly lower the time to execute the entire simulation, but requires the solver understand and convert the shorthand to its original semantics.
-This is the only alteration to the CUDF syntax made throughout this research.
+The representation of the configuration variables for the user install distribution and the probability a package is installed have their own file formats.
+These are presented in figures \ref{userprob} and \ref{packageprob}.
 
-%%%Generating multiple users 
-The generate user pseudo code algorithm in figure \ref{generateuser} requires individual variable definitions in order to generate a single user.
-By allowing sets of data to be inputted, sets of update cycles and user install distributions, multiple users can be generated simultaneously.
-As loading and processing of some of the data, notably package distributions, can be intensive on computer resources, 
-creating multiple users simultaneously lowers recreating this data.
-It also makes the script more usable as creating multiple users to execute and compare is typically the goal,
-creating them at the same time makes the task less tedious.
-
-%%%Executing multiple users in a row
-As with generating multiple users, using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
-This is simply done by iterating over a set of user files inputting one at a time into the algorithm. 
-
-%%%The addition of the timeout
-One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best current solution.
-This is simply an integer representing the number of seconds that the solver is allowed to run for.
-The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
-
-\subsubsection{File types}
-The method for storing and reading this configuration is trivial or previously defined cases like the definition of a CUDF file or the representation of an integer for the update cycle.
-However, for the probability a package will be installed and the probability a user will select a package to install more complex so have defined two file types in order for easy storage.
-These file types are shown in figure \ref{userprob} and \ref{packageprob}, the simulation reads and maps these files to create and run the various configurations
-
-In figure \ref{userprob} the file is laid out as a list of lines, each line with a list of real numbers separated by the delimiter ``,''.
-Each line represents a user, each list of real numbers is a users probability distribution.
-Therefore, each line represents an different $UI$ value.
+In figure \ref{userprob} is an example of the file describing the probability disturbance of a users likely hood to install a number of packages.
+Each line represents a user, each list of real numbers is a users probability distribution separated by the delimiter ``,''.
+The first line then means that a user has a 75.5\% chance of installing 0 packages, a 17.5\% chance of installing 1 package and a 5\% chance of installing 2 packages per day.
 
 \begin{figure}[htp]
 \begin{center}
-75.0, 18.0, 5.0
+75.5, 17.5, 5.0
 73.0, 18.0, 6.0, 1.0
 54.0, 34.0, 9.0, 2.0
 \caption[Install Distribution Example File]{An example of a users installation distributions}
@@ -196,50 +184,111 @@ Therefore, each line represents an different $UI$ value.
 In figure \ref{packageprob} the file is laid out as a list of lines, each line is package name, then an integer separated by a comma.
 The integer is the weight which represents the likelihood the package will be selected to be installed.
 To convert this weight into the necessary probability, the individual package weight is divided by the the sum of all package weights. 
-Therefore, this file represents the variable $WP$.
 
 \begin{figure}[htp]
 \begin{center}
-synaptic,1840590
-firefox,1828354
-software-properties-gtk,1781797
-gnome-system-monitor,1771676
-gucharmap,1770369
-\caption[Weighted Package File Example]{An exmaple of a Weighted Package file, co }
+gstreamer0.10-plugins-ugly,1398598
+gstreamer0.10-ffmpeg,1389240
+scim,1273746
+pidgin,1185436
+gstreamer0.10-plugins-bad,1147125
+notification-daemon,1115926
+\caption[Weighted Package File Example]{An example of a Weighted Package file }
 \label{packageprob}
 \end{center}
 \end{figure}
 
-The user file is a set of actions taken by the user of the time period, shown in figure \ref{userfile}.
+\subsubsection{Execute Simulation}
+The scripts to generate the CUDF problem and execute the simulation, described in the chapter \ref{simulation}, 
+are used to take a set of user interactions and criteria for update and install and simulate a solvers evolution.
+These process are implemented in the scripts based directly off of their described processes. 
+However, some practical changes were made in order to decrease the resources consumed when the scripts are executed and make the scripts easier to use.
 
-\begin{figure}[htp]
-\begin{center}
-1258110000.0;;;update
-1258196400.0;;;update
-1258282800.0;install:vinagre;;update
-1258369200.0;install:compiz-core;keep:vinagre;update
-1258455600.0;;keep:vinagre,compiz-core;update
-1258542000.0;install:gdebi;keep:vinagre,compiz-core;update
-  \caption[User File example]{An exmaple of a User file}
-  \label{userfile}
-\end{center}
-\end{figure}
+%%%Executing multiple users in a row
+As many different sets of user actions require to be generated, executing one set at a time is a tedious task.
+Using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
+This is simply done by iterating over a set of user files inputting one at a time into the algorithm. 
 
-This user file follows the grammar ``time;[install:PACKAGE[,PACKAGE]*]?;[keep:PACKAGE[,PACKAGE]*]?;[update]?'',
-that is the time variable, an install action, a keep action, and an update action seperated by a delimiter of ``;''.
-The time variable here defines the date the actions are taken, given in milliseconds since the epoch.
-The install action is a list of packages the pseudo user has selected to install, separated by the delimiter ``,''. 
+%%%The addition of the timeout
+One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best solution currently found.
+This timeout variable is simply an integer representing the number of seconds that the solver is allowed to run for.
+The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
+It may effect certain criteria and strategies more than others, this may have an impact on the results and the decision between different strategies.
 
+\subsection{Verification}
+%%%How we tested and made sure that the output was what it should be
+The way in which this simulation is implemented is abstracted from the configuration that is provided.
+This means that creating a ``mock'' configuration in order to be tested is simple.
+This testing was simplified because of the separation between the processes of generating the user actions, generating the CUDF problem, and executing the simulation.
+The resolver was tested and thoroughly verified to work through the MISC, and its individual criteria where tested as well for correctness.
+
+%%%Generate User Actions
+The generation of the user actions was tested by first inputting various configuration and taking what actions where generated and ensuring that they conformed to the input.
+For instance, by stating a user will update 50\% of the time, creating a set of user actions and ensuring that it is correct, it can be assumed that function is correct.
+This was also done for the install distribution and the weighted packages input.
+
+%%%Generate CUDF
+This testing of the generation of the CUDF problem was tested through giving the script a configuration and user action, and ensuring that it generated the problem correctly. 
+For instance, giving the script a user action to install package ``a'' and keep package ``b'', then looking at the output problem for correctness.
+
+%%%Execute Simulation 
+The testing of the execute simulation script was done through extensively logging the process and ensuring the individual functions where correct.
+As this script is a simple iteration the main task is to ensure that all the functions occur in the proper order and that no exceptions occur.
+This can be done through passing it various inputs and ensuring that they are properly processed.
+The individual functions of \verb+FAIL+ and \verb+executeSolver+ can be verified separately.
+These can have various inputs and checked for correct output.
+
+%%%The resolver validation though MISC
+The resolver is the most complex code in this simulation, the verification of this has been described in chapter \ref{implementation}.
+This was done through testing and the entrance into two MISC competitions, which ensured third party verification of the core resolver.
+
+%%%The criteria validated through checking for correct constraints and estimates
+This process verified the resolvers implementation and some of the criteria defined.
+However, there are many criteria used in this simulation that where not verified through this process.
+Many of the criteria used in this simulation where verified through firstly ensuring the correct constraints where being generated, 
+and ensuring the output solution conforms to the constraints.
+They where adjusted for speed through testing them against many of the CUDF problem from the MISC.
 
 \section{Simulation Validation}
+The validation of the implementation of the simulation is accomplished though looking at the results outputted from the simulation.
+This is done in two ways, firstly by taking the results and ensuring that it conforms to what we believe the system should act like.
+The second way is through comparing these results with the output of the actual system.
 
-\subsection{Results Validation}
+%%%Face Validation
+Face validation is the process by which output of the simulation is given to experts in order to find if it behaves as they believe it should.
+The core output from this simulation is the resulting systems created during execution of the simulation.
+Looking at this output alone is difficult to state that it is correct, only that it looks correct.
 
-\subsection{Face Validation}
+\subsection{Controlled Validation}
+%%%Controlled Environment
+To attempt to validate this simulation a controlled environment was set up. 
+A computer had a recent Ubuntu version installed, and each day a script was executed that updated the system, and saved the repository and the system state.
+This information was then used to simulate this process and the results analyised for simlarity.
+%TODO  
 
+\subsection{Validation against User Log}
+%%%Real User Log
+To further validate this simulation, results configuration was used.
+This is where the output of a real system is compared to those created from the simulation.
+A user log that is from the Ubuntu distribution is used as the output from a real system. 
+From this log a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
+The update and install criteria are that used by the APT application, and the rest are the default contexts.  
+
+The results of the simulation given this configuration where then compared to see if the changes made to the simulated system where similar to that of the real system.
+%TODO
 
 \section{Questions}
-Given our methodology we want to answer specific questions using our defined simulation
+This simulation has been defined and implemented in order to answer questions about component system evolution.
+As asking questions can lead to further questions, defining what the scope of the project is again is important.
+
+The core question of this research is:
+
+``What effect does using component resolution with different strategies have on system evolution?''.
+
+From this question further, more specific questions have been derived.
+In this chapter these questions are attempted to be answered though using our simulation.
+
+The questions are broken into three parts; Question 1 is for strategies for updating; Question 2 is for strategies for installing; Question 3 is for the integration of both of these.
 
 \subsection{What properties does a user have that does nothing?}
 {}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.

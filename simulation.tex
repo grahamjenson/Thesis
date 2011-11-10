@@ -217,7 +217,7 @@ however, the most definitive test of a simulations validity is established by cl
 This is done through:
 \begin{itemize}
   \item \textbf{Results validation: } a comparable system is used to create results and compared with the results from the simulation for validation.
-  \item \textbf{Face Validation: } experts are given output of the simulation model and checked to see if it is consistent with how they percieve the system should operate.
+  \item \textbf{Face Validation: } experts are given output of the simulation model and checked to see if it is consistent with how they perceive the system should operate.
 \end{itemize}
 
 Further validation of the implementation can be accomplished with sensitivity analysis,
@@ -450,7 +450,7 @@ These variables are formally defined as:
 \end{itemize} 
 
 
-\subsection{Processes}
+\section{Processes}
 These processes are attempts to abstract and simplify the reality of the component system evolution.
 The process that simulates the evolution of a component system takes a configuration and first generates a set of ``user actions" a user may take.
 These user actions are then iteratively applied to the initial system though generating a CUDF problem,
@@ -459,7 +459,7 @@ then passing it to the resolver with the appropriate criteria to find the result
 The results of this process is then a set of systems that are created through the user actions.
 These will be different along the dimensions of the configuration.
 
-\subsubsection{User Actions}
+\subsection{User Actions}
 %%%Generate user scripts
 A user action is defined as a tuple with four values,
 \begin{enumerate}
@@ -526,6 +526,7 @@ function generateUserActions:
 
 
 
+\subsubsection{Initialisation}
 %%%Initialize the algorithm
 The \verb+generateUserActions+ algorithm first initializes three variables, \verb+UserActions+, \verb+keeps+ and \verb+days+.
 The \verb+UserActions+ list is returned at the end of the algorithm.
@@ -536,7 +537,7 @@ This ensures that after a component has been selected to be installed by a user 
 
 The \verb+days+ variable keeps a count of the days in order to maintain the update cycle. 
 
-%%%Describe the Installation and keep
+\subsubsection{Initialisation and Keep}
 For each iteration, the keep list is first assigned, then the components to install are assigned, finally to update or not to update is decided.
 
 The keep list is first assigned as it is essentially a list of previously selected components to install, and does not contain the list of components currently selected to be installed.
@@ -563,10 +564,26 @@ This makes the update action occur at regular intervals during the time period, 
 %%%Describe the output
 The output of this algorithm is the list \verb+UserActions+.
 
-\subsubsection{Execution}
+\subsubsection{Differences to Reality}
+The core differences from this model of a user to a real user are life cycle actions and correlation between actions.
+
+A user when first installing a system will likely have components that they require that are not in the default system, and therefore when starting will install a lot of components.
+This type of reasoning leads to life cycle actions, actions that are caused by events in the life cycle of the system.
+Another example of this may be that at the end of each month a user decides to look through what they have installed and remove unneeded packages.
+These actions add an extra dimension to the user model and process and will clearly change some results.
+However, it has been opted out of the simulation as a precise set of possible actions and associated parameters are difficult to define.
+Also as stated in their name they occur infrequently, if at all, and therefore it has been decided that they may not be significant.  
+
+One action may also impact the occurrence of another action, so that they are correlated to happen together.
+For example, a user may select to always update before they install, or to only remove a component directly after it has been installed.
+The complexity that can be introduced by these correlations could make this simulation significantly more complex.
+As these values may be different for each type of user and is probably more related to the person than the strategy they employ these have been deemed 
+
+\subsection{Execution}
 %%%Run the simulation
 The execution of the simulation takes the initial system defined in the configuration, and iteratively executes a set of user actions to create a timeline of systems.
 Each iteration is broken into two parts, the update and the installation, as these are the core actions the user can take and have a different set of criteria to optimise for.
+The update action is completed before and independently from the install action, this is the typical user interaction, and also ensures that if one action fails it will not impact the other.
 This iteration is described in the figure \ref{executeSimulation}.
 
 \begin{figure}[htp]
@@ -661,8 +678,16 @@ function generateCUDF:
 \end{center}
 \end{figure}
 
+%%%Upgrade command in CUDF altered to be upgrade: *
+The CUDF specification, described in chapter \ref{background}, define the syntax and semantics of the request a CUDF problem can have.
+This defines the upgrade request as a list of packages to upgrade,
+however in the generate CUDF pseudo code if the upgrade command is defined as ``*''.
+This syntax is merely a short hand used by this script to describe the common situation where the user wants to upgrade all installed packages.
+This shorthand, although not strictly part of the specification, is used extensively throughout the simulation as it often saves the writing more than 1000 packages names.
+It can significantly lower the time to execute a simulation, but requires the solver understand and convert the shorthand to its original semantics.
+This is the only alteration to the CUDF syntax made throughout this study.
 
-\subsubsection{The Output}
+\subsection{The Output}
 The ultimate output of this simulation will be a series of CUDF files that represent the system for each date over the time period.
 These files are accompanied with logs, that describe errors and the time it took to complete the operation of calculating that system.
 The CUDF files can then be processed to find the necessary data in order to answer questions about component system evolution.
