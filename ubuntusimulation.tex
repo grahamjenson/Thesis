@@ -2,20 +2,24 @@
 \chapter{Ubuntu Simulation}
 \label{ubunutsimulation}
 {}In this chapter the implementation of the conceptual model and simulation is described.
-{}This is then validated through testing, and comparing the results generated to the output of an actual resolver. 
+{}This simulation is validated through comparing the results of a real system to that produced by the simulation. 
 {}This simulation is then used to answer some questions related to component system evolution, where the results and conclusions are discussed.
 
-The selection of the component system for this simulation is probably the most important decision as it limits what information can be collected and used during the simulation.
-The selected component system should also contain enough information to the resolution necessary for all, or most, of the configuration elements.
-It should also not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
+%%%What a selected component system should be like
+The first choice in this implementation is the selection of the component system to study.
+The selected component system should contain enough information to the resolution necessary to create a realistic configuration.
+Also it should not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
 
-For these reasons we have selected the Ubuntu GNU/Linux distribution for this simulation.
+%%Why Ubuntu was selected
+For these reasons the Ubuntu GNU/Linux distribution has been selected for this simulation.
 This distribution contains a large and active repository of components, millions of users, and a lot of freely accessible information in order to study.
+This simulation is then based on this component framework.
 
 \section{Simulation Implementation}
 There are two different aspects for the implementation of the simulation.
 First the assignment of the variables in the configuration, these fall into two categories, context variables which do not change, 
 and ranged variables which are changed to answer specific questions.
+Also the implementation of the processes as scripts, creating a practical way of executing this simulation.
 
 \subsection{Context Variables in the Configuration}
 The context variables in the configuration are static points in the configuration that do not change across many different simulation runs.
@@ -107,14 +111,7 @@ Which criteria are selected to be used by the resolver to install or update the 
 The specific criteria that will be selected will be those that best suit each question. 
 
 
-\subsubsection{Update Cycle}
-%%%What range of the update cycle is an integer
-
-%%%What control/base default settings are upgrade never and upgrade daily
-
-%%%Analysis of these results and how they apply to the user model
-
-\subsubsection{Probability a user will install a Component}
+\subsubsection{Probability a user will Install or Update}
 %%%The probability of how many components a user selects to install
 
 %%%Never selecting anything to install is the control case
@@ -250,7 +247,11 @@ and ensuring the output solution conforms to the constraints.
 They where adjusted for speed through testing them against many of the CUDF problem from the MISC.
 
 \section{Simulation Validation}
-The validation of the implementation of the simulation is accomplished though looking at the results outputted from the simulation.
+The validation of the implementation of the simulation is an important step in the use of this simulation.
+It is done in an attempt to shows the similarities and the differences to reality.
+As a simulation is only an approximation it will never be identical to a real system, the hope is that it is different by a tolerable error. 
+
+This validation is accomplished though looking at the results outputted from the simulation.
 This is done in two ways, firstly by taking the results and ensuring that it conforms to what we believe the system should act like.
 The second way is through comparing these results with the output of the actual system.
 
@@ -279,50 +280,203 @@ The results of the simulation given this configuration where then compared to se
 
 \section{Questions}
 This simulation has been defined and implemented in order to answer questions about component system evolution.
-As asking questions can lead to further questions, defining what the scope of the project is again is important.
+Defining the scope of these question is important, to stop the snowballing effect where getting answers can lead to more questions. 
 
-The core question of this research is:
+The scope is defined through the core question of this research:
 
 ``What effect does using component resolution with different strategies have on system evolution?''.
 
-From this question further, more specific questions have been derived.
-In this chapter these questions are attempted to be answered though using our simulation.
+This question has been broken up into three sub-questions,
+\begin{itemize}
+  \item Question 1 looks at strategies for updating
+  \item Question 2 looks at different strategies for installing
+  \item Question 3 looks at combining of installing and updating strategies
+\end{itemize}
 
-The questions are broken into three parts; Question 1 is for strategies for updating; Question 2 is for strategies for installing; Question 3 is for the integration of both of these.
+In this section these questions are broken into specific questions which are attempted to be answered though using our simulation.
 
-\subsection{What properties does a user have that does nothing?}
-{}A user that never installs anything and never updates, has no dependence on any criteria so can be analysed independently.
-{}Such a user has interesting consequences for the speed at which their system goes out of date, the change in values of heuristics such as PageRank, HITS and instability,
-{}and the 
-
-\subsection{What update strategy is currently best for a given user type?}
-A user interacts with a resolver to evolve a system by installing, removing or updating packages.
-The way in which these interactions occur is usually related to the purpose of the system, and what the type of user.
-For instance, a server administrator is less likely to install a component into a system as the system has only one task and if it is working their is no need to change it, 
-however a desktop user will more likely install different packages because they use their system for many different tasks.
-How a user updates their system is also different along these lines, server admins. will likely only update when absolutely necessary as if it is not broken why fix it.
-Yet desktop users will update more frequently as they want the best system they can have, and new features or better performance are usually wanted.
+\subsection{Question 1}
+The most significant action for the evolution of a users system is through requesting to update its components.
+This action can effect all components in the system, and can cause major changes in the way in a systems structure.
+The strategy the user employs to update, involves how often they update, and what criteria they optimise their resolver for when updating.
+As the installation is ignored in these questions, the install probability is set to 0 in the configuration.
 
 
-\subsubsection{Update Criteria}
-{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
-{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
-{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
+\subsection{What are the extremes this strategy can cause?}
+As described in chapter \ref{strategies}, the two main user sterotypes are that of the conservative user, who never wants to change their system,
+and the progressive user, who wants to be most up to date.
+These two extremes of this strategy are first measured to find the range in which all questions can be answered.
 
-The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
-The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
-This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
-Therefore, the returned system for any update command can be the initial system.
-This means that if a criteria, such as changed, or hamming where minimised as the most important  
+An extreme conservative user never wants to change their system, therefore their update strategy is to never update.
+This will mean that there system will never update, and how fast they become out of date as this is what they are sacrificing is of interest.
+This means that the criteria used for updating is unnecessary as it is never updated, and the user update probability will be 0.
 
+On the other hand, an extreme progressive user will update every day with criteria where being up to date is the highest importance.
+This will make this system change as much as necessary in order to have the newest components.
+Specifically, the criteria that is used will be ``-uptodatedistance,-removed,-new'', and the user update probability will be 1.
+
+\subsubsection{Results and Analysis}
+The results are presented here.
+
+\subsubsection{Conclusions}
+These users represent only the most extreme users, and not the typical users strategy.
+However, all other strategies exist between these two giving us a range of exploration in further questions.
+
+\subsection{What is the effect of current systems with real users caused?}
+Through selecting a range of user submitted logs and extracting their update probabilities, a ``real'' users actions can be predicted.
+These actions can then be simulated using different criteria from current resolvers.
+
+The two resolvers that are being looked at are APT, the default Debian and Ubuntu resolver, and Eclipse P2, the Eclipse provisioning system.
+As described in chapter \ref{strategies} the criteria for APT is ``-removed,-new,-uptodatedistance'', and for P2 it is ``-uptodatedistance,-removed,-new''.
+The difference between these two resolvers is that APT is a conservative resolver, where Eclipse P2 is more progressive. 
+
+Using these defined configurations 10 runs for each of 5 selected users where executed. 
+These users where selected to represent a broad range of different update probabilities, and the amount of runs as different user probabilities will create different user actions.
+
+\subsubsection{Results}
+The results from this simulation are presented here:
+
+The results when compared to the two extreme users presented in the previous question:
+
+\subsubsection{Conclusion}
+These results are interesting to note for two reasons. 
+Firstly the difference over the time period when updating with either APT or Eclipse P2 is shown to be\ldots
+
+When compared to the extreme users, there is a significant amount of area that the conservative.
+How conservative users change their systems could be 
+
+\subsection{What effect does the update cycle have on the progressive and conservative strategies?}
+%TODO
+
+\subsection{Can we create a criteria that only installs stable components?}
+%%%We noticed something interesting
+An interesting relationship was noticed when looking at the release cycles of different components;
+components will often release a versions very close together then have long periods of not releasing.
+
+%%%It might be caused by this
+This effect may be caused by users of the package updating to the newly released verion, 
+finding and posting bug report to the maintatin, who then quickly fixes the bug and releases a new versions to resolve the issue.
+ 
+%%%Here is a real example of this happening
+An example of this described situation is show in figures \ref{apachelog} and \ref{apachebug}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+apache2 (2.2.20-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fix some regressions related to Range requests caused by the CVE-2011-3192
+    fix. Closes: #639825
+\ldots
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 04 Sep 2011 21:50:22 +0200
+
+apache2 (2.2.19-2) unstable; urgency=high
+
+\ldots
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 29 Aug 2011 17:08:17 +0200
+\end{alltt}
+\caption[Apache Changelog]{An extract from the apache changelog located on http://changelogs.ubuntu.com/}
+\label{apachelog}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+
+Reported by: Takis Issaris <takis.issaris@uhasselt.be>
+Date: Tue, 30 Aug 2011 16:09:01 UTC
+Severity: important
+Found in versions 2.2.9-10+lenny10, 2.2.16-6+squeeze2, apache2/2.2.19-2
+
+\ldots
+
+Package: apache2.2-common
+Version: 2.2.9-10+lenny10
+
+Yesterday evenings update broke our Apache server setup,
+\ldots
+\end{alltt}
+\caption[Apache Bug Report]{Extract from the bug report filed with Debian}
+\label{apachebug}
+\end{center}
+\end{figure}
+
+A summary of these evenets are:
+\begin{enumerate}
+  \item Apache developer Stefan Fritsch released a new version of their server, apache2/2.2.19-2, on 29 Aug 2011
+  \item Takis Issaris upgraded to this version which broke their system on 29 Aug 2011
+  \item Takis Issaris submits a bug report on 30 Aug 2011, where he and Stefan Fritsch discuss the causes
+  \item On 04 Sep 2011 Stefan Fritsch releases a new version 2.2.20-1 that fixes this bug
+\end{enumerate}
+
+
+
+\subsubsection{Measuring the Effect}
+By calculating the difference in days between each version of all components in the repository, 
+over the dates of the simulation how often this situation occurs, where packages are quickly updated, can be measured.
+In figure \ref{comeponentversionreleases} a graph is presented measuring the time difference between version releases.
+ 
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{ubuntusimulationpics/versionreleasedistribution}
+  \caption[labelInTOC]{Distribution of the releases of component versions between 31/10/2009 - 31/10/2010}
+  \label{comeponentversionreleases}
+\end{center}
+\end{figure}
+
+There are two points on this graph are noteworthy, firstly there is a large amount of components that release after 3 and 6 months.
+Secondly there is a smaller but significant amount of components that have been released less than a month after the previous release.
+
+The release of components after 3 or 6 month is probably due to the 6 monthly release cycle of Ubuntu.
+Where individual components will release new versions for each Ubuntu release for it to be included.
+
+\subsubsection{Effects of these releases}
+%%%If this happens a lot, then these effects will happen
+If this kind of release happens frequently to components in a repository, it causes much more change for a progressive user,
+and standard strategies leave both conservative and progressive users vulnerable to the possible bug.
+
+%%%A progressive user will experience a great deal more change with little benefit
+The main effect of this kind of release causes to a progressive user is their system will go through more changes with little benefit.
+As a progressive user will update frequently, it means they may upgrade to each release of a component.
+As the time between the releases are so close to each other this only introduces more risk, and has little benefit for the system.
+
+%%%Both types of users are vulnerable if the bug effects them
+Another problem caused by this type of release is that if the bug effects the system, conservative users as well as progressive users are vulnerable.
+Conservative users, although they update less frequently do update sometimes.
+The time in which they update could be between one of these releases and then the bug can be introduced into their system, 
+causing them to update once more, maybe introducing another bug.
+
+
+\subsubsection{Criteria}   
+The effects caused by these components that release soon after, i.e. within a month, of a previous release can be mitigated by taking into account when a component was released.
+This criteria will then wait a certain amount of time once a package has been released, ensuring that no more releases are coming.
+This idea is called ``Stable Version'', the main parameter that is required is the time in which to wait for a package to become stable.
+
+This stable release criteria is defined as a hard constraint that can be added to a users update criteria.
+%%%TODO
+
+To test this criteria, to see if it reduces the effects of a set of user values is selected from the logs and extremes to build sets of user actions.
+Through altering our progressive and conservative criteria to include the stable version criteria a range of values for the parameter of stable version is tested and measured for performance.
+The criteria are altered to ``-stableversion(N),-removed,-new,-uptodatedistance'' and ``-stableversion(N),-uptodatedistance,-removed,-new'' where N is a number from a selected range.
+
+\subsubsection{Results}
+Compare against extreme and normal update distances.
+
+\subsubsection{Conclusions}
+The addition of the stable version criteria is shown to improve both the conservative and progressive user criteria.
+
+It also shows that updating daily with a large stable version parameter is more conservative with better metrics than updating less frequently with no parameter.
 
 \subsection{Should the system be updated on or after a release?}
 
-\subsection{Can we create a criteria that only installs stable components?}
 
-\subsection{What effect does the update cycle have on the progressive and conservative strategies?}
 
-\subsection{What install criteria should our different strategies use?}
+
+\subsection{What is the effect of either progressivly or conservativly updating for reccommends as well?}
 
 
 \section{Summary}
