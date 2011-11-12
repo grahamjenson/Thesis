@@ -302,7 +302,8 @@ The strategy the user employs to update, involves how often they update, and wha
 As the installation is ignored in these questions, the install probability is set to 0 in the configuration.
 
 
-\subsection{What are the extremes this strategy can cause?}
+\subsection{What are the effects of the extreme update strategies?}
+%%%We answer this to find the range in which users can select their strategies
 As described in chapter \ref{strategies}, the two main user sterotypes are that of the conservative user, who never wants to change their system,
 and the progressive user, who wants to be most up to date.
 These two extremes of this strategy are first measured to find the range in which all questions can be answered.
@@ -322,7 +323,8 @@ The results are presented here.
 These users represent only the most extreme users, and not the typical users strategy.
 However, all other strategies exist between these two giving us a range of exploration in further questions.
 
-\subsection{What is the effect of current systems with real users caused?}
+\subsection{What are the effects of strategies that current users employed?}
+%%%What is currently done in order to update a system
 Through selecting a range of user submitted logs and extracting their update probabilities, a ``real'' users actions can be predicted.
 These actions can then be simulated using different criteria from current resolvers.
 
@@ -345,10 +347,29 @@ Firstly the difference over the time period when updating with either APT or Ecl
 When compared to the extreme users, there is a significant amount of area that the conservative.
 How conservative users change their systems could be 
 
-\subsection{What effect does the update cycle have on the progressive and conservative strategies?}
-%TODO
+\subsection{What effect does a users update frequency have?}
+%%%Why a user selects to upgrade at their update probability
+A user will select to upgrade their system in order to increase the functionality of their system and to reduce risk of bugs being introduced.
+These benefits are weighted against against the risk that it causes on their system due to the necessary change, to define the probability a user will upgrade on a given day.
 
-\subsection{Can we create a criteria that only installs stable components?}
+%%%We have already explored the extremems and some real user probabilities, now we explore this as a range
+The extremes of the users probability to upgrade, from updating every day to never upgrading, have been explored.
+Also, some users have been simulated to see the effect on their update probabilities extracted from the submitted user logs.
+Here, the update probability simulated over a range of possibilities, to find the relationship between it and the resulting systems probabilities.
+For instance, what is the difference between a user who updates every day to one that updates half as much?
+
+Specifically, the update probability is selected to be $[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]$,
+selected as they cover the range of all update probabilities.  
+The criteria will be the conservative ``-removed,-new,-uptodatedistance'', and progressive ``-uptodatedistance,-removed,-new''.
+Each strategy (expect where the update probability is 1 or 0), will be executed 10 times to give a range of possible outcomes.
+
+\subsubsection{Results}
+The results are presented
+
+\subsubsection{Conclusion}
+The difference between updating 1 and .5 is insignificant. 
+
+\subsection{What are the effects of only installing stable components?}
 %%%We noticed something interesting
 An interesting relationship was noticed when looking at the release cycles of different components;
 components will often release a versions very close together then have long periods of not releasing.
@@ -400,7 +421,7 @@ Version: 2.2.9-10+lenny10
 Yesterday evenings update broke our Apache server setup,
 \ldots
 \end{alltt}
-\caption[Apache Bug Report]{Extract from the bug report filed with Debian}
+\caption[Apache Bug Report]{Extract from the bug report \#639825, filed with Debian}
 \label{apachebug}
 \end{center}
 \end{figure}
@@ -472,9 +493,30 @@ The addition of the stable version criteria is shown to improve both the conserv
 It also shows that updating daily with a large stable version parameter is more conservative with better metrics than updating less frequently with no parameter.
 
 \subsection{Should the system be updated on or after a release?}
+A release of a component system is a milestone in the systems development.
+It involves the cooperation of many parties, inclusing the component systems managers, and the component developers.
+This usually has many formal aspects to it, in Ubuntu there is an official schedule which is followed, an example shown in figure \ref{ubuntuSchedule}
+
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{ubuntusimulationpics/ubunturelease}
+  \caption[labelInTOC]{The Ubuntu release schedule from https://wiki.ubuntu.com/LucidReleaseSchedule}
+  \label{ubuntuSchedule}
+\end{center}
+\end{figure}
+
+These releases have an effect on the amount of packages aded to a repository, as can be seen in figure \ref{}
+
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{ubuntusimulationpics/releasedatepacakges}
+  \caption[labelInTOC]{The amount of packages added to the repository in relation to the Ubuntu releases}
+  \label{ubuntuSchedule}
+\end{center}
+\end{figure}
 
 
-
+\subsubsection{Results}
 
 \subsection{What is the effect of either progressivly or conservativly updating for reccommends as well?}
 
