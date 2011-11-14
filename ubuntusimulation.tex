@@ -1,31 +1,33 @@
 
 \chapter{Ubuntu Simulation}
 \label{ubunutsimulation}
-{}In this chapter the implementation of the conceptual model and simulation is described.
-{}This simulation is validated through comparing the results of a real system to that produced by the simulation. 
-{}This simulation is then used to answer some questions related to component system evolution, where the results and conclusions are discussed.
-
 %%%What a selected component system should be like
-The first choice in this implementation is the selection of the component system to study.
-The selected component system should contain enough information to the resolution necessary to create a realistic configuration.
-Also it should not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
+The implementation of the previously defined simulation is accomplished through the exact definition of the configuration elements.
+In order to define these elements, first the decision of what component framework to study must be made.
+The selected component framework should contain enough information to the resolution necessary to create a realistic simulation configuration.
+Also, it should not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
 
-%%Why Ubuntu was selected
+%%%Why Ubuntu was selected
 For these reasons the Ubuntu GNU/Linux distribution has been selected for this simulation.
-This distribution contains a large and active repository of components, millions of users, and a lot of freely accessible information in order to study.
-This simulation is then based on this component framework.
+This distribution contains a large and active repository of components, millions of users, and a lot of freely accessible information in order to study it.
+
+In this chapter the implementation of simulation using Ubuntu is described.
+This simulation is then validated through comparing the results of a real system to that produced by the simulation. 
+Questions about component system evolution are then specified and answered using this simulation,
+with results and conclusions presented.
 
 \section{Simulation Implementation}
-There are two different aspects for the implementation of the simulation.
-First the assignment of the variables in the configuration, these fall into two categories, context variables which do not change, 
-and ranged variables which are changed to answer specific questions.
-Also the implementation of the processes as scripts, creating a practical way of executing this simulation.
+The two core artifacts that are created in order to implement this simulation are the definition and description of the configuration elements,
+and the implementation of the processes as scripts creating a practical way of executing this simulation
+
+The configuration elements are broken into two groups,
+the context variables which do not change over different simulations, 
+and variables which are changed to answer specific questions.
 
 \subsection{Context Variables in the Configuration}
 The context variables in the configuration are static points in the configuration that do not change across many different simulation runs.
 The first context variable to be assigned is the time frame over which the simulation executes.
-This leads to the assignment of the initial system invariant.
-The repository function and the probability a package is selected be be installed are also invariants, and their complexity will be described.
+This leads to the assignment of the initial system, the repository function and the probability a package aswell.
 
 %%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
 The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
@@ -45,7 +47,6 @@ The repository function must return the components in the repository as a CUDF f
 To accomplish this the Ubuntu repository was downloaded and annotated with the times that the package was uploaded.
 The mapping from Debian Package format to the CUDF (described in chapter \ref{implementation}) was then used to convert each of the downloaded packages into CUDF.
 These CUDF representations where then aggregated into days they where uploaded to the repository, which can then be used to create the repository function.
-Some packages are not included in the 
 
 %%%The downloading and scraping of the ubuntu repository
 The Ubuntu Repository, as with most open and free software, is freely downloadable.
@@ -60,6 +61,16 @@ Using the extensible syntax of CUDF we included a property ``date'', an integer 
 All the CUDF files where then aggregated into the days they where added (assuming GMT dates).
 These where then further combined into all the packages in a repository on a given day.
 Through using these aggregated repositories a function can easily be created to return the packages on a given day.
+
+\paragraph{Differences}
+This repository is different in one major way to that of a real repository used by Ubuntu users, in that it uses the entire repository.
+
+Through the use of meta-data files, the Ubuntu repository is broken down into different sections which the users system links to for sources of components.
+These meta-data files do not list only portions of the contents of the repository, for different life cycle reasons and separating core from third party software.
+Creating a single repository out of all files was necessary as the states of the individual repositories are not stored, 
+so finding what is included on a given date was impossible.
+The effect of this change is that the user is then assumed to have selected all the meta-data files as sources for their components.
+
 
 \subsubsection{Probability a component will be selected}
 %%%The probability a component will be selected
@@ -329,8 +340,8 @@ Through selecting a range of user submitted logs and extracting their update pro
 These actions can then be simulated using different criteria from current resolvers.
 
 The two resolvers that are being looked at are APT, the default Debian and Ubuntu resolver, and Eclipse P2, the Eclipse provisioning system.
-As described in chapter \ref{strategies} the criteria for APT is ``-removed,-new,-uptodatedistance'', and for P2 it is ``-uptodatedistance,-removed,-new''.
-The difference between these two resolvers is that APT is a conservative resolver, where Eclipse P2 is more progressive. 
+As described in chapter \ref{strategies} the criteria for APT is ``-removed,-new,-uptodatedistance'', and for P2 it is ``-removed,-uptodatedistance,-new''.
+The difference between these two resolvers is that APT is a more conservative resolver, where Eclipse P2 is more progressive.
 
 Using these defined configurations 10 runs for each of 5 selected users where executed. 
 These users where selected to represent a broad range of different update probabilities, and the amount of runs as different user probabilities will create different user actions.
@@ -376,7 +387,7 @@ components will often release a versions very close together then have long peri
 
 %%%It might be caused by this
 This effect may be caused by users of the package updating to the newly released verion, 
-finding and posting bug report to the maintatin, who then quickly fixes the bug and releases a new versions to resolve the issue.
+finding and posting bug report to the maintain, who then quickly fixes the bug and releases a new versions to resolve the issue.
  
 %%%Here is a real example of this happening
 An example of this described situation is show in figures \ref{apachelog} and \ref{apachebug}.
@@ -492,10 +503,10 @@ The addition of the stable version criteria is shown to improve both the conserv
 
 It also shows that updating daily with a large stable version parameter is more conservative with better metrics than updating less frequently with no parameter.
 
-\subsection{Should the system be updated on or after a release?}
-A release of a component system is a milestone in the systems development.
-It involves the cooperation of many parties, inclusing the component systems managers, and the component developers.
-This usually has many formal aspects to it, in Ubuntu there is an official schedule which is followed, an example shown in figure \ref{ubuntuSchedule}
+\subsection{How do major releases effect component evolution?}
+A release of a component system is a milestone in the system and repository.
+It involves the cooperation of many parties, including the component systems managers, and the component developers.
+This usually has many formal aspects to it, in Ubuntu there is an official schedule which is followed, an example shown in figure \ref{ubuntuSchedule}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -505,21 +516,127 @@ This usually has many formal aspects to it, in Ubuntu there is an official sched
 \end{center}
 \end{figure}
 
-These releases have an effect on the amount of packages aded to a repository, as can be seen in figure \ref{}
+This schedule involves multiple releases assuring quality of the final version, 
+and freezes on different aspects of the components and system to assure that they do not change once the required quality has been found.
+
+
+The consequences such schedules have on a repository is can be measured through comparing the activity of components added to the repository when compared to the different Ubuntu releases.
+The amount of components added to the repository in relation to four different releases can be seen in figure \ref{ubuntureleases}.
 
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{ubuntusimulationpics/releasedatepacakges}
   \caption[labelInTOC]{The amount of packages added to the repository in relation to the Ubuntu releases}
-  \label{ubuntuSchedule}
+  \label{ubuntureleases}
 \end{center}
 \end{figure}
 
+Three patterns can be seen in this figure, a build up to a release, a break after a release and a massive addition of components about two weeks after.
+
+The build up to the release of components being added to the repository is probably component developers adding their latest versions to be included in the new major release.
+The break after the release, where there is significantly less components added to the repository, is likely an effect of the freeze on addition of comopnents, while the new release stabilises.
+
+The massive addition of components usually two weeks after the release, is the most concerning aspect.
+Likely it is either a situation described previously where developers are receiving bug reports and adding fixes, 
+or developers adding components that were unable to be added due to the freezes imposed on the repository. 
+
+This leads to the question of how do these releases effect the evolution of a component system, because clearly they effect the repository.
+
+\subsubsection{Experiment}
+The simulations configuration is defined to execute over the Ubuntu 10.04 (Lucid Lynx) release.
+Therefore, this is used to identify some of the effects that occur due to major releases in a repository.
+There are some difference to reality that must be defined, firstly   
+
+The previously defined experiments are now analysed with a closer eye on this period before and after a release, to analyse the effects on different criteria.
+Specifically, the changes made to find if the changes increase in relation to the release date, and 
 
 \subsubsection{Results}
+The changes made to the system around the release date can be seen to increase significantly.
 
-\subsection{What is the effect of either progressivly or conservativly updating for reccommends as well?}
+The changes made using the stable criteria, are delayed, but also less as it waits for the system to stabalise.
 
+\subsubsection{Conclusion}
+Major releases effect the evolution of a component systems.
+
+This effect is felt mostly by users the update often and those that update progressivly.
+
+The stable criteria as defined mitigates some of this effect of this system by waiting for the components to stabalize in their changes.
+
+\subsection{What is the effect of updating for while satisfying maximising recomends satisfaction?}
+As well as their explicit dependencies, components can define dependencies that they recommend should be installed.
+These components are usually what has been tested and are likely to interact with little friction with other components.
+Therefore, by satisfying these recomendation the system should be functional, though these recomendation may conflict with other users criteria.
+
+Installing recommended pieces of software may duplicate functionality in  
+
+Testing how the maximising the recomendations impacts the evolution of the system using the three 
+
+Specifically, 10 runs for each of 5 selected users where executedusing the a
+conservative criteria ``-removed,-new,-unsat\_recommends,-uptodatedistance'', a progressive criteria ``-unsat\_recommends,-uptodatedistance,-removed,-new''
+and a mixed criteria ``-removed,-unsat\_recommends,-uptodatedistance,-new''.
+
+\subsubsection{Results}
+Graphs of system size, system change are compared to the typical P2, APT and extreme progressive crtieria.
+
+Life cycle, clearly the first update will hurt the most.
+
+Show the trade offs.
+
+
+\subsubsection{Conclusion}
+Installing with recommendation may be prefered to increase stability, though it significantly increases the amount of change in a system, mostly at the begning.
+
+\subsection{Graph metrics to lower change?}
+The selection of the newest version is selected as it is presumed that the highest version is the best in the range of possible versions.
+Graph metrics can measure the amount a component can be potentially be used.
+However, given that the repository is always changing and newer versions are always added, the relationship between these metrics and their components,
+is first needed to be studied in order to access this hypothesis.
+
+%%%TODO
+First we explore the way in which these values change over versions of components, because if it is linear it will not work.
+If the value always increases over versions then the latest version will always be installed,
+If the value always decreases then the least updated version is always installed, either of which can be much more easily calculated.
+
+\subsubsection{Results}
+Results from graph metrics that can be used.
+
+\subsection{What are the effects of a typical installation criteria?}
+When a component is installed into a system the criteria is always conservative as the installation action is meant to change only parts of the system related to the selected components to install.
+For instance, if the install criteria was progressive like ``-uptodatedistance,-removed,-new'', it would update the system when it installed, which is not its goal.
+
+The extent at which the installation criteria is conservative can be altered per user.
+The most conservative criteria criteria as described in \ref{strategies}  is ``-changed,-uptodatedistance'', this will only change a package if necessary and try to install uptodate versions.
+The least conservative criteria that a user may want is ``-removedcomponent,-uptodatedistance,-changed'', this will first minimise removing any component from the original system,
+then select uptodate components, finally minimising change.
+
+Installation distributions can be measured in two different dimensions, how many components per install, and how often they select to install.
+This gives us four typical users; a user who installs very few components infrequently; 
+a user who installs very few components often;
+a user who installs many components infrequently,
+and a user who installs many components often install many components often.
+
+Creating such user distributions is a difficult problem, as it involves creating realistic user interactions, which is very difficult.
+Therefore, 4 user install distribution from user submitted logs who subjectively meet these descriptions have been selected to represent the extreme users.
+These are simulated with the above defined criteria, to analyse the effect on component evolution.
+
+Given the significant randomness that is involved with the installation property, 30 different user action sets have been generated for each user.
+
+\subsection{Results}
+The effects of using these install criteria, focus on the 
+
+\subsection{Conclusion}
+This criteria is difficult to 
+
+\subsection{Effects of installing and updating of typical users?}
+Throughout these questions, criteria for updating and installtion, for progressive and conservative users have been defined and studied for their impacts on component system evolution.
+It is asked here what impact these have overall, when combined together and simulated.
+
+Specifically, four users will be created that express the sterotypes of extreme and moderarte versions of progressive and conservateive users.
+Then 4 user install distributions and update probabilities will be selected from the user submitted logs that represent these user types and be simulated with 30 different user action sets each.
+
+With these typical users, the simulation is run.
+\subsubsection{Results}
+The results are presented specifically showing the two main goals of limited uptodate
 
 \section{Summary}
 %%%A list of the answers gained from the questions
