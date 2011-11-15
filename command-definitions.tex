@@ -1,0 +1,75 @@
+%=====================================================================================
+%  User-defined Latex Commands
+%=====================================================================================
+
+% NATBIB Bibliography Style -- better names for harvard extended styles
+%\newcommand {\citen}         [1]{\citet{#1}} % as a noun eg. Blogs (2000)
+%\newcommand {\citeaffixed}   [1]{\citet{#1}}
+%\newcommand {\possessivecite}[1]{\citet{#1}}
+%\newcommand {\urlX}[1]{\textit{#1}}          % \url doesn't like to be movable
+
+%%----------------------------------------------------------------------------------------
+
+\newtheorem{defs}{Definition}
+\newtheorem{prof}{Proof}
+\newtheorem{prop}{Proposition}
+
+
+
+% put a todo item in brackets, like   (todo: expand detail here )
+\newcommand {\note}[1] {\todo[inline]{#1}}
+
+% Put comments in a margin box
+\newcommand {\thought}[1]{\marginpar{#1}}
+\newcommand {\aside}[1]  {\marginpar{\tiny{#1}}}
+\newcommand {\idea}[1]   {\marginpar{#1}}
+
+% Hide some text
+\newcommand {\hidden }[1]{}
+\newcommand {\hide }  [1]{}
+
+\newcommand {\product}[1]{\textit{#1}\texttrademark%
+                          \index{#1@\textit{#1}}%
+            }
+\newcommand {\fullref}[1]{\ref{#1},~p\pageref{#1}}   % -->  4.5, p29
+\newcommand {\fullrefi}[1]{\ref{#1}~(p\pageref{#1})} % inline -->  4.5 (p29)
+\newcommand {\fullrefp}[1]{(sec. \fullref{#1})}      % add parentheses and sec. -> (sec. 4.5, p29)
+
+\newcommand {\skipline} {\newline ~ \newline}
+\newcommand {\gap}      {\newline ~ \newline}
+
+\newcommand {\tab} {~~~}
+
+\newcommand {\naive} {na\"{i}ve }
+\newcommand {\degrees} {$^\circ$ }            % degree symbol
+
+\newcommand {\LLLc} {Lifelong Learning }
+\newcommand {\LLLs} {lifelong learning }
+\newcommand {\LLLsn} {lifelong learning}
+
+\newcommand {\ep} {ePortfolio}
+
+% Registered (R) in a circle
+\def\registered{{\ooalign{\hfil\raise.05ex\hbox{\tiny{R}}\hfil\crcr\mathhexbox20D}}}
+
+% TEXT FORMATTING SHORTCUTS
+
+\newcommand {\se}[1] {\small{\emph{#1}}}
+
+% put a quotation in its own unindented paragraph
+\newcommand {\inlinequote}[1] {\emph{#1}}
+
+%%==========================================================================================
+\newcommand {\shortquote}[1] {
+   \noindent \begin{quote}
+     \emph{#1}
+   \end{quote}}
+
+% Indented text, slightly smaller than usual, and italicised.
+\newcommand {\smallquote}[1] {\begin{quote}\noindent\small{\textit{#1}} \end{quote}}
+
+%%===========================================+=======================
+\newcommand {\longquote}[1] {
+   \noindent \begin{quotation}
+     \emph{#1}
+   \end{quotation}}

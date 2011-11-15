@@ -1,0 +1,221 @@
+\chapter{Strategies}
+\label{strategies}
+%%%The two core criteria a user must consider when evolving a component system (after the neccessity of having the systems constraints resolved)
+%%%are that the system should be up-to date while changing as little as possible
+The two core criteria considered during component system evolution are the maximisation of the versions of individual components, 
+and the minimisation of the change caused by the evolution to the system.
+Together these two criteria express that a system wants to be as up to date as possible, while changing as little as possible.
+Although these criteria must be considered in a CDR algorithm,
+they are not strictly defined, conflicting and for different users relate in different ways.
+In this chapter we explore the nature and definitions of the two criteria,
+and show that there is a significant gap between what is currently known and what we intend to explore. 
+
+%%%These constraints are clearly conflicting, causing a pareto front of possible solutions
+The first step toward finding optimal solutions is to define the criteria.
+The first criterion of a valid component solution is whether it has all its dependencies resolved,
+this can be tested by extracting information about dependencies from component meta-data.
+Suppose the user has also defined their preference for free and open source components;
+this is the second criterion where the licences of the components can be checked to match with this preference.
+Further suppose the system is in a resource constrained environment where size matters, 
+this motivates the final criterion to minimise solution size.
+
+%%%They are also ill/un defined criteria and relationships. 
+%%%This leaves a space open for exploration and experimentation of their defintion and relationships.
+
+
+\section{Progressive vs. Conservative}
+\begin{quotation}
+Motion or change, and identity or rest, are the first and second secrets of nature: Motion and Rest. 
+The whole code of her laws may be written on the thumbnail, or the signet of a ring.
+
+Ralph Waldo Emerson in "Nature", Essays, Second Series (1844)
+\end{quotation}
+
+%%%The force and resistance to change is a natural problem, here we use the metaphor of politics to show this.
+Changing to what is newer and better, but being wary of the change because of cost and risk is a conflicting problem in many domains.
+For instance, in politics, conservitism is the philosophy that emphasises minimal and gradual change in society, %TODO cite
+where progressivism promotes change and reform to governments.
+These two conflicting ideaologies must be resolved, if a government is to function. 
+As with component systems, 
+the forces of change brought about by newer versions of components and the resistance to change brought about by the harm it may cause
+are competing forces that must be resolved for a system to evolve.
+In this section we discuss the nature of these criteria, why they are important to consider and how they conflict.
+
+%%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old problems linger
+
+\subsection{Updating vs. Minimal Change}
+%%%These forces must also be resolved in software as well
+
+%%%The reasons for keeping a system up-to-date; the fixing of bugs security, the adding of functionality, 
+
+%%%The reasons for minimal change; through change unknown bugs could be introduced, the act of changing can create bugs, the effort of changing can consume resources  (e.g. network traffic).
+
+%%%Problems with defining version based or change based criteria
+
+%%%How Different users define and see these criteria (e.g. server admins like minimal change, developers like cutting edge)
+
+They are also not strictly defined as the mechanisms to either compare two systems versions or the change from a system,
+can be measured in different ways.
+
+The measure to use when determining version of a system from the versions of installed components varies.
+As a set of components can be versioned differently, 
+we need to explore functions that can aggregate the versions of different components together in a meaningful way.
+
+The Mancoosi organisation uses a metric that minimises the number of components in a system that have better versions, 
+e.g. a system $a-1,b-1$ if $a-2$ exists is $1$ out of date. 
+The Eclipse P2 implementation counts the amount of versions that are better for each component,
+e.g. a system $a-1,b-1$ if $a-2$ and $a-3$ exist, is $2$ out of date.
+Both of these take into account only the component and not the components that depend on it.
+
+The measurement of change that a system goes through during evolution is also difficult to define.
+The added, removed, updated, total changed, have all been considered as metrics before. 
+As with the version metrics, none of these consider the dependencies when looking at the change that is performed on the system.
+
+\subsubsection{Update Criteria}
+{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
+{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
+{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
+
+The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
+The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
+This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
+Therefore, the returned system for any update command can be the initial system.
+This means that if a criteria, such as changed, or hamming where minimised as the most important  
+
+Dangers of Update Distance, as the distance for an uptodate components is 0, installing a new non upto date component costs nothing. If we set it to 1, then it will minimise solution size.
+\subsection{The Relationship between Criteria}
+%%%There are extremist views on both sides of these criteria; server admin will change a system reluctantly where developers will constantly stay up-to date.
+
+%%%The actual relationships between these criteria though are unknown, thus the reasons for either view is based on intuition or assumption and not fact. 
+
+%%%How fast will a system fall behind if a user never upgrades, or how much risk is introduced by continually upgrading?
+
+%%%These questions can be answered by looking at the dependencies and relationships between criteria.
+
+Each time a user decides to evolve a component system, the decision must be made about the risks of the evolution.
+In an environment which is mission critical, all risk is eliminated and an unecessary change to the system is too risky.
+In a development environment where the user may be trying to fix potential problem, 
+or test different packages, then the risk is accepted as the system is essentially disposable, and a complete re-installation is not out of the question.
+These two strategies are represented in by the current depenceny resolution implementations, however very little middle ground is available for the customisation of applications.
+This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
+
+
+\subsection{Efficient Ordering of Criteria}
+%%%Conflicting criteria should be lexicographically last, as they have the hardest time optimising if it times out it will still have a pretty good solution
+
+%%%The last lex criteria should always be weighted such that it is availble for each component. The first half of the strategy guides the solution towards what is wanted.
+%%%An exmaple is we want to maximise pagerank in our solutions, +sum(pagerank) will work, but the optimal solution would then be to install as many components as possible.
+%%%So we minimise change first -change,+sum(pagerank), this will install as many components that have the same name. 
+%%%-changed,-newc,+sum(pagerank) will minimise change from original system, minimise the amount of new components that can be added, and then maximise pagerank, 
+%%%so only installing new components with the largest pagerank.
+
+%%%Criteria that group components are more efficient as they have smaller constraints, criteria should be ordered lexicographically as efficiently as possible.
+
+\section{Criteria}
+%%%Here we specifically define different criteria/heuristics from academia (Mancoosi, Lehman), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
+%%%All defined formally, and ready for use for the simulation in the next chapter
+
+\subsection{Simple}
+%%%Hamming
+The \textbf{Hamming} distance \cite{hamming1950error} is used here to define minimality of component systems.
+This distance is defined as the size of the symmetric difference of two sets $C_1,C_2$, 
+i.e. $d_H(C_1,C_2) = |C_1 \ominus C_2|$.
+This is a greedy search for minimality, 
+as selecting the minimal system based only on the component changes from the current system may result in more changes over the long term.
+
+
+\subsection{Mancoosi Criteria}
+%%%Here we define the criteria from Mancoosi
+
+%%%not up to date
+
+%%%removed
+
+%%%new
+
+%%%Reccommends
+
+%%%Trendy which is lex(removed, not up to date, reccommends, new)
+
+The \textbf{Paranoid} distance function, 
+defined by the Mancoosi (\textit{MANaging the COmplexity of the Open Source Infrastructure}) project\footnote{http://www.mancoosi.org/}, 
+is the lexicographic composition of two distance functions $removed$ and $changed$.
+It is defined such that each component has a name $C \rightarrow Name$,
+where the function $V: 2^C \times Name \rightarrow 2^C$ returns all components with a name in a set of components 
+(these are the different versions of a component).
+They are defined such that $removed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name) $ is nonempty and $V(C_2,name)$ is empty $\}|$,
+and $changed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name)$ is different to $V(C_2,name)\}|$.
+The removed function therefore only considers when all components of a name are removed. 
+
+The distance function is then defined $d_P(C_1,C_2)$ to return a pair $(a,b)$ such that $a = removed(C_1,C_2)$ and $b = changed(C_1,C_2)$.
+The distance order $\leq_{P}$ is lexicographically defined with respect to $C_R(X)$ as given two models $C_1,C_2$,
+$(a,b)$ equals $d_P(C_R(X),C_1)$ and $(a',b')$ equals $d_P(C_R(X),C_2)$ then
+$C_1 \leq_{P} C_2 $ iff $a < a' \vee (a = a' \wedge b \leq b')$.
+This definition states that removing a component is infinitely worse than adding one, 
+therefore we should expect this to generate larger solutions.
+
+\subsection{Lehman}
+%%%Lehman has outlined laws of evolution though empirical research, we can adapt these laws to see if they hold true and to what degree in component systems
+
+\subsection{JDepend}
+%%%Coupling 
+
+%%%Instability
+
+\subsection{P2}
+%%%Looking at the criteria from the P2 solver
+Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
+Its optimisation function minimises the removed components, while maximising the version of installed components, 
+we denote it's distance function as $d_{P2}$.
+This function is fully described by Le Berre and Parrin in \cite{leBerre2010}.
+The goal of combining these two criteria is to simultaneously update components while altering the system.
+This strategy can be seen as a preemptive change, so that a user will not need to later update currently installed components,
+therefore minimising future change.
+As this is the only minimal criteria that includes the goal to maximise the currently installed version 
+we expect more change during evolution.
+
+\subsection{Propagation Based Criteria}
+%%%We can create more informative criteria by analyising progation effects.\\
+{}A components dependence on another component creates a tangible connection that should be considered when evolving a system.
+{}This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
+{}or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
+{}This should be considered when making the choice to either remove or add a component to a system.
+{}By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+
+%%%Page rank as a metric, calculate page rank value for all 
+The structure of component dependencies can be abstracted to a graph, 
+and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
+we attempt to quantify the value of a component in a system.
+PageRank with priors estimates the probability of stopping on a node in a random walk over a directed graph given a set of starting nodes.
+We see this as an approximation to the probability that a component is depended on in a system.
+A directed graph $G = (V,E)$ is generated from the
+dependency rules such that $V$ is the set of components, and $(a,b) \in E$ iff there is a dependency constraint in $R$ 
+where $a \rightarrow c_1 \vee \ldots \vee c_n$ where $b = c_i$ for some $i$.
+The function $PR(a)$ denotes the PageRank of $a$,
+so given the set $C_R(X) \cup \{\Delta\}$ is the starting set of nodes, and the generated graph $G$,
+the distance function $d_{PR}(C_1,C_2) = \sum_{a \in (C_1 \ominus C_2)} PR(a)$,
+i.e. the distance is the sum of the PageRank values in the symmetric difference of the systems.
+This distance is the only one to consider the components relationships when calculating the effect of removing or adding them.
+Our hope is that by minimising the impact on the structure of the system, 
+this will minimise the necessary changes over a long period of time.
+
+%%%HITS, where we can identify hubs and authorities of packages and use this as criteria
+
+%%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
+
+\section{Optimisation}
+%%%What can be optimised? Here we go over these criteria and discuss given the limitation that PBO imposes on optimisation, how we can optimise.
+
+\section{Other Criteria}
+{}There are many other types of criteria that can be considered when judging the optimality of a solution.
+{}As we are trying to stay component model agnostic, the only information that can be used comes from the definition of components and component models laid out in Chapter \ref{background}.
+{}However, there are other criteria that maybe component model dependent from information in component meta-data (e.g., size, vendor and licence),
+{}component contracts and composition testing (e.g., reliability and speed),
+{}and community sourced meta-data stored in repositories (e.g., popularity).
+
+%%%Discuss information from component met-data
+
+%%%Discuss information from component testing (e.g. treaty, unit tests)
+
+%%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
+
