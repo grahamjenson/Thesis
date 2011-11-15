@@ -1,6 +1,6 @@
 
 the word "must" "always" is only used where it must be.
-the work "we" "I" must be chaged
+the words "we" "I" "our" "us" must be chaged
 However --> However, 
 package ---> component when not reffering specifically to an ubuntu or CUDF package
 
@@ -15,4 +15,9 @@ metamodel -->meta-model
 chapter --> Chapter
 section --> Section
 singular criteria --> criterion
- 
+
+
+References are PRESENT TENSE
+What has been done is PAST TENSE
+
+Numbers up to 10, as words

@@ -1,44 +1,48 @@
 
 \chapter{Ubuntu Simulation}
 \label{ubunutsimulation}
-%%%What a selected component system should be like
-The implementation of the previously defined simulation is accomplished through the exact definition of the configuration elements.
-In order to define these elements, first the decision of what component framework to study must be made.
-The selected component framework should contain enough information to the resolution necessary to create a realistic simulation configuration.
-Also, it should not be trivially small or simple, as the results would then be easily calculable making the simulation superfluous.
+%%%Previously we defined the conceptual model, this contains configuration variables used to simulate component system evolution
+In the previous chapter the simulations conceptual model was defined.
+This model contains variables used to configure the simulation of component system evolution.
+To execute this simulation, first these variables and their assignments must be defined.
+Before this is possible though, the component framework of the simulated evolution must be defined.
+The component framework should contain enough information to the resolution necessary to create a realistic simulation configuration.
 
 %%%Why Ubuntu was selected
-For these reasons the Ubuntu GNU/Linux distribution has been selected for this simulation.
-This distribution contains a large and active repository of components, millions of users, and a lot of freely accessible information in order to study it.
+The Ubuntu GNU/Linux distribution has been selected for this simulation as it fits these criteria.
+This distribution contains a large and active repository of tens of thousands of components, with information at the necessary resolution.
+Also, the open nature of its development and distribution makes it easy to find and access information.
 
-In this chapter the implementation of simulation using Ubuntu is described.
-This simulation is then validated through comparing the results of a real system to that produced by the simulation. 
-Questions about component system evolution are then specified and answered using this simulation,
-with results and conclusions presented.
+%%%In this chapter\ldots
+In this chapter the implementation of simulation using Ubuntu component framework is described.
+This involves firstly describing the assignment and domain of configuration variables and the simulation processes.
+Then the validation of this simulation, through comparing the results of a real system to that produced by the simulation, is described. 
+Finally, we define specific question about component system evolution which are answered using this simulation.
 
 \section{Simulation Implementation}
-The two core artifacts that are created in order to implement this simulation are the definition and description of the configuration elements,
-and the implementation of the processes as scripts creating a practical way of executing this simulation
-
-The configuration elements are broken into two groups,
-the context variables which do not change over different simulations, 
+In order to implement the simulation, the assignment of the variables used to configure the simulation, must be defined.
+These variables are are broken into two groups; the context variables, which do not change over simulation executions; 
 and variables which are changed to answer specific questions.
+The implementation of the simulation processes are then described, with the necessary practical alterations made. 
+
 
 \subsection{Context Variables in the Configuration}
-The context variables in the configuration are static points in the configuration that do not change across many different simulation runs.
-The first context variable to be assigned is the time frame over which the simulation executes.
-This leads to the assignment of the initial system, the repository function and the probability a package aswell.
+%%%Context variables are common attributes
+Some variables form the context of the simulation, these are static points that stay at a default assignment across simulation runs.
+This context is used to assign some variables in the configuration.
+They include the time frame over which the simulation executes, the initial system, the repository function and the probability a package will be installed by a user.
 
 %%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
 The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
 Specifically the simulation is run from October 21st 2009 for 365 days.
-The length of a year was selected as the overwhelming majority of users in our User Survey responded that their system was less than or a year old.
+The date was selected as it is recent and just after the major release of an Ubuntu version.
+The length of a year was selected as the overwhelming majority of users in our User Survey responded that their system was a year or less old.
 Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
 then the month in which it was released, e.g. 10.04 is the release in April 2010.
 Therefore, this time frame occurs over an intimidate release of version 10.04 in April 2010, which allows for experimentation involving the release date.
 
 %%%This time frame implies the initial system which is Ubuntu 10.09
-The time frame start was selected to coincide with the release of a new Ubuntu version, 9.10.
+The time frame start was selected to coincide with the release of the Ubuntu version 9.10.
 This version was then selected to be used as the initial system, as if the user just installed a new Operating System onto their system.
 Specifically the desktop i386 distribution was selected as it is the most popular among the users of Ubuntu.
 
@@ -346,6 +350,7 @@ The difference between these two resolvers is that APT is a more conservative re
 Using these defined configurations 10 runs for each of 5 selected users where executed. 
 These users where selected to represent a broad range of different update probabilities, and the amount of runs as different user probabilities will create different user actions.
 
+\cite{}
 \subsubsection{Results}
 The results from this simulation are presented here:
 
@@ -620,6 +625,8 @@ Therefore, 4 user install distribution from user submitted logs who subjectively
 These are simulated with the above defined criteria, to analyse the effect on component evolution.
 
 Given the significant randomness that is involved with the installation property, 30 different user action sets have been generated for each user.
+
+%TODO look at how the top 100 components install effect the system, for different criteria, how many components they add, and what common components are added!
 
 \subsection{Results}
 The effects of using these install criteria, focus on the 
