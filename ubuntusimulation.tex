@@ -29,14 +29,14 @@ The implementation of the simulation processes are then described, with the nece
 \subsection{Context Variables in the Configuration}
 %%%Context variables are common attributes
 Some variables form the context of the simulation, these are static points that stay at a default assignment across simulation runs.
-This context is used to assign some variables in the configuration.
-They include the time frame over which the simulation executes, the initial system, the repository function and the probability a package will be installed by a user.
+They are static because they are assumed to be universal for Ubuntu users, like the repository function and the probability a package will be installed by a user;
+or they are assumed to be independent of component evolution, like the time frame and the initial system.
 
 %%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
 The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
 Specifically the simulation is run from October 21st 2009 for 365 days.
 The date was selected as it is recent and just after the major release of an Ubuntu version.
-The length of a year was selected as the overwhelming majority of users in our User Survey responded that their system was a year or less old.
+The length of a year was selected as the overwhelming majority of users in our user survey (from section \ref{usersurvey}) responded that their system was a year or less old.
 Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
 then the month in which it was released, e.g. 10.04 is the release in April 2010.
 Therefore, this time frame occurs over an intimidate release of version 10.04 in April 2010, which allows for experimentation involving the release date.
@@ -47,98 +47,175 @@ This version was then selected to be used as the initial system, as if the user 
 Specifically the desktop i386 distribution was selected as it is the most popular among the users of Ubuntu.
 
 \subsubsection{Repository function}
-The repository function must return the components in the repository as a CUDF file, on any day over the course of the year.
-To accomplish this the Ubuntu repository was downloaded and annotated with the times that the package was uploaded.
-The mapping from Debian Package format to the CUDF (described in chapter \ref{implementation}) was then used to convert each of the downloaded packages into CUDF.
-These CUDF representations where then aggregated into days they where uploaded to the repository, which can then be used to create the repository function.
+%%%Repository function created through downloading the Ubuntu repository
+For any day in the time frame, the repository function must return the components in the repository as a CUDF file.
+This is a very detailed resolution of information, therefore much care must be taken in finding this information.
+This function was created through information gathered from the Ubuntu repository located at http://archive.ubuntu.com/.
+This repository contains the information to the minute of when the package was added, detailed enough for this simulation.
 
-%%%The downloading and scraping of the ubuntu repository
-The Ubuntu Repository, as with most open and free software, is freely downloadable.
-It contains all the packages that have ever been in the repository with the information of when the package was added.
-A web scraper was created to download all the packages, and then annotate the downloaded file with the information of when it was added to the repository.
-
-%%%The mapping of the packages to CUDF format including the date stamp
-Each package that was for the proper chipset (i386 or all), then had it's meta information from its ``control'' file extracted and converted into CUDF format.
-Using the extensible syntax of CUDF we included a property ``date'', an integer type that is the time in seconds since the epoch it was added to the repository.
-
-%%%Aggregated into dayly uploaded, then into the repository for a given day
-All the CUDF files where then aggregated into the days they where added (assuming GMT dates).
-These where then further combined into all the packages in a repository on a given day.
-Through using these aggregated repositories a function can easily be created to return the packages on a given day.
+%%%These are the steps that are taken to create the repository function
+The process from this repository to the simulations repositories function is as follows:
+\begin{enumerate}
+  \item All the packages where downloaded from the repository, and for each package the date it was uploaded to the repository was stored.  
+  \item All versions referenced in these packages where mapped to integers, and the packages control files were then mapped from Debian package format to CUDF (described in chapter \ref{implementation}).
+  \item Using CUDFs extensible syntax, an integer property ``date'' was added to each CUDF file, referencing the time in seconds since the epoch of the package was added to the repository.
+  \item All CUDF files where then filtered to include only packages that had the ``architecture'' property either ``i386'' or ``all'', ensuring the package could work on our simulated system.
+  \item The CUDF files where aggregated into sets such that on a given day that is the set of packages that existed in the repository.
+  \item The function then just returns the CUDF file that is for a given day.
+\end{enumerate}
 
 \paragraph{Differences}
-This repository is different in one major way to that of a real repository used by Ubuntu users, in that it uses the entire repository.
+%%%The main different is is that the entire repository is used here, where typically only a sub set is used
+The one significant difference between a real repository and this simulated repository function,
+is that a real Ubuntu user would likely use only a subset of the repository where this function uses all packages. 
 
-Through the use of meta-data files, the Ubuntu repository is broken down into different sections which the users system links to for sources of components.
-These meta-data files do not list only portions of the contents of the repository, for different life cycle reasons and separating core from third party software.
-Creating a single repository out of all files was necessary as the states of the individual repositories are not stored, 
-so finding what is included on a given date was impossible.
-The effect of this change is that the user is then assumed to have selected all the meta-data files as sources for their components.
-
+Through the use of meta-data files which list subsets of packages inside the Ubuntu repository, a user can select portions of the repository to use.
+These meta-data files are used for different life cycle reasons (e.g. separating unstable from stable) and separating core packages from third party software.
+Creating a single repository out of all files was necessary as the states of the individual repositories are not stored,
+so finding what is included on a given date is impossible.
+To map a real user to this simulated user, the real user would select all meta-data files to use the entire repository of packages. 
 
 \subsubsection{Probability a component will be selected}
 %%%The probability a component will be selected
-To calculate the probability a component will be selected, 
-the set of packages listed in the package app-install-package is weighted with their popularity from the Ubuntu popularity contest.
-The main drawback of this data is that not all packages a user may install are listed.
+Different users will be more likely to select different packages to install.
+However, as discussed to simulate this probability is impractical, and is likely impossible.
+Therefore, one simulated user probability will be created, this assumes that all users have the same likely hood of selecting packages.
+
+To define the probability a user will select a package to install, the problem can be broken into two questions:
+\begin{enumerate}
+  \item What packages would a user select to install?
+  \item How many systems have a package installed?
+\end{enumerate}
+These questions are answered using the set of packages listed in the package app-install-package with the Ubuntu popularity contest.
 
 %%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
-There are many of the packages in a repository that a user would not directly select to install.
-Most packages provide libraries, background daemons, interfaces between services; packages that are only needed through dependencies.
-A user would not likely install these as they do not directly allow the user to complete tasks in the system.
+Most packages in the repository a user would not likely directly select to install.
+These packages provide libraries, background daemons, interfaces between services; they are usually installed because other packages depend on them.
+Finding a set of packages that a typical user may select to install is difficult.
 
-The package app-install-data contains a list of applications, that are available in the repository, which the user may wish to install.
-This data is used by applications like the Ubuntu Software Center to provide a mechanism for a user to find a package they may wish to install.
-This comprehensive list currently\footnote{May 24th 2011} contains 2399 packages which the user may wish to install.
-Some of these packages are already installed in the initial system, and some are not available in the core repository.
+The package app-install-data contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
+This data is used by other applications, like the Ubuntu Software Center, to provide a mechanism for a user to find a package they may wish to install.
+Some of these a are already installed in the initial system, and some are not available in the core repository.
 After filtering such packages out, the list has 2087 packages that the user can select to install from. 
 
 %%%PopCon
-The list of packages provided through the app-install-data package must still be weighted for their probability to be installed.
+The probability a package from app-install-data may be selected by the user for installation, must still be weighted.
 For this task the data set available from the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/} is used.
-The Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/} is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
-Each week this automated survey is submitted by nearly two million users.
-It aggregates information on what packages a user has installed and what package a user actually uses.
+The Ubuntu popularity contest is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
+Each week this automated survey is submitted by nearly two million users, that contains information on what packages a user has installed and uses.
+The packages that are most popular are not the ones users most install, but packages that are most depended upon.
+
 Through weighting the list from the app-install-data package with the number of systems that package is installed on,
-the probability a package is selected to be installed can be calculated.
-With the amount of information that this provides it is likely a very accurate weighting.
+the probability a package is selected to be installed can be measured.
 
 %%%The core problem with this list is that not all packages that can be installed are listed, i.e. experienced users may install packages that are not applications, build-essential
 Although a user will more likely install packages from the app-install-data list, it is not a complete list of packages that a user may install. 
 For example, more experienced users may select to install packages that are libraries or development tools, that are not listed.
-The package build-essential which contains tools to build Debian packages, is not included in the list, though is regularly installed.
+The package ``build-essential'' which contains tools to build Debian packages, is not included in the list, though is regularly installed.
 This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
-Therefore, this has been left out of the simulation. 
 
-\subsection{Ranged Variables in the Configuration}
-How the configuration of the simulation is altered to answer the necessary questions is through is limited to a small set of varaibles.
+\subsection{Variables}
+How the configuration variables of the simulation is altered each time will help answer the necessary questions of this research.
 These variables include the criteria the resolver updates and installs packages with,
-the cycle at which the users update and the probability a user will install a package.
+the probability a users will update the system and the probability a user will install a package.
 These variables are selected as the focus of this study is on the strategy the user employs to evolve their system,
-and these are somewhat under the users control.
+and these are user and strategy dependent.
 
-The aspects of these variables that will be considered is the range at which they can be assigned.
+%%%The criterias impact and how we assign it
+The criteria the resolver optimises for when updating the system or installing a new components will have a major impact on the system.
+Many current approaches have been discussed in chapter \ref{strategies}, these will be compared with extreme and novel criteria.
 
-\subsubsection{Criteria}
-%%%What criteria will be considered
-Which criteria are selected to be used by the resolver to install or update the system will effect the way the system is evolved.
-The specific criteria that will be selected will be those that best suit each question. 
+%%%The update and instal
+The probability a user will update the system depends on the type of user they are.
+If they are a server administrator they may update infrequently, where a desktop user may update often.
+The two ways in which this value can be set is either a range between the extremes of updating every day or never updating.
+This is a form of sensitivity analysis, to see how this simulation performs under these conditions.
+The value could also be extracted from the user submitted logs from the survey (described in section \ref{usersurvey}), to bootstrap real users values.
 
-
-\subsubsection{Probability a user will Install or Update}
 %%%The probability of how many components a user selects to install
+The probability of how many components a user selects to install can be measured in two different dimensions, how many components per install, and how often they select to install.
+A user could install few to many packages, either infrequently or frequently.
+The minimum of these value is to never install any number of components, however there maximum is unbounded.
+This makes these variable difficult to assign a fake value, therefore the majority of assignments of this variable are from real user values extracted from the user submitted logs.
 
-%%%Never selecting anything to install is the control case
-With the survey a call some logs from users where collected.
+\subsubsection{Extracting Information from the User Submitted Logs}
+These variables of update probability and user install distribution can be extracted from the user submitted logs from the survey.
+Initially, 31 logs where submitted, these logs were filtered to be APT logs, of more than 15 days long.
+This resulted in 19 logs of between 23 and 277 days long to be processed.
 
-%%%We populate this field by randomly selecting from a set of real user rates.
+An extract from one of these logs is shown in figure \ref{aptlog}.
 
-%%%User Logs: cannot use other than Apt logs, count number of installations per day over a period of time, calculate how often they select to install
-Resolvers often keep logs of their activities, for reporting and bug tracking purposes.
-When distributing the user survey their logs where asked for as this may help with the definition of this field.
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+\ldots
+Start-Date: 2010-12-21 11:32:28
+Install: libnet-daemon-perl (0.43-1), libhtml-template-perl (2.9-1), libdbi-perl (1.609-1build1), mysql-client-core-5.1 (5.1.41-3ubuntu12.8), libdbd-mysql-perl (4.012-1ubuntu1), mysql-server-5.1 (5.1.41-3ubuntu12.8), mysql-client-5.1 (5.1.41-3ubuntu12.8), libmysqlclient-dev (5.1.41-3ubuntu12.8), libplrpc-perl (0.2020-2), mysql-server-core-5.1 (5.1.41-3ubuntu12.8), mysql-server (5.1.41-3ubuntu12.8), libmysqlclient16-dev (5.1.41-3ubuntu12.8)
+Upgrade: mysql-common (5.1.41-3ubuntu12.6, 5.1.41-3ubuntu12.8), libmysqlclient16 (5.1.41-3ubuntu12.6, 5.1.41-3ubuntu12.8)
+End-Date: 2010-12-21 11:33:03
+\ldots
+\end{alltt}
+\caption[APT log extract]{An extract of an APT log file}
+\label{aptlog}
+\end{center}
+\end{figure}
 
-%%%We can either use these values to bootstrap to our simulation, or we can define our own values to stress test.
+In this log file a set of packages where installed and a few upgraded on the date 2010-12-21 11:32:28. 
+
+These logs mainly describe the changes made to the system by APT, not necessarily what the user requested.
+This is because APT may be used through another application, like semantic, to install or update the system.
+As the the criteria of APT is known, some information about the action the user requested can be inferred.
+
+Given APT will never install or remove a component if the system is updated; 
+if a package is upgraded but none are removed or installed then the user probably selected to update.
+Also, if a package is installed, then the user requested a single package to be installed.
+This second rule is assuming that only one package was selected, and not two at the same time.
+
+Using these rules, each log is processed, and the variables of update probability and install distribution are measured.
+These results are presented in table \ref{userlogvariables}.
+
+\begin{table}
+\begin{tabular}{|l|l ||  p{8.5cm}|}
+\hline User \# & Update Probability & Install Distribution  \\ \hline \hline
+1  &  0.05	 & 	(0 : 95.0), (1 : 1.7), (2 : 1.7), (5 : 1.7)\\ \hline 
+2  &  0.14	 & 	(0 : 87.0), (1 : 5.6), (2 : 4.6), (3 : 2.8)\\ \hline 
+3  &  0.25	 & 	(0 : 78.7), (1 : 12.8), (2 : 3.5), (3 : 2.8), (4 : 0.7), (6 : 1.4)\\ \hline 
+4  &  0.25	 & 	(0 : 88.8), (1 : 6.9), (2 : 2.5), (3 : 1.4)\\ \hline 
+5  &  0.29	 & 	(0 : 79.3), (1 : 10.3), (2 : 4.6), (3 : 5.7)\\ \hline 
+6  &  0.32	 & 	(0 : 84.0), (1 : 9.5), (2 : 3.4), (3 : 1.1), (4 : 1.1), (5 : 0.8)\\ \hline 
+7  &  0.33	 & 	(0 : 85.2), (1 : 11.1), (2 : 1.2), (3 : 1.2), (5 : 1.2)\\ \hline 
+8  &  0.36	 & 	(0 : 83.6), (1 : 9.1), (2 : 2.9), (3 : 1.8), (4 : 1.5)\\ \hline 
+9  &  0.36	 & 	(0 : 72.1), (1 : 13.1), (2 : 6.6), (3 : 1.6), (4 : 3.3), (5 : 0.8), (7 : 1.6), (27 : 0.8)\\ \hline 
+10  &  0.41	 & 	(0 : 79.0), (1 : 10.2), (2 : 7.0), (3 : 0.6), (4 : 2.5), (12 : 0.6)\\ \hline 
+11  &  0.45	 & 	(0 : 66.0), (1 : 19.6), (2 : 7.2), (3 : 3.1), (4 : 1.0), (5 : 2.1), (18 : 1.0)\\ \hline 
+12  &  0.48	 & 	(0 : 52.2), (1 : 13.0), (2 : 13.0), (3 : 13.0), (6 : 4.3), (14 : 4.3)\\ \hline 
+13  &  0.48	 & 	(0 : 74.1), (1 : 14.8), (2 : 5.6), (3 : 3.7), (7 : 1.9)\\ \hline 
+14  &  0.49	 & 	(0 : 69.0), (1 : 14.0), (2 : 3.3), (3 : 5.0), (5 : 2.5), (6 : 0.8), (7 : 2.5)\\ \hline 
+15  &  0.55	 & 	(0 : 59.1), (1 : 15.9), (2 : 13.6), (4 : 9.1), (10 : 2.3)\\ \hline 
+16  &  0.68	 & 	(0 : 42.4), (1 : 22.8), (2 : 16.3), (3 : 3.3), (4 : 6.5), (5 : 2.2), (6 : 1.1), (7 : 1.1), (9 : 2.2), (15 : 1.1), (20 : 1.1)\\ \hline 
+17  &  0.73	 & 	(0 : 32.1), (1 : 10.7), (2 : 14.3), (3 : 5.4), (4 : 8.9), (5 : 3.6), (6 : 3.6), (7 : 8.9), (8 : 5.4), (10 : 1.8), (14 : 1.8), (15 : 1.8), (23 : 1.8)\\ \hline 
+18  &  0.79	 & 	(0 : 55.2), (1 : 24.1), (2 : 13.8), (4 : 3.4), (7 : 3.4)\\ \hline 
+19  &  0.96	 & 	(0 : 61.1), (1 : 28.7), (2 : 4.5), (3 : 2.5), (4 : 0.6), (5 : 0.6), (6 : 0.6), (7 : 0.6), (8 : 0.6)\\ \hline 
+
+\end{tabular}
+\caption[Extracted User Log Information]{The set of extracted update probabilities and user install distributions extracted from the submitted user logs.
+The install distributions are shown as a set of pairs, where the first element is the number of packages, and the second is the probability of this amount being installed, 
+e.g. (2 : 2.9) means the user has a 2.9\% chance of installing 2 packages on a day.
+For presentations sake, pairs that have less than .5\% probability are removed.}
+\label{userlogvariables}
+\end{table}
+
+As can be seen the lowest update probability is 0.05 or updating once every 20 days, and the highest was .96 so updating nearly every day.
+The user who installs the least has a 95\% probability of installing nothing on a given day, where the most active user doesn't install anything on 32\% of days.
+
+Some users have a probabilities of installing large amounts of packages in a single day, e.g. user 13.
+This is due to some users have large amounts of activity installing, separated by low activity.
+
+The correlation of these values is not explored in this relationship, here though the user who updates the least also installs the least,
+and the user who updates the most, is the most likely to install one package on a given day.
+
+These values can be assigned to their configuration variables in order to represent typical users and to answer different questions.
 
 \subsection{Scripts of Processes}
 The processes described in chapter \ref{simulation} have been implemented using a set of BASH and Python scripts.
@@ -147,7 +224,8 @@ These are then used with the criteria for installation and updating by a script 
 
 \subsubsection{Generate User Script}
 %%%The process used to generate files
-The generate user script is an implementation of the process described in figure \ref{generateuser}, it takes in the configuration and generates a set of tuples, which are stored in the user file format.
+The generate user script is an implementation of the process described in figure \ref{generateuser}, 
+it takes in the configuration and generates a set of tuples, which are stored in the user file format.
 An example of a user file is shown in figure \ref{userfile}.
 
 %%%The User file
@@ -170,16 +248,20 @@ This directly maps to the user action tuple with a time variable, an install act
 %%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
 The practical use of this algorithm differs in a few aspects, that should be discussed.
 Firstly, given the random process introduced by probabilities in the configuration e.g. user package installation,
-a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated in the actual script.
-This allows the input of multiple values from the configuration variables update probability, user install distribution.
+a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated.
+
+As the simulation will also compare multiple different combinations of values, the script allows the input of multiple user update probabilities and multiple user install distributions.
+This will output all combinations of these values as user action files.
 
 The generation of multiple user action files has two benefits, it lowers the loading and processing of some of the data, notably package distributions, which can be intensive on computer resources.
 Also it makes the script more usable as generating many different user action files individually can be a time consuming task.
 
-The representation of the configuration variables for the user install distribution and the probability a package is installed have their own file formats.
-These are presented in figures \ref{userprob} and \ref{packageprob}.
+\paragraph{Input}
+The way in which this generate user action script takes the user update probabilities, user install distributions and package probabilities are in individual file formats.
 
-In figure \ref{userprob} is an example of the file describing the probability disturbance of a users likely hood to install a number of packages.
+The user update probabilities is a file consisting of one line that are the probabilities separated by the delimiter ``,'', e.g. .9,.85,.4
+
+In figure \ref{userprob} is an example of the file describing the probability distribution of a users likely hood to install a number of packages.
 Each line represents a user, each list of real numbers is a users probability distribution separated by the delimiter ``,''.
 The first line then means that a user has a 75.5\% chance of installing 0 packages, a 17.5\% chance of installing 1 package and a 5\% chance of installing 2 packages per day.
 
@@ -219,7 +301,7 @@ However, some practical changes were made in order to decrease the resources con
 %%%Executing multiple users in a row
 As many different sets of user actions require to be generated, executing one set at a time is a tedious task.
 Using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
-This is simply done by iterating over a set of user files inputting one at a time into the algorithm. 
+This is simply done by iterating over a set of user files inputting one at a time into the process. 
 
 %%%The addition of the timeout
 One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best solution currently found.
@@ -230,7 +312,7 @@ It may effect certain criteria and strategies more than others, this may have an
 \subsection{Verification}
 %%%How we tested and made sure that the output was what it should be
 The way in which this simulation is implemented is abstracted from the configuration that is provided.
-This means that creating a ``mock'' configuration in order to be tested is simple.
+This means that it is possible to create a ``mock'' configuration to test how the simulation responds.
 This testing was simplified because of the separation between the processes of generating the user actions, generating the CUDF problem, and executing the simulation.
 The resolver was tested and thoroughly verified to work through the MISC, and its individual criteria where tested as well for correctness.
 
@@ -247,8 +329,8 @@ For instance, giving the script a user action to install package ``a'' and keep 
 The testing of the execute simulation script was done through extensively logging the process and ensuring the individual functions where correct.
 As this script is a simple iteration the main task is to ensure that all the functions occur in the proper order and that no exceptions occur.
 This can be done through passing it various inputs and ensuring that they are properly processed.
-The individual functions of \verb+FAIL+ and \verb+executeSolver+ can be verified separately.
-These can have various inputs and checked for correct output.
+The individual functions of \verb+FAIL+ and \verb+executeSolver+ can be verified through this process as well.
+
 
 %%%The resolver validation though MISC
 The resolver is the most complex code in this simulation, the verification of this has been described in chapter \ref{implementation}.
@@ -257,41 +339,77 @@ This was done through testing and the entrance into two MISC competitions, which
 %%%The criteria validated through checking for correct constraints and estimates
 This process verified the resolvers implementation and some of the criteria defined.
 However, there are many criteria used in this simulation that where not verified through this process.
-Many of the criteria used in this simulation where verified through firstly ensuring the correct constraints where being generated, 
+The criteria used in this simulation where verified through firstly ensuring the correct constraints where being generated, 
 and ensuring the output solution conforms to the constraints.
-They where adjusted for speed through testing them against many of the CUDF problem from the MISC.
+Although a criterion can be correct, it may be slow and requires adjustment through some heuristics.
+This was accomplished by running multiple large CUDF problems from the MISC to determine their speed and iteratively adjusting their heuristics to minimise time. 
 
 \section{Simulation Validation}
+%%%This is validated to measure the difference to reality to find if the error is tolerable
 The validation of the implementation of the simulation is an important step in the use of this simulation.
-It is done in an attempt to shows the similarities and the differences to reality.
-As a simulation is only an approximation it will never be identical to a real system, the hope is that it is different by a tolerable error. 
+As no simulation exactly describes reality, this step validates that our assumptions does not make the simulation differ from reality to extensively.
+Therefore, this not only highlights the similarities to real component evolution, but also the differences.
+The identification of differences is important, as the assumptions made will lead to errors, these can be measured to find if the simulation is within tolerable error. 
 
-This validation is accomplished though looking at the results outputted from the simulation.
-This is done in two ways, firstly by taking the results and ensuring that it conforms to what we believe the system should act like.
-The second way is through comparing these results with the output of the actual system.
+%%%This is done by ensuring the 
+This simulation is validated though looking at the results outputted from the simulation and ensuring they conform to expectations, 
+then compare them to the output of an actual system.
 
 %%%Face Validation
-Face validation is the process by which output of the simulation is given to experts in order to find if it behaves as they believe it should.
+Face validation is the process by which output of the simulation checked in order to find if it behaves as it should.
 The core output from this simulation is the resulting systems created during execution of the simulation.
 Looking at this output alone is difficult to state that it is correct, only that it looks correct.
+This process was iteratively done throughout development, as the core stakeholder is also the simulation developer.
 
 \subsection{Controlled Validation}
 %%%Controlled Environment
-To attempt to validate this simulation a controlled environment was set up. 
-A computer had a recent Ubuntu version installed, and each day a script was executed that updated the system, and saved the repository and the system state.
-This information was then used to simulate this process and the results analyised for simlarity.
-%TODO  
+To attempt to validate this simulation a controlled system was created that updates every day over a time frame of November 1st to 30th in 2011.
+A computer had Ubuntu 11.10 (Oneiric Ocelot) installed on it, every day a script that used APT to update the system, and then saved the repository and the system state.
+
+To validate the simulation, first we can look at the series of repositories, to find how different the assumption that the user uses all repositories is different from the default real user.
+Secondly the evolution of the system can be looked at and compared to a similar evolution within the simulation.
+
+\subsubsection{Comparing Repositories}
+%%%Look at the repositories, amount of components \ldots amount of versions\ldots 
+A core assumption with this simulation is that a user uses all components in the repository, 
+this was caused by the fact that the usual meat-repository data files are not stored at the required resolution.
+How significant the impact of this assumption can be measured through looking at the metrics and change of the repositories saved through this controlled system.
+
+%%%TODO Complete this validation
+
+\subsubsection{Comparing Systems}
+%%%Compare this output to the output from the simulation
+The output of this controlled system can be compared to the simulations output when setting the update criteria to mimic the APT criteria.
+The simulated evolution of the system can metrics can be compared, like the rate at which the system goes out of date, and the amount of change that occurs.
+These can be used as a broad measure of validity, as they are symptoms of the evolution they will be similar but not exact.
+
+%%%TODO Complete this validation
 
 \subsection{Validation against User Log}
 %%%Real User Log
-To further validate this simulation, results configuration was used.
-This is where the output of a real system is compared to those created from the simulation.
-A user log that is from the Ubuntu distribution is used as the output from a real system. 
-From this log a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
-The update and install criteria are that used by the APT application, and the rest are the default contexts.  
+To further validate this simulation, the submitted user logs were compared with the output of the simulation.
+Some of the user logs fall within the dates of the simulation, this means that by generating custom user action sets these users actions can be directly simulated.
+Their update probabilities and install distributions can also be extracted and used to create similar simulated users, to validate the creating of user action sets.
 
-The results of the simulation given this configuration where then compared to see if the changes made to the simulated system where similar to that of the real system.
-%TODO
+\subsubsection{Directly comparing User Logs}
+%%%Creating custom user action sets to validate that the simulation returns about the right results
+From these logs a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
+The update and install criteria that used by the APT application, and the rest are the default contexts.  
+
+%%%TODO Complete this validation
+
+\subsubsection{Validating Generating User Actions Sets}
+%%%Creating generated users, from the simulated versions to validate the generating of the users returns about the right results.
+The entire simulation depends on being able to generate users that abstract from real users.
+As discussed extensivly in this, and the previous, chapter this is a very difficult challenge.
+Through comparing generated user action sets with the real users that are meant to abstract them, the difference can be determined.
+Then by simulating these generated users, and comparing the results of the actions to the real system log the error that is caused by the generation can be measured.  
+
+%%%Comparing the user action sets to the logs
+
+%%%Comparing multiple generated users to the real thing
+
+%%%TODO Actually complete this validation
 
 \section{Questions}
 This simulation has been defined and implemented in order to answer questions about component system evolution.
