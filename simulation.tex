@@ -1,7 +1,9 @@
 \chapter{Simulation}
 \label{simulation}
+\epigraph{A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. A simulation is the implementation of a model over time. A simulation brings a model to life and shows how a particular object or phenomenon will behave.}{\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
+
 {}To evaluate various strategies when evolving a component system, the environment in which these evolutions occur must be studied.
-{}This study could be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
+{}This study can be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
 {}Each of these options is discussed and weighed for their costs and benefits.
 {}The simulation method is selected as it has the best attributes required for this research.
 
@@ -9,23 +11,17 @@
 {}The basic artifact of this methodology is a ``conceptual model'', this is an simplified abstraction of reality.
 {}It describes the individual sub-models of the user, repository, and resolver; the variables in the configuration of the simulation;
 {}and the processes in which these variables are used to simulate reality.
-{}This chapter is finished with the discussion of the validation process of this conceptual model.
+{}This chapter concludes with the discussion of the validation process of this conceptual model.
 
 \section{Problem Definition}
-The problem addressed in this thesis is outlined by the thesis question,
+The problem addressed in this thesis is outlined by the thesis question (previously defined in chapter \ref{introduction},
 
-``What effect does using component resolution with different strategies have on system evolution?''.
+\begin{quotation}
+``What effect does using component dependency resolution with different strategies have on system evolution?''
+\end{quotation}
 
-Component resolution, evolution strategies, and component system evolution have been reviewed in previous chapters, and are summarized as:
-\begin{itemize}
-  \item \textbf{Component Resolution} is a function that takes a set of component constraints and returns an optimal system given a set of criteria
-  \item An \textbf{Evolution Strategy} is the plan of action employed by a user through component resolution to evolve a system to attain the systems objectives
-  \item \textbf{Component System Evolution} is the process by which a component system is changed for maintenance or extension 
-\end{itemize}
-
-%%%What is the effect being measured to answer the question
-Therefore, the final outcome of this research is a measurement of the effect of these aspects on the evolution of a component system. 
-Though, what is the effects that are being measured?
+Component system evolution, component dependency resolution and evolution strategies have been reviewed in their respective previous chapters \ref{background}, \ref{cdr} and \ref{strategies}.
+To solve this problem, the effects being measured must be further defined.
 
 %%%The most important effects are related to the objective of the strategy
 The effects that are most closely studied are those that are a measurement of how effectively a strategy satisfies its objectives.
@@ -39,11 +35,11 @@ A given strategy may fulfill all its objectives, though degrade the system by so
 For example, the server administrators strategy may keep a system up to date with little change, 
 though it may increase internal complexity of the system making it unstable. 
 
-\section{How to answer the thesis question}
+\section{How to Answer the Thesis Question}
 %%%What we need to have to answer the question? A time line of systems created using different strategies.
 To study the effects of different strategies on component system evolution requires the study of the systems and how they change over a period of time given the strategy employed. 
 Each system along this evolutionary timeline can be studied and analysed for the effects of the strategy.
-For a given strategy multiple different timelines must be collected, to eliminate the effects from the choices of the user and not the strategy.
+For any given strategy multiple different samples of timelines must be collected as different factors create a range of possible outcomes of any strategy.
 These strategies can then be compared by the effects that are caused to the system.
 
 %%%How to get this timeline of systems
@@ -61,7 +57,7 @@ Resolvers with strategy specific criteria would also have to be developed and di
 After a period of time the information of the systems evolution could be retrieved and analysed.
 
 %%%Now the cons %How about incomparible users/ if they use different systems from differntn starting points will haveto be handeled
-This approach will create accurate results, as the data would be real and the validity easily accessed. 
+This approach will create valid results, as the data would be real making the validity easily accessed. 
 However, it has significant drawbacks,
 it will take long periods of time to create meaningful results, for each day of results a day has to pass.
 The most difficult hurdle will be finding users that will trust an experimental resolver to alter their real system.   
@@ -71,15 +67,14 @@ As even the slightest error from a resolver can cause a system to become unstabl
 To gain the trust of possible users the experimental resolvers would have to be thoroughly tested through a managed development cycle and be well maintained.
 Moving a component through this cycle can be itself a massive undertaking lasting several months. 
 For example, the development of Eclipse Plug-ins involves a component going through four phases 
-Proposal, Incubation, Mature, and Top-Level\footnote{http://www.eclipse.org/projects/dev\_process/development\_process\_2010.php};
-similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable\footnote{http://en.wikipedia.org/wiki/File:Debian-package-cycl.svg}.
+Proposal, Incubation, Mature, and Top-Level \cite{eclipseDevelmonetProject};
+similar to Debian's process of moving through the phases Unstable, Testing, Frozen, and finally stable \cite{Barth2005}.
 After it has been through this cycle, maintenance of the resolver will likely be required.
 This shows how much effort must be applied to earn a users trust, and this effort will likely outweigh the actual benefits.
 
 \subsection{Users in a Controlled Environment}
 %%%The pros and cons of using real users with pseduo systems
-To remove the necessity for a users trust, and to increase the efficiency of collecting results, 
-a study of users interacting with a system in a monitored and controlled environment could be executed.
+To increase the efficiency of collecting results a study of users interacting with a system in a monitored and controlled environment could be executed.
 Each user could be given different strategies and different tasks to perform on their system to approximate real interactions.
 
 This study could compress a years worth of interactions with a system into an hour, and produce results from real users. 
@@ -110,7 +105,7 @@ When analysing the results and forming conclusions from a simulation,
 the assumptions and abstractions made, must be taken into account. %TODO ref
 Therefore, the majority of the effort when creating a simulation is defining the problem in such a way that the reality is simplified, but not over simplified.
 
-\subsubsection{Why Simulate?}
+\subsection{Why Simulate?}
 %%%What is good about the simulation over the other two methods, speed at which results are generated, the cost to get the results, the control over the variables in the simulation.
 The advantages of simulating are the speed at which ideas can be tested and evaluated;
 the cost to test and get results; and the control over variables and configuration of the environment.
@@ -136,13 +131,13 @@ i.e. if more results are needed the simulation will not need to be re-validated.
 %%%Control
 The control over the results that a simulation returns far exceeds the other methods as models can be altered and tested where a real user cannot. 
 This control allows the testing of extreme situations, the sensitivity analysis of different variables,
-and the generation of possibly optimal but 'out of the box' ideas. 
+and the generation of possibly optimal but `out of the box' ideas. 
 For instance, when finding an optimal update probability for a user, a range of values can be simulated and analysed.
 If real users were used, the amount of users necessary to be found would be enormous to produce any significant results in this area.
 
 %%%Final words on why we simulate
 A simulation was used as it provides us with a cost/benefit ratio that is desirable, while potentially allowing an appropriate level of accuracy to draw meaningful conclusions.
-The main effort is then to create the simulation with valid models for the desired accuracy of this research.
+The main effort was towards creating the simulation with valid models for the desired accuracy of this research.
 
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''
@@ -150,6 +145,9 @@ The main effort is then to create the simulation with valid models for the desir
 {}This places validity and credibility of a simulation and the results it provides at a high priority.
 {}To create a valid and credible simulation the methodology that \cite{Law2005} outlines is followed.
 {}This methodology is a guideline for defining the study, collecting information, creating and validating models, and running the simulation.
+
+This methodology has been used in numerous contexts. %TODO
+
 {}In this section the methodology is described and aligned to this study's stated objectives. 
 {}The steps that it states should be taken to create a valid simulation, and how the simulation will be created and what it will produce for this study are then discussed.
 
@@ -164,10 +162,11 @@ This reduces the credibility of the simulation to be used in future as a tool.
 A simulation is an abstraction and simplification of reality, often created as using an actual system can be disruptive, not cost-effective, or simply impossible.
 In this context,
 
-``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.''
+\begin{quotation}
+``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.'' \cite{Law2005}
+\end{quotation}
 
-The later part is an important aspect of validation, as the accuracy of the simulation is directly dependent on the problem and questions the study addresses.
-A simulation that is 99\% accurate may cost significantly more to produce than one that is 90\%, but provide little additional benefit given the specific information it is required to create.
+The latter part is an important aspect of validation, as the accuracy of the simulation is directly dependent on the problem and questions the study addresses.
 Therefore, the definition of the problem will directly lead to the modelling and scope of the simulation.
 
 %%%What is credible
@@ -179,7 +178,7 @@ The simulation produced by this study to identify the effect of different strate
 and must be credible for these results to be trusted.
 
 \subsection{Seven Step Method}
-This methodology has a seven step approach to creating a valid and credible simulation.
+The methodology presented in \cite{Law2005} has a seven step approach to creating a valid and credible simulation.
 These steps are; formulating the problem; collecting information and data to construct a conceptual model; validating the conceptual model;
 implementing (programming) the model; validating the programmed model; designing, conducting and analysing experiments; and documenting and presenting the simulation results.
 
@@ -205,7 +204,7 @@ This provides feedback as to the direction of the conceptual model, ensuring tha
 
 \subsubsection{Step 4: Implement the conceptual model}
 The implementation of the conceptual model must also be executed and documented in a way that allows others to replicate and repeat the process.
-The artifacts created during this process must be verified to work correctly, this can be accomplished through test-cases and debugging.
+The artifacts created during this process must be verified to work correctly, this can be accomplished through test-cases and debugging \cite{Pressman1992}.
 
 \subsubsection{Step 5: Validate implementation}
 There is no completely definitive approach to validating the simulation,
@@ -243,13 +242,17 @@ This is because the limits of the projects resources excludes the employment of 
 This may reduce the validity of the end model, but these restrictions have been made when only necessary,
 and done so in a manner that attempts to minimise negative effects.
 
+\subsection{Alternate methodologies}
+%%%TODO
 \section{Conceptual Model}
-In this section the ``conceptual model'' is presented.
-This model is made up of three sub-models, the user model, the resolver model, and the repository model.
-These models abstract their real counter parts and include variables to configure the simulation.
+In this section the ``conceptual model'' of the process of component evolution using component dependency resolution.
+This model describes the core elements of involved in this evolution, as well as the interactions between them.
+The goal of the conceptual model is not to specify concrete values to the simulation, 
+but as an abstract description that can be configured to ultimately answer the thesis question.
 
-The conceptual model also includes the processes that simulate the evolution of a component system.
-The core process first generates user actions which are then iteratively used to create CUDF problems to be solved by the resolver.
+In this section, the three sub-models, the user model, the resolver model, and the repository model that make up the conceptual model are discussed.
+These models contain variables that configure the simulation to represent various environments.
+The processes used to simulate are also part of this conceptual model, and how they use the configuration to simulate component evolution is described. 
 
 \subsection{User Model}
 %%%The user can in reality execute many actions
@@ -269,9 +272,9 @@ The initial system the user installs is also modelled here, as this is the start
 %%%Update
 \subsubsection{Update}
 %%%The update action
-Probably the most executed action by the user is the request to update their system.
+A common action requested by the user is to update their system.
 This involves looking at the repository and trying to find newer versions of currently installed components to replace the current versions.
-This action is taken as it is thought that newer versions have increased functionality and/or include bug fixes that make the system more stable.
+This action is taken as it is thought that newer versions have increased functionality or include bug fixes that make the system more stable.
 However, this action can become quite complex as newer versions of components may conflict with other already installed components.
 This would make them not able to be installed, and leave the system slightly out of date.
 
@@ -292,15 +295,14 @@ When simulating, the information of what component a user will install and when 
 
 %%%What probability a package will be selected to be installed
 Determining the probability a user will select any component to be installed is difficult given the enormous amount of factors this relies on.
-The users job, location, current tasks, previously installed software, favourite colour\ldots 
-These may all effect what component the user selects to be installed.
+The users job, location, current tasks, previously installed software, favourite colour and numerous other aspects can determine what the user will select to install.
 Given that all this information is impractical to simulate, this problem is abstracted into the form of two questions;
 \begin{itemize}
-  \item What components may a user select to install
-  \item How likely would a user select to install any of these
+  \item What components may a user select to install?
+  \item How likely would a user select to install any of these?
 \end{itemize}
-This is represented by a weighted list of components, where the weights represent popularity,
-e.g. component ``A'' has a 10\% chance of being selected as the component to install, component ``B'' has a 5\% chance.
+This is represented by a weighted list of components, where the weights represent popularity;
+e.g. component ``A'' has a 10\% chance of being selected as the component to install, or component ``B'' has a 5\% chance.
 
 %%%The core problem with this is correlation between packages and user
 The core problem with this weighting of components is that it ignores the correlation between probability a component will be installed. 
@@ -310,32 +312,35 @@ It would require the analysis of a significant amount of systems, which would pr
 
 The next question is what is the probability that a user will install a component, and how many components?
 This is represented by a probability for the amount of components that a user may install on a day,
-e.g. they have a 80\% chance of installing nothing, a 15\% chance of installing one pace
+e.g. they have a 80\% chance of installing nothing, a 15\% chance of installing one component.
 
 \subsubsection{Initial System}
 %%%The initial system to start from is important, typically there are many to choose from
-The initial system the user has installed will have a direct effect on the results.
-Many systems will release different configurations of components that use the same repository.
-This is a typical use of components to create systems with different use cases as it means that a single component system can satisfy many different users with minimal effort.
+The starting system will effect how the system is evolved.
+Therefore, selecting an initial system to start evolving is an important issue.
 
-%%%Examples
+%%%What initial systems are there to chose from
+Many component frameworks will release various configurations of components that satisfy many use cases.
+This is analogous to software product lines \cite{clements2001software}, which increases the re-use of components and satisfy many different users with minimal effort.
 The Eclipse framework offers more than ten types of initial Eclipse installs for different users.
-The Ubuntu system offers at least three different (server, desktop, alternative) each for either amd64 or i386 chipsets.
-The selection of the initial system can depend on many aspects of the simulation, 
-though selecting the most popular installed system may result in broader results. 
+
+The Ubuntu distribution offers three different systems for use, server, desktop and alternative.
+Each of these also includes the choice of either amd64 or i386 chipsets.
+
+The selection of the initial system can depend on many aspects of the simulation, which should be considered when defining the questions to be asked.
 
 \subsubsection{Variables}
 A user model is then represented by four pieces of information:
 \begin{enumerate}
-  \item The cycle at which a user selects to update a system
-  \item The probability a component will be selected to be installed
-  \item The probability a user will select to install a component per day
+  \item The probability a user selects to update their system
+  \item The probability distribution over components that they will be selected to be installed
+  \item The probability distribution over the number of components a user will select to install on a given day
   \item The initial system
 \end{enumerate}
 
 
 \subsection{Resolver Model}
-How the resolver is configured to solve the component dependency problems is an important aspect of this simulation.
+The resolver is configured to solve the component dependency problems in defined in CUDF.
 Throughout this thesis the definition, implementation and extension of a component dependency resolver has been described.
 The assumption is that the resolver is a valid CUDF problem solver, and that it can be configured using different criteria.
 
@@ -437,17 +442,15 @@ These variables are formally defined as:
   \item the update cycle as $UpdateCycle$ as an integer
   \item the dates between the start date and the start date plus the number of days as $DATES$ is a list of integers of seconds since the epoch.
   \item the repository function $Rep(d)$ which returns a CUDF object for the given date $d$
-  \item the probability a component will be selected to be installed is a set of pairs $ComponentProb \in C \times \mathbb{R}$ which maps a component to a real number between $0$ and $1$ 
-  and whose sum for all real values is 1, i.e. $\sum_{\forall p,r \in P}r = 1$,
-  e.g. a set $ComponentProb = \{ (a,.8) , (b,.2)\}$ means there is an 80\% change a will be slected and a 20\% change b will be selected
-  \item the probability a user will install a component per day is represented as a set of pairs of non negative integers to real numbers $UserInstall \in \mathbb{N} \times \mathbb{R}$,
-  integer is the number of components and real number is the probability that amount of components will be installed, 
-  e.g.  a set $UserInstall = \{ (0,.8) , (1,.15), (2,.5)\}$ means the user has a 80\% chance of installing 0 components, a 15\% chance of installing 1 component and a
+  \item the probability a component will be selected to be installed is a set of pairs $ComponentProb \in C \times \mathbb{R}$ which maps to a probability distribution over the set of components,
+  e.g. a set $ComponentProb = \{ (a,0.8) , (b,0.2)\}$ means there is an 80\% chance $a$ will be selected and a 20\% chance $b$ will be selected
+  \item the probability a user will install a component on a given day is a set of pairs $UserInstall \in \mathbb{N} \times \mathbb{R}$, which maps to a probability distribution over the set of non-negative integers,
+  e.g.  a set $UserInstall = \{ (0,0.8) , (1,0.15), (2,0.05)\}$ means the user has a 80\% chance of installing 0 components, a 15\% chance of installing 1 component and a
   5\% chance of installing 2 components.
 \end{itemize} 
 
 
-\section{Processes}
+\subsection{Processes}
 These processes are attempts to abstract and simplify the reality of the component system evolution.
 The process that simulates the evolution of a component system takes a configuration and first generates a set of ``user actions" a user may take.
 These user actions are then iteratively applied to the initial system though generating a CUDF problem,
@@ -456,7 +459,7 @@ then passing it to the resolver with the appropriate criteria to find the result
 The results of this process is then a set of systems that are created through the user actions.
 These will be different along the dimensions of the configuration.
 
-\subsection{User Actions}
+\subsubsection{User Actions}
 %%%Generate user scripts
 A user action is defined as a tuple with four values,
 \begin{enumerate}
@@ -467,7 +470,7 @@ A user action is defined as a tuple with four values,
 \end{enumerate}
 
 User actions are organised into a list, ordered by the time the action occurs.
-This is generated through the algorithm presented as pseudo code in figure \ref{generateuser}
+This is generated through the algorithm presented as pseudocode in figure \ref{generateuser}
 
 \begin{figure}[htp]
 \begin{center}
@@ -479,22 +482,22 @@ ComponentProb
 UpdateCycle
 
 \textbf{OUTPUTS}
-UserActions
+userActions
 
 function generateUserActions: 
-    UserActions = []
+    userActions = []
     keeps = []
     days = 0
     for date in DATES:
-        UserAction = (0, [], [], false) 
+        userAction = (0, [], [], false) 
         //the date(0), install(1), keep(2) and update(3) tuple
         
         //What is the date
-        UserAction[0] = date
+        userAction[0] = date
         
         //What components to keep
         if keeps.length > 0:
-            UserAction[2] = keeps 
+            userAction[2] = keeps 
             
         //What components to install
         installs = []
@@ -506,27 +509,27 @@ function generateUserActions:
             keeps.append(component)
             
         if installs.length > 0:
-            UserAction[1] = installs 
+            userAction[1] = installs 
         
         //Update or not
         if days mod UpdateCycle == 0:
-            UserAction[2] = true
+            userAction[2] = true
         days++
-        UserActions.append(UserAction)
+        userActions.append(userAction)
         
-    return UserActions
+    return userActions
 \end{alltt}
-\caption[generateUser script]{Pseudo code of to generate a list of user actions to be used when executing the simulation}
+\caption[generateUser Pseudocode]{Pseudocode to generate a list of user actions}
 \label{generateuser}
 \end{center}
 \end{figure}
 
 
 
-\subsubsection{Initialisation}
+\paragraph{Initialisation}
 %%%Initialize the algorithm
-The \verb+generateUserActions+ algorithm first initializes three variables, \verb+UserActions+, \verb+keeps+ and \verb+days+.
-The \verb+UserActions+ list is returned at the end of the algorithm.
+The \verb+generateUserActions+ algorithm first initializes three variables, \verb+userActions+, \verb+keeps+ and \verb+days+.
+The \verb+userActions+ list is returned at the end of the algorithm.
 
 The variable \verb+keeps+ is an initially empty list, that is contains all the components the user has previously selected to install.
 This list is later translated into a ``keep: package'' property of the installed component with defined semantics in the CUDF specification.
@@ -534,7 +537,7 @@ This ensures that after a component has been selected to be installed by a user 
 
 The \verb+days+ variable keeps a count of the days in order to maintain the update cycle. 
 
-\subsubsection{Initialisation and Keep}
+\paragraph{Initialisation and Keep}
 For each iteration, the keep list is first assigned, then the components to install are assigned, finally to update or not to update is decided.
 
 The keep list is first assigned as it is essentially a list of previously selected components to install, and does not contain the list of components currently selected to be installed.
@@ -559,9 +562,9 @@ The update action is included if the day modulus the update cycle $UpdateCycle$ 
 This makes the update action occur at regular intervals during the time period, as if it was scripted or part of a user routine.
 
 %%%Describe the output
-The output of this algorithm is the list \verb+UserActions+.
+The output of this algorithm is the list \verb+userActions+.
 
-\subsubsection{Differences to Reality}
+\paragraph{Differences to Reality}
 The core differences from this model of a user to a real user are life cycle actions and correlation between actions.
 
 A user when first installing a system will likely have components that they require that are not in the default system, and therefore when starting will install a lot of components.
@@ -576,18 +579,18 @@ For example, a user may select to always update before they install, or to only 
 The complexity that can be introduced by these correlations could make this simulation significantly more complex.
 As these values may be different for each type of user and is probably more related to the person than the strategy they employ these have been deemed 
 
-\subsection{Execution}
+\subsubsection{Execution}
 %%%Run the simulation
 The execution of the simulation takes the initial system defined in the configuration, and iteratively executes a set of user actions to create a timeline of systems.
 Each iteration is broken into two parts, the update and the installation, as these are the core actions the user can take and have a different set of criteria to optimise for.
 The update action is completed before and independently from the install action, this is the typical user interaction, and also ensures that if one action fails it will not impact the other.
-This iteration is described in the figure \ref{executeSimulation}.
+This iteration is described in figure \ref{executeSimulation}.
 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
 \textbf{INPUT}:
-UserActions
+userActions
 InitialSystem
 UCRIT
 ICRIT
@@ -595,7 +598,7 @@ Rep
 
 function runSimulation:
     system = InitialSystem
-    for date,installs,keeps,update in UserActions:
+    for date,installs,keeps,update in userActions:
         if update:
             cudfFile = generateCUDF([],keeps,true,Rep(date),system)        
             outputCUDF  = date + "-update.cudf"
@@ -610,7 +613,7 @@ function runSimulation:
                 system = outputCUDF
             
 \end{alltt}
-\caption[Execute Simulation]{Pseudo code describing the execution of the simulation}
+\caption[Execute Simulation]{Pseudocode describing the execution of the simulation}
 \label{executeSimulation}
 \end{center}
 \end{figure}
@@ -619,7 +622,7 @@ function runSimulation:
 There are three additional undefined functions in this script, \verb+FAIL+, \verb+executeSolver+ and \verb+generateCUDF+.
 
 %%%Describing the FAIL function
-The \verb+FAIL+ a CUDF file and returns true if it is syntactically incorrect and false otherwise.
+The \verb+FAIL+ function takes a CUDF file and returns true if it is syntactically incorrect and false otherwise.
 This function does not check that the CUDF file conforms to the constraints necessary, only that it has an output syntactically correct.
 This is used in this situation to check if the solver has produced an output to a user action.
 If it has not produced a correct output then it is not used on the next user action executed. 
@@ -638,7 +641,7 @@ It does this by creating a new CUDF file with all of the components from the rep
 and changing the status of the components that are already installed in the system to be installed in the new file.
 It also changes the keep status of the components selected in the keeps list to \verb+package+, this will ensure that a version of this component is in the resulting system.
 It also generates the request for the CUDF from the selected components to install in the installs,
-and from the Boolean of whether to update or not.
+and whether to update or not.
 The algorithm to do this is presented in the figure \ref{generateCUDF}.
 
 \begin{figure}[htp]
@@ -670,7 +673,7 @@ function generateCUDF:
     
     return newCUDF
 \end{alltt}
-\caption[Generate CUDF Pseudo Code]{Pseudo code describing the generate CUDF algorithm}
+\caption[Generate CUDF Pseudocode]{Pseudocode describing the generate CUDF algorithm}
 \label{generateCUDF}
 \end{center}
 \end{figure}
@@ -678,13 +681,13 @@ function generateCUDF:
 %%%Upgrade command in CUDF altered to be upgrade: *
 The CUDF specification, described in chapter \ref{background}, define the syntax and semantics of the request a CUDF problem can have.
 This defines the upgrade request as a list of packages to upgrade,
-however in the generate CUDF pseudo code if the upgrade command is defined as ``*''.
+however in the generate CUDF pseudocode if the upgrade command is defined as ``*''.
 This syntax is merely a short hand used by this script to describe the common situation where the user wants to upgrade all installed packages.
-This shorthand, although not strictly part of the specification, is used extensively throughout the simulation as it often saves the writing more than 1000 packages names.
+This shorthand, although not strictly part of the specification, is used extensively throughout the simulation as it saves writing potentially many individual packages names.
 It can significantly lower the time to execute a simulation, but requires the solver understand and convert the shorthand to its original semantics.
 This is the only alteration to the CUDF syntax made throughout this study.
 
-\subsection{The Output}
+\subsubsection{The Output}
 The ultimate output of this simulation will be a series of CUDF files that represent the system for each date over the time period.
 These files are accompanied with logs, that describe errors and the time it took to complete the operation of calculating that system.
 The CUDF files can then be processed to find the necessary data in order to answer questions about component system evolution.
@@ -755,8 +758,7 @@ The feedback generated when a component causes a fault should ideally be a bug r
 By using the Launchpad API to extract bug information, the amount of bugs per component in the system was able to be measured.
 It was initially assumed that the number of systems that a component was installed on would increase the number of bug reports generated,
 as more users means more eyes and systems to find bugs.
-The Ubuntu Debian popularity contest was used then to  
-Therefore to see if this relationship existed the graph in figure \ref{bugsvspop} was created.
+The Ubuntu Debian popularity contest was used then to see if this relationship existed the graph in figure \ref{bugsvspop} was created.
 
 \begin{figure}[htp]
 \begin{center}
