@@ -1,28 +1,46 @@
 \chapter{Background}
 \label{background}
-{}Component-based software engineering is considered by many to be the future for development of software systems \cite{Szyperski2002},
-{}where instead of developing a monolithic system, 
-{}many small reusable units of execution are developed and composed into a single system.
-{}The specification of how these components are defined and used to create a system is given in the \textbf{component model}.
-{}This model can also support the evolution of the component systems by defining mechanisms to add, remove and replace components in that system.
+%%%What are components
+{}Component-based software engineering is considered by many to be the future for development of software systems \cite{Szyperski2002}.
+{}Its goal is to use many reusable units of execution that are developed and composed into a single system.
+{}This replaces the idea of developing large monolithic systems that bundle all functionality into one unit, with a more modular approach.
 
-%%%Manually evolving a system can be tedious, so we use component dependency resolution
-Evolving a system through individually adding and removing components can be tedious task 
-as components can have dependencies on other components which also need to be satisfied.
-Therefore, after the user has identified the wanted components, 
-those components' dependencies must be satisfied with other components, which themselves can have dependencies.
-Satisfying all these dependencies manually is a recursive, time-consuming and error-prone task to accomplish.
-However, as most modern component models require components to explicitly state their dependencies; 
-this enables component dependency resolution to build systems where all dependencies are satisfied.
+%%%What are component models.
+An important difference between software components and other modular approaches, is the \textbf{component model}.
+This is the specification of how software components are described and how they interact with each other to form the system.
 
-%%%A small example of such a problem.
+%%%Examples of component models
+There are various component models available, these can differ by functionally, platform, or their objectives for being created.
+These models have become successful in many domains, such as application frameworks, operating systems and embedded systems.
 
-In this chapter we go over the what a component is, and the difficulty in defining it.
-We then discuss what a component model is, giving and comparing current examples of them.
-Then discuss the evolution of individual components and component-based systems.
-We then discuss component dependency resolution, giving a broad view of its goals and use cases for component systems.
-Finally we give and compare different examples of component dependency resolvers for design-time and run-time, used in academia 
- 
+%%%What is evolution Evolution
+The component model typically includes specifications to help with the evolution of the component system.
+This evolution is the changing of the system, either for maintenance or to add functionality.
+To enable this evolution, the component model must define functionality that allows components to be added, removed or replaced in the system. 
+
+%%%What is Component Dependency resolution
+The relationships between components can be complex, therefore a component that is changed through this evolution may require further changes to the system.
+As these changes can be extensive, the function of component dependency resolution (CDR) was created to automate them.
+
+%%%Examples of CDRs
+There are currently many sucessful implementations of CDR's.
+These can be for development time and run time component models, both greatly decreasing the time it takes to evolve a component system.
+
+%%%How to implement CDR
+The problem of finding the necessary changes to the system is NP-Complete, and as there are many different possible solutions, finding the best one is NP-Hard.
+Therefore, the implementation of CDR requires to be robust and fast.
+Recently, the use of Boolean satisfaction (SAT) solvers, extended to handle pseudo Boolean constraints for optimisation has become popular.
+This method takes an exact description of the contraints of the problem and using a set of powerful tools quickly finds solutions to that satisfy all constraints.
+
+A specification, from the Mancoosi organisation, called CUDF has been defined to abstract this problem from the component model, and allow CDR implementations to be used in any context.  
+This specification is contains the necessary detail to express the core problem, and an extensible syntax to allow for component model specific detail.
+
+In this chapter; what a component and component model are is discussed with respect to component dependency resolvers.
+The evolution of individual components and component systems is then described.
+The component dependency resolution problem is described with its uses and purposed,
+then examples of its implementation are given and compared.
+Boolean satisfiability solvers, are described and their implementations examined, with their extension to pseudo Boolean constraints.
+Finally, the CUDF specification with its syntax and semantics is described in detail.
  
 \section{What is a Component?}
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
@@ -135,6 +153,7 @@ Therefore, lessening the change lowers the risk, and this is a very attractive f
 \subsection{Component Evolution}
 %%%Component evolution, i.e. the modification of components to create newer versions or branch existing versions.\\
 
+
 %%%What is a version?
 A version is the mechanism through which individual components evolve.
 It is a unique marker which is compariable to other versions such that they are ordered.
@@ -189,6 +208,15 @@ Debian package can be compiled for different CPU architectures.
 
 
 \subsection{Component System Evolution}
+%%%Manually evolving a system can be tedious, so we use component dependency resolution
+Evolving a system through individually adding and removing components can be tedious task 
+as components can have dependencies on other components which also need to be satisfied.
+Therefore, after the user has identified the wanted components, 
+those components' dependencies must be satisfied with other components, which themselves can have dependencies.
+Satisfying all these dependencies manually is a recursive, time-consuming and error-prone task to accomplish.
+However, as most modern component models require components to explicitly state their dependencies; 
+this enables component dependency resolution to build systems where all dependencies are satisfied.
+
 %%%Changing the component in the component systems by adding removeing components to support evolution\\
 Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
 Add, remove, upgrade, downgrade components in the system while it is running.
@@ -218,86 +246,7 @@ for adding, removing and updating components in package based operating systems 
 
 %%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
-\section{Boolean Satisfiability (SAT) Solvers}
-%%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
-
-%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
-Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
-This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
-The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
-Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
-
-%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
-
-%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
-
-%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
-
-\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
-%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
-
-%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
-
-\subsection{CHAFF Watched Literals}
-%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
-%TODO cite
-
-\subsection{Conflict Learning}
-%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly)
-
-%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
-
-%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
-
-\subsection{Literal Order}
-%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
-
-%%%The selection of a literal can be broken into two stages for modularity;
-%%%first selecting a variable that is very volatile,
-%%%second selecting a phase (negative or positive)
-
-\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
-%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-
-%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
-
-%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
-
-\subsection{Other Methods}
-\subsubsection{Integer Programming}
-%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
-\subsubsection{SMT Solvers}
-%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
-\subsubsection{Constraint Solver}
-%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
-
-\section{Common Upgradeability Description Format}
-%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
-{}\cite{treinen2009common}
-
-%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
-
-%%%In both regards it has succeded, there have been many competitions run, 
-%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
-
-\subsection{CUDF Syntax}
-%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
-
-%%%Package Formulas are the standard mechanism of dependence
-
-%%%Versions as Integers
-
-%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
-
-\subsection{CUDF Semantics}
-%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
-
-%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
-
-%%%It must be broad enough to define and solve real world problems
-
-
-\section{Design Time Dependency Resolvers}
+\section{CDR Implementations}
 %%%Design time dependency resolvers benefits the software engineer building a large complex system that can involve many libraries with complex relationships.
 
 \subsection{Apache Maven}
@@ -309,8 +258,6 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 \subsection{RubyGems bundler}
 %%% Bundler is a package dependency manager for RUBY gems (http://gembundler.com/)
 
-\section{Run Time Dependency Resolvers}
-%%%Run time dependency resolvers benefit users of the component system, who would rather use a systems functionality than maintain a complex system of interacting components.
 
 \subsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
@@ -410,7 +357,7 @@ the core of many applications with its Rich Client Platform. This is a large bas
 The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
 One implementation of note is the P2CUDF implementation, that uses SAT
 
-\section{Comparison of functionality}
+\subsection{Comparison of functionality}
 %%%The comparisons of these resolvers will focus on the functionality that they provide given their component model (we will not compare their implementations)
 
 %%%Multiple package installations 
@@ -429,3 +376,84 @@ One implementation of note is the P2CUDF implementation, that uses SAT
 %Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
 
 %%%Reccommendation System, soft dependency (is this even a good idea)
+
+
+\section{Boolean Satisfiability (SAT) Solvers}
+%%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
+
+%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
+Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
+This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
+The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
+Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
+
+%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
+
+%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
+
+%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
+
+\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+
+%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
+
+\subsection{CHAFF Watched Literals}
+%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
+%TODO cite
+
+\subsection{Conflict Learning}
+%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly)
+
+%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
+
+%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
+
+\subsection{Literal Order}
+%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
+
+%%%The selection of a literal can be broken into two stages for modularity;
+%%%first selecting a variable that is very volatile,
+%%%second selecting a phase (negative or positive)
+
+\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
+%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
+
+%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+
+%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+
+\subsection{Other Methods}
+\subsubsection{Integer Programming}
+%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
+\subsubsection{SMT Solvers}
+%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
+\subsubsection{Constraint Solver}
+%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
+
+\section{Common Upgradeability Description Format}
+%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+{}\cite{treinen2009common}
+
+%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
+
+%%%In both regards it has succeded, there have been many competitions run, 
+%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
+
+\subsection{CUDF Syntax}
+%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
+
+%%%Package Formulas are the standard mechanism of dependence
+
+%%%Versions as Integers
+
+%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
+
+\subsection{CUDF Semantics}
+%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
+
+%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
+
+%%%It must be broad enough to define and solve real world problems
+
+

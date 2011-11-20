@@ -278,16 +278,17 @@ This action is taken as it is thought that newer versions have increased functio
 However, this action can become quite complex as newer versions of components may conflict with other already installed components.
 This would make them not able to be installed, and leave the system slightly out of date.
 
-%%%Regular intervals as a user routine or script
-The update action can happen at regular intervals as it is typically automated or part of a users routine.
-This action can occur quite frequently, daily for many users, 
-or it can happen very infrequently, 
-as with server administrators updating very infrequently to minimise change to a potentially critical system.
-In this abstraction, the core variable for a users update action is the cycle in which it occurs,
-e.g. every 3 days the user updates.
+%%%Probability as the representation
+Any given day the user may select to update, the probability of update being selected is the representation of this action.
+This probability can differ significantly between users,  
+as the users goals and view of risk will impact their decision to update.
 
-%%%Install
+%%%Update a single component
+The user can select to update a single component in their system, this would have different effects on the system.
+However, this is rarely used when compared to the update system action, therefore is discarded from the user model.
+
 \subsubsection{Install}
+%%%Install
 A user typically requests to install a component to extend the functionality of the system they are using.
 This additional functionality could be to complete a given task, or as a future task may require it. 
 The resolver takes the component selected to be installed, and attempts to install it and its dependencies, while maintaining system stability.
@@ -307,7 +308,7 @@ e.g. component ``A'' has a 10\% chance of being selected as the component to ins
 %%%The core problem with this is correlation between packages and user
 The core problem with this weighting of components is that it ignores the correlation between probability a component will be installed. 
 Two or more components may complement their functionality, thus making their installation together more likely.
-This is impossible to determine with a weighted list, however this type of information is very difficult to calculate.
+This is impossible to represent with a weighted list, however this type of information is very difficult to calculate.
 It would require the analysis of a significant amount of systems, which would probably cost more than the benefits gained.
 
 The next question is what is the probability that a user will install a component, and how many components?
@@ -429,7 +430,7 @@ The initial system and the repository information will be store in the CUDF form
 The criteria to update and install will be defined in our modified MANCOOSI format defined in chapter \ref{criteria}.
 
 Some inputs are trivially defined;
-the update cycle is an integer representing days between updates;
+the update probability is a number between 0 and 1;
 the time frame is defined as the dates of the days (given in seconds since the epoch at Jan. 1st 1970) between a given start date and the number of days that the simulation should run for.
 
 These final inputs, the probability distributions of whether a component will be selected to be installed and how many components a user will select to install on a given day,
@@ -439,7 +440,7 @@ These variables are formally defined as:
 \begin{itemize}
   \item the initial system as $InitialSystem$ which is a CUDF object.
   \item the update criteria $UCRIT$ and install criteria $ICRIT$ as strings in the format of given in chapter \ref{criteria}
-  \item the update cycle as $UpdateCycle$ as an integer
+  \item the update probability as $UpdateProb$ is a number between 0 and 1
   \item the dates between the start date and the start date plus the number of days as $DATES$ is a list of integers of seconds since the epoch.
   \item the repository function $Rep(d)$ which returns a CUDF object for the given date $d$
   \item the probability a component will be selected to be installed is a set of pairs $ComponentProb \in C \times \mathbb{R}$ which maps to a probability distribution over the set of components,
@@ -479,7 +480,7 @@ This is generated through the algorithm presented as pseudocode in figure \ref{g
 DATES
 UserInstall
 ComponentProb
-UpdateCycle
+UpdateProb
 
 \textbf{OUTPUTS}
 userActions
@@ -487,7 +488,6 @@ userActions
 function generateUserActions: 
     userActions = []
     keeps = []
-    days = 0
     for date in DATES:
         userAction = (0, [], [], false) 
         //the date(0), install(1), keep(2) and update(3) tuple
@@ -512,11 +512,10 @@ function generateUserActions:
             userAction[1] = installs 
         
         //Update or not
-        if days mod UpdateCycle == 0:
+        if 1 == randomSelect(\{(0,1-UpdateProb),(1,UpdateProb)\}):
             userAction[2] = true
-        days++
-        userActions.append(userAction)
-        
+            
+        userActions.append(userAction)        
     return userActions
 \end{alltt}
 \caption[generateUser Pseudocode]{Pseudocode to generate a list of user actions}
@@ -535,7 +534,6 @@ The variable \verb+keeps+ is an initially empty list, that is contains all the c
 This list is later translated into a ``keep: package'' property of the installed component with defined semantics in the CUDF specification.
 This ensures that after a component has been selected to be installed by a user a component is not later removed by an action, like an update.
 
-The \verb+days+ variable keeps a count of the days in order to maintain the update cycle. 
 
 \paragraph{Initialisation and Keep}
 For each iteration, the keep list is first assigned, then the components to install are assigned, finally to update or not to update is decided.
@@ -558,8 +556,8 @@ with the operation \verb+ComponentProb.remove+.
 This function then must recalculate the distribution so that the sum of all probabilities equals 1 again.
 
 %%%Describe the Update
-The update action is included if the day modulus the update cycle $UpdateCycle$ is equal to 0.
-This makes the update action occur at regular intervals during the time period, as if it was scripted or part of a user routine.
+The update action is included if the function \verb+randomSelect+ selects to update from the set of pairs that represent the probability the user will or will not update.
+This set is defined as ${(0,1-UpdateProb),(1,UpdateProb)}$.
 
 %%%Describe the output
 The output of this algorithm is the list \verb+userActions+.
@@ -726,7 +724,7 @@ so that only the most important aspects of the problem can be selected to be sim
 It also filled in gaps of what was missing from the survey and model, giving direction for exploration.
 
 \subsubsection{Frequency of User Actions}
-%%%This showed that people interact mostly at regular intervals as an update 
+%%%How often do users do these actions
 The more frequently a user selects an action to evolve their system, the more important it is to the evolution of their system.
 The information gained from the survey provides confidence that not including the action to remove a component and abstract the requirement multiple repositories, 
 would not damage the validity of the results.
