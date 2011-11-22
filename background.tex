@@ -14,28 +14,32 @@ There are various component models available, these can differ by functionally, 
 These models have become successful in many domains, such as application frameworks, operating systems and embedded systems.
 
 %%%What is evolution Evolution
-The component model typically includes specifications to help with the evolution of the component system.
-This evolution is the changing of the system, either for maintenance or to add functionality.
-To enable this evolution, the component model must define functionality that allows components to be added, removed or replaced in the system. 
+The component model typically includes specifications assist the evolution of the component system.
+This evolution is the changing of the system over time, either for maintenance or to add functionality.
+To enable this evolution, the component model defines functionality that allows components to be added, removed or replaced in the system. 
 
 %%%What is Component Dependency resolution
 The relationships between components can be complex, therefore a component that is changed through this evolution may require further changes to the system.
 As these changes can be extensive, the function of component dependency resolution (CDR) was created to automate them.
 
 %%%Examples of CDRs
-There are currently many sucessful implementations of CDR's.
-These can be for development time and run time component models, both greatly decreasing the time it takes to evolve a component system.
+There are currently many successful implementations of CDR's.
+These can be used in the development of a component system or at run time to alter the currently used system.
 
 %%%How to implement CDR
-The problem of finding the necessary changes to the system is NP-Complete, and as there are many different possible solutions, finding the best one is NP-Hard.
+The problem of finding the necessary changes to the system is NP-Complete, and as there can be many different possible solutions, optimising this problem is NP-Hard.
 Therefore, the implementation of CDR requires to be robust and fast.
-Recently, the use of Boolean satisfaction (SAT) solvers, extended to handle pseudo Boolean constraints for optimisation has become popular.
-This method takes an exact description of the contraints of the problem and using a set of powerful tools quickly finds solutions to that satisfy all constraints.
+Recently, the use of Boolean satisfaction (SAT) solvers extended to handle pseudo Boolean constraints for optimisation, has become popular.
+This method takes a set of constraints that describe the problem and using a set of powerful tools quickly finds solutions to that satisfy all constraints.
 
-A specification, from the Mancoosi organisation, called CUDF has been defined to abstract this problem from the component model, and allow CDR implementations to be used in any context.  
-This specification is contains the necessary detail to express the core problem, and an extensible syntax to allow for component model specific detail.
+%%%How to describe all CDR problems
+Many component models share similar properties but the CDR implementations are not interoperable between these models.
+This comparing these implementations difficult, and reusing them outside of their component model impossible. 
+To solve this, a specification from the Mancoosi organisation called CUDF has been defined to abstract this problem from the component model.
+This specification contains the necessary detail to express the core problem, and an extensible syntax to allow for component model specific detail. 
+This allows the description of many CDR problems in a single format, and the use of various CDR implementations to solve them. 
 
-In this chapter; what a component and component model are is discussed with respect to component dependency resolvers.
+In this chapter; what software components, and component models, are is discussed with respect to component dependency resolvers.
 The evolution of individual components and component systems is then described.
 The component dependency resolution problem is described with its uses and purposed,
 then examples of its implementation are given and compared.
@@ -44,23 +48,24 @@ Finally, the CUDF specification with its syntax and semantics is described in de
  
 \section{What is a Component?}
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
-Software components ideals can be traced to M. D. McIlroy's paper \cite{McIlroy1969}, where he described his ideas industrializing software engineering through a software component sub-industry. 
+Software components ideals can be traced to \cite{McIlroy1969}, where the author describes his ideas industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
-However there is still much debate over how to define what a software component is, and what features it should have.\\
+However, there is still much debate over how to define what a software component is, and what features it should have.
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
-Dr Dobb's magazine published a set of articles by two leading researchers in software engineering, Bertrand Meyer, originator of the design by contract methodology, 
-and Clemens Szyperski, author of ``Component Software: Beyond Object-Oriented Programming''. 
-These articles \cite{szyperski_components_2000, szyperski_point_2000, meyer_what_2000,meyer_significance_1999} discuss the
-definitions of what a software component is as and how to use them.\\ 
-Szyperski defined components in the first edition of his book, \cite{szyperski_component_2002} as having three characteristic properties:
+A discussion between two leading researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight this difficultly of defining exactly what a software component is. 
+They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000,} the definitions of what a software component is and the importance of their use.
+
+%%%Szyperski's definition
+Szyperski defines components in \cite{Szyperski2002} as having three characteristic properties:
 \begin{enumerate}
   \item a unit of independent deployment
   \item a unit of third party composition
   \item has no externally observable state
 \end{enumerate}
 
-In the Dr Dobb's articles Szyperski defended his position against Meyers own enumeration of what a software components should be:
+%%%Meyers Definition
+Meyer's definition of software components is enumerated as:
 \begin{enumerate}
   \item May be used by other software elements (clients)
   \item May be used by clients without the intervention of the components
@@ -73,58 +78,286 @@ In the Dr Dobb's articles Szyperski defended his position against Meyers own enu
   \item Can be integrated into a system quickly and smoothly
 \end{enumerate}
 
+%%%Using a component model
+Others, like Heineman and Councill \cite{heineman2001component} have stated that components must conform to a component model, 
+\begin{quotation}
+A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.
+\end{quotation}
+
+Defining a component model as:
+\begin{quotation}
+A component model defines a set of standards for component implementation, naming, interoperability, customization, composition, evolution, and deployment.
+\end{quotation}
+
+%%%Other differences, architectural/implementation
+Exactly what is, and what is not a software component is then in dispute amongst the community.
+As such, many different components models have been developed, each targeting various domains with different functionality and technical aspects.
+This diversity has inspired a classification approach from \cite{Crnkovic2011}, where components and component models are classified into a scheme.
+This effort highlights the difficulty in creating an exact definition of a software component. 
+
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
-%%%Our egotistical view of components is defined with relation to Component Dependency Resolution.\\
-{}As noted by Szyperski in \cite{Szyperski2002}, 
-{}formal concept analysis \cite{Ganter1999} is the observation that it is impossible to
-{}``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
-{}A definition can be found however, not by feature enumeration, but through stating the intention for the concept and exploring the technically inevitable consequences. 
-{}As our intention is to investigate component dependency resolution, we will define what a component is with respect our goal of using component dependency resolution.
+These problems with exactly defining a software component may stem from the fact that ``component'' is a natural concept.
+Observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002} is the problem that it is impossible to
+
+\begin{quotation} 
+``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
+\end{quotation}
+
+%%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
+However, a definition can be found, not by feature enumeration but through stating the intention for the concept and exploring the technically inevitable consequences \cite{Szyperski2002}. 
+As the intention of this study is to investigate component dependency resolution and evolution strategies,
+the definition of software component used will be in respect to these aspects.
 
 %%%This will not fit all views of what a component is (no definition will), but it eliminates unnecessary arguments so we can focus on CDR
-This view of a software components definition will not agree with every persons view of what a software component is, but then no view can.
-By only looking at aspects that are necessary for our topic we eliminate arguments over unnecessary semantics to focus on the core aspects of component dependency resolution. 
+This view of a software components definition will not agree with every persons view of what a software component is, but (as described above) no view can.
+By only looking at aspects that are necessary for our topic, the arguments over unnecessary semantics are eliminated, leaving only the core aspects of this research. 
 
-\subsection{A Software Component with respect to Component Dependency Resolution}
-For component dependency resolution to be used the component model must require the explicit definition of dependencies of all components
-and include mechanisms in which the composition of components can be altered.
-This definition leaves undefined many aspects in the space of component software, however these are superfluous when discussing dependency resolution therefore are ignored.
+\subsection{Software Component}
+The definition of a software component is given with respect to the evolution of the system using component dependency resolution.
+This definition specifies requirements on the component model that ensure it is applicable in this research.
+
+For CDR to be used with a component system, there are two core requirements, the component model must:
+\begin{enumerate}
+  \item require the explicit definition of dependencies between components
+  \item include mechanisms in which to compose or evolve a component system
+\end{enumerate}
+This definition leaves undefined many aspects of component model, however these are ignored as they are not related to CDR of component system evolution.
 
 %%%A component must have explict (computer readable) requirements on the context in which it can be used. Different from COTS requirements which are meant to be human readable.
-The core requirement of a component that enables the use of component dependency resolution, is the explicit definition of what context a component can be executed under.
- 
-%%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
-Being able to use dependencies in order to find a system that fulfils all component requirements is not entirely useful unless there exists mechanisms in which to build or change a system.
+To automate the resolution of dependencies between components, these dependencies must be explicitly defined and computer readable.
+These dependencies constraint the environment in which the component can be executed.
+As CDR requires the ability to calculate systems that will function, this requirement is necessary.
 
-%%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).    
-Composition can be ignored because although the dependencies express a semantic purpose, that is not necessary for the resolver to know.
-How the components are distributed is also superfluous, as the selection of the component is where we live
+%%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
+The creation or evolution of a component system must be able to be automated for CDR to be usable.
+This means that CDR should have the ability to add, remove and replace components in a system, and create a functioning system.
+These actions can occur at either at compile-time or run-time of the system.
+
+%%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).
+The classification, from \cite{Crnkovic2011}, of a component model is partially described as:
+\begin{itemize}
+  \item Lifecycle 
+  		\begin{itemize}
+	  		\item Modelling
+	  		\item Implementation
+	  		\item Packaging
+	  		\item Deployment
+		\end{itemize}
+	\item Construction
+		\begin{itemize}
+	  		\item Interface Specification
+	  		\item Binding
+	  		\item Interactions 
+		\end{itemize}
+	\item Extra Functional Specifications
+		\begin{itemize}
+	  		\item Management
+	  		\item Specification
+	  		\item Composability
+		\end{itemize}	
+\end{itemize}  
+This list displays the complexity in defining a component model.
+In this classification scheme, the two aspects that are included in this definition are lifecycle deployment for the evolution of a component system, 
+and construction interface specification for the explicitly defined dependencies.
+All the other aspects that practically must be defined, are here ignored as their definition is superfluous to the core topic of this research.
 
 \section{Component Models}
-%%%We go over some component models with their goals, syntax, semantics but end focusing on the component models, OSGi, Debian and CUDF
-With respect to our definition of a software component, we examine some current component models, focusing on to popular models OSGi and Debian.
+%%%Some core component models are described, and their dependencies and evolution are discussed
+Given the definition of a software component for this research, some current component models are described and discussed.
+These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (Software appliances).
 
-%%%Fractal
+\subsection{OSGi} 
+OSGi is a mature component model from the OSGi Alliance that has a significant presence in industry \cite{Kriens2008} 
+from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
 
-%%%Maven POM
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Bundle-Name: TextEditor
+Bundle-Vendor: Graham Jenson
+Bundle-SymbolicName: nz.geek.maori.textEditor
+Bundle-Version: 0.0.1.alpha
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: nz.geek.maori.textEditor;version="0.0.1.alpha"
+Require-Bundle: nz.geek.maori.fonts
+Import-Package: nz.geek.maori.spellchecker
+\end{alltt}
+  \caption[OSGi Meta-data]{Example of OSGi Meta-data}
+  \label{osgibundle}
+\end{center}
+\end{figure}
 
-%%%JavaBeans
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+\ldots
+---Controlling Bundles---
+    install - install and optionally start bundle from the given URL
+    uninstall - uninstall the specified bundle(s)
+    start - start the specified bundle(s)
+    stop - stop the specified bundle(s)
+    refresh - refresh the packages of the specified bundles
+    update - update the specified bundle(s)
+\ldots
+\end{alltt}
+  \caption[OSGi functionality extract]{Extract from the Equinox OSGi console that lists functionality provided}
+  \label{osgibundle}
+\end{center}
+\end{figure}
 
-%%%RPM
 
-\subsection{Debian}
+
+\subsection{Eclipse Plugins}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<plugin
+    name="Text Editor"
+    id="nz.geek.maori.textEditor"
+    version="0.0.1.alpha"
+    provider-name="Graham Jenson">
+    
+    <requires>
+        <import plugin="nz.geek.maori.fonts"/>
+    </requires>
+
+    <runtime>
+        <library name="texteditor.jar"/>
+    </runtime>
+    
+    <extension-point id="nz.geek.maori.spellchecker" 
+        name="Spell Checker" 
+        schema="spellchecker.exsd"/>
+</plugin>
+\end{alltt}
+  \caption[Eclipse Plugin meta-data]{Example of an Eclipse Plugin plugin.xml meta-data file}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<schema targetNamespace="null" xmlns="http://www.w3.org/2001/XMLSchema">
+ <element name="spellchecker">
+  <complexType>
+   <attribute name="spellchecker" type="string" use="required">
+    <annotation>
+     <appinfo>
+      <meta.attribute kind="java" basedOn=":nz.geek.maori.ISpellChecker"/>
+     </appinfo>
+    </annotation>
+   </attribute>
+  </complexType>
+ </element>
+</schema>
+\end{alltt}
+  \caption[Eclipse Plugin extension point schema]{Example of an Eclipse Plugin extension point schema file}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+\subsection{Fractal}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC 
+    "-//objectweb.org//DTD Fractal ADL 2.0//EN" 
+    "classpath://org/objectweb/fractal/adl/xml/basic.dtd">
+
+<definition name="textEditorComponent">
+  <interface name="textEditor" role="server" signature="nz.geek.maori.textEditor"/>
+  <interface name="spellChecker" role="client" signature="nz.geek.maori.spellChecker"/>
+  <content class="nz.geek.maori.textEditorImpl"/>
+</definition>
+\end{alltt}
+  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+\subsection{Maven}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <groupId>nz.geek.maori</groupId>
+  <artifactId>textEditor</artifactId>
+  <version>0.0.0.alpha</version>
+
+    <dependencies>
+        <dependency>
+          <groupId>nz.geek.maori</groupId>
+          <artifactId>spellChecker</artifactId>
+          <version>1.0</version>
+          <type>jar</type>
+        </dependency>
+  </dependencies>
+</project>
+\end{alltt}
+  \caption[Maven POM file]{Example of a Maven POM file}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+\subsection{Debain Packages}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Package: textEditorPackage
+Version: 0.0.1.alpha
+Depends: spellChecker
+
+Package: spellCheckerPackage
+Version: 1.0.0
+Provides: spellChecker
+
+\end{alltt}
+  \caption[Debian Control file]{Example of a Debian Control File}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+
 %%%The debian component model is used in Debain based GNU/Linux distributions
 
 %%%Some feel that this is not truly a component model as it has no formal definition of composition.\\
 
 %%%However it fits our criteria of a component as given in previous sections
 
-\subsection{OSGi}
-{}OSGi is a mature component model from the OSGi Alliance that has a significant presence in industry \cite{Kriens2008} 
-{}from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
+\subsection{Red Hat Packages}    
 
-\subsection{CUDF}
-%%%Here we give a brief introduction to CUDF, later in chapter \ref{implementation} we describe it more in depth
+
+\subsection{SOFA 2}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<frame name="nz.geek.maori.textEditor">
+  <requires name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
+</frame>
+
+<?xml version="1.0"?>
+<frame name="nz.geek.maori.spellChecker">
+  <provides name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
+</frame>
+\end{alltt}
+  \caption[SOFA ADL files]{Example of a SOFA ADL Files}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
 
 \subsection{Comparison}
 %%%The comparison of component models focusses on their semantic definitions of dependencies and requirements,
@@ -328,8 +561,6 @@ Aptitude with APT, has immense amounts of information free on-line, the hardest 
 We also used and read the help documentation, contacted the author of the software \cite{burrows_modelling_2005} and
 the Debian developers reference for the specific implementation of the Debian repository.
 
-\subsection{Mancoosi MPM}
-%%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
 
 \subsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
@@ -352,10 +583,6 @@ a provided fitness function, if a solution exists it is guaranteed to find it.\\
 Eclipse already is
 the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
 
-\subsubsection{P2CUDF implementation}
-%%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
-The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
-One implementation of note is the P2CUDF implementation, that uses SAT
 
 \subsection{Comparison of functionality}
 %%%The comparisons of these resolvers will focus on the functionality that they provide given their component model (we will not compare their implementations)
@@ -455,5 +682,15 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 %%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
 
 %%%It must be broad enough to define and solve real world problems
+
+
+\subsection{Mancoosi MPM}
+%%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
+
+
+\subsubsection{P2CUDF implementation}
+%%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
+The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
+One implementation of note is the P2CUDF implementation, that uses SAT
 
 
