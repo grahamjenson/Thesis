@@ -97,7 +97,7 @@ This effort highlights the difficulty in creating an exact definition of a softw
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
 These problems with exactly defining a software component may stem from the fact that ``component'' is a natural concept.
-Observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002} is the problem that it is impossible to
+The problem, observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
 ``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
@@ -114,6 +114,7 @@ By only looking at aspects that are necessary for our topic, the arguments over 
 
 \subsection{Software Component}
 The definition of a software component is given with respect to the evolution of the system using component dependency resolution.
+Both these areas will be explored further in this chapter, however it is most important to first define the concept of ``software component''.
 This definition specifies requirements on the component model that ensure it is applicable in this research.
 
 For CDR to be used with a component system, there are two core requirements, the component model must:
@@ -164,11 +165,23 @@ All the other aspects that practically must be defined, are here ignored as thei
 \section{Component Models}
 %%%Some core component models are described, and their dependencies and evolution are discussed
 Given the definition of a software component for this research, some current component models are described and discussed.
-These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (Software appliances).
+These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
+
+The typical mechanism in which components, from these frameworks, describe their relationships is through meta-data files.
+These files contain what the component requires and provides, as well as other information like versions and provider details.
+The way in which these component models express their relationships will be described.
+
+Typically, the component model also provides a mechanism to alter the system of components.
+This is usually a low level interface, such that the addition of a component is an atomic step and does not lead to the addition of other components.
+When applicable, these mechanisms will also be described.
+
+Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
 
 \subsection{OSGi} 
-OSGi is a mature component model from the OSGi Alliance that has a significant presence in industry \cite{Kriens2008} 
-from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
+OSGi is a mature component model from the OSGi Alliance.
+It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
+
+OSGi uses
 
 \begin{figure}[htp]
 \begin{center}
@@ -259,6 +272,9 @@ Import-Package: nz.geek.maori.spellchecker
 \end{center}
 \end{figure}
 
+The installation of a plugin into Eclipse can be accomplished by droping the plugin into the ``plugins'' folder in the appilcation directory.
+This is an unstable method, but commonly used.
+
 \subsection{Fractal}
 
 \begin{figure}[htp]
@@ -279,6 +295,13 @@ Import-Package: nz.geek.maori.spellchecker
   \label{osgibundle}
 \end{center}
 \end{figure}
+
+
+In the java implementqtion to create a component GenericFactory.newFcInstance
+
+To add a component programmatically the ContentController.addFcSubComponent is used and ContentController.removeFcSubComponent.
+
+
 
 \subsection{Maven}
 
@@ -309,6 +332,8 @@ Import-Package: nz.geek.maori.spellchecker
 \end{center}
 \end{figure}
 
+Adding a component is done only during the compilation stage of Maven.
+
 \subsection{Debain Packages}
 
 \begin{figure}[htp]
@@ -328,6 +353,8 @@ Provides: spellChecker
 \end{center}
 \end{figure}
 
+dpkg --install textEditor
+dpkg --remove textEditor
 
 %%%The debian component model is used in Debain based GNU/Linux distributions
 
@@ -335,8 +362,32 @@ Provides: spellChecker
 
 %%%However it fits our criteria of a component as given in previous sections
 
-\subsection{Red Hat Packages}    
+\subsection{RedHat Packages}    
 
+The spec file is not located in the component but is more a build script to create the component.
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Name:      textEditor
+Version:   0.0.1.alpha
+
+\ldots
+
+Requires: spellChecker
+Provides: textEditor
+\ldots
+\end{alltt}
+  \caption[RPM SPEC file example]{Example of a RPM SPEC file}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+
+rpm is a powerful Package Manager, which can be used to build, install, query, verify, update, and erase individual software packages
+
+rpm --erase
+rpm --update
+rpm --install
 
 \subsection{SOFA 2}
 
@@ -358,10 +409,14 @@ Provides: spellChecker
 \end{center}
 \end{figure}
 
+SOFA 2 allows for dynamic evolution of an architecture at runtime. Unlike other component systems,
+it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined
+evolution patterns. This increases the manageability and predictability of an application's architectural evolution. In current SOFA 2, three evolution patterns are predefined: factory pattern, removal
+pattern, and service access pattern. As its name suggests, in factory pattern a designated component
+serves as a component factory. The removal pattern serves for destroying of a component previously
+dynamically created. The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
 
-\subsection{Comparison}
-%%%The comparison of component models focusses on their semantic definitions of dependencies and requirements,
-%%%and the mechanisms by which a composition change.
+These patterns are further discussed in \cite{Hnetynka2006}
 
 \section{Evolution}
 %%%Evolution is an important core aspect of Software Engineering and examining it in realtion to Component Systems is beneficial to the community\\
