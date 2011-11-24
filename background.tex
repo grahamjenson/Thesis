@@ -133,6 +133,8 @@ As CDR requires the ability to calculate systems that will function, this requir
 The creation or evolution of a component system must be able to be automated for CDR to be usable.
 This means that CDR should have the ability to add, remove and replace components in a system, and create a functioning system.
 These actions can occur at either at compile-time or run-time of the system.
+There can be a system where user involvement is required to add or remove a component, one where installing a component required manual configuration.
+These systems could not use an algorithm like CDR to change their system, therefore would not be a component in this research.
 
 %%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).
 The classification, from \cite{Crnkovic2011}, of a component model is partially described as:
@@ -177,11 +179,22 @@ When applicable, these mechanisms will also be described.
 
 Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
 
-\subsection{OSGi} 
+\subsection{OSGi}
+%%%What OSGi is? Bundle Service
 OSGi is a mature component model from the OSGi Alliance.
-It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix.
+It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix framework.
 
-OSGi uses
+OSGi components are refereed to as bundles, these contain JVM classes with meta-data describing their relationships.
+A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the unit of deployment the service.
+These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
+This service layer allows third-party frameworks to describe service relationships, e.g. Spring Dynamic Modules.
+These relationships and the interaction with services make themselves a component, under our definition.
+A standard way of interacting with this layer is defined in the OSGi compendium is Declarative Services (DS).
+
+OSGi is implemented to allow dynamic interaction, the addition and removal of bundles at run-time.
+This can be done through a console implemented in the Equinox OSGi framework, this enables user interaction.
+
+An example of a bundle which defines a text editor that depends on a spell checker is described in figure \ref{osgibundle}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -193,13 +206,53 @@ Bundle-Version: 0.0.1.alpha
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: nz.geek.maori.textEditor;version="0.0.1.alpha"
 Require-Bundle: nz.geek.maori.fonts
-Import-Package: nz.geek.maori.spellchecker
+Import-Package: nz.geek.maori.spellchecker;version>"0.0.1"
 \end{alltt}
   \caption[OSGi Meta-data]{Example of OSGi Meta-data}
   \label{osgibundle}
 \end{center}
 \end{figure}
 
+%%%OSGI Meta data description
+This meta-data shows the name, version and vendor of the component, as well as the exported packages (referring to Java packages) which are able to be used by other components.
+The \verb+Require-Bundle+ key expressed the direct dependence on another bundle.
+The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
+
+This meta-data only contains the necessary relationships to install a bundle, not what it requires to be functional.
+This information is in the service layer, described by the meta-data available in DS.
+An example of this meta-data is in figure \ref{dsmetadata}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<component name="textEditor">
+	<implementation class="nz.geek.maori.textEditor.TextEditorImpl"/>
+	<service>
+		<provide interface="nz.geek.maori.textEditor.TextEditor"/>
+	</service>
+	<reference name="spellChecker"
+		interface="nz.geek.maori.spellchecker.SpellChecker"
+		bind="setSpellChecker"
+		unbind="unsetSpellChecker"
+		cardinality="0..1"
+		policy="dynamic"/>
+</component>
+\end{alltt}
+  \caption[OSGi Declarative Services]{Example of OSGi Declarative Services meta-data}
+  \label{dsmetadata}
+\end{center}
+\end{figure}
+
+This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
+These relationships can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programatic features.
+The goal of this service meta-data, like the bundle meta-data, is to express the environment in which this component can be used by others.
+
+To interact with the component framework to install and remove bundles and their containing services, a console was implemented.
+This console give users interactive ability that all bundles have programatically.
+A extract from the help text of this console is represented in figure \ref{osgiconsole}.
+
+%%%The control
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
@@ -214,14 +267,25 @@ Import-Package: nz.geek.maori.spellchecker
 \ldots
 \end{alltt}
   \caption[OSGi functionality extract]{Extract from the Equinox OSGi console that lists functionality provided}
-  \label{osgibundle}
+  \label{osgiconsole}
 \end{center}
 \end{figure}
 
+This console has the ability to add and remove bundles from the framework, as well as assign it to various life cycle states.
+This gives complete evolution control for an OSGi system, with the ability to make changes without shutting the system down.
 
+OSGi therefore has the necessary elements in order to be considered a component model for this research. 
+It has the ability to explicitly describe relationships between either bundles or services, and to install and remove bundles from the system.
 
 \subsection{Eclipse Plugins}
+%%%What is Eclipse
+Eclipse is a popular IDE and frameowrk
 
+%%%It is like DS built on top of OSGi
+Like the declaritive services framework built on top of OSGi, the Eclipse
+
+%%%It uses the idea of extensions and extension points
+ 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
@@ -246,7 +310,7 @@ Import-Package: nz.geek.maori.spellchecker
 </plugin>
 \end{alltt}
   \caption[Eclipse Plugin meta-data]{Example of an Eclipse Plugin plugin.xml meta-data file}
-  \label{osgibundle}
+  \label{eclipseplugin}
 \end{center}
 \end{figure}
 
@@ -268,7 +332,7 @@ Import-Package: nz.geek.maori.spellchecker
 </schema>
 \end{alltt}
   \caption[Eclipse Plugin extension point schema]{Example of an Eclipse Plugin extension point schema file}
-  \label{osgibundle}
+  \label{eclipseextensionschema}
 \end{center}
 \end{figure}
 
@@ -292,7 +356,7 @@ This is an unstable method, but commonly used.
 </definition>
 \end{alltt}
   \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
-  \label{osgibundle}
+  \label{fractalmetadata}
 \end{center}
 \end{figure}
 
@@ -328,7 +392,7 @@ To add a component programmatically the ContentController.addFcSubComponent is u
 </project>
 \end{alltt}
   \caption[Maven POM file]{Example of a Maven POM file}
-  \label{osgibundle}
+  \label{mavenmetadata}
 \end{center}
 \end{figure}
 
@@ -349,18 +413,13 @@ Provides: spellChecker
 
 \end{alltt}
   \caption[Debian Control file]{Example of a Debian Control File}
-  \label{osgibundle}
+  \label{debianmetadata}
 \end{center}
 \end{figure}
 
 dpkg --install textEditor
 dpkg --remove textEditor
 
-%%%The debian component model is used in Debain based GNU/Linux distributions
-
-%%%Some feel that this is not truly a component model as it has no formal definition of composition.\\
-
-%%%However it fits our criteria of a component as given in previous sections
 
 \subsection{RedHat Packages}    
 
@@ -378,7 +437,7 @@ Provides: textEditor
 \ldots
 \end{alltt}
   \caption[RPM SPEC file example]{Example of a RPM SPEC file}
-  \label{osgibundle}
+  \label{rpmmetadata}
 \end{center}
 \end{figure}
 
@@ -405,16 +464,18 @@ rpm --install
 </frame>
 \end{alltt}
   \caption[SOFA ADL files]{Example of a SOFA ADL Files}
-  \label{osgibundle}
+  \label{SOFAmetadata}
 \end{center}
 \end{figure}
 
-SOFA 2 allows for dynamic evolution of an architecture at runtime. Unlike other component systems,
-it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined
-evolution patterns. This increases the manageability and predictability of an application's architectural evolution. In current SOFA 2, three evolution patterns are predefined: factory pattern, removal
-pattern, and service access pattern. As its name suggests, in factory pattern a designated component
-serves as a component factory. The removal pattern serves for destroying of a component previously
-dynamically created. The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
+SOFA 2 allows for dynamic evolution of an architecture at runtime. 
+Unlike other component systems,
+it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined evolution patterns. 
+This increases the manageability and predictability of an application's architectural evolution. 
+In current SOFA 2, three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
+As its name suggests, in factory pattern a designated component serves as a component factory. 
+The removal pattern serves for destroying of a component previously dynamically created.
+The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
 
 These patterns are further discussed in \cite{Hnetynka2006}
 
