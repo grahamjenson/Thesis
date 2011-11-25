@@ -39,14 +39,18 @@ To solve this, a specification from the Mancoosi organisation called CUDF has be
 This specification contains the necessary detail to express the core problem, and an extensible syntax to allow for component model specific detail. 
 This allows the description of many CDR problems in a single format, and the use of various CDR implementations to solve them. 
 
-In this chapter; what software components, and component models, are is discussed with respect to component dependency resolvers.
-The evolution of individual components and component systems is then described.
-The component dependency resolution problem is described with its uses and purposed,
-then examples of its implementation are given and compared.
-Boolean satisfiability solvers, are described and their implementations examined, with their extension to pseudo Boolean constraints.
-Finally, the CUDF specification with its syntax and semantics is described in detail.
+In this chapter; how software components and component models are defined in this research is discussed in section \ref{background.components}.
+The evolution of individual components and component systems is then discussed in section \ref{background.evolution}.
+The component dependency resolution problem is described with relation to its purpose and impact on component systems in section \ref{background.cdr}.
+Examples of various component models and CDR implementation are then given in sections \ref{background.models} and \ref{background.icdrs}.
+
+The use of Boolean satisfiability solvers to implement CDR algorithms is described is described in \ref{background.SAT}.
+This also includes an in-depth description of  a common SAT solver algorithm, the Davis-Putnam-Logemann-Loveland (DPLL) algorithm, 
+with its extension to also use pseudo Boolean constraints.
+Finally, the Common Upgradeability Description Format (CUDF) specification is described in section \ref{background.cudf}.
  
 \section{What is a Component?}
+\label{background.components}
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
 Software components ideals can be traced to \cite{McIlroy1969}, where the author describes his ideas industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
@@ -120,7 +124,7 @@ This definition specifies requirements on the component model that ensure it is 
 For CDR to be used with a component system, there are two core requirements, the component model must:
 \begin{enumerate}
   \item require the explicit definition of dependencies between components
-  \item include mechanisms in which to compose or evolve a component system
+  \item include mechanisms in which to programmatically compose or evolve a component system
 \end{enumerate}
 This definition leaves undefined many aspects of component model, however these are ignored as they are not related to CDR of component system evolution.
 
@@ -133,8 +137,7 @@ As CDR requires the ability to calculate systems that will function, this requir
 The creation or evolution of a component system must be able to be automated for CDR to be usable.
 This means that CDR should have the ability to add, remove and replace components in a system, and create a functioning system.
 These actions can occur at either at compile-time or run-time of the system.
-There can be a system where user involvement is required to add or remove a component, one where installing a component required manual configuration.
-These systems could not use an algorithm like CDR to change their system, therefore would not be a component in this research.
+As CDR would evolve a system automatically, these actions must be able to be enacted either through a function call, or well defined command interface.
 
 %%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).
 The classification, from \cite{Crnkovic2011}, of a component model is partially described as:
@@ -164,322 +167,8 @@ In this classification scheme, the two aspects that are included in this definit
 and construction interface specification for the explicitly defined dependencies.
 All the other aspects that practically must be defined, are here ignored as their definition is superfluous to the core topic of this research.
 
-\section{Component Models}
-%%%Some core component models are described, and their dependencies and evolution are discussed
-Given the definition of a software component for this research, some current component models are described and discussed.
-These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
-
-The typical mechanism in which components, from these frameworks, describe their relationships is through meta-data files.
-These files contain what the component requires and provides, as well as other information like versions and provider details.
-The way in which these component models express their relationships will be described.
-
-Typically, the component model also provides a mechanism to alter the system of components.
-This is usually a low level interface, such that the addition of a component is an atomic step and does not lead to the addition of other components.
-When applicable, these mechanisms will also be described.
-
-Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
-
-\subsection{OSGi}
-%%%What OSGi is? Bundle Service
-OSGi is a mature component model from the OSGi Alliance.
-It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix framework.
-
-OSGi components are refereed to as bundles, these contain JVM classes with meta-data describing their relationships.
-A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the unit of deployment the service.
-These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
-This service layer allows third-party frameworks to describe service relationships, e.g. Spring Dynamic Modules.
-These relationships and the interaction with services make themselves a component, under our definition.
-A standard way of interacting with this layer is defined in the OSGi compendium is Declarative Services (DS).
-
-OSGi is implemented to allow dynamic interaction, the addition and removal of bundles at run-time.
-This can be done through a console implemented in the Equinox OSGi framework, this enables user interaction.
-
-An example of a bundle which defines a text editor that depends on a spell checker is described in figure \ref{osgibundle}.
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-Bundle-Name: TextEditor
-Bundle-Vendor: Graham Jenson
-Bundle-SymbolicName: nz.geek.maori.textEditor
-Bundle-Version: 0.0.1.alpha
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Export-Package: nz.geek.maori.textEditor;version="0.0.1.alpha"
-Require-Bundle: nz.geek.maori.fonts
-Import-Package: nz.geek.maori.spellchecker;version>"0.0.1"
-\end{alltt}
-  \caption[OSGi Meta-data]{Example of OSGi Meta-data}
-  \label{osgibundle}
-\end{center}
-\end{figure}
-
-%%%OSGI Meta data description
-This meta-data shows the name, version and vendor of the component, as well as the exported packages (referring to Java packages) which are able to be used by other components.
-The \verb+Require-Bundle+ key expressed the direct dependence on another bundle.
-The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
-
-This meta-data only contains the necessary relationships to install a bundle, not what it requires to be functional.
-This information is in the service layer, described by the meta-data available in DS.
-An example of this meta-data is in figure \ref{dsmetadata}.
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<?xml version="1.0"?>
-<component name="textEditor">
-	<implementation class="nz.geek.maori.textEditor.TextEditorImpl"/>
-	<service>
-		<provide interface="nz.geek.maori.textEditor.TextEditor"/>
-	</service>
-	<reference name="spellChecker"
-		interface="nz.geek.maori.spellchecker.SpellChecker"
-		bind="setSpellChecker"
-		unbind="unsetSpellChecker"
-		cardinality="0..1"
-		policy="dynamic"/>
-</component>
-\end{alltt}
-  \caption[OSGi Declarative Services]{Example of OSGi Declarative Services meta-data}
-  \label{dsmetadata}
-\end{center}
-\end{figure}
-
-This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
-These relationships can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programatic features.
-The goal of this service meta-data, like the bundle meta-data, is to express the environment in which this component can be used by others.
-
-To interact with the component framework to install and remove bundles and their containing services, a console was implemented.
-This console give users interactive ability that all bundles have programatically.
-A extract from the help text of this console is represented in figure \ref{osgiconsole}.
-
-%%%The control
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-\ldots
----Controlling Bundles---
-    install - install and optionally start bundle from the given URL
-    uninstall - uninstall the specified bundle(s)
-    start - start the specified bundle(s)
-    stop - stop the specified bundle(s)
-    refresh - refresh the packages of the specified bundles
-    update - update the specified bundle(s)
-\ldots
-\end{alltt}
-  \caption[OSGi functionality extract]{Extract from the Equinox OSGi console that lists functionality provided}
-  \label{osgiconsole}
-\end{center}
-\end{figure}
-
-This console has the ability to add and remove bundles from the framework, as well as assign it to various life cycle states.
-This gives complete evolution control for an OSGi system, with the ability to make changes without shutting the system down.
-
-OSGi therefore has the necessary elements in order to be considered a component model for this research. 
-It has the ability to explicitly describe relationships between either bundles or services, and to install and remove bundles from the system.
-
-\subsection{Eclipse Plugins}
-%%%What is Eclipse
-Eclipse is a popular IDE and frameowrk
-
-%%%It is like DS built on top of OSGi
-Like the declaritive services framework built on top of OSGi, the Eclipse
-
-%%%It uses the idea of extensions and extension points
- 
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<?xml version="1.0"?>
-<plugin
-    name="Text Editor"
-    id="nz.geek.maori.textEditor"
-    version="0.0.1.alpha"
-    provider-name="Graham Jenson">
-    
-    <requires>
-        <import plugin="nz.geek.maori.fonts"/>
-    </requires>
-
-    <runtime>
-        <library name="texteditor.jar"/>
-    </runtime>
-    
-    <extension-point id="nz.geek.maori.spellchecker" 
-        name="Spell Checker" 
-        schema="spellchecker.exsd"/>
-</plugin>
-\end{alltt}
-  \caption[Eclipse Plugin meta-data]{Example of an Eclipse Plugin plugin.xml meta-data file}
-  \label{eclipseplugin}
-\end{center}
-\end{figure}
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<schema targetNamespace="null" xmlns="http://www.w3.org/2001/XMLSchema">
- <element name="spellchecker">
-  <complexType>
-   <attribute name="spellchecker" type="string" use="required">
-    <annotation>
-     <appinfo>
-      <meta.attribute kind="java" basedOn=":nz.geek.maori.ISpellChecker"/>
-     </appinfo>
-    </annotation>
-   </attribute>
-  </complexType>
- </element>
-</schema>
-\end{alltt}
-  \caption[Eclipse Plugin extension point schema]{Example of an Eclipse Plugin extension point schema file}
-  \label{eclipseextensionschema}
-\end{center}
-\end{figure}
-
-The installation of a plugin into Eclipse can be accomplished by droping the plugin into the ``plugins'' folder in the appilcation directory.
-This is an unstable method, but commonly used.
-
-\subsection{Fractal}
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE definition PUBLIC 
-    "-//objectweb.org//DTD Fractal ADL 2.0//EN" 
-    "classpath://org/objectweb/fractal/adl/xml/basic.dtd">
-
-<definition name="textEditorComponent">
-  <interface name="textEditor" role="server" signature="nz.geek.maori.textEditor"/>
-  <interface name="spellChecker" role="client" signature="nz.geek.maori.spellChecker"/>
-  <content class="nz.geek.maori.textEditorImpl"/>
-</definition>
-\end{alltt}
-  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
-  \label{fractalmetadata}
-\end{center}
-\end{figure}
-
-
-In the java implementqtion to create a component GenericFactory.newFcInstance
-
-To add a component programmatically the ContentController.addFcSubComponent is used and ContentController.removeFcSubComponent.
-
-
-
-\subsection{Maven}
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-  <groupId>nz.geek.maori</groupId>
-  <artifactId>textEditor</artifactId>
-  <version>0.0.0.alpha</version>
-
-    <dependencies>
-        <dependency>
-          <groupId>nz.geek.maori</groupId>
-          <artifactId>spellChecker</artifactId>
-          <version>1.0</version>
-          <type>jar</type>
-        </dependency>
-  </dependencies>
-</project>
-\end{alltt}
-  \caption[Maven POM file]{Example of a Maven POM file}
-  \label{mavenmetadata}
-\end{center}
-\end{figure}
-
-Adding a component is done only during the compilation stage of Maven.
-
-\subsection{Debain Packages}
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-Package: textEditorPackage
-Version: 0.0.1.alpha
-Depends: spellChecker
-
-Package: spellCheckerPackage
-Version: 1.0.0
-Provides: spellChecker
-
-\end{alltt}
-  \caption[Debian Control file]{Example of a Debian Control File}
-  \label{debianmetadata}
-\end{center}
-\end{figure}
-
-dpkg --install textEditor
-dpkg --remove textEditor
-
-
-\subsection{RedHat Packages}    
-
-The spec file is not located in the component but is more a build script to create the component.
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-Name:      textEditor
-Version:   0.0.1.alpha
-
-\ldots
-
-Requires: spellChecker
-Provides: textEditor
-\ldots
-\end{alltt}
-  \caption[RPM SPEC file example]{Example of a RPM SPEC file}
-  \label{rpmmetadata}
-\end{center}
-\end{figure}
-
-
-rpm is a powerful Package Manager, which can be used to build, install, query, verify, update, and erase individual software packages
-
-rpm --erase
-rpm --update
-rpm --install
-
-\subsection{SOFA 2}
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-<?xml version="1.0"?>
-<frame name="nz.geek.maori.textEditor">
-  <requires name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
-</frame>
-
-<?xml version="1.0"?>
-<frame name="nz.geek.maori.spellChecker">
-  <provides name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
-</frame>
-\end{alltt}
-  \caption[SOFA ADL files]{Example of a SOFA ADL Files}
-  \label{SOFAmetadata}
-\end{center}
-\end{figure}
-
-SOFA 2 allows for dynamic evolution of an architecture at runtime. 
-Unlike other component systems,
-it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined evolution patterns. 
-This increases the manageability and predictability of an application's architectural evolution. 
-In current SOFA 2, three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
-As its name suggests, in factory pattern a designated component serves as a component factory. 
-The removal pattern serves for destroying of a component previously dynamically created.
-The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
-
-These patterns are further discussed in \cite{Hnetynka2006}
-
 \section{Evolution}
+\label{background.evolution}
 %%%Evolution is an important core aspect of Software Engineering and examining it in realtion to Component Systems is beneficial to the community\\
 {}A software engineers goals towards software is to have continual satisfactory execution with maximum confidence at minimal cost and delay in this changing world \cite{Lehman2006}, 
 {}while maintaining intellectual control over the complexity of design \cite{Brooks1975}.
@@ -581,6 +270,7 @@ This is a scheduling problem as described by %TODO
 The composer must also make sure that all dependencies are meet
 
 \section{Component Dependency Resolution}
+\label{background.cdr}
 %%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
 Manually satisfying all component dependencies while evolving a component system can be a tedious, time consuming task.
 This process can be automated into the function Component Dependency Resolution (CDR) \cite{Jenson2010}.
@@ -595,17 +285,462 @@ for adding, removing and updating components in package based operating systems 
 
 %%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
+
+\section{Component Models}
+\label{background.models}
+%%%Some core component models are described, and their dependencies and evolution are discussed
+Given the definition of a software component for this research, some current component models are described and discussed.
+These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
+
+The typical mechanism in which components, from these frameworks, describe their relationships is through meta-data files.
+These files contain what the component requires and provides, as well as other information like versions and provider details.
+The way in which these component models express their relationships will be described.
+
+Typically, the component model also provides a mechanism to alter the system of components.
+This is usually a low level interface, such that the addition of a component is an atomic step and does not lead to the addition of other components.
+When applicable, these mechanisms will also be described.
+
+Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
+
+To compare these component models, the relationship of a text editor component, that requires a spell checker component is used.
+This is a simple example, however it highlights the possible differences in these models.
+
+
+\subsection{OSGi}
+%%%What OSGi is? Bundle Service
+OSGi is a mature component model from the OSGi Alliance.
+It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix framework.
+
+OSGi components are refereed to as bundles, these contain JVM classes with meta-data describing their relationships.
+A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the unit of deployment the service.
+These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
+This service layer allows third-party frameworks to describe service relationships, e.g. Spring Dynamic Modules.
+These relationships and the interaction with services make themselves a component, under our definition.
+A standard way of interacting with this layer is defined in the OSGi compendium is Declarative Services (DS).
+
+OSGi is implemented to allow dynamic interaction, the addition and removal of bundles at run-time.
+This can be done through a console implemented in the Equinox OSGi framework, this enables user interaction.
+
+An example of a bundle which defines a text editor that depends on a spell checker is described in figure \ref{osgibundle}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Bundle-Name: TextEditor
+Bundle-Vendor: Graham Jenson
+Bundle-SymbolicName: nz.geek.maori.textEditor
+Bundle-Version: 0.0.1.alpha
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: nz.geek.maori.textEditor;version="0.0.1.alpha"
+Require-Bundle: nz.geek.maori.fonts
+Import-Package: nz.geek.maori.spellchecker;version>"0.0.1"
+\end{alltt}
+  \caption[OSGi Meta-data]{Example of OSGi Meta-data}
+  \label{osgibundle}
+\end{center}
+\end{figure}
+
+%%%OSGI Meta data description
+This meta-data shows the name, version and vendor of the component, as well as the exported packages (referring to Java packages) which are able to be used by other components.
+The \verb+Require-Bundle+ key expressed the direct dependence on another bundle.
+The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
+
+This meta-data only contains the necessary relationships to install a bundle, not what it requires to be functional.
+This information is in the service layer, described by the meta-data available in DS.
+An example of this meta-data is in figure \ref{dsmetadata}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<component name="textEditor">
+    <implementation class="nz.geek.maori.textEditor.TextEditorImpl"/>
+    <service>
+        <provide interface="nz.geek.maori.textEditor.TextEditor"/>
+    </service>
+    <reference name="spellChecker"
+        interface="nz.geek.maori.spellchecker.SpellChecker"
+        bind="setSpellChecker"
+        unbind="unsetSpellChecker"
+        cardinality="0..1"
+        policy="dynamic"/>
+</component>
+\end{alltt}
+  \caption[OSGi Declarative Services]{Example of OSGi Declarative Services meta-data}
+  \label{dsmetadata}
+\end{center}
+\end{figure}
+
+This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
+These relationships can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programmatic features.
+The goal of this service meta-data, like the bundle meta-data, is to express the environment in which this component can be used by others.
+The \verb+service+ tag describes the services provided, and the \verb+reference+ tag expresses a dependence on another services.
+
+%%%DS provides no versioning
+One aspect of DS that is lacking, is the ability to explicitly version services.
+The version of the bundle that is providing the service and the version of the package that is provided by the bundle, implicitly version the service being provided.
+However, for the evolution of a component model, some type of versioning is required to give a relative timestamp of it's development.
+This may make the evolution of these services difficult to predict, and therefore difficult to use CDR to evolve them. 
+
+
+\subsubsection{Evolution of OSGi}
+The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance \footnote{http://www.osgi.org/javadoc/r4v43/}, therefore are OSGi framework agnostic.
+The installation and removal of both the bundles and services from the OSGi system are defined as such:
+ 
+\begin{itemize}
+  \item To install a bundle: \verb+org.osgi.framework.BundleContext.install+
+  \item To uninstall a bundle: \verb+org.osgi.framework.Bundle.uninstall+
+  \item To register a service: \verb+org.osgi.framework.BundleContext.registerService+
+  \item To unregister a service: \verb+org.osgi.framework.ServiceRegistration.unregister+
+\end{itemize}
+
+OSGi therefore has the necessary elements in order to be considered a component model for this research. 
+It has the ability to explicitly describe relationships between either bundles or services, and to install and remove bundles from the system.
+
+\subsection{Eclipse Plugins}
+%%%What is Eclipse
+Eclipse is a widely used IDE and an extencible plugin platform for createing Java applications.
+It is built on top of the OSGi framework, but ignore OSGi's service layer and re-implements it with its own Eclipse plugin runtime.
+Therefore, like the declaritive services, the distruted elements are OSGi bundles but the run time elements are plugins.
+
+These plugins are defined using extensions and extension points, these are the relationships between the plugins.
+An example of the meta-data describing a plugin is given in figure \ref{eclipseplugin}. 
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<plugin
+    name="Text Editor"
+    id="nz.geek.maori.textEditor"
+    version="0.0.1.alpha"
+    provider-name="Graham Jenson">
+    
+    <requires>
+        <import plugin="nz.geek.maori.fonts"/>
+    </requires>
+
+    <runtime>
+        <library name="texteditor.jar"/>
+    </runtime>
+    
+    <extension-point id="nz.geek.maori.spellchecker" 
+        name="Spell Checker" 
+        schema="spellchecker.exsd"/>
+</plugin>
+\end{alltt}
+  \caption[Eclipse Plugin meta-data]{Example of an Eclipse Plugin plugin.xml meta-data file}
+  \label{eclipseplugin}
+\end{center}
+\end{figure}
+
+This plugin defines the name, version and provider of the plugin, and using the tags \verb+requires+ defines the requirements of this plugin to function.
+The \verb+extension-point+ tag defines not only what the plugin provides, but also the required information it requires in order to provide it, described in a schema.
+This is a special feature of the Eclipse plugin framework, as other component models generally do not specify these parameters on this type of relationship. 
+
+The schema of an extension point, as shown in figure \ref{eclipseextensionschema}, describes the elements to use an extension.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<schema targetNamespace="null" xmlns="http://www.w3.org/2001/XMLSchema">
+ <element name="spellchecker">
+  <complexType>
+   <attribute name="spellchecker" type="string" use="required">
+    <annotation>
+     <appinfo>
+      <meta.attribute kind="java" basedOn=":nz.geek.maori.ISpellChecker"/>
+     </appinfo>
+    </annotation>
+   </attribute>
+  </complexType>
+ </element>
+</schema>
+\end{alltt}
+  \caption[Eclipse Plugin extension point schema]{Example of an Eclipse Plugin extension point schema file}
+  \label{eclipseextensionschema}
+\end{center}
+\end{figure}
+
+In this description, this extension point requires a string that describes a java class that implements \verb+nz.geek.maori.ISpellChecker+.
+This is the only requirement for this extension point, but other parameters of types, e.g. Boolean, integer, can be defined.
+
+\subsubsection{Eclipse Evolution}
+The programmatic evolution of an Eclipse system is through the use of the previously OSGi methods and with interaction with the plugin registry.
+
+As an eclipse plugin is an OSGi bundle, and the eclipse framework uses OSGi, the methods for installing and removing a plugin are the same as for OSGi.
+
+The extensions and extension points, for an Eclipse system, can be altered in the plugin registry.
+This is the storage of all the extensions and extension points for interaction, and the core interaction with this layer of the plugins.
+The methods used to add and remove these are then:
+
+\begin{itemize}
+  \item add extensions and extension points described in an XML file : \verb+org.eclipse.core.runtime.IExtensionRegistry.addContribution+
+  \item remove extension: \verb+org.eclipse.core.runtime.IExtensionRegistry.removeExtension+
+  \item remove extension point: \verb+org.eclipse.core.runtime.IExtensionRegistry.removeExtensionPoint+
+\end{itemize}
+
+The Eclipse plugin system can therefore be defined as a component system in this study.
+It contains the necessary explicit relationships, and the programmatic evolution requirements necessary for CDR to be used.
+
+\subsection{Fractal}
+Fractal is a component model developed by France Telecom R\&D and INRA.
+It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse.
+The most notable aspect, and the reason for its name, is that a components can be composed together to make a new component.
+This recursive nature of composition, actually means the the system of components is itself a component.
+
+An example of meta-data to define a Fractal component is given in figure \ref{fractalmetadata}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC 
+    "-//objectweb.org//DTD Fractal ADL 2.0//EN" 
+    "classpath://org/objectweb/fractal/adl/xml/basic.dtd">
+
+<definition name="textEditorComponent">
+  <interface name="textEditor" role="server" signature="nz.geek.maori.textEditor"/>
+  <interface name="spellChecker" role="client" signature="nz.geek.maori.spellChecker"/>
+  <content class="nz.geek.maori.textEditorImpl"/>
+</definition>
+\end{alltt}
+  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
+  \label{fractalmetadata}
+\end{center}
+\end{figure}
+
+This meta-data describes the relationship between components as the metaphor of client and server.
+The interface tag with the role attribute assigned to ``server'', defines the provided functionality of the component.
+The interface tag with the role attribute assigned to ``client'' then defines the required functionality of the component.  
+
+An example of the definition of a recursive component can be seen in figure \ref{fractalrecursve}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC 
+    "-//objectweb.org//DTD Fractal ADL 2.0//EN" 
+    "classpath://org/objectweb/fractal/adl/xml/basic.dtd">
+
+<definition name="textEditorWithSpellCheckerComponent">
+  <interface name="textEditorWithSpellChecker" role="server" signature="nz.geek.maori.textEditorWSC"/>
+  <component name="textEditorComponent">
+    <interface name="textEditor" role="server" signature="nz.geek.maori.textEditor"/>
+    <interface name="spellChecker" role="client" signature="nz.geek.maori.spellChecker"/>
+    <content class="nz.geek.maori.textEditorImpl"/>
+  </component>
+  <component name="spellCheckerComponent">
+    <interface name="spellChecker" role="server" signature="nz.geek.maori.spellChecker"/>
+    <content class="nz.geek.maori.spellChecker.SpellChecker"/>
+  </component>
+  <binding client="this.textEditorWithSpellChecker" server="textEditorComponent.textEditor"/>
+  <binding client="textEditorComponent.spellChecker" server="spellCheckerComponent.spellChecker"/>
+</definition>
+\end{alltt}
+  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
+  \label{fractalmetadata}
+\end{center}
+\end{figure}
+
+In this description of a recursive component structure, as well as defining both the text editor and spell checker components it also defines and instructs their relationships.
+The tag \verb+definition+ is then used as a container of components, rather than the deifnition of a single component.
+This composite component defines that it provides a service of \verb+textEditorWithSpellChecker+.
+To provide this the spell checker must be bound (described in the tag \verb+binding+) to the text editor,
+and the text editors provided interface bound to the output interface. 
+
+The programmatic evolution of a Fractal component system can differ between implementations.
+To simplify this, only the Java implementation is described. 
+
+\subsubsection{Fractal Evolution}
+In this implementation the methods to edit the configuration are\footnote{http://fractal.ow2.org/current/doc/javadoc/fractal/}:
+\begin{itemize}
+  \item to create a component: \verb+org.objectweb.fractal.api.factory.GenericFactory.newFcInstance+
+  \item to add a component to a composite: \verb+org.objectweb.fractal.api.control.ContentController.addFcSubComponent+
+  \item to remove a component from a composite: \verb+org.objectweb.fractal.api.control.ContentController.removeFcSubComponent+
+\end{itemize}
+
+There are two points that may make the evolution of Fractal component model particularly difficult,
+the recursive nature of Fractal, and the lack of required version information about components and composites.
+
+%%%Fractal requires not only the selection of components but the configuration
+Given the recursive nature of the components described, any system may provide the same functionality with the same components in a combinatorial number of configurations.
+Therefore, not only would a CDR algorithm require to select a set of components but also provide or select the composites to configure them.
+The simplest solution to this problem is to ignore the recursive nature of this component model,
+and use a CDR algorithm to create exactly one composite with all components in it.
+More difficult solutions could be created by reusing user composites, or analyzing the graph structure and grouping into clusters using algorithms like the one presented in \cite{dietrich2008cluster}.
+
+Another aspect of Fractal that will make the automatic evolution of systems difficult will be the lack of versioning information.
+Like DS, this component model doesn't not explicitly require the version of the component and the interfacs they provide.
+As versions are typically the atomic unit of evolution, the process of selecting a newer version will be made more difficult if not impossible. 
+
+\subsection{Maven}
+Maven is a build automation tool, designed to be programming language agnostic but primarily used with Java.
+The core component aspect of Maven is that it can dynamically select and download files from a repository to be used to build a system.
+Although Maven is built using a plugin architecture, the focus in this section is on the use of Maven as a component model and not Maven itself.
+
+A system is defined using a Project Object Model (POM) file, an example given in \ref{mavenmetadata}. 
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <groupId>nz.geek.maori</groupId>
+  <artifactId>textEditor</artifactId>
+  <version>0.0.0.alpha</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>nz.geek.maori</groupId>
+      <artifactId>spellChecker</artifactId>
+      <version>[0.0.1,1.0.0)</version>
+      <type>jar</type>
+     </dependency>
+  </dependencies>
+</project>
+\end{alltt}
+  \caption[Maven POM file]{Example of a Maven POM file}
+  \label{mavenmetadata}
+\end{center}
+\end{figure}
+
+This model defines the components namespace using the \verb+groupId+ tag, the name using the tag \verb+artifactId+, and the version.
+It also defines the dependencies on other projects through the \verb+dependency+ tag,
+where it states that it depends on the artifact \verb+spellChecker+ from versions 0.0.1 to (but excluding) version 1.0.0.
+
+\subsubsection{Maven Evolution}
+The use of Maven as a development time component model, does not exclude it from the definition of being a component model in this study.
+Though it puts it in a unique situation, where it does not evolve a component system by altering it, but by recompiling and replacing it.
+Therefore, the evolution of a Maven based system is done simply by selecting the projects to build, and using Maven to compile them into a system. 
+
+Another core difference from the other presented component models is that Maven POM objects do not declare what they provide.
+For example, an OSGi bundle can declare provided packages and a Fractal component declares provided interfaces, where a Maven project can only provide itself.
+This will simplify a CDR algorithm by not having to resolve another layer of dependencies.
+
+\subsection{Debian Packages}
+Debian is a GNU/Linux based operating system provided by the Debain Project.
+This operating system most prominent feature is that it is composed of packages, unit of deployment with explicit dependencies.
+
+Each package is defined using a control file, an example presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Package: textEditorPackage
+Version: 0.0.1.alpha
+Depends: spellChecker
+Conflicts: otherTextEditorPackage
+\end{alltt}
+  \caption[Debian Control file for Text Editor]{Example of a Debian Control File for Text Editor}
+  \label{debianmetadatate}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+Package: spellCheckerPackage
+Version: 1.0.0
+Provides: spellChecker
+\end{alltt}
+  \caption[Debian Control files for Spell Checker]{Example of a Debian Control File for Spell Checker}
+  \label{debianmetadatasc}
+\end{center}
+\end{figure}
+
+These control files describe two packages, a text editor and spellChecker, they are organised into key/value pairs seperated by the ``:'' character.
+The text editor states using the \verb+Depends+ key that is requires a spellChecker to be installed, 
+and through the \verb+Conflicts+ key states that it cannot be installed with another text editor.
+The spell checker package defines that it provides a spell checker  using the \verb+Provides+ key.
+
+The semantics of these control files is further described in the section \ref{DebToCUDF}.
+
+\subsubsection{Debian Evolution}
+The application dpkg is the base of the Debian package management, this gives interactions to the
+
+
+dpkg --install textEditor
+dpkg --remove textEditor
+
+Constaints 
+
+Debian does not specify constraints on the provided packages like interfaces and such.
+
+There is no composition model, whichmakes some see this as a seperate entity form a component system.
+
+%\subsection{RedHat Packages}    
+% 
+% The spec file is not located in the component but is more a build script to create the component.
+% \begin{figure}[htp]
+% \begin{center}
+% \begin{alltt}
+% Name:      textEditor
+% Version:   0.0.1.alpha
+% 
+% \ldots
+% 
+% Requires: spellChecker
+% Provides: textEditor
+% \ldots
+% \end{alltt}
+%   \caption[RPM SPEC file example]{Example of a RPM SPEC file}
+%   \label{rpmmetadata}
+% \end{center}
+% \end{figure}
+% 
+% 
+% rpm is a powerful Package Manager, which can be used to build, install, query, verify, update, and erase individual software packages
+% 
+% rpm --erase
+% rpm --update
+% rpm --install
+
+\subsection{SOFA 2}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<?xml version="1.0"?>
+<frame name="nz.geek.maori.textEditor">
+  <requires name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
+</frame>
+
+<?xml version="1.0"?>
+<frame name="nz.geek.maori.spellChecker">
+  <provides name="spellChecker" itf-type="sofatype://nz.geek.maori.spellChecker"/>
+</frame>
+\end{alltt}
+  \caption[SOFA ADL files]{Example of a SOFA ADL Files}
+  \label{SOFAmetadata}
+\end{center}
+\end{figure}
+
+SOFA 2 allows for dynamic evolution of an architecture at runtime. 
+Unlike other component systems,
+it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined evolution patterns. 
+This increases the manageability and predictability of an application's architectural evolution. 
+In current SOFA 2, three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
+As its name suggests, in factory pattern a designated component serves as a component factory. 
+The removal pattern serves for destroying of a component previously dynamically created.
+The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
+
+These patterns are further discussed in \cite{Hnetynka2006}
+
+
 \section{CDR Implementations}
+\label{background.icdrs}
 %%%Design time dependency resolvers benefits the software engineer building a large complex system that can involve many libraries with complex relationships.
+
+\subsection{Apache Maven}
 
 \subsection{Apache Maven}
 %%%Maven is a design time project and build automation tool, that can resolve library dependencies from a repository (https://oss.sonatype.org/content/repositories/)
 
-\subsection{Nuget} 
-%%%A new distribution model from microsfot for .Net libraries (http://nuget.codeplex.com/)
-
-\subsection{RubyGems bundler}
-%%% Bundler is a package dependency manager for RUBY gems (http://gembundler.com/)
 
 
 \subsection{OSGi Bundle Repostiory}
@@ -641,14 +776,6 @@ The largest public OBR implementation is the federated repository provided by th
 currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
 There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
 
-\subsection{OSGi Declarative Services}
-%%%DS is standardised in the OSGi standards
-
-\subsection{Spring Dynamic Modules}
-%%%Spring is a competitor to DS, such that it resolves service level dependencies
-
-\subsection{yum}
-%%%Red hat package manager
 
 \subsection{Apt-get}
 %%%Apt-get is the core application for package management in Debian based GNU/linux distributions
@@ -721,7 +848,9 @@ the core of many applications with its Rich Client Platform. This is a large bas
 %%%Reccommendation System, soft dependency (is this even a good idea)
 
 
-\section{Boolean Satisfiability (SAT) Solvers}
+\section{CDR implementaion with Boolean Satisfiability (SAT) Solvers}
+\label{background.SAT}
+
 %%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
 
 %%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
@@ -775,6 +904,8 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 %%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
 \section{Common Upgradeability Description Format}
+\label{background.cudf}
+
 %%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
 {}\cite{treinen2009common}
 
