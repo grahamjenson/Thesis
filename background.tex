@@ -660,18 +660,26 @@ The spell checker package defines that it provides a spell checker  using the \v
 
 The semantics of these control files is further described in the section \ref{DebToCUDF}.
 
+One aspect that differentiates the Debian package model from the many other models, is that it does not specify the rules of composition between components.
+That is, there is no formal specification of the semantics of the communication and relationships between packages.
+For instance, OSGi bundles exist in a very constrained environment that manages their interactions, dependning on another bundle gives has run-time implications.
+For Debian, the dependence has no run-time effects, only whether the package is functional or not.
+The way in which a package, uses or communcates with a depended upon package is then defined between the packages and not in the component model.
+
+Since the composition of packages is not an aspect of this study, this is a valid component model, though some may disagree.
+
+
 \subsubsection{Debian Evolution}
-The application dpkg is the base of the Debian package management, this gives interactions to the
+The application dpkg is the command line tool use to modify a Debian package system.
 
+The commands to modify a Debain package system are:
+\begin{itemize}
+  \item to add a package: dpkg --install <package file>
+  \item to remove a package: dpkg --remove <package>
+\end{itemize}
 
-dpkg --install textEditor
-dpkg --remove textEditor
-
-Constaints 
-
-Debian does not specify constraints on the provided packages like interfaces and such.
-
-There is no composition model, whichmakes some see this as a seperate entity form a component system.
+These commands define the atomic actions to change a Debain system.
+They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
 %\subsection{RedHat Packages}    
 % 
@@ -700,9 +708,14 @@ There is no composition model, whichmakes some see this as a seperate entity for
 % rpm --update
 % rpm --install
 
-\subsection{SOFA 2}
+\subsection{SOFA 2.0}
+Software Appliance (SOFA) is a component model developed at Charles University in Prague.
+A component in the SOFA framework is defined by it's frame, which is the core definition of what the component requires and provides.
+Like Fractal, SOFA is a recursive component model, allowing for a composite of components to be treated as a component.
 
-\begin{figure}[htp]
+An example definition of a frame is given in figure \ref{SOFAmetadata}.
+
+\begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
 <?xml version="1.0"?>
@@ -720,17 +733,25 @@ There is no composition model, whichmakes some see this as a seperate entity for
 \end{center}
 \end{figure}
 
-SOFA 2 allows for dynamic evolution of an architecture at runtime. 
+This meta-data descirbes what a component using the tag \verb+frame+.
+The sub elements \verb+requires+ and \verb+provides+ describe what the component requires and provides through an external interface definition with the namespace \verb+sofatype://nz.geek.maori.spellChecker+.
+This is the namespace 
+
+
+
+\subsubsection{SOFA Evolution}
+SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at runtime. 
+
 Unlike other component systems,
-it pursues the idea of controlled evolution, which means that evolution has to conform to well-defined evolution patterns. 
-This increases the manageability and predictability of an application's architectural evolution. 
-In current SOFA 2, three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
+it only allows for controlled evolution; evolution that conforms to specified evolution patterns.
+Other component models allow the change of the component system on a fine grained level of adding or removing a component, where this model has only allows to change the component system.
+This is meant to increase the manageability and predictability of a component systems evolution. 
+Three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
 As its name suggests, in factory pattern a designated component serves as a component factory. 
 The removal pattern serves for destroying of a component previously dynamically created.
 The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
 
-These patterns are further discussed in \cite{Hnetynka2006}
-
+These patterns are further discussed in \cite{Hnetynka2006}.
 
 \section{CDR Implementations}
 \label{background.icdrs}
