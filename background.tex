@@ -1,9 +1,32 @@
 \chapter{Background}
 \label{background}
-%%%What are components
-{}Component-based software engineering is considered by many to be the future for development of software systems \cite{Szyperski2002}.
-{}Its goal is to use many reusable units of execution that are developed and composed into a single system.
-{}This replaces the idea of developing large monolithic systems that bundle all functionality into one unit, with a more modular approach.
+%%%What is Software Evolution
+Software evolution is the necessary process of changing a system to adapt to its changing environment.
+The cycle of continual evolution has been empirically studied and laws have been found that describe the nature of this process.  
+Software development cycles have been described to mitigate the negative aspects of these laws, and to assist with evolution.
+
+%%%Component Evolution
+Component-based software engineering (CBSE) is considered by many to be the future for development of software systems \cite{Szyperski2002}.
+It composes many encapsulated units of execution into a single system.
+This replaces the idea of developing large monolithic systems that bundle all functionality into one unit, with a more modular approach.
+Through its encapsulated components, and granular evolution, it provides many benefits to the process of software evolution.
+
+%%%Broken into two parts
+The evolution of a component based software can be broken into two different cycles; the evolution of the component, and the evolution of a component system. 
+A component is evolved by a developer, like a typical software system, but a component system can be evolved by a user or stakeholder of the system.
+The process of evolving a component system is the focus of this research.
+
+%%%What is Component Dependency resolution
+The evolution of a component system can be automated through a function called component dependency resolution.
+This function uses the explicitly declared relationships between components, to evolve a system 
+As these changes can be extensive, the function of component dependency resolution (CDR) was created to automate them.
+
+%%%What is a evolutionary strategy
+The purpose and user of a system will impact the evolution of a component system.
+
+%%%Defining components
+It is difficult to define exactly what a component is, as the community still disagrees over even fundamental differences.
+However, a software component can be defined with respect to software evolution, in order to study the effect of component system evolution.
 
 %%%What are component models.
 An important difference between software components and other modular approaches, is the \textbf{component model}.
@@ -13,14 +36,9 @@ This is the specification of how software components are described and how they 
 There are various component models available, these can differ by functionally, platform, or their objectives for being created.
 These models have become successful in many domains, such as application frameworks, operating systems and embedded systems.
 
-%%%What is evolution Evolution
+%%%What is evolution
 The component model typically includes specifications assist the evolution of the component system.
-This evolution is the changing of the system over time, either for maintenance or to add functionality.
-To enable this evolution, the component model defines functionality that allows components to be added, removed or replaced in the system. 
-
-%%%What is Component Dependency resolution
-The relationships between components can be complex, therefore a component that is changed through this evolution may require further changes to the system.
-As these changes can be extensive, the function of component dependency resolution (CDR) was created to automate them.
+To enable this evolution, the component model defines functionality that allows components to be added, removed or replaced in the system.
 
 %%%Examples of CDRs
 There are currently many successful implementations of CDR's.
@@ -48,7 +66,193 @@ The use of Boolean satisfiability solvers to implement CDR algorithms is describ
 This also includes an in-depth description of  a common SAT solver algorithm, the Davis-Putnam-Logemann-Loveland (DPLL) algorithm, 
 with its extension to also use pseudo Boolean constraints.
 Finally, the Common Upgradeability Description Format (CUDF) specification is described in section \ref{background.cudf}.
- 
+
+\section{Software Evolution}
+\label{background.evolution}
+Software evolution is the process of change made to software system to maintain, or to extend its functionality over the systems lifetime.
+This process is necessary as the environment for which the system is developed will change.
+
+The nature and fundamental laws of software evolution has be explored through empirical study of the software being evolved.
+Some of the discovered laws of this evolution process are outlined by \cite{lehman1980} and \cite{lehman1997}:
+
+\begin{enumerate}
+  \item \textit{Continuing Change:} Systems\footnote{E-type systems: software implemented in a real-world computing context} must be continually adapted else they become progressively less satisfactory
+  \item \textit{Increasing Complexity:} As the system evolves its complexity increases unless work is done to reduce it
+  \item \textit{Self Regulation:} the system evolves with statistically determinable trends and invariences
+  \item \textit{Conservation of Organisational Stability:} The average effective activity rate to evolve a system is invariant over its lifetime
+  \item \textit{Conservation of Familiarity:} As the system evolves, its incremental growth remains invariant to ensure users maintain mastery over the system.
+  \item \textit{Continuing Growth:} The system must continually grow to maintain user satisfaction
+  \item \textit{Declining Quality:} The quality of the system will decline unless rigorously maintained
+  \item \textit{Feedback System:} As the system effects the environment it is installed in, this changes the functions it performs
+\end{enumerate}
+
+%%%It is impossible to create a satisfactory system, but we can continually change it to become more satisfactory
+These laws make the software engineers objective of a creating a satisfactory system impossible, 
+because the system effects the environment it is in, which then changes the measurement of satisfactory.
+A software engineers goal is then to continually change a system to make it more satisfactory, with minimal cost and delay \cite{Lehman2006}.
+This change must be accomplished while the engineer maintains intellectual control over the complexity of the system \cite{Brooks1975}, 
+as the more complex a system, the greater the difficulty to change it.
+
+This iterative process can be seen in the spiral model shown in figure \ref{spiral}, first presented by \cite{Boehm1988}.
+
+%\usepackage{graphics} is needed for \includegraphics
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{backgroundpics/spiral}
+  \caption{The spiral software model}
+  \label{spiral}
+\end{center}
+\end{figure}
+
+This figure shows the evolutionary cycle of software development.
+As the process progresses the evolution of the software system continues till the end of it's life.
+This is a common model used to develop a software system, and shows the necessity to consider evolution during the software development.  
+
+A software engineer must create a system that can be quickly altered to adapt to a changing environment, 
+without increasing the systems complexity to a point where change may be too difficult.
+
+\section{Component Based Software Evolution}
+%%%Component systems can help
+Component based software engineering (CBSE) creates software systems by composing encapsulated units of execution
+that explicitly declare the relationships between themselves and the system.
+Using a component based system may reduce the costs and time of making evolving a system through more easily calculating side effects and maximising reuse within the system.
+Also, CBSE reduces the complexity of the change to a system by enforcing only granular changes. 
+
+%%%More easily calculate side effects of change
+Software components require the explicit definition of their relationships between one another and the system. 
+This with the enforcement of the encapsulation on components makes the effects of a change to a component based system can more easily be calculated than a typical system.
+Within a monolithic system, typically any part of the system can depend on any other part, this can occur without documentation or constraint.
+This means that any change to the system can effect any other part, and in unknown and unpredictable ways.
+Their are tools that analyse these dependencies to measure and mitigate their effect on the system, e.g. JDepend, Jens's tool.
+However, as a component system explicitly declares its relationships, and encapsulates its functionality these dependencies are restricted.
+Therefore, a components relationship to any other component in a system is calculable, making the effect of a change more easily predictable.
+For instance, given a text editor component explicitly declares it's dependence on a spell checker, a change to the spell checker will have a known effect on the text editor.
+Where in a monolithic system this relationship would only be implicit and the effect would then be more difficult to predict.
+
+%%%Maximising reuse
+Reuse is often cited as the main driving force of component technology, and has been empirically shown to increase the quality and productivity within software development \cite{hallsteinsen_experiences_1997}.
+The amount of reuse in a system will also decrease the amount of necessary change during system evolution as there is less replicated functionality to maintain.
+The greatest obstacle to reuse is the difficultly to locate and access required functionality quickly and easily \cite{ye_supporting_2001}.
+As a component explicitly declares the functionality it provides and the environment it requires to function, the ability to find and use it is increased.
+This can lead to greater reuse in a system and therefore less required change during evolution.
+For example, if a text editor component explicitly requires a spell checker, and a spell checker explicitly declares its functionality,
+the ability to find and compose them is greatly increased as their relationship is so specifically defined.
+
+
+%%%Intellectual control over the complexity of the system is increased
+The complexity of a component based system is greatly reduced due to the granularity of its construction.
+This complexity is not a mathematical concept, but a psychological one.
+It is the perceived complexity of a system, by an engineer, that intends to change the system.
+As the systems complexity increases the ability of the engineer to make effective changes to the system decreases.
+The number of units that must be looked at and the relationships between them must be considered by the engineer before a change is made.
+The atomic evolutionary change made to a component system is the addition or removal of a component, to or from the system.
+The smallest evolution that can be made to a monolithic software system can be as small as changing a single instruction. 
+Therefore, a component systems granularity means that there are less items each with explict relationships the system is more easily understood.
+For example, if a system required upgrading a spell-checker component, 
+the parts of the system that an engineer should be concerned about will be the components that depend on the spell checker.
+
+The use of component based systems can lower the cost, time and complexity of software evolution.
+These potential benefits motivate this research into the evolution of component based systems. 
+
+\subsection{Component Evolution}
+%%%Component evolution, i.e. the modification of components to create newer versions or branch existing versions.
+
+
+%%%What is a version?
+A version is the mechanism through which individual components evolve.
+It is a unique marker which is compariable to other versions such that they are ordered.
+As with the evolution of entire software systems, evolution of components requires constant maintenance.
+Bugs can be found, features can be added, and code can be refactored all which make the component better.
+
+%%%How are components versioned?
+The syntax and semantics of a version is usually defined within the component model.
+This forces all components that are developed for this model to follow the same general guidelines.
+
+%%%Versions between components?
+Although component must be versioned to conform to a versioning model defined by the component model, 
+the way in which a developer uses this model to version their component is not usually strictly defined.
+Each component is designed to be an independent unit, as such developers of components are separate from one another,
+and the way in which they version their components can be different.
+Therefore, version comparison is only useful between different versions of the same component;
+e.g. a spell-checker component can be version 10 but a separate and superior spell-checker component may be only version 1.
+This makes using component versions to decide between components impossible.
+
+%%%A version of a component that is greater than another version of that component is assumed to be better in some way.
+A newer version exists because the component has changed to be better in some way.
+This may be through a bug being fixed, a security hole being patched, or the functionality being extended.
+Having a newer version of a component in the system, may also make all of the other components that depend on it better as well,
+causing a propagation of system improvement with the upgrading of one component.
+
+In Belief Revision, one must maintain the newest set of information while only changing the minimal amount of previous knowledge. 
+
+The change to the system that is caused when a newer version is installed may cause harm to your system.
+In the same way that a version upgrade can propagate benefits through the system, 
+friction or errors can propagate and cause a faulty or not functional system.
+
+%%%Drawbacks of versions, they don't tell what changes
+A common approach to selecting an optimal solution is to
+maximise the versions of components while minimising the number of components.
+The problem with the first criterion is that the version information does not tell us what quality improves, 
+how much it improves or if that quality is relevant to the user or system.
+Optimising for fewer components in a solution can be against many component system goals, like reuse or extensibility.
+For example, this heuristics optimal solution would be a monolithic component with redundant functionality, over 
+a set of more specific components. 
+
+
+Versioning is the main mechanism in which components evolve.
+There is also branching, and environment specific altering.
+
+Versioning components has significant research behind it.
+
+Branching is when a difference in opinion or idealogy on how a component should proceed into the future
+causes the project to take two different routes given the same base code or idea.
+
+Spring DM takes libraries and makes them OSGi compatable, 
+Debian package can be compiled for different CPU architectures.
+
+
+\subsection{Component System Evolution}
+%%%Manually evolving a system can be tedious, so we use component dependency resolution
+Evolving a system through individually adding and removing components can be tedious task 
+as components can have dependencies on other components which also need to be satisfied.
+Therefore, after the user has identified the wanted components, 
+those components' dependencies must be satisfied with other components, which themselves can have dependencies.
+Satisfying all these dependencies manually is a recursive, time-consuming and error-prone task to accomplish.
+However, as most modern component models require components to explicitly state their dependencies; 
+this enables component dependency resolution to build systems where all dependencies are satisfied.
+
+%%%Changing the component in the component systems by adding removeing components to support evolution\\
+Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
+Add, remove, upgrade, downgrade components in the system while it is running.
+
+%%%How is this achieved?
+
+%%%Problems with versioning a component system is different combinations of components, with different versions.
+
+There are some problems that must be solved within the component model like making sure that during the change,
+the system is never invalid or unstable. 
+This is a scheduling problem as described by %TODO
+
+The composer must also make sure that all dependencies are meet
+
+\subsection{Component Dependency Resolution}
+\label{background.cdr}
+%%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
+Manually satisfying all component dependencies while evolving a component system can be a tedious, time consuming task.
+This process can be automated into the function Component Dependency Resolution (CDR) \cite{Jenson2010}.
+This takes advantage of the explicitly declared requirements of components to find a system where all component constraints are satisfied.
+
+%%%CDR can be used at design-time and run-time on component models.
+CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \cite{casey_better_2008}),
+at run time to evolve or extend a component-based system (as in Eclipse P2 \cite{leBerre2010}),
+or it can be used to build and restructure software product lines \cite{savolainen_analyzing_2007}.
+CDR is also used in package management systems, like apt-get \cite{Barth2005},
+for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com}. 
+
+%%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
+
+\subsection{Evolution Strategies}
+
 \section{What is a Component?}
 \label{background.components}
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
@@ -167,123 +371,9 @@ In this classification scheme, the two aspects that are included in this definit
 and construction interface specification for the explicitly defined dependencies.
 All the other aspects that practically must be defined, are here ignored as their definition is superfluous to the core topic of this research.
 
-\section{Evolution}
-\label{background.evolution}
-%%%Evolution is an important core aspect of Software Engineering and examining it in realtion to Component Systems is beneficial to the community\\
-{}A software engineers goals towards software is to have continual satisfactory execution with maximum confidence at minimal cost and delay in this changing world \cite{Lehman2006}, 
-{}while maintaining intellectual control over the complexity of design \cite{Brooks1975}.
-{}Component systems aim to manage complexity through decomposition of systems into well defined components, and the evolution of such components through well defined mechanisms.
-
-%%%Evolving a component system requires less change when compared to evolving a monolithic system.
-Evolving component-based software requires only altering a minimal set of parts of the system, 
-where as evolving a monolithic piece of software is achieved by replacing the entire system.
-This comparison is described by Szyperski \cite{Szyperski2002} as ``evolution not revolution''.
-As introducing change to a system introduces significant risk,
-minimising change during evolution lowers the risk of component-based systems compared to monolithic systems. 
-This risk occurs due to side effects that are caused by change, 
-and changing large parts of a system incurs more side effects versus altering only specific parts of a system.
-Therefore, lessening the change lowers the risk, and this is a very attractive feature of using and developing component-based software.
-
-%%%A component model should support the evolution of individual components, and the evolution and change of the entire system
-
-{}In this section we first discuss the support provided by a component model through the evolution of individual components and component systems.
-
-\subsection{Component Evolution}
-%%%Component evolution, i.e. the modification of components to create newer versions or branch existing versions.\\
+These core aspects will be explored in the following sections, with examples of different component models and CDR implementations being presented.
 
 
-%%%What is a version?
-A version is the mechanism through which individual components evolve.
-It is a unique marker which is compariable to other versions such that they are ordered.
-As with the evolution of entire software systems, evolution of components requires constant maintenance.
-Bugs can be found, features can be added, and code can be refactored all which make the component better.
-
-%%%How are components versioned?
-The syntax and semantics of a version is usually defined within the component model.
-This forces all components that are developed for this model to follow the same general guidelines.
-
-%%%Versions between components?
-Although component must be versioned to conform to a versioning model defined by the component model, 
-the way in which a developer uses this model to version their component is not usually strictly defined.
-Each component is designed to be an independent unit, as such developers of components are separate from one another,
-and the way in which they version their components can be different.
-Therefore, version comparison is only useful between different versions of the same component;
-e.g. a spell-checker component can be version 10 but a separate and superior spell-checker component may be only version 1.
-This makes using component versions to decide between components impossible.
-
-%%%A version of a component that is greater than another version of that component is assumed to be better in some way.
-A newer version exists because the component has changed to be better in some way.
-This may be through a bug being fixed, a security hole being patched, or the functionality being extended.
-Having a newer version of a component in the system, may also make all of the other components that depend on it better as well,
-causing a propagation of system improvement with the upgrading of one component.
-
-In Belief Revision, one must maintain the newest set of information while only changing the minimal amount of previous knowledge. 
-
-The change to the system that is caused when a newer version is installed may cause harm to your system.
-In the same way that a version upgrade can propagate benefits through the system, 
-friction or errors can propagate and cause a faulty or not functional system.
-
-%%%Drawbacks of versions, they don't tell what changes
-A common approach to selecting an optimal solution is to
-maximise the versions of components while minimising the number of components.
-The problem with the first criterion is that the version information does not tell us what quality improves, 
-how much it improves or if that quality is relevant to the user or system.
-Optimising for fewer components in a solution can be against many component system goals, like reuse or extensibility.
-For example, this heuristics optimal solution would be a monolithic component with redundant functionality, over 
-a set of more specific components. 
-
-
-Versioning is the main mechanism in which components evolve.
-There is also branching, and environment specific altering.
-
-Versioning components has significant research behind it.
-
-Branching is when a difference in opinion or idealogy on how a component should proceed into the future
-causes the project to take two different routes given the same base code or idea.
-
-Spring DM takes libraries and makes them OSGi compatable, 
-Debian package can be compiled for different CPU architectures.
-
-
-\subsection{Component System Evolution}
-%%%Manually evolving a system can be tedious, so we use component dependency resolution
-Evolving a system through individually adding and removing components can be tedious task 
-as components can have dependencies on other components which also need to be satisfied.
-Therefore, after the user has identified the wanted components, 
-those components' dependencies must be satisfied with other components, which themselves can have dependencies.
-Satisfying all these dependencies manually is a recursive, time-consuming and error-prone task to accomplish.
-However, as most modern component models require components to explicitly state their dependencies; 
-this enables component dependency resolution to build systems where all dependencies are satisfied.
-
-%%%Changing the component in the component systems by adding removeing components to support evolution\\
-Version and Dynamic dependence, with focus on interface give extensive tools to the composer 
-Add, remove, upgrade, downgrade components in the system while it is running.
-
-%%%How is this achieved?
-
-%%%Problems with versioning a component system is different combinations of components, with different versions.
-
-There are some problems that must be solved within the component model like making sure that during the change,
-the system is never invalid or unstable. 
-This is a scheduling problem as described by %TODO
-
-The composer must also make sure that all dependencies are meet
-
-\section{Component Dependency Resolution}
-\label{background.cdr}
-%%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
-Manually satisfying all component dependencies while evolving a component system can be a tedious, time consuming task.
-This process can be automated into the function Component Dependency Resolution (CDR) \cite{Jenson2010}.
-This takes advantage of the explicitly declared requirements of components to find a system where all component constraints are satisfied.
-
-%%%CDR can be used at design-time and run-time on component models.
-CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \cite{casey_better_2008}),
-at run time to evolve or extend a component-based system (as in Eclipse P2 \cite{leBerre2010}),
-or it can be used to build and restructure software product lines \cite{savolainen_analyzing_2007}.
-CDR is also used in package management systems, like apt-get \cite{Barth2005},
-for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com}. 
-
-%%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
 
 \section{Component Models}
@@ -397,6 +487,39 @@ The installation and removal of both the bundles and services from the OSGi syst
 OSGi therefore has the necessary elements in order to be considered a component model for this research. 
 It has the ability to explicitly describe relationships between either bundles or services, and to install and remove bundles from the system.
 
+\subsubsection{OSGi Bundle Repostiory}
+%%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
+Peter Kriens \cite{kriens_osgi_2008}, 
+a primary author of the OBR \cite{the_osgi_alliance_rfc-0112_2006}, described a use of a component repository within a resource constrained environment.
+When a device registers, 
+through the repository, the driver for that device is loaded and then used, until the device is no longer available
+then to conserve resources the driver is uninstalled dynamically. 
+This demonstrates two requirements for a component repository, dynamic installation and uninstallation and being scalable to small devices.
+
+For the OBR, we reviewed the standard \cite{the_osgi_alliance_rfc-0112_2006}, 
+contacted both authors \cite{kriens_osgi_2008, richard_s._hall_obr_2008} 
+and downloaded the open source Apache Felix OBR implementation and reviewed the source code.
+OBR was our most completely reviewed repository.
+
+OSGi is a 
+mature standard component model from the OSGi Alliance that has seen a recent uptake in industry \cite{kriens_osgi_2008} 
+from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix. This has multiplied the 
+number of available bundles \cite{the_osgi_alliance_rfc-0112_2006}. OSGi Bundle Repository (OBR) was initially defined by 
+Richard S. Hall, and later Peter Kriens, to help with the distribution of components, and is proposed in 
+RFC-0112 \cite{the_osgi_alliance_rfc-0112_2006}. The design follows a federation of repositories each describing 
+the capabilities and requirements of it's components and providing a URL to access it. Search is done using syntax with OSGi filter 
+based expressions. This repository can also resolve dependencies and install these composites into a system. \\
+OBR has been seen as a solution to to simplify deployment of OSGi applications
+\cite{jung_integrating_2007}, distribution and deployment to embedded
+ubiquitous systems \cite{jung_embedded_2006}, smart home applications \cite{gouin-vallerand_managing_2007} and 
+dynamic distribution of drivers \cite{kriens_osgi_2008}. It is the only easily available deployment 
+architecture available for OSGi, others have been developed to either extend or compete \cite{frnot_component_2005} with OBR, 
+but are either in development, have been abandoned or are proprietary.\\ 
+The most mature implementation of OBR client is offered by Apache, it is bundled with their core OSGi framework, Felix. 
+The largest public OBR implementation is the federated repository provided by the OSGi alliance,
+currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
+There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
+
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
 Eclipse is a widely used IDE and an extencible plugin platform for createing Java applications.
@@ -482,6 +605,27 @@ The methods used to add and remove these are then:
 
 The Eclipse plugin system can therefore be defined as a component system in this study.
 It contains the necessary explicit relationships, and the programmatic evolution requirements necessary for CDR to be used.
+
+\subsubsection{Eclipse P2}
+%%%The Eclipse P2 Solver, by Le Berre and Rapicault
+
+For the Eclipse P2 repository system there was extensive literature provided by the Eclipse foundation in the form of a developer forum.
+We also reviewed an early implementation through use of the software within the Eclipse environment.
+Due to its recent release there is no literature reviewing or discussing this software.
+
+Eclipse P2
+is the new provisioning system for the Eclipse IDE platform.
+It provides an update manager, the functionality to component pool, and a new dependency resolver.\\
+The update manager is what most users will be familiar with, being the primary interface to the P2 functionality. 
+A public repository, called a site, is added, and can be searched for components and their dependencies to install, and run.
+This simplifies the evolution of Eclipse based applications to a simple user interface.\\
+Component or bundle pooling uses a centralised set of components to run different applications.
+This comes from the common problem of running multiple Eclipse based applications on the same system with different combinations of components.
+A file is used to describe what components should be used in each particular application and P2 builds the composition into an application.\\
+The dependency resolver of P2 is based on SAT4J\footnote{http://www.sat4j.org/} technology, a SAT resolver, which finds an optimal solution based on
+a provided fitness function, if a solution exists it is guaranteed to find it.\\  
+Eclipse already is
+the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
 
 \subsection{Fractal}
 Fractal is a component model developed by France Telecom R\&D and INRA.
@@ -681,37 +825,38 @@ The commands to modify a Debain package system are:
 These commands define the atomic actions to change a Debain system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
-%\subsection{RedHat Packages}    
-% 
-% The spec file is not located in the component but is more a build script to create the component.
-% \begin{figure}[htp]
-% \begin{center}
-% \begin{alltt}
-% Name:      textEditor
-% Version:   0.0.1.alpha
-% 
-% \ldots
-% 
-% Requires: spellChecker
-% Provides: textEditor
-% \ldots
-% \end{alltt}
-%   \caption[RPM SPEC file example]{Example of a RPM SPEC file}
-%   \label{rpmmetadata}
-% \end{center}
-% \end{figure}
-% 
-% 
-% rpm is a powerful Package Manager, which can be used to build, install, query, verify, update, and erase individual software packages
-% 
-% rpm --erase
-% rpm --update
-% rpm --install
+\subsubsection{Apt-get}
+%%%Apt-get is the core application for package management in Debian based GNU/linux distributions
+
+Debian is a free and open source GNU/Linux based operating system. 
+Debian's package system (dpkg) is used to install, remove and provide information about the operating system packages. 
+APT is a repository client built on top of dpkg and simplifies it's functionality.\\
+Aptitude is an application that adds a basic user interface to APT and also increases functionality in aspects like 
+locating and removing redundant packages. 
+Search of a package repository is done using regular expressions mixed with a
+custom set of search terms that increase expressiveness. Using a simple
+constraint-directed best-first search algorithm with some basic conflict
+tracking Aptitude resolves dependencies between packages, and generates
+composites to install.\\ 
+There are many public and private implementations of this repository system. 
+The largest public implementation is the Debian public repository, with 28078 packages in the ``Lenny'' stable repository.
+With the most popular Debian distribution Ubuntu\footnote{http://www.ubuntu.com} having ten million users \cite{vance_software_2009} the user base for this repository is massive.
+This repository has many regulations to publish and distribute, enumerated in the Debian Developers Reference \cite{andreas_barth_debian_2008}. 
+User and automated testing is recommended, and if any critical bugs are found they are removed from the repository. 
+This very manual way of publication and
+distribution has its drawbacks, mostly the long community process that must be followed.\\
+
+\subsubsection{Aptitude}
+%%%Aptitude is a competitor to apt-get which has some more advanced features
+Aptitude with APT, has immense amounts of information free on-line, the hardest part was reviewing as much as possible.
+We also used and read the help documentation, contacted the author of the software \cite{burrows_modelling_2005} and
+the Debian developers reference for the specific implementation of the Debian repository.
+
 
 \subsection{SOFA 2.0}
 Software Appliance (SOFA) is a component model developed at Charles University in Prague.
-A component in the SOFA framework is defined by it's frame, which is the core definition of what the component requires and provides.
-Like Fractal, SOFA is a recursive component model, allowing for a composite of components to be treated as a component.
+A component in the SOFA framework is defined by it's frame, which contains the meta-data of what the component requires and provides.
+Like Fractal, SOFA is a recursive component model, allowing for a composite of components to be treated as a single component.
 
 An example definition of a frame is given in figure \ref{SOFAmetadata}.
 
@@ -733,232 +878,84 @@ An example definition of a frame is given in figure \ref{SOFAmetadata}.
 \end{center}
 \end{figure}
 
-This meta-data descirbes what a component using the tag \verb+frame+.
-The sub elements \verb+requires+ and \verb+provides+ describe what the component requires and provides through an external interface definition with the namespace \verb+sofatype://nz.geek.maori.spellChecker+.
-This is the namespace 
-
+This meta-data descirbes two components, a text editor and a spell checker, using the tag \verb+frame+.
+The sub elements \verb+requires+ and \verb+provides+ describes their relationship through an externally defined interface with the namespace \verb+sofatype://nz.geek.maori.spellChecker+.
+This interface is defined using an Architecture Definition Language (ADL) and added to a repository to be re-used. 
 
 
 \subsubsection{SOFA Evolution}
 SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at runtime. 
-
 Unlike other component systems,
-it only allows for controlled evolution; evolution that conforms to specified evolution patterns.
-Other component models allow the change of the component system on a fine grained level of adding or removing a component, where this model has only allows to change the component system.
-This is meant to increase the manageability and predictability of a component systems evolution. 
+it only allows for controlled evolution; 
+Many component models allow the change of the component system on a fine grained level of adding or removing a component.
+However this model only allows more grainular changes to be made to the system, these changes must conform to specified evolution patterns.
+This restriction is meant to increase the manageability and predictability of a component systems evolution. 
+
 Three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
 As its name suggests, in factory pattern a designated component serves as a component factory. 
 The removal pattern serves for destroying of a component previously dynamically created.
-The employment of utility interfaces described below (allowing access to external services), comprises the service access pattern.
-
+The service access pattern allows for the access to external services.
 These patterns are further discussed in \cite{Hnetynka2006}.
 
-\section{CDR Implementations}
-\label{background.icdrs}
-%%%Design time dependency resolvers benefits the software engineer building a large complex system that can involve many libraries with complex relationships.
 
-\subsection{Apache Maven}
+\subsection{Common Upgradeability Description Format}
+%%%CUDF model created for compeition
+The Common Upgradeability Description Format (CUDF) model is defined as an abstract representation of the problem found when evolving a package based system, e.g. Debian.
+It was created by the Mancoosi project to foster interest and competition in creating solvers for upgrading problems faced by Free and Open Source Software (FOSS).
 
-\subsection{Apache Maven}
-%%%Maven is a design time project and build automation tool, that can resolve library dependencies from a repository (https://oss.sonatype.org/content/repositories/)
+%%%No concrete components, but fits our definition
+There is no concrete component representation, as it was not designed to be an executable component model.
+However, as it takes a similar definition of component to this research, it fits within our  
 
+In figure \ref{CUDFmetadata}, an example of a CUDF problem is presented.
 
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+package: textEditor
+version: 1
+depends: spellCheckerService
 
-\subsection{OSGi Bundle Repostiory}
-%%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
-Peter Kriens \cite{kriens_osgi_2008}, 
-a primary author of the OBR \cite{the_osgi_alliance_rfc-0112_2006}, described a use of a component repository within a resource constrained environment.
-When a device registers, 
-through the repository, the driver for that device is loaded and then used, until the device is no longer available
-then to conserve resources the driver is uninstalled dynamically. 
-This demonstrates two requirements for a component repository, dynamic installation and uninstallation and being scalable to small devices.
+package: spellChecker
+version: 2
+provides: spellCheckerService
 
-For the OBR, we reviewed the standard \cite{the_osgi_alliance_rfc-0112_2006}, 
-contacted both authors \cite{kriens_osgi_2008, richard_s._hall_obr_2008} 
-and downloaded the open source Apache Felix OBR implementation and reviewed the source code.
-OBR was our most completely reviewed repository.
+request:
+install:textEditor
 
-OSGi is a 
-mature standard component model from the OSGi Alliance that has seen a recent uptake in industry \cite{kriens_osgi_2008} 
-from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix. This has multiplied the 
-number of available bundles \cite{the_osgi_alliance_rfc-0112_2006}. OSGi Bundle Repository (OBR) was initially defined by 
-Richard S. Hall, and later Peter Kriens, to help with the distribution of components, and is proposed in 
-RFC-0112 \cite{the_osgi_alliance_rfc-0112_2006}. The design follows a federation of repositories each describing 
-the capabilities and requirements of it's components and providing a URL to access it. Search is done using syntax with OSGi filter 
-based expressions. This repository can also resolve dependencies and install these composites into a system. \\
-OBR has been seen as a solution to to simplify deployment of OSGi applications
-\cite{jung_integrating_2007}, distribution and deployment to embedded
-ubiquitous systems \cite{jung_embedded_2006}, smart home applications \cite{gouin-vallerand_managing_2007} and 
-dynamic distribution of drivers \cite{kriens_osgi_2008}. It is the only easily available deployment 
-architecture available for OSGi, others have been developed to either extend or compete \cite{frnot_component_2005} with OBR, 
-but are either in development, have been abandoned or are proprietary.\\ 
-The most mature implementation of OBR client is offered by Apache, it is bundled with their core OSGi framework, Felix. 
-The largest public OBR implementation is the federated repository provided by the OSGi alliance,
-currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
-There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
+\end{alltt}
+  \caption[CUDF meta-data file]{Example of a CUDF problem file}
+  \label{CUDFmetadata}
+\end{center}
+\end{figure}
 
+The CUDF file is defined using key/value pairs, where each component is defined using the two tags \verb+package+ and \verb+version+.
+This file does not only represent the components but also the evolutionary change with the tag \verb+request+.
+Further definition of the syntax and semantics of CUDF is in chapter \ref{cdr}, as it is used extensivly throughout this study.
 
-\subsection{Apt-get}
-%%%Apt-get is the core application for package management in Debian based GNU/linux distributions
-
-Debian is a free and open source GNU/Linux based operating system. 
-Debian's package system (dpkg) is used to install, remove and provide information about the operating system packages. 
-APT is a repository client built on top of dpkg and simplifies it's functionality.\\
-Aptitude is an application that adds a basic user interface to APT and also increases functionality in aspects like 
-locating and removing redundant packages. 
-Search of a package repository is done using regular expressions mixed with a
-custom set of search terms that increase expressiveness. Using a simple
-constraint-directed best-first search algorithm with some basic conflict
-tracking Aptitude resolves dependencies between packages, and generates
-composites to install.\\ 
-There are many public and private implementations of this repository system. 
-The largest public implementation is the Debian public repository, with 28078 packages in the ``Lenny'' stable repository.
-With the most popular Debian distribution Ubuntu\footnote{http://www.ubuntu.com} having ten million users \cite{vance_software_2009} the user base for this repository is massive.
-This repository has many regulations to publish and distribute, enumerated in the Debian Developers Reference \cite{andreas_barth_debian_2008}. 
-User and automated testing is recommended, and if any critical bugs are found they are removed from the repository. 
-This very manual way of publication and
-distribution has its drawbacks, mostly the long community process that must be followed.\\
-
-\subsection{Aptitude}
-%%%Aptitude is a competitor to apt-get which has some more advanced features
-Aptitude with APT, has immense amounts of information free on-line, the hardest part was reviewing as much as possible.
-We also used and read the help documentation, contacted the author of the software \cite{burrows_modelling_2005} and
-the Debian developers reference for the specific implementation of the Debian repository.
-
-
-\subsection{Eclipse P2}
-%%%The Eclipse P2 Solver, by Le Berre and Rapicault
-
-For the Eclipse P2 repository system there was extensive literature provided by the Eclipse foundation in the form of a developer forum.
-We also reviewed an early implementation through use of the software within the Eclipse environment.
-Due to its recent release there is no literature reviewing or discussing this software.
-
-Eclipse P2
-is the new provisioning system for the Eclipse IDE platform.
-It provides an update manager, the functionality to component pool, and a new dependency resolver.\\
-The update manager is what most users will be familiar with, being the primary interface to the P2 functionality. 
-A public repository, called a site, is added, and can be searched for components and their dependencies to install, and run.
-This simplifies the evolution of Eclipse based applications to a simple user interface.\\
-Component or bundle pooling uses a centralised set of components to run different applications.
-This comes from the common problem of running multiple Eclipse based applications on the same system with different combinations of components.
-A file is used to describe what components should be used in each particular application and P2 builds the composition into an application.\\
-The dependency resolver of P2 is based on SAT4J\footnote{http://www.sat4j.org/} technology, a SAT resolver, which finds an optimal solution based on
-a provided fitness function, if a solution exists it is guaranteed to find it.\\  
-Eclipse already is
-the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
-
-
-\subsection{Comparison of functionality}
-%%%The comparisons of these resolvers will focus on the functionality that they provide given their component model (we will not compare their implementations)
-
-%%%Multiple package installations 
-%Maven Debain No, OSGi Eclipse DS and CUDF yes
-
-%%%Focus on interface not implementation dependence 
-%Maven no, Debian Community defined virtual packages, 
-
-%%%Version Control
-
-%%%Run time replacement Dynamic Dependence
-%Maven no (no runtime), Eclipse Kind of a bit buggy requires restarts,
-%OSGI DS Debian Yes, CUDF is abstract so has no real implementation
-
-%%%Conflicts
-%Maven?, Spring and DS no,  OSGi Singleton, Debian and CUDF are Expressive
-
-%%%Reccommendation System, soft dependency (is this even a good idea)
-
-
-\section{CDR implementaion with Boolean Satisfiability (SAT) Solvers}
-\label{background.SAT}
-
-%%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
-
-%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
-Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
-This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
-The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
-Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
-
-%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
-
-%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
-
-%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
-
-\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
-%%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
-
-%%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
-
-\subsection{CHAFF Watched Literals}
-%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
-%TODO cite
-
-\subsection{Conflict Learning}
-%%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly)
-
-%%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
-
-%%%Further improvement can be made by searching for the smallest constraint through such variable elimination
-
-\subsection{Literal Order}
-%%%The order in which the literals are assumed in the DPLL algorithm, is heuristically accomplished
-
-%%%The selection of a literal can be broken into two stages for modularity;
-%%%first selecting a variable that is very volatile,
-%%%second selecting a phase (negative or positive)
-
-\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
-%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-
-%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
-
-%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
-
-\subsection{Other Methods}
-\subsubsection{Integer Programming}
-%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
-\subsubsection{SMT Solvers}
-%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
-\subsubsection{Constraint Solver}
-%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
-
-\section{Common Upgradeability Description Format}
-\label{background.cudf}
-
-%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
-{}\cite{treinen2009common}
-
-%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
-
-%%%In both regards it has succeded, there have been many competitions run, 
-%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
-
-\subsection{CUDF Syntax}
-%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
-
-%%%Package Formulas are the standard mechanism of dependence
-
-%%%Versions as Integers
-
-%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
-
-\subsection{CUDF Semantics}
-%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
-
-%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
-
-%%%It must be broad enough to define and solve real world problems
-
-
-\subsection{Mancoosi MPM}
+\subsubsection{Mancoosi MPM}
 %%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
-
 
 \subsubsection{P2CUDF implementation}
 %%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
 The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
 One implementation of note is the P2CUDF implementation, that uses SAT
+
+
+
+\section{Summary}
+
+In this chapter the process of software evolution and the use of component based systems within this process has been described. 
+
+
+
+
+
+
+
+
+
+
+
 
 
