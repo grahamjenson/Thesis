@@ -45,7 +45,7 @@ With respect to this definition of a component, various component models can be 
 These component models can differ by functionality, platform, or their objectives for being created.
 They may also have their own CDR implementations, created to assist in their component systems evolution. 
 
-
+%%%In this chapter\ldots
 In this chapter; firstly the software evolution and the evolution of components and component systems is then discussed in section \ref{background.evolution}.
 This section includes descriptions of component dependency resolution and the evolution strategies of stakeholders.
 
@@ -57,10 +57,16 @@ This includes an introduction to the Debian model, and CUDF model that are descr
 
 \section{Software Evolution}
 \label{background.evolution}
+%%%Evolution in other contexts
+Evolution is primarily used in the contexts of biology referring to the natural change of a species to survive in its environment,
+and in cosmology when referring to the continual change of the universe.
+
+%%%Software Evolution is
 Software evolution is the process of change made to software system to maintain, or to extend its functionality over the systems lifetime.
 This evolution is required in order to adapt to the changing environment, which is made up of stakeholders, systems, and other internal and external constraints that impact the system. 
 As the system will inevitably change the environment it is in, the continual evolution in order to satisfy the stakeholders and constraints is necessary. 
 
+%%%The nature of this evolution has been explored and laws found
 The nature and fundamental laws of software evolution has be explored through empirical study of the software being evolved.
 By observing the evolutionary development of many software systems and analysing the results, laws, similar to the laws of nature like gravity, can be identified.
 Some of the discovered laws of this evolution are outlined by \cite{lehman1980} and \cite{lehman1997}, and presented here:
@@ -76,7 +82,7 @@ Some of the discovered laws of this evolution are outlined by \cite{lehman1980} 
   \item \textit{Feedback System:} As the system effects the environment it is installed in, this changes the functions it performs
 \end{enumerate}
 
-%%%It is impossible to create a satisfactory system, but we can continually change it to become more satisfactory
+%%%These laws describe the fact that it is impossible to create a single satisfactory system, and an iterative approach is best to strive for continual satisfaction
 These laws make the software engineers objective of a creating a satisfactory system impossible.
 A software engineers goal is then to continually change a system to make it more satisfactory, with minimal cost and delay \cite{Lehman2006}.
 This change must be accomplished while the engineer maintains intellectual control over the complexity of the system \cite{Brooks1975}, 
@@ -93,32 +99,36 @@ This iterative process can be seen in the spiral model shown in figure \ref{spir
 \end{center}
 \end{figure}
 
+%%%Figure of the iterative spiral development cycle showing its mitigation of the negative effects of the laws of software evolution
 This figure shows the evolutionary cycle of software development through the stages of communication, planning, modeling, construction and deployment.
 These stages are iterated ad infinitum, or until the software project reaches the end of its life. 
 This is a common model used to develop a software system, and shows the necessity to consider evolution during the software development.  
 
+%%%Therefore a software engineer, must\ldots
 A software engineer must create a system that can be quickly altered to adapt to a changing environment, 
 while working to reduce the inevitable complexity caused by this change.
 
 \subsection{Component Based Software Evolution}
-%%%CBSE benefits on software Evolution
+%%%How CBSE helps with these goals of a software developer
 As stated above, the goals of a software engineer is to create a system that can be continually changed with minimal cost and delay,
 while maintaining intellectual control over the systems complexity.
 Towards these goals component based software engineering (CBSE) was created.
 
+%%%What is component based software engineering
 Component-based software engineering (CBSE) is considered by many to be the future for development of software systems \cite{Szyperski2002}.
 It creates software systems by composing encapsulated units of execution that explicitly declare the relationships between themselves and their environment.
 Many benefits are gained to the process of software evolution through using a component based system. 
 The costs and time of changing a system can be reduced through more easily calculating side effects and supporting reuse within the system.
 Also, using a component system reduces the complexity of the understanding and altering a system, as the system is made of higher abstracted elements. 
 
-%%%More easily calculate side effects of change
-Software components require the explicit definition of their relationships between one another and the system. 
-With the enforcement of the encapsulation on components, this makes the effects of a change to a component based system more easily calculable.
-To compare, within a monolithic system any part of the system can depend on any other part without documentation or constraint.
+%%%Change in a monolithic system
+Within a monolithic system any part of the system can depend on any other part without documentation or constraint.
 This means that any change to the system can effect any other part in unknown and unpredictable ways.
 This problem has lead to tools that analyse these dependencies to measure and mitigate their effect on the system, e.g. JDepend, Jens's tool.
-However, as a component system explicitly declares its relationships, and encapsulates its functionality these dependencies are restricted.
+
+%%%Change in a component system is more predicatble
+Software components require the explicit definition of their relationships between one another and the system. 
+With the enforcement of the encapsulation on components, this makes the effects of a change to a component based system more easily calculable.
 Therefore, a components relationship to any other component in a system is calculable, making the effect of a change more easily predictable.
 For instance, given a text editor component explicitly declares it's dependence on a spell checker, a change to the spell checker will have a known effect on the text editor.
 Where in a monolithic system this relationship would only be implicit and the effect would then be more difficult to predict.
@@ -139,11 +149,13 @@ The complexity of changing a component based system is greatly reduced due to th
 The higher level abstraction of the system into components, above classes or functions, reduces the number of elements and their relationships.
 At this level, the atomic evolutionary change made to a component system is the addition or removal of a component, to or from the system.
 
+%%%Conclusion
 The use of component based systems can lower the cost, time and complexity of software evolution.
 Though an important distinction must now be made between the evolution of a single component, and the evolution of a component system.
 This discussion is continued in the following section.
 
 \subsection{Component Evolution vs. Component System Evolution}
+%%%Evolution of a component system is made up of two cycles, the component evolution and system evolution.
 Evolution is the repeated change to a software system to adapt to its environment.
 There are two environments that exist when considering the evolution of a component based system; 
 the environment the component exists in, and the environment that the component system exists in.
@@ -154,33 +166,41 @@ These separate processes, although related, have different features and aspects 
 \subsubsection{Component Evolution}
 %%%Two main differences with component evolution and typical software evolution, is the definition and testing of relationships,
 %%%And the declaration and distribution of a version, not a system
-The evolution of a component is similar to the evolution of any piece of software,
-though two main differences exist;
-the relationships on external components must be defined and tested for compatibility;
-instead of deploying a complete system, the component is versioned and released for distribution.
+The evolution of a component is similar to the evolution of a typical piece of software, using methods similar to the one present in figure \ref{spiral}.
+The main exceptions is caused bt the difference that throughout evolution the explicit relationships to other components must be considered.
+These relationships effect a components evolution as the related components have different evolution cycles, 
+and the relationships can create a combinatorial amount of systems that component could be deployed in.
 
-As a component explicitly declares relationships to other components that may have different development cycles, the complexity of a component release is increased.
+A component explicitly declares relationships to other components, therefore the development and evolution of a component will effect those that it is related to.
+These effects can be passed through dependencies, and therefore must be considered throughout development.
+For example, if a component $a$ is changed, and component $b$ uses $a$'s functionality, this change may effect $b$.
+As the developers of $a$ do not have control over the development of $b$ the changes must be discussed, and co-ordinated to ensure that they are not detrimental to either component.
+
 A typical piece of software is bundled together, and as a system can be tested to work before deployment.
 However, as a component can be used in different contexts the specification, and testing, of the relationships is required.
-A component may express dependence over a range of other components,
-for instance, a text editor depending on a spell checker between versions 1 and 10.
-As there can be many such relationships the possibility of testing all com
+As a component may contain complex relationships to many other components,
+the amount of systems that the component can be deployed in can be massive.
+Testing all possible systems is then impossible, which must be considered during evolution.
+For example, given a text editor component depends on three versions of a spell checker, 
+and four versions of a font component the total amount of possible systems is 12.
+This number increases to 105 if the component system allows multiple versions of the same component to be installed.
 
-%%%The version 
-Component evolution is primarily accomplished through a development cycle similar to the one presented in figure \ref{spiral}.
-A core difference though, is that the component is not a complete system, therefore is not distributed as a system, but released as a version.
-This process involves the component being tagged as a version, and released so that others may deploy the component into their system.
-A version is a unique identifier, a name, that indicates some position in an ordered list of releases.
-Each component may version the component through a different model,
-therefore, version comparison is only useful between different versions of the same component;
-e.g. a spell-checker component can be version 10 but a separate and superior spell-checker component may be only version 1.
-
-
-
+This nature of this component evolution is explored in studies such as \cite{vasa2007patterns}, where the evolution of 5 components is empirically studied and patterns of evolution are extracted.
+Other studies look at aspects like the evolution of specifications \cite{Mencl2001}, the specifications to version components in the component model \cite{Stuckenholz2005},
+and the general concepts related to this evolution \cite{Rhode2000}.
+This area is closely related to the well studied area of software evolution, and is still an active area of research.
 
 \subsubsection{Component System Evolution}
-Evolving a component system is accomplished though adding and removing components.
-This 
+The evolution of a component system is accomplished through altering the structure of the component system.
+This is opposed to the evolution of individual component which alters the internal structure of a single component.
+This architectural level view of evolution is significantly different as it does not concern itself with the internals of the constituent components only the relationships between the components.
+
+The core functions involved in evolving a component system are the addition and removal of components to and from the system.
+These functions are executed for the same reason as the evolution of a component, for maintenance or to extend the systems functionality.
+Though the differences between the two processes are significant.
+
+Users and other non technical stakeholders can alter the system
+Individual components can diverge their evolution from the system
 
 
 For instance, a component could be developed to be used in an embedded system, but be deployed in a web-server.
@@ -189,11 +209,11 @@ The web-server will continue to be evolved in an environment of serving web page
 If at some stage the embedded component evolves to the point of conflict with the web-servers environment, 
 then the server must either adapt to do without it or stop using the evolution or
 
-The process of component system evolution was studied in \cite{fortuna2011} by looking at the first 10 releases of the Debian Linux/GNU distribution.
-
-It has been studied in studies such as \cite{vasa2007patterns}, where the evolution of 5 components is empirically studied and measured to help with their use.
-
-
+The process of component system evolution is empirically studied in \cite{fortuna2011} by looking at the first 10 releases of the Debian Linux/GNU distribution.
+This study uses graph metrics to analyse the evolution of the complexity of the software releases, and then compares the results to its biological counter part to shed light on both processes.
+A system to evolve a component system using mutiple sources of components to install the newset versions is discuesed in \cite{Ryan2005}.
+The evolution of a robot built as a set of OSGi components is studied in the paper \cite{Luo2004}
+The mitigation of the negative effects caused by evolution is discussed in the paper \cite{Stuckenholz2007}.
 
 
 %%%Versions dont work
@@ -215,7 +235,16 @@ for adding, removing and updating components in package based operating systems 
 %%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
 
 \subsection{Evolution Strategies}
-asd
+Given any point throughout the life of a system, there are choices to be made about the systems evolution.
+Should a component be removed, should it be added, should the system be upgraded and what criteria should any of these actions optimise the change for.
+The fears that guide these decisions are caused by the risk that change will damage the system, and the risk that not changing will leave the system out of date.
+These two risks are most extremely representd by the sterotypes of conservative and progressive evolutionary strategies.
+
+
+The research presented in \cite{Ryan2005}, states that a component should always be as uptodate as possible.
+This is a clearly risky 
+
+\cite{Lehman2006} Conservation of Familiarity requires that a system evolve not so much as to 
 
 \section{What is a Component?}
 \label{background.components}

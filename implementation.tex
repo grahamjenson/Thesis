@@ -5,6 +5,8 @@ Therefore, the implementation of CDR requires to be robust and fast.
 Recently, the use of Boolean satisfaction (SAT) solvers extended to handle pseudo Boolean constraints for optimisation, has become popular.
 This method takes a set of constraints that describe the problem and using a set of powerful tools quickly finds solutions to that satisfy all constraints.
 
+
+
 %%%The implementation of CDR is also a very important aspect of the problem, as the queries can be very large and complex to solve given its NP-Hard nature.
 
 %%%The implementation to these solvers is sometimes ad-hoc, this can be bad as the problem is similar across different domains, 
@@ -89,6 +91,9 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 %%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
 
 \subsection{Other Methods}
+This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution.
+
+
 \subsubsection{Integer Programming}
 %%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
 \subsubsection{SMT Solvers}
