@@ -186,7 +186,7 @@ and four versions of a font component the total amount of possible systems is 12
 This number increases to 105 if the component system allows multiple versions of the same component to be installed.
 
 This nature of this component evolution is explored in studies such as \cite{vasa2007patterns}, where the evolution of 5 components is empirically studied and patterns of evolution are extracted.
-Other studies look at aspects like the evolution of specifications \cite{Mencl2001}, the specifications to version components in the component model \cite{Stuckenholz2005},
+Other studies look at aspects like the evolution of specifications \cite{Mencl2001}, the models used to version components \cite{Stuckenholz2005},
 and the general concepts related to this evolution \cite{Rhode2000}.
 This area is closely related to the well studied area of software evolution, and is still an active area of research.
 
@@ -197,57 +197,104 @@ This architectural level view of evolution is significantly different as it does
 
 The core functions involved in evolving a component system are the addition and removal of components to and from the system.
 These functions are executed for the same reason as the evolution of a component, for maintenance or to extend the systems functionality.
-Though the differences between the two processes are significant.
+Though they differ in the fact that users, and other non-technical stakeholders can evolve the system,
+there is no single metric like a version to measure the state or change to the system,
+and the evolution of the system and the evolution of a component can diverge.
+ 
+%%%Users and other non technical stakeholders can alter the system
+As the evolution is more coarsely grained than that of the evolution of a single component, the necessary technological knowledge is lowered.
+To evolve a single component requires programming and software development knowledge to accomplish.
+However, the evolution of a piece of software from a higher level requires some knowledge of the component model and tools to change it,
+though the overhead in learning this information is quite low.
+For example, to maintain a component system like a Debian GNU/Linux distribution can be done through executing the command \verb+apt-get upgrade+.
+To extend the system to install a component \verb+comp+ the command \verb+apt-get install comp+ can be executed.
+This gives the power to evolve a system to a user.
 
-Users and other non technical stakeholders can alter the system
-Individual components can diverge their evolution from the system
+%%%There is no version, or single metric, to describe the system state
+The state a component or piece of software has evolved to can be represented by a single measurement, a version.
+The state of a component system cannot be measured with a single metric as it is represented by a configuration of the versions of components that are installed in the system.
+A component system then forms something like a partially ordered set, where a system can be neither more or less evolved than another.=
+For instance, a system that has version 1 of component $a$ and version 2 of component $b$, is neither more or less evolved than a system with version 2 of $a$ and version 1 of $b$.
+This complexity makes it difficult to compare systems, and make decisions about actions to be taken.
 
-
+%%%Individual components can diverge their evolution from the system
+The evolution of a component, and the evolution of a system it is in can become in conflict with each other.
+As discussed above, a component is evolved disconnected from the systems it is deployed in, as a component can be used in many different contexts and systems.
+When a component evolves, it may then conflict with many systems that it is part of.
 For instance, a component could be developed to be used in an embedded system, but be deployed in a web-server.
-The evolution of the component may continue to be evolved to adapt to the embedded environment that it is developed for.
-The web-server will continue to be evolved in an environment of serving web pages. 
-If at some stage the embedded component evolves to the point of conflict with the web-servers environment, 
-then the server must either adapt to do without it or stop using the evolution or
+The evolution of the component may continue to be evolved to adapt to the embedded environment that it is developed for,
+but at some point conflicts with the web-servers requirements.
+This then has the effect of stopping the evolution of that component in the web-server, or by removing that component all together.
 
-The process of component system evolution is empirically studied in \cite{fortuna2011} by looking at the first 10 releases of the Debian Linux/GNU distribution.
-This study uses graph metrics to analyse the evolution of the complexity of the software releases, and then compares the results to its biological counter part to shed light on both processes.
-A system to evolve a component system using mutiple sources of components to install the newset versions is discuesed in \cite{Ryan2005}.
-The evolution of a robot built as a set of OSGi components is studied in the paper \cite{Luo2004}
-The mitigation of the negative effects caused by evolution is discussed in the paper \cite{Stuckenholz2007}.
-
-
-%%%Versions dont work
-
+This process of component system evolution is empirically studied in \cite{fortuna2011} by looking at the first 10 releases of the Debian Linux/GNU distribution,
+and using graph metrics to analyse the evolution of the complexity of the software releases, the process can be compared to its biological counter part.
+Methods to evolve component systems are discussed \cite{Ryan2005} and \cite{Luo2004},
+and the mitigation of the negative effects caused by such evolution is discussed in the paper \cite{Stuckenholz2007}.
+This area of research is quite new, the evolution of component systems that are occurring today are having unknown and unpredictable emergent effects that remain to be studied.
 
 \subsection{Component Dependency Resolution}
 %%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
-Manually satisfying all component dependencies while evolving a component system can be a tedious, time consuming, error prone task.
-This process can be automated into the function Component Dependency Resolution (CDR) \cite{Jenson2010}.
-This takes advantage of the explicitly declared requirements of components to find a system where all component constraints are satisfied.
+The relationships between component enforce the constraints on the system that must be satisfied when evolving the system.
+For example, a user wants to install a new text editor component into their system, and the selected text editor has a dependency on a spell checker.
+This means a spell checker component must be installed for the text editor to be functional.
+As the spell checker can have its own relationships such as dependencies, 
+the satisfaction of all constraints while evolving a component system can be a tedious, time consuming and error prone task.
+
+As the components relationships are explicit, the constraints can be extracted and the process can be automated.
+A function that can be used to resolve these constraints is Component Dependency Resolution (CDR) \cite{Jenson2010}.
+Use of such a function lowers the cost of evolving a system, and allows for different criteria to be specified to guide evolution.
+This function is implemented in many different systems, in many component models, all with the goal of automatically altering the architecture to evolve a component system.
+
+%%%CDR lowers cost of evolution
+CDR lowers the cost to evolve a system as it removes much of the effort to satisfy constraints from the user.
+It also can increase the quality of the created system, as many evolutionary steps can have multiple solutions and CDR can examine and discard undesired changes.
+For example, a  text editor component requires a spell checker, and three different spell checkers exist each with their own various dependencies and relationships.
+To calculate a system manually may take a very long time and may not be optimal, however through the automated CDR algorithm many systems can be examined and the optimal system returned.
 
 %%%CDR can be used at design-time and run-time on component models.
+The value of this function has been seen and implemented for many different component models.
 CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \cite{casey_better_2008}),
 at run time to evolve or extend a component-based system (as in Eclipse P2 \cite{leBerre2010}),
 or it can be used to build and restructure software product lines \cite{savolainen_analyzing_2007}.
 CDR is also used in package management systems, like apt-get \cite{Barth2005},
 for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com}. 
 
-%%%Talk about dependency hell and how that it is largely mitigated via dependency resolvers
+A formal definition of CDR is given in chapter \ref{cdr}, and discussion of the implementation from this study in chapter \ref{implementation}.
 
 \subsection{Evolution Strategies}
 Given any point throughout the life of a system, there are choices to be made about the systems evolution.
-Should a component be removed, should it be added, should the system be upgraded and what criteria should any of these actions optimise the change for.
-The fears that guide these decisions are caused by the risk that change will damage the system, and the risk that not changing will leave the system out of date.
-These two risks are most extremely representd by the sterotypes of conservative and progressive evolutionary strategies.
+Should a component be removed, should one be added, should the system be upgraded and what is the way in which a system should be selected given multiple possibilities exist.
+The two fears that guide these decisions are caused by the risk that change will damage the system, and the risk that not changing will leave the system out of date.
 
+%%%The decisions that lead to an evolution strategy
+The strategy that a user employs to evolve their system must take into the environment in which the system exists.
+For example, if a system is a mission critical system only the necessary changes will be made to it.
+Where a users desktop computer may add components for testing, and make many unnecessary changes through trial and error.
+These differences are through the strategy that is used to evolve a system, the pattern to evolve the system.
 
-The research presented in \cite{Ryan2005}, states that a component should always be as uptodate as possible.
-This is a clearly risky 
+%%%The risk of change to a system
+When changing any software system problems can be caused by either the process of the change, or the change itself.
+These problems can manifest themselves in many ways, from friction caused by an incompatibility in the system to completely destabilising the system.
+They can also effect the user, as the resulting change may make the system too different from the previous system.
+This problem with change is expressed in the laws of evolution stating that with each change complexity increases and quality declines.
 
-\cite{Lehman2006} Conservation of Familiarity requires that a system evolve not so much as to 
+%%%The risk of not being up to date
+Why would a user ever select to evolve their system, if it is inevitable that the system will be more complex with less quality. 
+The laws of evolution also state that a system must go through continually changed and grown as user satisfaction decreases with time.
+As discussed, this is caused by the feedback cycle of the system effecting the environment it is made for.
+For example, a system is created to digitise photos from a photo album, if it is successful the resulting change to the environment is then the large amount of digitised pictures.
+The system must then adapt to service the new requirement of managing a large amount of pictures, which itself may change the environment.
 
-\section{What is a Component?}
+How to define such a strategy and what elements must be considered is discussed in chapter \ref{strategies}.
+
+\section{What is a Software Component?}
 \label{background.components}
+%%%What is a component in a larger context
+A component is a natural concept that describes a part or element of a larger system or process,
+a broad definition of a component is ``components ca be composed together''.
+They are usually physical, as in electrical or mechanical components, where their properties and how they are composed are documented to be used in construction.
+Typically, components can be used in many different contexts, e.g. an resistor component, they can be used in electrical systems from space stations to cellphones.   
+
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
 Software components ideals can be traced to \cite{McIlroy1969}, where the author describes his ideas industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
@@ -368,8 +415,6 @@ All the other aspects that practically must be defined, are here ignored as thei
 These core aspects will be explored in the following sections, with examples of different component models and CDR implementations being presented.
 
 
-
-
 \section{Component Models}
 \label{background.models}
 %%%Some core component models are described, and their dependencies and evolution are discussed
@@ -483,36 +528,48 @@ It has the ability to explicitly describe relationships between either bundles o
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
-Peter Kriens \cite{kriens_osgi_2008}, 
-a primary author of the OBR \cite{the_osgi_alliance_rfc-0112_2006}, described a use of a component repository within a resource constrained environment.
-When a device registers, 
-through the repository, the driver for that device is loaded and then used, until the device is no longer available
-then to conserve resources the driver is uninstalled dynamically. 
-This demonstrates two requirements for a component repository, dynamic installation and uninstallation and being scalable to small devices.
+A CDR implementation for OSGi was proposed by Peter Kriens and Richard S. Hall in RFC-0112 \cite{the_osgi_alliance_rfc-0112_2006}.
+This is called the OSGi Bundle Repository and consists of collection of components documented in an XML format and documentation which describe a component as a resource.
+An example of this document is shown in figure \ref{obrmetadata}.
 
-For the OBR, we reviewed the standard \cite{the_osgi_alliance_rfc-0112_2006}, 
-contacted both authors \cite{kriens_osgi_2008, richard_s._hall_obr_2008} 
-and downloaded the open source Apache Felix OBR implementation and reviewed the source code.
-OBR was our most completely reviewed repository.
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+<repository name='OBR REP' time='123'> 
+  <resource version='0.0.1' name='nz.geek.maori.textEditor' 
+  uri='nz.geek.maori.textEditor.0.0.1.jar'> 
+    <require optional='false'  multiple='false'  name='package' 
+        filter='(&amp;(package=nz.geek.maori.spellChecker)(version&gt;=1.0.0))'> 
+      Import package nz.geek.maori.spellChecker ;version=1.0.0 
+    </require> 
+  </resource> 
 
-OSGi is a 
-mature standard component model from the OSGi Alliance that has seen a recent uptake in industry \cite{kriens_osgi_2008} 
-from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix. This has multiplied the 
-number of available bundles \cite{the_osgi_alliance_rfc-0112_2006}. OSGi Bundle Repository (OBR) was initially defined by 
-Richard S. Hall, and later Peter Kriens, to help with the distribution of components, and is proposed in 
-RFC-0112 \cite{the_osgi_alliance_rfc-0112_2006}. The design follows a federation of repositories each describing 
-the capabilities and requirements of it's components and providing a URL to access it. Search is done using syntax with OSGi filter 
-based expressions. This repository can also resolve dependencies and install these composites into a system. \\
-OBR has been seen as a solution to to simplify deployment of OSGi applications
-\cite{jung_integrating_2007}, distribution and deployment to embedded
-ubiquitous systems \cite{jung_embedded_2006}, smart home applications \cite{gouin-vallerand_managing_2007} and 
-dynamic distribution of drivers \cite{kriens_osgi_2008}. It is the only easily available deployment 
-architecture available for OSGi, others have been developed to either extend or compete \cite{frnot_component_2005} with OBR, 
-but are either in development, have been abandoned or are proprietary.\\ 
-The most mature implementation of OBR client is offered by Apache, it is bundled with their core OSGi framework, Felix. 
-The largest public OBR implementation is the federated repository provided by the OSGi alliance,
-currently (as of 6 January 2009) aggregating components from Apache (32 bundles) and Eclipse (1534 bundles).
-There are also many private repositories, some discussed with as much as 5000 bundles involved \cite{kriens_osgi_2008}.\\  
+  <resource version='1.0.0' name='nz.geek.maori.spellChecker' 
+  uri='nz.geek.maori.spellChecker-1.0.0.jar'> 
+    <capability name='package'> 
+      <p v='nz.geek.maori.spellChecker' n='package'/> 
+      <p v='1.0.0' t='version' n='version'/> 
+    </capability> 
+  </resource> 
+
+</repository>
+\end{alltt}
+  \caption[OSGi Bundle Repository markup example]{Example of OSGi Bundle Repository meta-data}
+  \label{obrmetadata}
+\end{center}
+\end{figure}
+
+This meta-data was designed so that it can merge such meta-data as described in figures \ref{osgibundle} and \ref{dsmetadata}.
+This then would be a complete model at both the OSGi bundle and service layers, to be used by CDR to create a complete system. 
+
+OBR has been seen as a solution to to simplify deployment of OSGi applications \cite{jung_integrating_2007}, 
+distribution and deployment to embedded ubiquitous systems \cite{jung_embedded_2006}, 
+smart home applications \cite{gouin-vallerand_managing_2007} and 
+dynamic distribution of drivers \cite{kriens_osgi_2008}. 
+
+The most mature implementation of OBR client is offered by Apache, it is bundled with their core OSGi framework, Apache Felix. 
+This can be used with any of the large public or private OBR collections of bundles.
+An example of one such public repository is the Paremus repository\footnote{http://www.osgi.org/Repository/} which contains (as of December 2011) over 2000 bundles.
 
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
@@ -602,24 +659,12 @@ It contains the necessary explicit relationships, and the programmatic evolution
 
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
+Eclipse P2 \cite{le_berre_dependency_2009}, \cite{leBerre2010} is the provisioning system for the Eclipse IDE platform.
+It provides the interaction to alter an Eclipse based component system. 
+It is implemented using a Boolean Satisfiability solver, called SAT4J.
+This method of implementation has become a typical way of implementing CDR, explored in \cite{Berre2008}, and further discussed in chapter \ref{implementation}.
 
-For the Eclipse P2 repository system there was extensive literature provided by the Eclipse foundation in the form of a developer forum.
-We also reviewed an early implementation through use of the software within the Eclipse environment.
-Due to its recent release there is no literature reviewing or discussing this software.
-
-Eclipse P2
-is the new provisioning system for the Eclipse IDE platform.
-It provides an update manager, the functionality to component pool, and a new dependency resolver.\\
-The update manager is what most users will be familiar with, being the primary interface to the P2 functionality. 
-A public repository, called a site, is added, and can be searched for components and their dependencies to install, and run.
-This simplifies the evolution of Eclipse based applications to a simple user interface.\\
-Component or bundle pooling uses a centralised set of components to run different applications.
-This comes from the common problem of running multiple Eclipse based applications on the same system with different combinations of components.
-A file is used to describe what components should be used in each particular application and P2 builds the composition into an application.\\
-The dependency resolver of P2 is based on SAT4J\footnote{http://www.sat4j.org/} technology, a SAT resolver, which finds an optimal solution based on
-a provided fitness function, if a solution exists it is guaranteed to find it.\\  
-Eclipse already is
-the core of many applications with its Rich Client Platform. This is a large base of applications that already support and can integrate with P2.
+It is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
 \subsection{Fractal}
 Fractal is a component model developed by France Telecom R\&D and INRA.
@@ -819,29 +864,24 @@ The commands to modify a Debain package system are:
 These commands define the atomic actions to change a Debain system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
-\subsubsection{Apt-get}
-%%%Apt-get is the core application for package management in Debian based GNU/linux distributions
-APT is a package manager built on top of dpkg to simplify and extend it's functionality.
-Aptitude is an application that adds a basic user interface to APT and also increases functionality in aspects like 
-locating and removing redundant packages. 
-Search of a package repository is done using regular expressions mixed with a
-custom set of search terms that increase expressiveness. Using a simple
-constraint-directed best-first search algorithm with some basic conflict
-tracking Aptitude resolves dependencies between packages, and generates
-composites to install.\\ 
-There are many public and private implementations of this repository system. 
-The largest public implementation is the Debian public repository, with 28078 packages in the ``Lenny'' stable repository.
-With the most popular Debian distribution Ubuntu\footnote{http://www.ubuntu.com} having ten million users \cite{vance_software_2009} the user base for this repository is massive.
-This repository has many regulations to publish and distribute, enumerated in the Debian Developers Reference \cite{andreas_barth_debian_2008}. 
-User and automated testing is recommended, and if any critical bugs are found they are removed from the repository. 
-This very manual way of publication and
-distribution has its drawbacks, mostly the long community process that must be followed.\\
+\subsubsection{Apt-get and Aptitude}
+The application dpkg can only remove and add a single component at a time, it does not resolve the dependencies of the component.
+There are many applications that can resolve these dependencies on a Debian system, the default and most popular solutio is through the apt pacakage.
+This package is built on top of dpkg, to provide an interface to simplyfy and extend its functionality.
 
-\subsubsection{Aptitude}
-%%%Aptitude is a competitor to apt-get which has some more advanced features
-Aptitude with APT, has immense amounts of information free on-line, the hardest part was reviewing as much as possible.
-We also used and read the help documentation, contacted the author of the software \cite{burrows_modelling_2005} and
-the Debian developers reference for the specific implementation of the Debian repository.
+From the Apt manual:
+\begin{quotation}
+\begin{alltt}
+apt-get is the command-line tool for handling packages, and may be
+       considered the user's "back-end" to other tools using the APT library.
+       Several "front-end" interfaces exist, such as dselect(1), aptitude(8),
+       synaptic(8) and wajig(1).
+ \end{alltt}
+\end{quotation}
+
+Apt is purely a command line tool, which provides 
+Another application that extends APT further is Aptitude \cite{Burrows2005}.
+This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
 
 
 \subsection{SOFA 2.0}
@@ -889,19 +929,26 @@ The service access pattern allows for the access to external services.
 These patterns are further discussed in \cite{Hnetynka2006}.
 
 
-\section{Common Upgradeability Description Format}
+\subsection{Common Upgradeability Description Format}
 %%%CUDF model created for compeition
+Many component models share similar properties:
+\begin{itemize}
+  \item a component name
+  \item a component version
+  \item description of what the component provides
+  \item description of what the component requires
+\end{itemize} 
+
+By creating an abstraction of these models, that only contains the information that is necessary for CDR, different CDR implementations can be compared.
+
 The Common Upgradeability Description Format (CUDF) model is defined as an abstract representation of the problem found when evolving a package based system, e.g. Debian.
 It was created by the Mancoosi project to foster interest and competition in creating solvers for upgrading problems faced by Free and Open Source Software (FOSS).
-
-These component models share similar properties but the CDR implementations are not interoperable between these models.
-To solve this, a specification from the Mancoosi organisation called CUDF has been defined to abstract this problem from the component model.
 This specification contains the necessary detail to express the core aspects of evolution, and an extensible syntax to allow for component model specific detail. 
-This allows the description of many CDR problems in a single format, and the use of various CDR implementations to solve them. 
+CUDF allows the description of many CDR problems in a single format, and the use of various CDR implementations to solve them. 
 
 %%%No concrete components, but fits our definition
 There is no concrete component representation, as it was not designed to be an executable component model.
-However, as it takes a similar definition of component to this research, it fits within our  
+This means that there is no detail of how to execute the component system, or other implementation focused details that are necessary for the other presented component models.
 
 In figure \ref{CUDFmetadata}, an example of a CUDF problem is presented.
 
@@ -927,21 +974,25 @@ install:textEditor
 
 The CUDF file is defined using key/value pairs, where each component is defined using the two tags \verb+package+ and \verb+version+.
 This file does not only represent the components but also the evolutionary change with the tag \verb+request+.
-Further definition of the syntax and semantics of CUDF is in chapter \ref{cdr}, as it is used extensivly throughout this study.
+Further definition of the syntax and semantics of CUDF is in chapter \ref{cdr}, as it is used extensively throughout this study.
 
-\subsection{Mancoosi MPM}
+\subsubsection{Mancoosi MPM}
 %%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
-
-\subsection{P2CUDF implementation}
-%%%Our implementation is based off of Daniel Le Berre and Rapicult P2CUDF, which uses SAT4J a SAT and PB solver, tested and validated in competitions.
-The Mancoosi organisation who have created the CUDF standard have also organised competitions for the solvers.
-One implementation of note is the P2CUDF implementation, that uses SAT
-
-
+The CUDF component model is defined especially to compare CDR implementations, therefore many various implementations exist.
+Some of these will be discussed in the latter chapter \ref{implementation}.
+However, here only the default implementation , Modular Package Manager \cite{abate2011} (MPM), is discussed.
+This implementation was created by the Mancoosi organisation to explore the possibility of using CUDF to eolve real systems.
+In the study \cite{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
 
 \section{Summary}
 
-In this chapter the process of software evolution and the use of component based systems within this process has been described. 
+In this chapter, first the evolution of software was discussed, and the nature and laws of this process described.
+The area of component based software engineering and the benefits its provides to the process of software evolution.
+The evolution of a component based system, through the individual component evolution and the evolution of a component system is discussed
+and how component dependency resolution and evolution strategies are used to evolve a component system.
+Given these goals of this study, software components are defined, and examples given that fit this deinfition.
+
+In the next chapter the evolution of a component system is further defined.
 
 
 
