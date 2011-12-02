@@ -1,47 +1,61 @@
-\chapter{Component System Evolution}
+\chapter{Formal Component System Evolution}
 \label{cdr}
+The exact definition of component system evolution is required in order to express and study it.
 
-%%%This chapter stays abstracted over any implementation details, it aims to give motivation for CDR then define it formally.\\
-%%%We start by giving a simplified 'real' example of a users requirements for a text editor, and the text editor requiring a spell checker.
-Suppose a user wants to install a new text editor component ($c_t$) into their system.
+The evolution of a system is made through iterative evolutionary steps over a period of time. 
+As any evolutionary step can have many outcomes, the optimisation of the process is necessary.
+This optimisation may also include many various criteria that must be combined and optimised for.
+The overall evolution of a system can then be defined, and the process discussed in a formal light.
+This evolution then requires a representation, a format in which to describe then evolve a system.
+
+In this chapter, the formal definition of an evolutionary step is given and shown to be NP-Hard problem in section \ref{formal.step}.
+Then the definition of an optimisation framework for this process is described in section \ref{formal.opt}.
+The overall formal description of an evolving system is then defined in section \ref{formal.evo}.
+Finally, the CUDF description language (previously discussed in chapter \ref{background}) is defined for this problem in section \ref{formal.cudf}.
+
+\section{Formal Definition}
+\label{formal.step}
+Suppose a user wants to install a new text editor component into their component system.
 The selected text editor has a dependency on a spell checker;
 this means a spell checker component must be installed for the text editor to be functional.
-There are three spell checker components available that satisfy this dependency ($c_1, c_2, c_3$),
+There are three spell checker components available that satisfy this dependency,
 this means that one of these spell checkers should be selected for installation as well.
 
-%%%The problem becomes more complex when components, like the spell checkers, may require further components, and conflict with other components
+Or suppose, the use already has the text editor installed, and wants to update it to a newer version to increase stability and functionality.
+There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
+where the lesser up to date text editor can use the current spell checker.
+This requires a selection of which to install, based on the users objectives for the system.
 
-%%%This problem is NP-Complete, as finding a solution is difficult but validating it is easy.
+The first step in solving these problems is to represent them formally, this allows the study of the problems properties.
+This definition must include some way to choose between solutions, an optimisation framework that lets the users criteria be expressed.
 
-%%%CDR is more complex though, as there are typically many solutions that can be selected from, each with different properties, therefore it is an optimisation problem making it NP-Hard
+In this section, a formal definition for a evolutionary step of a component based system is given.
+This definition includes the ability to be optimised to choose a solution using a distance metric.
+This problem is then shown to be NP-Complete in finding a solution and NP-Hard when finding the best solution.
 
-In this chapter we give the formal defintion and notation of CDR while staying abstract. We finish by discussing the CUDF 
- 
-\section{Formal Definition}
+\subsection{Formal Definition}
 %%%The formal definition of CDR is an expansion from our CBSE 2011 paper.
-First we denote the space of components as $\mathbb{C}$, each described by a name and version, such that no two components can have the same name and version.
-We then define CDR as the function $C_R: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
-such that it takes a set of user-requested components $X$ (an individual request is denoted $\Delta$),
-and returns a set of components that satisfy all the constraints $R$.
-For instance, given $X = \{a\}$ and a set of component constraints $R$,
-$C_R(X)$ would try to resolve a set of components that contain $a$ while satisfying $R$.
-The user-requested components must be in the system i.e. $X \subseteq C_R(X)$ as the user requirements are mandatory.
-The returned set of components is seen as the resulting system of installed components, e.g. if $a \in C_R(X)$ then $a$ is installed.
+First the space of components is denoted as $\mathbb{C}$, each described by a name and version, such that no two components can have the same name and version.
+The evolutionary step function is then defined as $C_R: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
+such that it takes a set of components and returns a set of components that satisfy all constraints $R$.
+For instance, given the set of components $X = \{a,b\}$ and a set of component constraints $R$,
+$C_R(X)$ would try to evolve the set $X$ to a set of components that satisfy $R$.
 
-%%%The three constraints can be keep constraints, dependency requirements, or conflict constraints.//
+%%%The four constraints can be keep constraints, dependency requirements, or conflict constraints, and request constraints//
 The constraints in $R$ can be either: 
 \begin{itemize}
   \item keep requirement in the form $a \vee \ldots \vee b$, e.g. $a \vee b$ means the $a$ or $b$ must be in the system
   \item dependency requirements in the form $a \rightarrow c_1 \vee \ldots \vee c_n$, e.g. $a \rightarrow b \vee c$ means $a$ depends on $b$ or $c$
   \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
-  \item request constraints %TODO Explain the different request constraints that can be had
+  \item request constraints in the form of $(a_1 \vee \ldots \vee a_i) \wedge \ldots \wedge (z_1 \vee \ldots \vee z_j)$ is a conjunction of clauses, each clause a disjunction of components.
 \end{itemize}
 %%%Semantics of the constraints are then defined.
 These constraints are defined semantically such that
 a keep requirement  $a \vee \ldots \vee b$ means $a \in C_R(X)$ or $b \in C_R(X)$ (note: this can be unit i.e. $a$ is a valid keep constraint),
 a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in C_R(X)$ then $c_1 \in C_R(X)$ or \ldots or $c_n \in C_R(X)$,
 and a conflict constraint $a \rightarrow \neg c$ means if $a \in C_R(X)$ then $c \not \in C_R(X)$.
-These types of constraints are expressive enough to describe many CDR problems.
+The request constraint describes the changes that are necessary for the system.
+These types of constraints are expressive enough to describe many component system evolution problems.
 
 %%%We extend this definition of CDR to include optimisation through some measurement of improvement over the previous system.\\
 CDR is expressed w.r.t. a heuristic using a distance function $d(\mathbb{C}_1,\mathbb{C}_2)$ 
@@ -62,6 +76,7 @@ By defining $d$ we can alter CDR w.r.t. our heuristics.
 %%%This proof has been published before; list of papers.
 
 \section{Optimisation}
+\label{formal.opt}
 %%%This section is based on our APSEC 2011 paper, though we expand the ranking function to include an earlier system (dynamic).\\
 %%%CDR can return potentially enormous amount of solutions, each has different properties that may make it more or less desirable than another, we need criteria to find an optimal solution.
 Any given CDR problem can be resolved to a potentially enormous number of solutions \cite{Jenson2010},
@@ -336,9 +351,11 @@ since lexicographic orders may create non-distributive lattices, our overall fra
 The c-semiring framework is still greatly useful as c-semirings are complete lattices all instances of this framework will work in ours.
 
 
+\section{Component System Evolution}
+\label{formal.evo}
 
 \section{Common Upgradeability Description Format}
-\label{form.cudf}
+\label{formal.cudf}
 
 %%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
 {}\cite{treinen2009common}
