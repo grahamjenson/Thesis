@@ -1,0 +1,516 @@
+\chapter{Formal Component System Evolution}
+\label{cdr}
+The exact definition of component system evolution is required in order to express and study it.
+This definition is abstracted from any algorithm or process, as the evolution of a system could be performed manually.
+
+The evolution of a system is made through iterative evolutionary steps over a period of time. 
+As any evolutionary step can have many outcomes, the optimisation of the process is necessary.
+This optimisation may also include many various criteria that must be combined and optimised for.
+The overall evolution of a system can then be defined, and the process discussed in a formal light.
+This evolution then requires a representation, a format in which to describe then evolve a system.
+
+In this chapter, the formal definition of an evolutionary step is given and shown to be NP-Hard problem in section \ref{formal.step}.
+Then the definition of an optimisation framework for this process is described in section \ref{formal.opt}.
+The overall formal description of an evolving system is then defined in section \ref{formal.evo}.
+Finally, the CUDF description language (previously discussed in chapter \ref{background}) is defined for this problem in section \ref{formal.cudf}.
+
+\section{Formal Definition}
+\label{formal.step}
+Suppose a user wants to install a new text editor component into their component system.
+The selected text editor has a dependency on a spell checker;
+this means a spell checker component must be installed for the text editor to be functional.
+There are three spell checker components available that satisfy this dependency,
+this means that one of these spell checkers should be selected for installation as well.
+
+Or suppose, the use already has the text editor installed, and wants to update it to a newer version to increase stability and functionality.
+There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
+where the lesser up to date text editor can use the current spell checker.
+This requires a selection of which to install, based on the users objectives for the system.
+
+The first step in solving these problems is to represent them formally, this allows the study of the problems properties.
+This definition must represent the component relationships and the change that is requested to be made. 
+It also must include some way to choose between solutions, an optimisation framework that lets the users criteria be expressed.
+
+In this section, a formal definition for a evolutionary step of a component based system is given.
+This definition includes the ability to be optimised to choose a solution using a distance metric.
+This problem is then shown to be NP-Complete in finding a solution and NP-Hard when finding the best solution.
+
+\subsection{Formal Definition}
+%%%What a component is
+First the space of components is denoted as $\mathbb{C}$.
+Each component is described by a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
+
+%%%What a component system is and the relationships
+A component system is represented by a set of components.
+The relationships between all components are described by a set of constraints denoted as $R$.
+
+%%%What the change is
+The evolutionary change that is requested to a system is defined as a set of constraints $\Delta$.
+
+%%%The evolutionary function
+The function that takes a component system and evolves it to another system is defined as $E$.
+The evolutionary step function is then defined as $E_{R \cup \Delta}: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
+such that it takes a component system and returns another component system that satisfy all constraints in $R$ and $\Delta$.
+This function will then take a component system, the constraints from the component relationships and the change request,
+and return a system that satisfies all component relationships and the change request.
+
+%%%Component realtionships constraints
+The constraint in $R$ can be either: 
+\begin{itemize}
+  \item keep constraint in the form $a \vee \ldots \vee b$, e.g. $a \vee b$ means the $a$ or $b$ must be in the system
+  \item dependency constraint in the form $a \rightarrow c_1 \vee \ldots \vee c_n$, e.g. $a \rightarrow b \vee c$ means $a$ depends on $b$ or $c$
+  \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
+\end{itemize}
+These constraints are defined semantically such that
+a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or $b \in E_{R \cup \Delta}(X)$ (note: this can be unit i.e. $a$ is a valid keep constraint),
+a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in E_{R \cup \Delta}(X)$ then $c_1 \in E_{R \cup \Delta}(X)$ or \ldots or $c_n \in E_{R \cup \Delta}(X)$,
+and a conflict constraint $a \rightarrow \neg c$ means if $a \in E_{R \cup \Delta}(X)$ then $c \not \in E_{R \cup \Delta}(X)$.
+These constraints are expressive enough to describe many of the component systems described in section \ref{background.models}.
+
+%%%Change constraints
+The constraints in $\Delta$ are of the form of either adding or removing a single component.
+they can be in the form of $a$ or $\neg a$, where $a$ means to install component $a$ and $\neg a$ means to remove component $a$.
+Semantically $a$ means to $a \in E_{R \cup \Delta}(X)$ and $\neg a$ means $a \not \in E_{R \cup \Delta}(X)$. 
+This is a limited set of changes that can be requested to be made to the system.
+This will be extended in section \ref{formal.cudf} to express more, but for now is all that is required.
+
+\subsection{Solution Selection}
+\label{formal.solsel}
+This definition of an evolutionary step requires a mechanism to select between solutions.
+This is an optimisation problem as the solution that is selected should be optimal by some criterion.
+
+For instance, given there are three components $a$,$b$ and $c$, and there is a component system of two components $a$ and $b$ (i.e. $\{a,b\}$).
+There is only one relationship where $a$ depends on $b$, i.e. $R$ consists of only the dependency constraint $a \rightarrow b$,
+and the defined change is to add a component $c$, i.e. $\Delta = \{c\}$.
+
+The resulting system $E_{R \cup \Delta}(\{a,b\})$ could be one of three systems; $\{c\}$, $\{b,c\}$ or $\{a,b,c\}$.
+Intuitively the correct answer is $\{a,b,c\}$, because unnecessarily removing a component from the system may be detrimental.
+Therefore, some mechanism to select between the returning system is required in the function.
+  
+%%%The defintiion if extended to include the ability to minimise a heuristic
+The function $E_{R \cup \Delta}$ is then extended to include the ability to select to return a solution that is superior to other possible solutions by some criterion.
+The evolutionary step function is then extended to return a minimal system given some criterion given by the function $d: 2^\mathbb{C} \times 2^\mathbb{C} \rightarrow A$,
+where the set $A$ is ordered by some order $<: A \times A$.
+
+Therefore, given a component system $X$, a set of constraints $R$ and a change request $\Delta$,
+$E_{R \cup \Delta}(X) = X_1$ iff there does not exist another system $X_2$, such that $X_2$ satisfies $R$ and $\Delta$, 
+and $d(X,X_2) < d(X,X_1)$.
+That is, $E_{R \cup \Delta}$ will return a solution that is minimal given the function $d$ and the order $<$.
+
+%%%This optimisation function can be simplified to a function where the previous solution is not compared, but some static metric of the system is measured.
+The function $d$ then compares the previous system to the evolved system, this could be seen as measuring the distance the system evolved.
+This kind of criterion is \textit{dynamic}, it compares the change necessary for an evolutionary step.
+A dynamic criterion could then be used to minimise the amount of components removed from the system, as it compares the previous system to the possible returned one.
+
+This function can be simplified to represent \textit{static} measurements by defining, $d: 2^\mathbb{C} \rightarrow A$, which returns a direct measure of the evolved system.
+This type of criterion could represent system size, which does not require the comparison with the previous system.
+
+\subsection{Component System Evolution is NP-Complete}
+Finding a solution that satisfies all relationship and request constraints is shown to be NP-Complete through reduction to a Boolean Satisfiability (SAT) problem,
+and not belonging to a class given in Schaefer's dichotomy theorem \cite{Schaefer1978}.
+The problem of optimising the evolutionary step function is then shown to be NP-Hard.
+This is not the first proof that this problem is NP-Complete \cite{edos2005report}, 
+though it may be the first through using Schaefer's dichotomy theorem which may be found to be more intuitive than reduction to 3-SAT.
+
+SAT problems where the initial problem given the class NP-Complete in \cite{cook1971}.
+This class of problem is described by its properties of being able to verify a solution quickly, but have no efficient way to find a solution initially.
+To show that this problem is NP-Complete, the first step is to reduce the problem into SAT problem represented by a Boolean equation in Conjuctive Normal Form (CNF).
+CNF is a conjunction of clauses, where each clause is a disjunction of literals.
+
+The constraints in this problem are converted to CNF clauses:
+\begin{itemize}
+  \item keep constraint: $a \vee \ldots \vee b$ is directly represented as a single clause in CNF
+  \item dependency constraint: $a \rightarrow c_1 \vee \ldots \vee c_n$ can be represented in CNF as a clause $\neg a \vee c_1 \vee \ldots \vee c_n$
+  \item conflict constraint: $a \rightarrow \neg c$ can be represented in CNF as a clause $\neg a \vee \neg c$
+  \item request constraint: $a$ and $\neg a$ can be represented directly as CNF clauses
+\end{itemize}
+All clauses are combined through $\wedge$ to form a complete CNF formula, the representative SAT problem.
+
+According to Schaefer's dichotomy theorem \cite{Schaefer1978}, iff a SAT problem can be represented in CNF as one of six classes the problem is not NP-Complete.
+Therefore showing that a problem SAT created by the evolution step can be in none of these classes, then the problem can be NP-Complete.
+These classes are:
+\begin{enumerate}
+  \item the problem is solvable by assigning each variable false
+  \item the problem is solvable by assigning each variable true
+  \item every clause has at most one negated variable
+  \item every clause has at most one unnegated variable
+  \item every clause has 2 literals (2-SAT problem)
+  \item all relations are equivalent to a conjunction of affine formulae (i.e. $x_1 \oplus \ldots \oplus x_n = true$ or $x_1 \oplus \ldots \oplus x_n = false$)
+\end{enumerate} 
+
+As each literal represents whether a component is included or excluded from the system, these classes can be described in terms of the component system.
+The first two classes state that this problem is not NP-Complete if a component system can be created with no components or all components.
+As the request constraints can state that a component has to be included or has to be excluded, the problem may exist such that it is not in either of these classes.  
+
+The third and fourth classes state that either the problem can be represented by a set of Horn or dual-Horn clauses, such problems are known to be solvable in linear time \cite{dowling1984linear}.
+Given a component and conflict with another creating a clause such as $\neg a \vee \neg c$, and a component can depend on multiple other components represented by a constraint such as
+$\neg a \vee c_1 \vee c_2$, this problem does not belong to either of these classes.
+
+The fifth class states that the CNF problem cannot be represented as a series of clauses with only 2 literals.
+This class will exist in the problem if the dependence tree creates a strongly connected component, which has been shown to be reducible to 2-SAT \cite{aspvall1979linear} and therefore solvable in linear time.
+
+The sixth class states that for this problem to be NP-Complete it must not be representable as a linear equation over a two element field $\{0,1\}$
+That is, the CNF formula can be represented as a conjunction of clauses using the XOR ($\oplus$) operator.
+ 
+The evolutionary step problem can be shown to be in neither the fifth or sixth classes 
+through mapping to an equivalent problem called ``exactly one in three'' presented in \cite{Schaefer1978} as problem ``NP1.
+This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
+For example, given components $a$,$b$ and $c$, the only possible solutions that satisfy the constraints ($R \cup \Delta$) are $\{a\}$,$\{b\}$ and $\{c\}$.
+This problem is shown to not belong to any of the above classes in lemmas 3.1A, 3.1B and 3.1W in \cite{Schaefer1978}.
+By stating the keep clause of $a \vee b \vee c$ and the conflict clauses of $\neg a \vee \neg b$, $\neg b \vee \neg c$ and $\neg a \vee \neg c$, 
+the only possible solutions are $\{a\}$,$\{b\}$ and $\{c\}$. 
+
+%%%This problem may be in fact P if it can exist to one of these classes
+This evolutionary step problem then has the potential to be NP-Complete, though many practical problems may be solvable in linear time.
+For instance, a problem that has no conflict constraints would be in the third class where it would have at most one negated variable in each clause.
+As some component models, such as Maven, have no means of defining conflicting components, they will be in this class of problems and therefore not be NP-Complete. 
+
+The complexity of the problem impacts the possiblility of completeing the evolution manually, or if automated through CDR, the implementation possibilities.
+
+\subsection{Component System Evolution is NP-Hard}
+As noted by \cite{leberre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
+Also noted, is the fact that some of these solutions are not as good as others.
+By creating a function to attribute a measurement to each set of possible solutions and searching for the optimal system given this measurement, this problem becomes NP-Hard. 
+This can be shown through mapping it to an equivilant problem of that has already been shown to be NP-Hard, the Binate Covering Problem \cite{Coudert1996}.
+
+This problem is defined:
+\begin{itemize}
+  \item $v$ is the set $\{0,1\}$, $y$ is a variable, and $y^v$ is the assignment of $y$ to $v$
+  \item $f(y_1, \ldots, y_n)$ is a Boolean function from $\{0,1\}^n$ to $\{0,1\}$
+  \item $cost$ is a function that associates a positive cost with the assignment of a variable $y_k$ to $1$ or $0$
+  \item the cost of a n-tuple $(v_1,\ldots,v_n)$ is defined as $\sum^n_{k=1}cost(y^{v_k}_{k})$
+\end{itemize}
+The binate covering problem then consists of finding a minimum $cost$ n-tuple that evaluates $f$ to $1$.
+
+This evolutionary step can be mapped to this problem by defining:
+\begin{itemize}
+  \item each variable $y_1,\ldots,y_n$ represents a component in $\mathbb{C}$
+  \item an n-tuple assignment represents a component system such that any component $y_k$ is assigned $1$ iff it is in the component system 
+  \item $f(v_1,\ldots,v_n)$ returns $1$ if the n-tuple assignment creates a system that satisfies $R$ and $\Delta$
+  \item the cost of a component system is is defined as the function $d : {0,1}^n \rightarrow A$ defined as $\sum^n_{k=1}cost(y^{v_k}_{k})$
+\end{itemize}
+The goal of the evolutionary step problem then consists of finding an n-tuple that creates a system that satisfies $R$ and $\Delta$,
+with the minimum value for $d$.
+This cost function only considers \textit{static} measurements, as described in section \ref{formal.solsel}, though could be extended to consider \textit{dynamic} measurements.
+
+This NP-Hard class of problem is notably intractable to solve, and will impact any attempt to solve it, manual or computational.
+The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
+
+\section{Evolution Optimisation}
+\label{formal.opt}
+Any requested evolution of a component system can have many different possible resulting systems.
+This is because the problem is generally under-constrained, and there can exist many possible systems that satisfy the requested change and component relationship constraints.
+Up till now in this research, the function $d$ has been used to judge the level of optimal of a change to a component system during evolution.
+However, a practical problem occurs when the exact measurement of what an optimal solution is, is attempted to be defined. 
+
+In section \ref{background.models} come CDR applications, like APT and Eclipse P2, have their criteria described by which they select an optimal system.
+These description contain mutiple measures, combined to create a more general 
+
+%%%CDR can return potentially enormous amount of solutions, each has different properties that may make it more or less desirable than another, criteria are required to find an optimal solution.
+As this evolution problem is often under constrained \ref{leberre2008}, there can exist many different systems given any evolution request.
+As each solution has different properties, suitable criteria should be included in the selection of an optimal solution.
+As shown in the previous section, this problem is NP-Hard, and the problem of finding any solution is NP-Complete.
+The optimisation function  is left largely undefined and it properties not explored.
+
+This is made more complex by the practical matter that multiple, often conflicting, criteria are wanting to be optimised for.  
+
+%%%Information from differnet loactions and meta data can be used to define the criteria.
+Information from component meta-data, component contracts \cite{Watkins1999}, repositories \cite{Guo2000}, 
+composition testing \cite{XuejieZhang2008} and user preferences can be used to taken into account with looking for optimal systems.
+Additional criteria, such as size, reliability or licence, may change a systems' desirability, 
+therefore during evolution the optimisation of such criteria may return better solution.
+
+
+\subsection{Multi-Criteria CDR}
+%%%Combining criteira is a challenge because criteria have different domains and orders, some have partial orders, arbitrary rankings, criterion orderings.
+Optimising multiple criteria proposes some challenges; firstly criteria may have different domains and orders, 
+e.g., minimising the size in bytes while maximising percentages of reliability. 
+Some criteria may have partial orders where two solutions can be incomparable,
+e.g., one licence may not be better or worse than another.
+Criteria may have arbitrary rankings, 
+e.g., preferences for licences can differ significantly between users.
+A criterion could also be more important than another, 
+e.g., correct functionality of a system will always be more important than its size.
+
+%%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
+A naive solution for this problem is to create a function to map each of the criteria to a real number.
+Then by aggregating these numbers (through addition or multiplication) with user defined weightings 
+(to express their preferences on properties), we create a single fitness function, 
+and using this function we can search for optimal solutions.
+
+%%%This has significant draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
+This method has some significant drawbacks;
+we lose some information in the conversion to the totally ordered real numbers,
+making aspects like Pareto fronts \cite{pareto1964cours} (where multiple solutions are incomparable) impossible to represent.
+The relationships between criteria are also difficult to define 
+as complicated functions must be created to maintain proper ordering of solutions.
+Asking users to assign preferences of criteria with arbitrary weights is not intuitive,
+e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information to the user about their weighting decision.
+
+%%%We approach this problem formally using orders over partially ordered sets, where any sub set is bounded, this is a complete lattice.
+The formal approach to solve this problem is to use orders over sets, 
+where each criterion is a set ($A$) with an order ($\leq$).
+Each criterion is then a partially ordered set (the order must be reflexive, antisymmetric and transitive).
+Furthermore we require that any set of elements in a criterion must be bounded, 
+i.e. have a least upper bound and a greatest lower bound.
+A complete lattices satisfies these requirements, therefore is used as our representation. 
+
+%%%We can then compose these complete lattice criteria using the product and lexicographic orders.
+
+%%%This framework can then be used to describe and discuss the multicritera problem of CDR.
+This framework defines criteria as a ranking system over a complete lattice.
+The ranking system describes a mechanism in which to rank a solution to a complete lattice. 
+The complete lattice gives an order to the solutions based on their ranking.
+By combining these criteria (ranking systems and complete lattices) multi-criteria problems can be composed.
+Then using a general algorithm that can search these structures, 
+optimal solutions for any defined problem can be found.
+
+\subsection{Complete Lattice}
+%%%Complete Lattices have been used in other optimisation frameworks.
+Complete lattices are an effective abstraction to represent rankings,
+and have been used before when describing such criteria \cite{Bistarelli1997,Fernandez}.
+They can represent problems that involve partial orders,
+be combined into new lattices,
+and be easily visualised and presented using Hasse diagrams \cite{davey1990introduction}.
+They also have strict bounding, which enables general methods, such as branch and bound \cite{Land1960}, to find solutions.
+
+%%%The formal definition for comlpete lattices is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound
+A complete lattice is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound.
+Formally we define:
+\begin{defs}
+A complete lattice is a pair $L = \langle A, \leq \rangle$ where $A$ is a non empty set 
+and $\leq \subseteq A \times A$ is a relation such that:
+\begin{itemize}
+  \item $\leq$ is a partial order
+  \item for all subsets of $A$ there exists a unique least upper bound (join or $\vee$) and a unique greatest lower bound (meet or $\wedge$)
+\end{itemize}
+\end{defs}
+
+%%%The domiain of the complete lattice represents the value domain of the criteria.
+The domain of the complete lattice ($A$) defines the value space (e.g., probability, cost, \ldots) 
+that is used to rank solutions. 
+The core attribute of a complete lattice is that all subsets of the lattice have both a unique least upper bound (join or $\vee$) 
+and a unique greatest lower bound (meet or $\wedge$).
+Using these operators we can define the greatest ($1$) and least ($0$) elements as
+the join of the entire domain ($\bigvee A = 1$) and the meet of the domain ($\bigwedge A = 0$).
+
+\subsection{Ranking and Solution}
+%%%We define a ranking system and function, which returns a value for the complete lattice domain.
+An optimal solution can now be defined through a ranking system with respect to complete lattices.
+
+%%%A ranking system is a lattice a finite domain of variables, and their assignment domain
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$; we define 
+a ranking system over this lattice as a triple $RS = \langle L, D, V \rangle$, 
+where $V$ is a finite set of variables and $D$ is their finite domain.
+\end{defs}
+
+%%%Given we specifically look at components, the variables are components and their domain is \{T,F\}, whether they are installed or not
+Given we are focused on the component dependency resolution problem,
+this abstract definition of a ranking system can be further defined.
+Within dependency resolution, 
+each variable in this problem is a component and their domain is whether they are included or excluded from the final solution.
+Therefore, $D = \{F,T\}$ and $V = C$, where $C$ is the set of components in the problem.
+
+%%%A solution (system) is a mapping of variables to the domain
+\begin{defs}
+A solution is a variable binding $\gamma: V \rightarrow D$, a mapping of each variable to an element in the domain,
+and $\Gamma$ is the set of all solution functions.
+\end{defs}
+
+This definition of solution does not take order into account, where a solution could be the worst possible solution.
+
+%%%The ranking function, takes two solutions, and returns the distance between them 
+%TODO increase the ranking function to take two solutions and return a distance between them
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$ and a ranking system $RS = \langle L, D, V \rangle$.
+A ranking function ($Rank$) maps the distance from the current solution and a new solution to elements from $A$,
+$Rank: \Gamma \times \Gamma \rightarrow A$.
+\end{defs}
+
+%%%The set of optimal solutions is then the set of solutions where there are no better solutions
+\begin{defs}
+Consider a complete lattice $L = \langle A, \leq \rangle$, a ranking system $RS = \langle L, D, V \rangle$, a previous solution $\gamma$ and a ranking function $Rank$.
+The set of optimal solutions ($OSol \subseteq \Gamma$) is the set of solutions where there is no other solution whose rank is better,
+such that $OSol = \{ s \in \Gamma : \nexists s' \mbox{ such that } Rank(\gamma,s) < Rank(\gamma,s')\}$
+\end{defs}
+
+%%%The set of optimial solutions may still be undesirable, as it is only solutions that are available
+The set of optimal solutions only includes the highest ranked solutions,
+as with the definition of solutions, these optimal solutions could be undesirable.
+For instance given a problem which is ranked with either $Correct$ or $Incorrect$, 
+the optimal solution could be $Incorrect$ if there exists no solutions that are $Correct$. 
+
+\subsection{Composition of Complete Lattices}
+%%%This section is mostly identicle to the section in our APSEC paper, it just proves that combining two complete lattices with lexicographic or product order returns a complete lattice
+\label{sec:composition}
+As a complete lattice with a ranking system is the representation of a criterion,
+the composition of criteria is the way of expressing their relationships to one another. 
+We first define two separate composition operators of complete lattices resulting in the product and lexicographic orders.
+
+Here we prove that the lexicographical and product compositions of complete lattices result in a complete lattice,
+this enables any combination of these orders to be used and remain within our framework.
+This is proven by deriving the join (unique least upper bound) and meet (unique greatest lower bound) operations,
+and showing there exists a least element ($0$) within the lattice \cite{davey1990introduction}. 
+
+We then define how the ranking systems are composed with these orderings.
+
+\begin{defs}
+\label{def:product_order}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
+$L_1 \otimes L_2$ creates a product composition $L_P = \langle A_1 \times A_2, \leq_P \rangle$
+where $\leq_P$ is a product order; 
+$(a,b) \leq_{P} (a',b') \mbox{ iff } a \leq_{1} a' \mbox{ and } b \leq_{2} b'$.
+\end{defs}
+
+The product order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
+composed with its self is given in the diagram in Figure \ref{fig:product}.
+%\begin{figure}[htp]
+%\begin{center}
+%  \includegraphics[height=.1\textheight]{productorder.png}
+%  \caption{Hasse diagram of the product composition of classical lattices}
+%  \label{fig:product}
+%\end{center}
+%\end{figure}
+
+The product order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
+\begin{prop}
+The product composition of two complete lattices is a complete lattice.  
+\end{prop}
+\begin{prof}
+For any two points $(a,b)$ and $(a',b')$;
+their join is the join of each element $(a \vee a', b \vee b')$, 
+inversely their meet is the meet of each element $(a \wedge a', b \wedge b')$.
+This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
+$\Box$\end{prof}
+
+\begin{defs}
+\label{def:lex_order}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
+$L_1 \odot L_2$ creates a lexicographical composition  $L_L = \langle A_1 \times A_2, \leq_L \rangle$
+where $\leq_L$ is a lexicographic order;
+$(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
+\end{defs}
+
+The lexicographic order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
+composed with its self is given in the diagram in Figure \ref{fig:lex}.
+%\begin{figure}[htp]
+%\begin{center}
+%  \includegraphics[height=.1\textheight]{lexicograhicorder.png}
+%  \caption{Hasse diagram of the lexicographical composition of classical lattices}
+%  \label{fig:lex}
+%\end{center}
+%\end{figure}
+
+The lexicographical order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
+\begin{prop}
+The lexicographical composition of two complete lattices is a complete lattice.
+\end{prop}
+\begin{prof}
+Consider two points $(a,b)$ and $(a',b')$; 
+the join of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a <_1 a'$,
+$(a,b)$ if $a' <_1 a$,
+$(a, b \vee b')$ if $a = a'$,
+or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \vee a', 0_2)$
+as this is an upper bound, and any other upper bound must be bigger than this.
+The meet is defined dually where the meet of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a' <_1 a$,
+$(a,b)$ if $a <_1 a'$,
+$(a, b \wedge b')$ if $a = a'$,
+or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \wedge a',1_2)$
+as this is a lower bound, and any other lower bound must be smaller than this.
+
+This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
+$\Box$\end{prof}
+
+There are two things to note about the lexicographical composition; 
+first it does not create a distributive lattice i.e. $\wedge_L$ does not distribute over $\vee_L$.
+\begin{prop}
+The lexicographic composition does not result in a distributive lattice.
+\end{prop}
+\begin{prof}
+Consider two pairs $(a,b)$ and $(a', b') \in L_1 \odot L_2$ where $a || a'$ and $a = a''$ and $a' || a''$,
+then $(a,b) \wedge_{L} ((a', b') \vee_{L} (a'', b'')) = (a,b)$,
+where under the same conditions $((a,b) \wedge_{L} (a', b')) \vee_{L} ((a,b) \wedge_{L} (a'', b'')) = (a,b \wedge_2 b'')$.
+$\Box$\end{prof}
+
+Secondly, two lattices (not complete lattices) lexicographically combined together may not be a lattice. 
+This is another reason for the choice of complete lattices as the structure of representation.
+\begin{prop}
+The lexicographic composition of two lattices may not result in a lattice.
+\end{prop}
+\begin{prof}
+Suppose a lattice $K$ has a non linear order, and a lattice $L$ has no least bound ($0_L$). 
+For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ are incomparable.
+This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
+$\Box$\end{prof}
+
+In figure \ref{fig:stacking} is presented some examples of how our composition operators can be stacked
+by using a classical lattice ($L = \langle \{T,F\}, \leq \rangle$) composed in different ways.
+In these examples we have simplified the domain for brevity, 
+e.g., $\langle T, \langle T,T\rangle\rangle$ is represented with $\langle T,T,T\rangle$
+%\begin{figure}[htp]
+%\begin{center}
+%  \includegraphics[width=.45\textwidth]{all.png}
+%  \caption{Hasse diagrams of the composition of a classical complete lattice}
+%  \label{fig:stacking}
+%\end{center}
+%\end{figure}
+
+The composition of the ranking systems is defined as:
+\begin{defs}
+Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2,\leq_2 \rangle$ and
+the ranking systems over them $RS_1 = \langle L_1,D,V \rangle $ and $RS_2 = \langle L_2,D,V \rangle$,
+with defined ranking functions as $Rank_1: \Gamma \rightarrow A_1 $ and $Rank_2: \Gamma \rightarrow A_2$.
+The combination $RS_1 \odot RS_2$ (resp. $RS_1 \otimes RS_2$) results in the ranking system 
+$RS = \langle L_1 \odot L_2, D, V \rangle$ (resp. $RS = \langle L_1 \otimes L_2, D, V \rangle$), 
+and the combination of the ranking functions is 
+$Rank: \Gamma \rightarrow A_1 \times A_2$ where $Rank(\gamma) = \langle Rank_1(\gamma), Rank_2(\gamma) \rangle$.
+\end{defs}
+
+The main point in this definition is that to combine ranking systems they must have the same set of variables 
+and the same domain.
+
+\subsection{Semi-ring constraint incompatibility}
+%%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
+Instances of different complete lattices used for constraint solving can be found in a similar framework based on c-semirings, 
+by Bistarelli et al. \cite{Bistarelli1997}.
+They prove that all instances of their framework are complete lattices, and their $+$ operator coincides with join
+and if their $\times$ operator is idempotent, it coincides with meet.
+Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
+In their framework $\times$ must distribute over $+$, this gives a distributive lattice,
+since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
+The c-semiring framework is still greatly useful as c-semirings are complete lattices all instances of this framework will work in ours.
+
+
+\section{Component System Evolution}
+\label{formal.evo}
+
+\section{Common Upgradeability Description Format}
+\label{formal.cudf}
+
+%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
+{}\cite{treinen2009common}
+
+%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
+
+%%%In both regards it has succeded, there have been many competitions run, 
+%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
+
+\subsection{CUDF Syntax}
+%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
+
+%%%Package Formulas are the standard mechanism of dependence
+
+%%%Versions as Integers
+
+%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
+
+\subsection{CUDF Semantics}
+%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
+
+%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
+
+%%%It must be broad enough to define and solve real world problems
+
+
+
