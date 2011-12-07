@@ -427,7 +427,9 @@ The way in which these component models express their relationships will be desc
 
 Typically, the component model also provides a mechanism to alter the system of components.
 This is usually a low level interface, such that the addition of a component is an atomic step and does not lead to the addition of other components.
-When applicable, these mechanisms will also be described.
+These basic mechanisms are usually abstracted to be more usable, by automatically resolving dependencies using a CDR implementation.
+These implementations have their various criteria and strategies to evolve their component systems.
+When applicable the mechanisms, CDR implementations and their criteria will be discussed.
 
 Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
 
@@ -571,7 +573,15 @@ The most mature implementation of OBR client is offered by Apache, it is bundled
 This can be used with any of the large public or private OBR collections of bundles.
 An example of one such public repository is the Paremus repository\footnote{http://www.osgi.org/Repository/} which contains (as of December 2011) over 2000 bundles.
 
-%%%TODO Write about the crtieria that are used to insall and update components
+The specification of OBR does not define the criteria by which evolutions are made to the system.
+The strategy used is then described outside of the specification in the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} help page,
+
+\begin{quotation}
+\[OBR\] might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
+In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.
+\end{quotation}
+
+This shows that when updating a system of bundles, newer bundles may be installed although currently installed bundles are preferred.
 
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
@@ -666,9 +676,19 @@ It provides the interaction to alter an Eclipse based component system.
 It is implemented using a Boolean Satisfiability solver, called SAT4J.
 This method of implementation has become a typical way of implementing CDR, explored in \cite{Berre2008}, and further discussed in chapter \ref{implementation}.
 
-It is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
+Eclipse P2 is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
-%%%TODO Write about the crtieria that are used to insall and update components
+Some of the criteria used by Eclipse P2 to evolve the system are described in \cite{le_berre_dependency_2009} and \cite{leBerre2010}:
+\begin{enumerate}
+  \item minimise the amount of components installed that have no dependency to them 
+  \item minimise the removal of already installed components
+  \item minimise the age of the installed components
+  \item minimise changing an installed component if they are unrelated to the request being made
+\end{enumerate} 
+
+Some of the Eclipse specific criteria have been removed from this list.
+The presented criteria are general enough to be selected for any component system, and can be reused.
+
 
 \subsection{Fractal}
 Fractal is a component model developed by France Telecom R\&D and INRA.
@@ -868,9 +888,9 @@ The commands to modify a Debain package system are:
 These commands define the atomic actions to change a Debain system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
-\subsubsection{Apt-get and Aptitude}
+\subsubsection{Apt-get}
 The application dpkg can only remove and add a single component at a time, it does not resolve the dependencies of the component.
-There are many applications that can resolve these dependencies on a Debian system, the default and most popular solutio is through the apt pacakage.
+There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the apt pacakage.
 This package is built on top of dpkg, to provide an interface to simplyfy and extend its functionality.
 
 From the Apt manual:
@@ -883,7 +903,20 @@ apt-get is the command-line tool for handling packages, and may be
  \end{alltt}
 \end{quotation}
 
-Apt is purely a command line tool, which provides 
+Apt is purely a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
+
+The criteria it uses to update the system and install components into the system is explained in the apt-get manaual:
+
+\begin{quotation}
+\begin{alltt}
+       under no circumstances are currently installed packages removed, or packages
+       not already installed retrieved and installed. New versions of
+       currently installed packages that cannot be upgraded without
+       changing the install status of another package will be left at
+       their current version.
+ \end{alltt}
+\end{quotation}
+
 Another application that extends APT further is Aptitude \cite{Burrows2005}.
 This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
 
@@ -986,8 +1019,12 @@ Further definition of the syntax and semantics of CUDF is in chapter \ref{cdr}, 
 The CUDF component model is defined especially to compare CDR implementations, therefore many various implementations exist.
 Some of these will be discussed in the latter chapter \ref{implementation}.
 However, here only the default implementation , Modular Package Manager \cite{abate2011} (MPM), is discussed.
-This implementation was created by the Mancoosi organisation to explore the possibility of using CUDF to eolve real systems.
+This implementation was created by the Mancoosi organisation to explore the possibility of using CUDF to evolve real systems.
+
 In the study \cite{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
+This CDR implementation is the first to allow the user to completely specifiy the criteria by which the solver selects a system.
+In the study the solver first minimised the amount of packages removed from the system, and then minimised the amount of packages changed in the system.
+Further discussion of these criteria and how they are combined is discussed in chapter \ref{strategies}. 
 
 \section{Summary}
 
