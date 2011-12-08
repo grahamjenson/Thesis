@@ -225,12 +225,25 @@ Initially there is only one version of $b$, $bv1$, making the dependence constra
 However, due to component evolution at a latter date a newer version of $b$ is created, $bv2$, this then created the constraint $a \rightarrow bv1 \vee bv2$.
 This time dependence is defined, given a specific time $t$, the component constraints that exist at time $t$ are denoted as $R_t$.
 
-%%%TODO? What about keep, should the user requests become hard constriants?
+%%%The requests should be aggregated into one request, if there is a conflict then newer requests should be prioritised
+The requested changes to the system should also be considered even after they have been made.
+A request to change the system is usually performed in order to maintain or extend the system.
+A possible problem occurs when after the change has been made, the next evolution may undo that change, even if it is not necessary.
+For instance, if a component is requested to be installed, in a latter evolution it may be removed even though it was avoidable.
+
+The simple solution to this is to aggregate all previous requests into one set of constraints;
+Given a series of evolutionary changes denoted as the tuple $\langle \Delta_1, \ldots, \Delta_i \rangle$ in order from least to most recent,
+the constraints for the request would be the $\Delta_1 \cup \ldots \cup \Delta_i$.
+However, these requests can conflict, e.g. a component is requested to be installed, and later requested to be removed.
+As a more recent request is of higher importance than an older request, a simple process of finding a non-conflicting set of request constraints can be defined.
+Therefore: given a series of requests $\langle \Delta_1, \ldots, \Delta_i \rangle$ in order from least to most recent,
+the set of request constraints is defined as $\Delta_G = [\Delta_n \mid n \in \{1, \ldots , i\} \mbox{ and } \Delta_n \cup \ldots \cup \Delta_i \mbox{ is satisfiable}]$.
+That is, $\Delta_G$ is the subset of request constraints that includes all constraints that do not conflict with a more recent constraint.
 
 %%%This process is then defined as
 Given the tuple of evolutionary changes denoted as $\langle \Delta_1, \ldots, \Delta_n \rangle$
 which occur at times  $\langle t_1, \ldots, t_n \rangle$.
-A generation is defined as $G_i = E_{R_{t_i} \cup \Delta_i}(G_{i-1})$ where $i$ is an integer between $1$ and $n$.
+A generation is defined as $G_i = E_{R_{t_i} \cup \Delta_G}(G_{i-1})$ where $i$ is an integer between $1$ and $n$.
 The initial generation of this process, $G_0$, is the starting point that could either be an system with no components, or a system that is a pre-defined configuration of components.
 
 %%%This makes a sometimes counter intuitive complexity
@@ -521,42 +534,237 @@ and the same domain.
 
 \subsection{Semi-ring constraint incompatibility}
 %%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
-Instances of different complete lattices used for constraint solving can be found in a similar framework based on c-semirings, 
-by Bistarelli et al. \cite{Bistarelli1997}.
-They prove that all instances of their framework are complete lattices, and their $+$ operator coincides with join
+A large part of this formalisation was inspired by research into the representation of constraints as a c-semiring \cite{Bistarelli1997}.
+This research shows that all instances of their framework are complete lattices, and their $+$ operator coincides with join
 and if their $\times$ operator is idempotent, it coincides with meet.
 Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
-In their framework $\times$ must distribute over $+$, this gives a distributive lattice,
-since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
-The c-semiring framework is still greatly useful as c-semirings are complete lattices all instances of this framework will work in ours.
+In their framework $\times$ must distribute over $+$, this gives a distributive lattice.
+However, since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
 
 
 \section{Common Upgradeability Description Format}
 \label{formal.cudf}
+%%%The description of the represnation of CUDF is described.
+Described in this chapter is the formal model of evolution of a component system, its constraints and it's optimisation.
+The representation of such an evolution problem, how the problem is described has been, so far, left undefined.
+In this section, the representation of such a problem is described through using the Common Upgradeability Description Format (CUDF) specification presented by \cite{treinen2009common}.
+This specification was previously described in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
 
-%%%Here we give an introduction to the CUDF format from Mancoosi, this format is used as a standard for Dependency Resolution problems
-{}\cite{treinen2009common}
+CUDF was defined as an abstract representation of this evolution problem.
+This allows the comparison of various implementations designed to solve evolution problems, and the creation of generlisatiable solvers to be used across component models.
+In both aspects CUDF has succeeded;
+competitions, like the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc-2011/}, have been held to compare various state of the art, and legacy, solvers.
+the creation of the solver MPM \cite{abate2011}, that can solve problems represented in CUDF for different component models.
 
+In this section first the design principles of CUDF are described, this will show the motivations of this definition are aligned to this research.
+The syntax of CUDF is then described, this will not be as in-depth a description as given in the full specification \cite{treinen2009common},
+however it will be enough detail to give a broad understanding of the format.
+This CUDF syntax is then mapped to our model of the a component system evolutionary step.
+This includes some minor extensions to the presented definition in section \ref{formal.step}.
+Finally, although the definition of optimisation is not directly in the CUDF specification, the Mancoosi format for specifying optimisation criteria is discussed.
+
+\subsection{CUDF Design}
 %%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
+The Mancoosi organisation is a research project whose area is the improvement to the upgrading of Free and Open Source Software (FOSS) distributions.
+This upgrade problem is the same problem defined in this chapter, the evolution of a component system.
+This is a broad topic, with many smaller objectives defined as milestones.
 
-%%%In both regards it has succeded, there have been many competitions run, 
-%%%and their creation of a Modular Package Manager(MPM) is currently moving through the Debian stages into their core repository
+One of these objectives was to organise a competition between competing solutions of the upgrade problems of FOSS systems.
+This was defined as it would hopefully encourage researchers and practitioners into researching the upgrade problem.
 
-\subsection{CUDF Syntax}
-%%%The CUDF syntax is made to resemble similar CDR meta-data through using key-value pairs (not XML, too verbose?)
+An initial problem faced in organising a competition is a format in which the competition could represent the upgrade problem.
+The design of this format would have to follow some design princples to ensure the results would be useful.
+These principles are presented in \cite{treinen2009common}, summarised as:
 
+\begin{itemize}
+  \item \textbf{Agnostic towards component model details}: 
+  The specific component model and the implementation chosen to solve the problem, should be abstracted as to allow many problems and solutions to be used  
+  \item \textbf{Stay close to the original problem}: 
+  The original problem is still the focus of this research, therefore the format should not abstract so far as to be unrecognisable. 
+  By using similar terms and syntax that already exists within the domain, the format will still directly represent the upgrade problem. 
+  \item \textbf{Preserve the ability for humans to inspect encoded problems}:
+  The analysis and design of a specific problem should be able to be directly accomplished through manual investigation.
+  This will allow greater testing and debugging, also enable the direct inspection of the problem by researchers for study.
+  \item \textbf{Avoid bias towards specific implementations or techniques}:
+  Specific encoding of the problem, e.g. using propositional logic, or constraint programming, may create an advantage or disadvantage for a particular technique or solution.
+  Since a goal of this research is to encourage the advancement of this area, the format should strive to be independent from any technique or implementation. 
+  \item \textbf{Support legacy tools}:
+  The comparison to tools that are already in use to solve such upgrade problems is a necessity when determining if this research is advancing the field.
+  Ideally, a legacy or current solution should easily be able to be adapted and used with the format.
+  Conversely though, the format should not stop state-of-the-art solutions from being used.
+  \item \textbf{Extensible}:
+  Although the format will attempt to abstract the common elements of the problem, there may still be necessary component model specific details that require inclusion.
+  Also, some details are required for the optimisation of the problem, but which are not relevant to the specification of the format.
+  The ability to extend the format is then required.
+  \item \textbf{Transactional semantics}:
+  The format should have the ability to completely represent a problem as a single unit, that can be passed to an implementation for solution.
+  Also, the solution passed back should itself be a single unit, of the same format.
+  This ignores aspects of the problem such as install order of the components, though this is outside the scope of this research.
+  \item \textbf{Plain Text Format}:
+  The use of plain text, as opposed to a binary format, will allow it to be human readable, as well as make it easier to parse and write.
+  Although plain text may not be the most efficient way to encode a problem, the overhead required to parse other formats may decrease the interest to enter a competition.
+  This also aligns with the morals of the community of FOSS developers, where plain text is the universal information interchange format \cite{ray2003}.
+\end{itemize}
+
+The result of these design goals is the CUDF specification, presented in \cite{treinen2009common}.
+This format is presented in the following sections.
+
+\subsection{CUDF Document}
+%%%Here the CUDF document is defined using text and trying to stay away from too many formalisms, just describing concepts to be used later
+In this section a brief description of the CUDF format is presented.
+Some aspects of CUDF are ignored as a complete redefinition of the original specification is not the goal of this section.
+For example, the CUDF specification describes a formal type system, which is left out here.
+Where details are removed, or glossed over a reference will be made as to ensure that mis-information is not conveyed. 
+
+CUDF is defined given the design goals presented in the previous section;
+a CUDF document is a single plain text file, that represents all information necessary to define an evolutionary step as defined in section \ref{formal.step}.
+
+This document is separated into three stanzas, the preamble, the package descriptions, and the request.
+
+\begin{itemize}
+  \item \textbf{preamble}: Defines the additional types used in the CUDF document
+  \item \textbf{package descriptions}: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package)
+  \item \textbf{request}: this defines the requested evolutionary change that should be made to the components 
+\end{itemize}
+
+This structure is presented in figure \ref{formal:cudfstruct}.
+
+\begin{figure}[htp]
+\centering
+\begin{tabular}{|c|}
+\hline preamble \\ \hline
+\hline package description$_{1}$ \\ \hline
+\hline package description$_{2}$ \\ \hline
+ \multicolumn{1}{c}{\ldots}  \\ 
+\hline package description$_{i}$\\ \hline
+\hline request\\ \hline
+\end{tabular}
+\caption{Structure of the CUDF stanzas}
+\label{formal:cudfstruct}
+\end{figure}
+
+Every stanza begins with a key of their type (\verb+preamble+, \verb+package+, \verb+request+), followed by several lines ending in a empty line.
+Each stanza line defines a set of properties using key/value pairs separated by the delimiter ``:``, these are in no defined order.
+This structure is presented in figure \ref{formal.cudfproperties}
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+\textit{stanza}: \textit{value}
+\textit{key1}: \textit{value1}
+\ldots
+\textit{key2}: \textit{value2}
+
+\textit{stanza}: \textit{value}
+\textit{key1}: \textit{value1}
+\ldots
+\end{alltt}
+  \caption[CUDF property structure]{Structure of CUDF properties}
+  \label{formal.cudfproperties}
+\end{center}
+\end{figure}
+
+\subsubsection{Package Description}
+The package description stanza starts with the \verb+package+ key followed by the value of package name, a non-empty string.
+The only mandatory property of this stanza is defined with the key \verb+version:+ who's value is the version of the package, a positive integer.
+The pair $\langle name, version \rangle$ of a package is unique, there can exist at most one package description for a given name and version.
+This name and version pair is the basic unit for the CUDF document. 
+
+The most relevant properties for a package are defined by the keys:
+\begin{itemize}
+  \item \verb+installed+: this Boolean property states whether the package is installed or not in the system. 
+  As the CUDF document describes all packages, installed and not, the set of packages with the property \verb+installed: true+ defines the current component system.
+  \item \verb+keep+: this property defines the keep constraints as defined in section \ref{formal:step}
+  Some possible values\footnote{The keep property can also be assigned feature or none} are:
+	  	\begin{itemize}
+	  		\item \verb+version+: keep this particular version of the package installed
+	  		\item \verb+package+: keep at least one version of this package installed
+		\end{itemize}
+  \item \verb+provides+: this is a list of names of features or services that this package provides separated by the delimiter ``,''.
+  e.g. \verb+provides: a, b, c+ means this package provides the feature \verb+a+, \verb+b+ and \verb+c+.
+  Each feature name can be accompanied by a version, to state what particular version is provided, e.g. \verb+a=10+ means feature \verb+a+ version \verb+10+ is provided.
+  When no version is specified for a feature, it is defined as all possible versions are provided.
+  \item \verb+depends+: this is a list of lists of \textbf{package formulae}, first separated by the delimiter ``,'' then delimiter ``|''.
+  The list represents a conjunction of disjunctions (conjunctive normal form), with each formulae defining a set of packages.
+  A package is defined using a name of either a package or feature $n$ and optionally an operator and version of the form  $n = v$, $n != v$, $n > v$, $n < v$, $n >= v$, or $n <= v$.
+  For example, \verb+depends: a , b | c < 10+ means the package depends on a packages (or features) with the name \verb+a+ AND \verb+b+ or \verb+c+ less than version \verb+10+.  
+  \item \verb+conflicts+: is a list of \textbf{package formulae} as defined above separated by the delimiter ``,''.
+  For example, \verb+conflicts: a , c > 2+ means this package conflicts with all packages (or features) with the name \verb+a+ AND \verb+c+ greater than the version \verb+2+
+\end{itemize}
+
+\subsubsection{Preamble}
+The preamble stanza starts with the key \verb+preamble:+, no value is necessary for this key.
+The main function of this stanza is to provide the description of addition properties and their types, that can be added to the package descriptions.
+This is described under the key \verb+property+ where the value is a list of properties defining their name, type and optionally a default value separated by the delimiter ``,''.
+Each addition property of name $n$ and type $t$ and optionally a default value is a pair or triple separated first by ``:`` then ``=`` where the default is wrapped in ``[`` and ``]''.
+
+For example, \verb+property: size: int, bugs: int = [0]+ defines the integer property of \verb+size+ and the integer property of \verb+bugs+ with the default value \verb+0+.
+Given this preamble, package descriptions can now use these properties as shown in figure \ref{formal.cudfextensionexample}
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+preamble:
+property: size: int, bugs: int = [0]
+
+package: textEditor
+version: 1
+bugs: 10
+size: 2
+depends: spellCheckerService
+
+\ldots
+
+\end{alltt}
+  \caption[Example of Extendable CUDF syntax]{Example of Extendable CUDF syntax}
+  \label{formal.cudfextensionexample}
+\end{center}
+\end{figure}
+
+\subsubsection{Request}
+The request stanza starts with the \verb+request:+ key, no value is required for this key.
+This stanza contains three properties that define the request to change the system:
+\begin{itemize}
+  \item \verb+install+: is a list of \textbf{package formulae} separated by the delimiter ``,''.
+  \item \verb+remove+:
+  \item \verb+upgrade+:
+\end{itemize}
+
+\subsubsection{Full Example}
+
+\subsection{CUDF Specification}
+
+
+
+
+
+To further describe this specification a few initial definitions are required:
+\begin{itemize}
+  \item package: a string that represents the name of a set of components
+  \item version: an positive integer representing the version state of a package
+  \item package-version: a unique package that is mapped to a version
+  \item   
+\end{itemize}
+
+
+
+
+
+A key definition used in this 
+
+\subsection{Package Descriptions}
+
+The most imporant descriptions of a package are defined using the keys
+
+\subsubsection{Preamble}
+The preamble stanza, started with the key ``premable'' and empty value, defines a list of additional properties that can be 
 %%%Package Formulas are the standard mechanism of dependence
 
 %%%Versions as Integers
 
 %%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
 
-\subsection{CUDF Semantics}
-%%%As CUDF was a format the was supposed to be open to allow people to build differnt solvers for it, and be used as a real package manager, it walked a fine line.
-
-%%%It must be simple enough so that developers can quickly understand it to build or modify existing solvers capable of competing in MISC competitions
-
-%%%It must be broad enough to define and solve real world problems
 
 
+\subsection{Mancoosi Optimisation Format}
 
