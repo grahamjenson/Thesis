@@ -723,48 +723,128 @@ depends: spellCheckerService
 
 \subsubsection{Request}
 The request stanza starts with the \verb+request:+ key, no value is required for this key.
-This stanza contains three properties that define the request to change the system:
+This stanza contains three properties that define the request to change the system,
+each is a list of \textbf{package formulae} separated by the delimiter ``,'' such that:
 \begin{itemize}
-  \item \verb+install+: is a list of \textbf{package formulae} separated by the delimiter ``,''.
-  \item \verb+remove+:
-  \item \verb+upgrade+:
+  \item \verb+install+: is a request to install a set of packages into the system,
+  e.g. \verb+install: a, b >= 2+ means install component \verb+a+ and component \verb+b+ of version two or greater.
+  \item \verb+remove+: is a request to remove a set of packages from the system 
+  e.g. \verb+remove: a , b = 2+ means remove all components with name \verb+a+ and component \verb+b+ of version two.
+  \item \verb+upgrade+: is a request to remove all versions of a package and install greater than or equal versions of the package,
+  e.g. \verb+upgrade: a+ means to remove all packages of name \verb+a+ and install one package of equal or greater versions to that of the maximum version of the 
 \end{itemize}
 
-\subsubsection{Full Example}
+%%%Installation of multiple components
+CUDF as a specification is probably most derived from the Debian package format, described in section \ref{background.models}.
+A significant difference between these two specifications is that the CUDF specification does not explicitly state that only one version of a package can be installed.
+This is a practical decision as other component models, like Red Hat Package manager and OSGi, allow the installation of multiple versions of the same component.
+However, although these models do allow this, a system that does have multiple versions of a package installed can be seen as less optimal to one that doesn't. 
+This is then left up to the optimisation when finding a solution to try to identify solutions with only one version installed per component.
+
+%%%Upgrading with multiple packages
+The semantics of upgrading a package in CUDF are the most complicated request to define.
+This is due to the possibility of having multiple installed versions of a component installed.
+If a package is requested to be upgraded and there is only one version, then either the package is not altered or a package with the same name and a higher version replaces it.
+However, if there are multiple versions of a package that is requested to be upgraded, the most significant constraint is that only one version of the package can exist in the final system.
+The second constraint is that the version that remains in the system is of greater or equal value of the maximum installed version of the component.
+This means that all versions lower than the highest installed version will be removed, and the highest installed version can be replaced with only a higher version.
+
+%%%Upgrading can do nothing to a system
+These constraints have an interesting side effect on a system where there exists at most one version per component,
+an upgrade request may not change the system.
+This makes the definition of criteria for optimisation of a solution an important aspect of upgrading the system.
+As any criteria that express that minimal change is the most important has the possibility of not changing the system with an upgrade request.
 
 \subsection{CUDF Specification}
+In this section, the model presented in section \ref{formal.step} is extended and mapped to this CUDF specification.
+
+The first definition is that of the set of components.
+Given a set of package descriptions $PD$ described in a CUDF document,
+the function $property$ is defined such that is takes a package description and key, and returns the value of the key for that description, i.e. $property: PD \times key \rightarrow value$. 
+As defined in section \ref{formal.step} each component is defined by a name and version,
+therefore the set of components $\mathbb{C}$ is defined as $[\langle property(pd, $\verb+name+$), property(pd, $\verb+version+$) \rangle \mid pd \in PD]$.
+
+%%%Features or services
+CUDF specifies an additional aspect to component relationships, that of a feature or service.
+This attributes a set of features to a component, where each feature is represented by a name, and a set of versions.
+Unlike a component, which has exactly one version, a component can provide a feature of multiple versions.
+
+A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is a string for a name, and $V$ is a subset of positive integers, i.e $V \subseteq \mathbb{N}$.
+The features provided by a component are defined as the property with the key \verb+provides+, whose value follows the BNF grammar shown in figure \ref{formal.cudfprovidessyntax}.
+This grammar defines \verb+FName+ as a (string) feature name and \verb+Ver+ as a (positive integer) feature version, and each feature is separated by the delimiter ``,''
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+Provides ::= [FName (VEq)?]["," FName (VEq)?]*
+VEq ::= "=" Ver
+\end{alltt}
+  \caption[Provides syntax]{CUDF Provides syntax}
+  \label{formal.cudfprovidessyntax}
+\end{center}
+\end{figure}
+
+This list of feature names and sets of versions returned from  $property(c,$\verb+provides+$)$ in the form $\langle$ (\verb+FName+$_1$, {\verb+Ver+$_1$}), \ldots, (\verb+FName+$_i$, {\verb+Ver+$_i$}) $\rangle$,
+where if \verb+\VEq+ is undefined {\verb+Ver+} equals all positive integers, i.e. if {\verb+Ver+}$= \mathbb{N}$.
+That is, if a feature is defined such that no version is specified, it is then assumed that it provides all possible versions of that feature.
+ 
+The function $providedFeatures(c)$ is defined as $[n \mid (n,v) \in property(c,$\verb+provides+$)]$,
+that is it returns the set of all feature names that a component provides.
+The provided versions of each feature is then defined as the union of all defined provided versions, 
+$featureVersions(c,n_f) = \bigcup_{(n,v) \in property(c,provides)} v \mbox{ iff } n = n_f$,
+that is it returns the union of all versions of a feature provided by a component.
 
 
+\subsubsection{Package formula}
+A package formula is a query of a CUDF document that is mapped through a function to return a set of packages.
+This formulae is the atomic unit used for all relationships and requests, as it is used to create the necessary constraints to be mapped to the model in section \ref{formal.step}. 
+The syntax and the semantics are here mapped to out previously presented model of an evolutionary step. 
+
+It is syntactically defined using as \verb+PkgF+ in the BNF grammar in figure \ref{formal.cudfpackageformulasyntax},
+where \verb+PkgName+ is the (string) package name and \verb+Ver+ is the (positive integer) package version. 
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+PKgF ::= PkgName (VConstr)?
+VConstr ::= RelOp Ver
+RelOp ::=  "=" | "!=" | ">=" | ">" | "<=" | "<"
+\end{alltt}
+  \caption[Package Formulae syntax]{Structure of CUDF package Formulae syntax}
+  \label{formal.cudfpackageformulasyntax}
+\end{center}
+\end{figure}
+
+This package formulae is then the triple $\langle n,v,op\rangle$ where $n$ and $v$ are directly taken from \verb+PkgName+ and \verb+Ver+,
+and $op$ is created through \verb+RelOp+ being parsed by the function:  
+$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, \verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$
+In the situation where \verb+Ver+ and \verb+RelOp+ are not defined, the $v = 0$ and $op = >$.
+
+%%%Find all packages which satisfy the package formula
+A package formula (whose set is denoted as $PF$) can be mapped to a set of components through the function $packages: PF \rightarrow 2^{\mathbb{C}}$,
+which takes a package formulae and returns all packages that conform to its definition.
+This is defined as:
+given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
+$packages(\langle n,v,op\rangle) = [\langle n_c,v_c \rangle \mid \langle n_c,v_c \rangle \in \mathbb{C} \mbox{ and } n_c = n \wedge v_c op v]$.
+That is any component whose name is the same as that in the package formulae and whose version is related through the defined $op$ will be included in the set.
+
+%%%Find all packages who provides a feature which satisfies the package formula
+A package formula does not distinguish between components and features, so a package formulae is also used to search for components providing a feature.
+The function $features: PF \rightarrow 2^{\mathbb{C}}$ also takes a package formula and returns a set of components that provide the described feature.
+Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
+$features(\langle n,v,op\rangle) = [c \mid c\in \mathbb{C} \mbox{ and } n \in providedFeatures(c) \wedge \exists v_f \in featureVersions(c,n) \mbox { such that } v op v_f ]$.
+That is, given a package formula, 
+$features$ returns a set of components that provide a feature where the name of the feature is in the package formula and the exists a version of that feature that satisfies the relation. 
 
 
+\subsubsection{Request}
+The request stanza of a CUDF document describes the change request as defined as $\Delta$ in section \ref{formal.step}.
 
-To further describe this specification a few initial definitions are required:
-\begin{itemize}
-  \item package: a string that represents the name of a set of components
-  \item version: an positive integer representing the version state of a package
-  \item package-version: a unique package that is mapped to a version
-  \item   
-\end{itemize}
-
-
-
-
-
-A key definition used in this 
-
-\subsection{Package Descriptions}
-
-The most imporant descriptions of a package are defined using the keys
-
-\subsubsection{Preamble}
-The preamble stanza, started with the key ``premable'' and empty value, defines a list of additional properties that can be 
-%%%Package Formulas are the standard mechanism of dependence
-
-%%%Versions as Integers
-
-%%%The Syntax has been defined to be extensible within the language, so additional model specific information can be included without increasing the size of the standard
+\subsubsection{Full Example}
 
 
 
 \subsection{Mancoosi Optimisation Format}
+%%%Describe the format by which mancoosi has required optimisation criteria formatted
 
+%%%Not part of CUDF but closly related
