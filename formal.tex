@@ -258,13 +258,91 @@ A better evolution of this system would of been $G_1 = \{a,bv2,c\}$ then $G_2 = 
 This complexity is the reason for the study of the evolution process throughout this research. 
 This counter-intuitive impact on the evolution of component systems, opens up research questions that should be answered to use component systems.
 
+\subsubsection{Belief Revision}
+This formalism of generational evolution is similar to the formal logic of belief revision \cite{alchourron1985logic}.
+This logic deals with the process in which a set of beliefs can be revised when confronted with new information.
+The complexity of belief revision comes from the many ways in which a set of beliefs can be revised when necessary.
+For instance, if you see an object that is black and is flying towards you, where you also know that birds fly; then you infer it is a bird.
+However, an expert in flying things then tells you that it is a bat that is flying towards you; given this new information your previous beliefs require revision to stay consistent.
+How this revision occurs can be complex; for instance, is the object still black?
+
+The Alchourrón, G\"ardenfors, and Makinson (AGM) \cite{alchourron1985logic} postulates for belief revision give a set of eight properties 
+that a such a revision operator needs to satisfy in order to be considered ``\textit{rational}''.
+These postulates (not enumerated here) were rephrased for propositional languages by \cite{katsuno1991propositional}. 
+Given a set of propositional formula $Y$ representing the belief set and a single formula $A$ representing new information, the revision of $Y$ by $A$, denoted by $Y \circ A$,
+should have these properties:
+
+\begin{itemize}
+  \item (KM1) \textit{ $Y \circ A$  implies $A$}
+  \item (KM2) \textit{ If $Y \wedge A$  is satisfiable, then $Y \circ A \equiv Y \wedge A$}
+  \item (KM3) \textit{ If $A$ is satisfiable, then $Y \circ A$  is also satisfiable}
+  \item (KM4) \textit{ If $Y_1 \equiv Y_2$ and $A_1 \equiv A_2$, then $Y_1 \circ A_1 \equiv Y_2 \circ A_2$}
+  \item (KM5) \textit{ $(Y \circ A) \wedge B$  implies $Y \circ (A \wedge B)$}
+  \item (KM6) \textit{ If $(Y \circ A) \wedge B$ is satisfiable, then $Y \circ (A \wedge B)$ implies $(Y \circ A) \wedge B$}
+\end{itemize} 
+
+The first four KM postulates are equivalent to the first six AGM postulates, describing the basic nature of revision;
+new information is always included in the new beliefs (KM1); if the new information does not conflict with old information the revision is equviliant to conjunction (KM2);
+if the new information is satisfiable then the revised beliefs should be satisfiable (KM3); revision should be deterministic where given equal scenarios the results are equal (KM4).
+
+The last two KM postulates are equivalent to the last two AGM postulates, which describe the intended minimal change of revision.
+That is, revision should only change a minimal set of beliefs given new information is conflicting.
+Through weakening (KM6) to two more postulates (KM7) and (KM8), \cite{katsuno1991propositional} further define the revisions minimal change.
+
+\begin{itemize}
+  \item (KM7) \textit{ $Y \circ A_1$  implies $A_2$ and $Y \circ A_2$ implies $A_1$ then $Y \circ A_1$ is equivalent to $Y \circ A_2$}
+  \item (KM8) \textit{ $(Y \circ A_1) \wedge (Y \circ A_2)$ implies $A$}
+\end{itemize}
+
+\cite{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
+given the set of all models $M$, a function ($Mod$) is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
+where the strict order is defined as $m <_Y m'$ if and only if $m \leq_Y m'$ and $m' \not \leq_Y m$. 
+This assignment is described as ``\textit{faithful}'' if three conditions hold:
+\begin{enumerate}
+  \item If $m,m' \in Mod(Y)$, then $m <_Y m'$ does not hold
+  \item If $m \in Mod(Y)$ and $m' \not\in Mod(Y)$, then $m <_Y m'$ holds
+  \item If $Y \equiv Z$, then $\leq_Y = \leq_Z$  
+\end{enumerate}
+
+That is, a model of $Y$ cannot be strictly less than any other model of $Y$ and must be strictly less than all non-models of $Y$.
+
+\paragraph{Component System Evolution Mapping}
+This propositional belief revision can be used to describe component system evolution.
+However, there are incompatibilities with this mapping, notably the absolute dependence on minimal change of beliefs. 
+
+The belief set, $Y$, defines the component system,
+and the new information, $A$, is the requested change to the system.
+That is, the beliefs define what the system of components are best suited for the user, and the new information states a change the user would like to make to the system.
+
+The component relationships are facts, and cannot change in the system, therefore they are axioms of this mapping.
+The revision operator is then denoted with respect to the component relationship axioms $R$ as $\circ_R$.
+This revision operator is then the evolutionary step operator, used to evolve a system of $Y$ given an evolutionary change of $A$.
+
+Given this mapping; (KM1) states that evolution described by $A$ must be made to the system; 
+(KM2) states if the evolution $A$ does not conflict with the current step then no change is required;
+(KM3) states if the evolution is possible (satisfiable) then it must be made;
+(KM4) states under exact circumstances, an evolution must be deterministic.
+
+The minimal change that is described in belief revision to be considered ``rational'' also directly applies to component system evolution.
+As any revision of a belief system can be accomplished though many different solutions, as with component system evolution, 
+an operator must be defined to allow for optimisation of revision, $\leq_{Y}$.
+This operator is analogous to the function $d$ with its order $<$, and $Mod$ returns all solutions that are minimal given $<$.
+
+The most significant reason that this formalism is not used for this research is the absolute approach to minimal change.
+Within component systems other priorities must be expressed other than minimality, for instance system stability, maximising the versions installed, and so on.
+Where in belief revision the main goal is to find a ``rational'' definition of a minimal operator that could change a component system with as little alterations as possible.
+Although, the extension of belief revision is possible to accurately describe component system evolution, the necessary changes will remove belief revision from its foundations,
+therefore be seen as extreme.
+This has lead this research to ignore this approach, and instead focused on defining directly the problem rather than using belief revision as the basis of the definition. 
+
 \section{Evolution Optimisation}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
-Any requested evolution of a component system can have many different possible resulting systems.
-This is because the problem is generally under-constrained \cite{leberre2008}, therefore many possible systems that satisfy the requested change and component relationship constraints can exist.
+Any requested evolution of a component system can have many different possible resulting systems \cite{leBerre2010}.
+This is because the problem is generally under-constrained \cite{leberre2008}, which enables many various possible systems available to satisfy the component relationships.
 Up till now in this chapter, the function to optimise the evolution of the system has been left largely undefined.
-This is due to a to the practical aspect that an evolution step is a multi-crititeria optimisation problem as noted in \cite{leBerre2010}. 
+
+The lack of definition is due to the practical aspect that an evolution step is a multi-crititeria optimisation problem \cite{leBerre2010}. 
 
 %%%This can be seen from the examples described in the background
 The necessity of using multiple criteria can be seen in the examples of current CDR application criteria presented in \ref{background.models},
