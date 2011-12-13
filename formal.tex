@@ -295,7 +295,7 @@ Through weakening (KM6) to two more postulates (KM7) and (KM8), \cite{katsuno199
 \end{itemize}
 
 \cite{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
-given the set of all models $M$, a function ($Mod$) is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
+given the set of all models $M$, a function is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
 where the strict order is defined as $m <_Y m'$ if and only if $m \leq_Y m'$ and $m' \not \leq_Y m$. 
 This assignment is described as ``\textit{faithful}'' if three conditions hold:
 \begin{enumerate}
@@ -306,34 +306,58 @@ This assignment is described as ``\textit{faithful}'' if three conditions hold:
 
 That is, a model of $Y$ cannot be strictly less than any other model of $Y$ and must be strictly less than all non-models of $Y$.
 
+Katsuno and Mendelzon then use this assignment to define minimality and a revision operator; 
+let $J$ be a subset of $M$, 
+a model $m$ is minimal in $J$ with respect to $\leq_{Y}$ if $m \in J$ and there is no $m' \in J$ such that $m' <_Y m$. 
+The function $Min(J,\leq_{Y}) = \{ m \mid m$ is minimal in $J$ with respect to $\leq_{Y} \}$.
+A revision operator $\circ$ will satisfy the postulates (KM1)-(KM5) if and only if
+their exists a faithful assignment that maps each set of propositional formula $Y$ to a pre-order $\leq_{Y}$
+such that $Mod(Y \circ A) = Min(Mod(A),\leq_{Y})$.
+Katsuno and Mendelzon show that (KM6) will also be satisfied iff $\leq_{Y}$ is a total order,
+and (KM7) and (KM8) will also be satisfied iff $\leq_{Y}$ is a partial order.
+
 \paragraph{Component System Evolution Mapping}
-This propositional belief revision can be used to describe component system evolution.
-However, there are incompatibilities with this mapping, notably the absolute dependence on minimal change of beliefs. 
+This propositional belief revision can be used to describe component system evolution, it proposes a formal basis to give component system evolution ``rational'' properties.
+However, there are incompatibilities with this mapping, significantly this logic's dependence on minimal change.
 
-The belief set, $Y$, defines the component system,
-and the new information, $A$, is the requested change to the system.
-That is, the beliefs define what the system of components are best suited for the user, and the new information states a change the user would like to make to the system.
+%%%Define the mapping
+The set of beliefs, $Y$, defines the propositional formulae whose model is the component system,
+and the new information, $A$, is the propositional formulae that are requested change to the system.
+The variables in these formula represent the components, and a model is represented by a set, where if a variable is in a set iff it is assigned $true$, 
+and a variable is not in the set iff it is assigned $false$. 
+Then set $Y$ is the set of formulae that is ``believed" to create a component system best suited for the user.
+The formula $A$ defines a change to the beliefs of what is best for the user, which may require the component system to be revised.
 
-The component relationships are facts, and cannot change in the system, therefore they are axioms of this mapping.
-The revision operator is then denoted with respect to the component relationship axioms $R$ as $\circ_R$.
-This revision operator is then the evolutionary step operator, used to evolve a system of $Y$ given an evolutionary change of $A$.
+%%%Discuss the mapping of the function to the revision operator
+The component relationships are facts in this logic, and not beliefs; they are axioms that are defined as integrity constraints by \cite{katsuno1991propositional}.
+The revision operator is then denoted with respect to the component relationships $R$ as $\circ_R$.
+This revision operator $\circ_R$ is mapped to the the evolutionary function $E$;
+given the evolutionary function $E_{R \cup \Delta}(X) = X_1$, $Mod(Y) = \{X\}$ and $Mod(Y \circ_R \Delta) = \{X_1\}$.
+This restricts the possible models of $Y$ and the revised models to a singleton sets of $\{X\}$ and $\{X_1\}$,
+as there can only exist a single component system at a time.
 
-Given this mapping; (KM1) states that evolution described by $A$ must be made to the system; 
-(KM2) states if the evolution $A$ does not conflict with the current step then no change is required;
-(KM3) states if the evolution is possible (satisfiable) then it must be made;
-(KM4) states under exact circumstances, an evolution must be deterministic.
+%%%What does this mapping give us, a foundation
+An order $\leq_{Y}$ that holds to the properties stated previously must be defined in order to consider this revision operator ``rational''.
+This property, that is the basis of belief revision operators gives component system evolution a foundation.
+It states that the changes that are made to a component system are reasonable with respect to the beliefs that it is satisfiable for the user.
+The benefit of this mapping would provide evolution with a set of revision operators already defined, and another set of research to contribute to.
 
-The minimal change that is described in belief revision to be considered ``rational'' also directly applies to component system evolution.
-As any revision of a belief system can be accomplished though many different solutions, as with component system evolution, 
-an operator must be defined to allow for optimisation of revision, $\leq_{Y}$.
-This operator is analogous to the function $d$ with its order $<$, and $Mod$ returns all solutions that are minimal given $<$.
+%%%However, this mapping is incompatible with our definition.
+Although this mapping may provide some benefits to component system evolution, their are fundamental differences which make the mapping incompatible.
+The optimisation function $d$ with its order $<$ is analogous to the order $\leq_{Y}$.
+They both describe the measures of optimality, however $d$ can be static, measure the optimality of a system separate from a previous system,
+where $\leq_Y$ is only dynamic, measuring the change from previous to new system.
+This difference creates a incompatibility, given the constraint on $\leq_Y$ which requires no change if necessary,
+and $d$ which can make changes which may not be minimal.
+For example, if a system is requested to install a component that is already installed, a belief revision operator will never change the system,
+however a component evolution function may identify there exists a newer version and attempt to update the component.
 
-The most significant reason that this formalism is not used for this research is the absolute approach to minimal change.
-Within component systems other priorities must be expressed other than minimality, for instance system stability, maximising the versions installed, and so on.
-Where in belief revision the main goal is to find a ``rational'' definition of a minimal operator that could change a component system with as little alterations as possible.
-Although, the extension of belief revision is possible to accurately describe component system evolution, the necessary changes will remove belief revision from its foundations,
-therefore be seen as extreme.
-This has lead this research to ignore this approach, and instead focused on defining directly the problem rather than using belief revision as the basis of the definition. 
+%%%Therefore it is not used
+This fundamental difference excludes the use of belief revision as the basis of component system evolution formalisation.
+Although, the extension of belief revision may be possible to accurately describe component system evolution, 
+the necessary changes will remove belief revision from its foundation of minimal change,
+therefore is seen as extreme.
+Instead, this research directly defines the problem using belief revision as inspiration.
 
 \section{Evolution Optimisation}
 \label{formal.opt}
@@ -863,7 +887,7 @@ VEq ::= "=" Ver
 \end{figure}
 
 This list of feature names and sets of versions returned from  $property(c,$\verb+provides+$)$ in the form $\langle$ (\verb+FName+$_1$, {\verb+Ver+$_1$}), \ldots, (\verb+FName+$_i$, {\verb+Ver+$_i$}) $\rangle$,
-where if \verb+\VEq+ is undefined {\verb+Ver+} equals all positive integers, i.e. if {\verb+Ver+}$= \mathbb{N}$.
+where if \verb+\VEq+ is undefined $\{$\verb+Ver+$\}$ equals all positive integers, i.e. if $\{$\verb+Ver+$\}= \mathbb{N}$.
 That is, if a feature is defined such that no version is specified, it is then assumed that it provides all possible versions of that feature.
  
 The function $providedFeatures(c)$ is defined as $[n \mid (n,v) \in property(c,$\verb+provides+$)]$,
@@ -910,9 +934,67 @@ That is any component whose name is the same as that in the package formulae and
 A package formula does not distinguish between components and features, so a package formulae is also used to search for components providing a feature.
 The function $features: PF \rightarrow 2^{\mathbb{C}}$ also takes a package formula and returns a set of components that provide the described feature.
 Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
-$features(\langle n,v,op\rangle) = [c \mid c\in \mathbb{C} \mbox{ and } n \in providedFeatures(c) \wedge \exists v_f \in featureVersions(c,n) \mbox { such that } v op v_f ]$.
+$features(\langle n,v,op\rangle) = [c \mid c\in \mathbb{C} \mbox{ and } n \in providedFeatures(c) \wedge \exists v_f \in featureVersions(c,n) \mbox { such that } v_f op v ]$.
 That is, given a package formula, 
 $features$ returns a set of components that provide a feature where the name of the feature is in the package formula and the exists a version of that feature that satisfies the relation. 
+
+Give the functions $packages$ and $features$ the resolution of a package formula $pf$ can be described as the function $packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+That is, $packagesThatSatisfy$ takes a package formula and returns a set of packages that either directly satisfy it, or that provide a feature that satisfy the it.
+
+\subsubsection{Relationships}
+Given the function $packagesThatSatisfy$, the CUDF document can be mapped to the relationship constraints described in section \ref{formal.step}.
+
+There are three constraints:
+\begin{itemize}
+  \item keep constraint: derived from the property \verb+keep+ of a package descriptions where property \verb+installed+ is true.
+  \item dependency constraint: derived from the property \verb+depends+ from all package descriptions in a CUDF document.
+  \item conflict constraints: derived from the property \verb+conflicts+ from all package descriptions in a CUDF document.
+\end{itemize}
+
+\paragraph{Keep Constraint}
+The keep constraint states that a system should maintain either a specific package, or a version of a package in the system.
+In the CUDF specification only the keep constraints of installed components are considered.
+
+The function $keeppf$ returns a package formula $pf$ is defined from a component $c$ of name $n$ and version $v$ such that:
+\begin{itemize}
+	\item if $property(c,$\verb+keep+$)$ equals \verb+version+: $keeppf(c) = \langle n, =, v \rangle$
+	\item if $property(c,$\verb+keep+$)$ equals \verb+package+: $keeppf(c) = \langle n, >, 0 \rangle$
+\end{itemize}
+
+A keep constraint, of the form $c_1 \vee \ldots \vee c_n$, for a package is then created using the function $keep$,
+where $keep(c) = \bigvee packages(keeppf(c))$.
+That is, the package formula from $keeppf$ is used to query for a set of packages that are then disjoined.
+This creates a constraint that forces one of the resulting packages to be included in the system.
+
+To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
+Therefore, given a set of components $\mathbb{C}$ defined in a CUDF document, 
+the subset $\mathbb{C}' \subseteq \mathbb{C}$ is defined such that for all $c \in \mathbb{C}'$, $property(c,$\verb+installed+$)$ equals \verb+true+.
+That is, $\mathbb{C}'$ is the set of components currently installed in the system.
+then the set of keep constraints is defined as $\bigcup_{c \in \mathbb{C}'} keep(c)$.
+
+\paragraph{Dependency Constraint}
+The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property \verb+depends+.
+The depends property syntax is presented in figure \ref{formal.cudfdependssyntax}.
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+Depends ::= DisDep ("," DisDep)*
+DisDep ::= PKgF ("|" PKgF)*
+\end{alltt}
+  \caption[CUDF Package depends syntax]{Structure of CUDF depends syntax}
+  \label{formal.cudfdependssyntax}
+\end{center}
+\end{figure}
+
+This syntax shows that the depends syntax is a conjunction (separated by the delimiter ``,'') of dijunct (seperated by the delimiter ``|'') package formulas.
+Therefore, the syntax in conjuctive normal form, where using the function $packagesThatSatisfy$ to create sets of packages the dependency constraints can be created.
+Using the function $cnf$ which takes a component and uses the value of the components property \verb+depends+ to return a set of sets of package formula,
+e.g. $property(c,$\verb+depends+$)$ equals \verb+a, b | c+ returns the set $\{\{a\},\{b,c\}\}$.
+
+
+
+\paragraph{Conflict Constraint}
 
 
 \subsubsection{Request}
