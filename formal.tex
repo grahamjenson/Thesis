@@ -908,7 +908,7 @@ where \verb+PkgName+ is the (string) package name and \verb+Ver+ is the (positiv
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
-PKgF ::= PkgName (VConstr)?
+PkgF ::= PkgName (VConstr)?
 VConstr ::= RelOp Ver
 RelOp ::=  "=" | "!=" | ">=" | ">" | "<=" | "<"
 \end{alltt}
@@ -980,25 +980,83 @@ The depends property syntax is presented in figure \ref{formal.cudfdependssyntax
 \begin{center}
 \begin{alltt}
 Depends ::= DisDep ("," DisDep)*
-DisDep ::= PKgF ("|" PKgF)*
+DisDep ::= PkgF ("|" PkgF)*
 \end{alltt}
   \caption[CUDF Package depends syntax]{Structure of CUDF depends syntax}
   \label{formal.cudfdependssyntax}
 \end{center}
 \end{figure}
 
-This syntax shows that the depends syntax is a conjunction (separated by the delimiter ``,'') of dijunct (seperated by the delimiter ``|'') package formulas.
-Therefore, the syntax in conjuctive normal form, where using the function $packagesThatSatisfy$ to create sets of packages the dependency constraints can be created.
-Using the function $cnf$ which takes a component and uses the value of the components property \verb+depends+ to return a set of sets of package formula,
-e.g. $property(c,$\verb+depends+$)$ equals \verb+a, b | c+ returns the set $\{\{a\},\{b,c\}\}$.
+This syntax shows that the depends syntax is a conjunction (separated by the delimiter ``,'') of lists of package formulas (seperated by the delimiter ``|'').
+The syntax is in conjunctive normal form; where each disjunction is a union of the components that satisfy the package formulas in a given list.
+Each package formula list is then used to create a single dependency constraint, as described in section \ref{formal.step}.
 
+Given a component $c$, $property(c,$\verb+depends+$)$ is of the form $PkgFList_1 ,\ldots, PkgFList_i$,
+where there are $i$ package formula lists, denoted as $PkgFList$.
+Each package formula list is of the form \verb+PkgF+$_1$ | \ldots | \verb+PkgF+$_n$, where there are $n$ package formulas in the list.
+For a given list $PkgFList_j$, \verb+PkgF+$^j_m$ denotes the $m$-th package formula in the $j$-th list.
 
+The set of all package formula lists in the property \verb+depends+ for a given component $c$ is denoted as $PKGFLISTS$.
+Each package formula list is a subset of package formulae, i.e. $PKGFLISTS \subseteq 2^{PF}$.
+A given package formula list $PkgFList_j$ of the form of the form \verb+PkgF+$_1$ | \ldots | \verb+PkgF+$_n$ 
+is mapped to the set of package formulae $\{$\verb+PkgF+$^j_1$, \ldots, \verb+PkgF+$^j_n$ $\}$.
+
+The function $dependsOn$ which take a component and a package list and returns a single dependency constraint of the form $a \rightarrow c_1 \vee \ldots \vee c_n$.
+Such that given a component $a$ and a package list $pkglist$, 
+$dependsOn(a,pkglist) = a \rightarrow \bigvee \bigcup \limits_{pkgf \in pkglist} packagesThatSatisfy(pkgf)$.
+That is $dependsOn(a,pkglist)$ takes a the union of all components that satisfy a contained package formula to create the dependency constraint. 
+
+The function $depends$ is then defined such that,
+for a given component $a$ and the set of package forumlae lists $PkgLists$ tuple of package lists from $property(a,$\verb+depends+$)$,
+$depends(a) = \bigcup \limits_{pkglst \in PKGLISTS} dependsOn(a,pkglst)$.
+That is, the set of dependency constraints for a given component is the union of all constraints created from individual package lists.
+
+Finally, the set of all dependency constraints is defined given the set of all components $\mathbb{C}$ defined in a CUDF document,
+such that the set of dependency constraints equals $\bigcup \limits_{c\in \mathbb{C}} depends(a)$.
 
 \paragraph{Conflict Constraint}
+The conflict constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property \verb+conflicts+.
+The conflicts property syntax is presented in figure \ref{formal.cudfconflictsyntax}.
 
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+Conflicts ::= PkgF ("," PkgF)*
+\end{alltt}
+  \caption[CUDF Package conflicts syntax]{Structure of CUDF conflicts syntax}
+  \label{formal.cudfconflictsyntax}
+\end{center}
+\end{figure}
+
+This syntax is similar to that from the depends property syntax, except there is only one package formula list.
+Given a component $c$, $property(c,$\verb+conflicts+$)$ is of the form \verb+PkgF+$_1$ , \ldots , \verb+PkgF+$_n$,
+and can be mapped to a set of package formula $conflictPkgf = \{$\verb+PkgF+$_1$, \ldots, \verb+PkgF+$_n$ $\}$.
+
+The function $conflictsWith$ takes a component and a package formula and returns a set of conflict constraints, each of the form $a \rightarrow \neg c$ as defined in section \ref{formal.step}.
+Given a component $a$ and a package formula $pf$,  $conflictsWith(a,pf) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf)]$.
+That is, for each component that satisfies the package formula, a conflict constraint is creates with the component $a$.
+
+The function $conflicts$ is then defined as the set of all conflict constaints for a component.
+Given a component $a$ and set of package formulae $conflictPkgf$ from $property(a,$\verb+conflicts+$)$, $conflicts(a) = \bigcup \limits_{pf \in conflictPkgf} conflictsWith(a,pf)$.
+That is, the conflict constraints for a component is the union of all constraints created from each package formula in the conflicts property.
+
+Finally, the set of all conflict constraints given a set of components $\mathbb{C}$ defined in a CUDF document,
+is equal to $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 
 \subsubsection{Request}
-The request stanza of a CUDF document describes the change request as defined as $\Delta$ in section \ref{formal.step}.
+In a CUDF document there is exactly one request stanza that describes the change request to the component system.
+In section \ref{formal.step}, this request, denoted as $\Delta$,  was simplified to only include the installation of one component, or removal of one components.
+However, in a CUDF document there are three optional requests, to either install one of a set of components, remove all components, or update an installed component.
+These three requests are expressed by the properties \verb+install+, \verb+remove+ and \verb+update+ respectively.
+
+The definition in section \ref{formal.step} is then extended to allow for these requests of the CUDF document.
+\paragraph{Install}
+The install property 
+
+\paragraph{Remove}
+
+\paragraph{Install}
+
 
 \subsubsection{Full Example}
 
