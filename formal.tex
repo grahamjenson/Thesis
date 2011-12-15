@@ -62,7 +62,7 @@ The constraint in $R$ can be either:
   \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
 \end{itemize}
 These constraints are defined semantically such that
-a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or $b \in E_{R \cup \Delta}(X)$ (note: this can be unit i.e. $a$ is a valid keep constraint),
+a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or \ldots or $b \in E_{R \cup \Delta}(X)$ (note: this can be unit i.e. $a$ is a valid keep constraint),
 a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in E_{R \cup \Delta}(X)$ then $c_1 \in E_{R \cup \Delta}(X)$ or \ldots or $c_n \in E_{R \cup \Delta}(X)$,
 and a conflict constraint $a \rightarrow \neg c$ means if $a \in E_{R \cup \Delta}(X)$ then $c \not \in E_{R \cup \Delta}(X)$.
 These constraints are expressive enough to describe many of the component models described in section \ref{background.models}.
@@ -860,56 +860,64 @@ As any criteria that express that minimal change is the most important has the p
 \subsection{CUDF Specification}
 In this section, the model presented in section \ref{formal.step} is extended and mapped to this CUDF specification.
 
-The first definition is that of the set of components.
-Given a set of package descriptions $PD$ described in a CUDF document,
-the function $property$ is defined such that is takes a package description and key, and returns the value of the key for that description, i.e. $property: PD \times key \rightarrow value$. 
-As defined in section \ref{formal.step} each component is defined by a name and version,
-therefore the set of components $\mathbb{C}$ is defined as $[\langle property(pd, $\verb+name+$), property(pd, $\verb+version+$) \rangle \mid pd \in PD]$.
+The first definition is that of the CUDF document, which is made up of three stanzas preamble, a set of package descriptions and a request, 
+i.e. $CUDF = \langle preamble, PD, request \rangle$ where $PD$ is the set of package description stanzas.
+Each stanza is made of a set of properties, where each property is a tuple of key/value, i.e. $stanza = \{\langle $\verb+key+, \verb+value+$\rangle\}$.
+This syntax is described in figures \ref{formal:cudfstruct} and \ref{formal.cudfproperties}.
 
+The function $property$ is defined such that it takes a stanza and key and returns a value,
+i.e. $property: STANZA \times key \rightarrow value$ such that given a stanza $s$ and key \verb+key+,
+$property(s,$\verb+key+$) = $ \verb+value+ where $\langle$\verb+key+, \verb+value+$ \rangle \in s$.
+
+Components in a CUDF document, as defined in section \ref{formal.step} each component is defined by a name and version.
+The function $c$ takes a package description stanza and returns a component, such that $c(pd) = \langle property(pd, $\verb+name+$), property(pd, $\verb+version+$) \rangle$.
+Therefore given $PD$ is the set of package descriptions in a CUDF document,
+the set of components $\mathbb{C}$ equals $[ c(pd) \mid pd \in PD]$.
+
+A CUDF document not only described the set of all components, but the bub set of components that defines the current system.
+The set of components in the system (denoted as $X$) is defined using the key \verb+installed+,
+such that given a package description $pd$ and component $c = c(pd)$, $c \in X$ iff  $property(pd, $\verb+installed+$)$ equals \verb+true+.
+That is, only package descriptions that contains the value \verb+true+ for key \verb+installed+ are mapped to components in the component system.
+
+\subsubsection{Features}
 %%%Features or services
 CUDF specifies an additional aspect to component relationships, that of a feature or service.
 This attributes a set of features to a component, where each feature is represented by a name, and a set of versions.
-Unlike a component, which has exactly one version, a component can provide a feature of multiple versions.
+Unlike a component, which has exactly one version, a component can provide multiple versions of a feature.
 
-A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is a string for a name, and $V$ is a subset of positive integers, i.e $V \subseteq \mathbb{N}$.
-The features provided by a component are defined as the property with the key \verb+provides+, whose value follows the BNF grammar shown in figure \ref{formal.cudfprovidessyntax}.
-This grammar defines \verb+FName+ as a (string) feature name and \verb+Ver+ as a (positive integer) feature version, and each feature is separated by the delimiter ``,''
+A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is the name of the feature, and $V$ is a subset of positive integers representing versions, i.e $V \subseteq \mathbb{N}$.
+The features provided by a component are defined as the property with the key \verb+provides+, whose value follows the BNF grammar \verb+Provides+, shown in figure \ref{formal.cudfprovidessyntax}.
 
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
-Provides ::= [FName (VEq)?]["," FName (VEq)?]*
-VEq ::= "=" Ver
+Provides ::= Feature ["," Feature]*
+Feature :: = FName ("=" Ver)?
 \end{alltt}
   \caption[Provides syntax]{CUDF Provides syntax}
   \label{formal.cudfprovidessyntax}
 \end{center}
 \end{figure}
 
-This list of feature names and sets of versions returned from  $property(c,$\verb+provides+$)$ in the form $\langle$ (\verb+FName+$_1$, {\verb+Ver+$_1$}), \ldots, (\verb+FName+$_i$, {\verb+Ver+$_i$}) $\rangle$,
-where if \verb+\VEq+ is undefined $\{$\verb+Ver+$\}$ equals all positive integers, i.e. if $\{$\verb+Ver+$\}= \mathbb{N}$.
-That is, if a feature is defined such that no version is specified, it is then assumed that it provides all possible versions of that feature.
- 
-The function $providedFeatures(c)$ is defined as $[n \mid (n,v) \in property(c,$\verb+provides+$)]$,
-that is it returns the set of all feature names that a component provides.
-The provided versions of each feature is then defined as the union of all defined provided versions, 
-$featureVersions(c,n_f) = \bigcup_{(n,v) \in property(c,provides)} v \mbox{ iff } n = n_f$,
-that is it returns the union of all versions of a feature provided by a component.
-
+Each feature represented by \verb+Feature+ is in the form ``\verb+FName+'' or  ``\verb+FName+ = \verb+Ver+'', 
+which is mapped to a feature $($\verb+FName+$,\mathbb{N})$ or $($\verb+FName+$,\{$\verb+Ver+$\})$ respectivly.
+That is, a component provides all versions of a feature if no version is defined, where if a version is defined it provides a singleton set of that version. 
+The list of features defined by \verb+Provides+, in the form ``\verb+Feature+$_1$,\ldots,\verb+Feature+$_n$'', can then be mapped to a set of features.
+This property is wrapped with the function $providedFeatures$,
+such that given a package description stanza $pd$ and component $c = c(pd)$, $providedFeatures(c)$ equals the set of features mapped from $property(pd,$\verb+provides+$)$.
 
 \subsubsection{Package formula}
-A package formula is a query of a CUDF document that is mapped through a function to return a set of packages.
-This formulae is the atomic unit used for all relationships and requests, as it is used to create the necessary constraints to be mapped to the model in section \ref{formal.step}. 
-The syntax and the semantics are here mapped to out previously presented model of an evolutionary step. 
+A package formula is a query to retrieve a set of components from a CUDF document.
+This formula is the mechanism to define all relationships and requests in the CUDF specification,
+and is then necessary to define outside of a particular property definition. 
 
-It is syntactically defined using as \verb+PkgF+ in the BNF grammar in figure \ref{formal.cudfpackageformulasyntax},
-where \verb+PkgName+ is the (string) package name and \verb+Ver+ is the (positive integer) package version. 
+Each package formula is syntactically defined as \verb+PkgF+ in the BNF grammar in figure \ref{formal.cudfpackageformulasyntax}.
+This also defines \verb+PkgName+ as the package name, \verb+Ver+ as the package version, and \verb+RelOp+ as a relational operator expressing the constraint of the query.
 
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
-PkgF ::= PkgName (VConstr)?
-VConstr ::= RelOp Ver
+PkgF ::= PkgName (RelOp Ver)?
 RelOp ::=  "=" | "!=" | ">=" | ">" | "<=" | "<"
 \end{alltt}
   \caption[Package Formulae syntax]{Structure of CUDF package Formulae syntax}
@@ -917,24 +925,27 @@ RelOp ::=  "=" | "!=" | ">=" | ">" | "<=" | "<"
 \end{center}
 \end{figure}
 
-This package formulae is then the triple $\langle n,v,op\rangle$ where $n$ and $v$ are directly taken from \verb+PkgName+ and \verb+Ver+,
-and $op$ is created through \verb+RelOp+ being parsed by the function:  
-$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, \verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$
-In the situation where \verb+Ver+ and \verb+RelOp+ are not defined, the $v = 0$ and $op = >$.
+The syntax of \verb+RelOp+ is parsed to a mathematical relation with the function:  
+$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, \verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$.
+The package formula is in the form ``\verb+PkgName+'' or  ``\verb+PkgName+ \verb+RelOp+ \verb+Ver+'',
+given \verb+RelOp+ is mapped to $op$, each form is mapped to a triple $\langle $\verb+PkgName+$,0,>\rangle$ or $\langle$\verb+PkgName+$,op,$ \verb+Ver+ $\rangle$.
+That is, each package formula is a triple of name, operation and version. 
+Also in the situation where \verb+Ver+ and \verb+RelOp+ are not defined, the query returns searches for all version greater than 0.
 
 %%%Find all packages which satisfy the package formula
 A package formula (whose set is denoted as $PF$) can be mapped to a set of components through the function $packages: PF \rightarrow 2^{\mathbb{C}}$,
-which takes a package formulae and returns all packages that conform to its definition.
+which takes a package formula and returns all packages that conform to its definition.
 This is defined as:
 given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
 $packages(\langle n,v,op\rangle) = [\langle n_c,v_c \rangle \mid \langle n_c,v_c \rangle \in \mathbb{C} \mbox{ and } n_c = n \wedge v_c op v]$.
-That is any component whose name is the same as that in the package formulae and whose version is related through the defined $op$ will be included in the set.
+That is, any component whose name is the same as that in the package formulae and whose version is related through the defined $op$ will be included in the set.
 
 %%%Find all packages who provides a feature which satisfies the package formula
 A package formula does not distinguish between components and features, so a package formulae is also used to search for components providing a feature.
 The function $features: PF \rightarrow 2^{\mathbb{C}}$ also takes a package formula and returns a set of components that provide the described feature.
 Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
-$features(\langle n,v,op\rangle) = [c \mid c\in \mathbb{C} \mbox{ and } n \in providedFeatures(c) \wedge \exists v_f \in featureVersions(c,n) \mbox { such that } v_f op v ]$.
+$features(\langle n,v,op\rangle)$ equals 
+$[c \mid c\in \mathbb{C} \mbox{ and } (n,V) \in providedFeatures(c) \wedge \exists v_f \in V \mbox { such that } v_f op v ]$.
 That is, given a package formula, 
 $features$ returns a set of components that provide a feature where the name of the feature is in the package formula and the exists a version of that feature that satisfies the relation. 
 
@@ -955,68 +966,61 @@ There are three constraints:
 The keep constraint states that a system should maintain either a specific package, or a version of a package in the system.
 In the CUDF specification only the keep constraints of installed components are considered.
 
-The function $keeppf$ returns a package formula $pf$ is defined from a component $c$ of name $n$ and version $v$ such that:
+The function $keeppf$ is defined to take a component and to return a package formula such that can be used to create a keep constraint.
+Given a package description $pd$, component $\langle n,v \rangle = c(pd)$, $keeppf$ is defined such that:
 \begin{itemize}
-	\item if $property(c,$\verb+keep+$)$ equals \verb+version+: $keeppf(c) = \langle n, =, v \rangle$
-	\item if $property(c,$\verb+keep+$)$ equals \verb+package+: $keeppf(c) = \langle n, >, 0 \rangle$
+	\item if $property(pd,$\verb+keep+$)$ equals \verb+version+: $keeppf(c) = \langle n, =, v \rangle$
+	\item if $property(pd,$\verb+keep+$)$ equals \verb+package+: $keeppf(c) = \langle n, >, 0 \rangle$
 \end{itemize}
 
 A keep constraint, of the form $c_1 \vee \ldots \vee c_n$, for a package is then created using the function $keep$,
 where $keep(c) = \bigvee packages(keeppf(c))$.
-That is, the package formula from $keeppf$ is used to query for a set of packages that are then disjoined.
+That is, the package formula from $keeppf$ is used to query for a set of packages whose disjunction forms the keep constraint.
 This creates a constraint that forces one of the resulting packages to be included in the system.
 
 To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
-Therefore, given a set of components $\mathbb{C}$ defined in a CUDF document, 
-the subset $\mathbb{C}' \subseteq \mathbb{C}$ is defined such that for all $c \in \mathbb{C}'$, $property(c,$\verb+installed+$)$ equals \verb+true+.
-That is, $\mathbb{C}'$ is the set of components currently installed in the system.
-then the set of keep constraints is defined as $\bigcup_{c \in \mathbb{C}'} keep(c)$.
+Given a set of components $\mathbb{C}$ defined in a CUDF document, 
+the set of component $X$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in X} keep(c)$.
 
 \paragraph{Dependency Constraint}
 The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property \verb+depends+.
-The depends property syntax is presented in figure \ref{formal.cudfdependssyntax}.
+The syntax of the \verb+depends+ property value is defined as \verb+Depends+ and is presented in figure \ref{formal.cudfdependssyntax}.
 
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
-Depends ::= DisDep ("," DisDep)*
-DisDep ::= PkgF ("|" PkgF)*
+Depends ::= PkgFList ("," PkgFList)*
+PkgFList ::= PkgF ("|" PkgF)*
 \end{alltt}
   \caption[CUDF Package depends syntax]{Structure of CUDF depends syntax}
   \label{formal.cudfdependssyntax}
 \end{center}
 \end{figure}
 
-This syntax shows that the depends syntax is a conjunction (separated by the delimiter ``,'') of lists of package formulas (seperated by the delimiter ``|'').
-The syntax is in conjunctive normal form; where each disjunction is a union of the components that satisfy the package formulas in a given list.
-Each package formula list is then used to create a single dependency constraint, as described in section \ref{formal.step}.
+This syntax shows that the depends property is a list of package formula (as defined in figure \ref{formal.cudfpackageformulasyntax}) lists, first separated by the delimiter ``,'' then by the delimiter ``|''.
+Each package formula list maps to a single dependency constraint, as described in section \ref{formal.step}.
 
-Given a component $c$, $property(c,$\verb+depends+$)$ is of the form $PkgFList_1 ,\ldots, PkgFList_i$,
-where there are $i$ package formula lists, denoted as $PkgFList$.
-Each package formula list is of the form \verb+PkgF+$_1$ | \ldots | \verb+PkgF+$_n$, where there are $n$ package formulas in the list.
-For a given list $PkgFList_j$, \verb+PkgF+$^j_m$ denotes the $m$-th package formula in the $j$-th list.
+The syntax of \verb+PkgFList+ is in the form ``\verb+PkgF+$_1$ | \ldots | \verb+PkgF+$_n$''.
+Given \verb+PkgF+$_i$ maps to $pf_i$, \verb+PkgFList+ maps to a set of package formulae $pkgflist$ such that $pkgflist = \{pf_1,\ldots, pf_n\}$
+Therefore, the property \verb+Depends+ of the form ``\verb+PkgFList+$_1$ ,\ldots, \verb+PkgFList+$_n$'',
+where \verb+PkgFList+$_i$ maps to a set of package formulae $pkgflist_i$, \verb+Depends+ maps to a set of sets of package formulae $listpkgflist = \{pkgflist_1,\ldots,pkgflist_n\}$.
 
-The set of all package formula lists in the property \verb+depends+ for a given component $c$ is denoted as $PKGFLISTS$.
-Each package formula list is a subset of package formulae, i.e. $PKGFLISTS \subseteq 2^{PF}$.
-A given package formula list $PkgFList_j$ of the form of the form \verb+PkgF+$_1$ | \ldots | \verb+PkgF+$_n$ 
-is mapped to the set of package formulae $\{$\verb+PkgF+$^j_1$, \ldots, \verb+PkgF+$^j_n$ $\}$.
+The function $dependsOn$ is then defined such that it takes a component and a package list to create a single dependency constraint of the form $a \rightarrow c_1 \vee \ldots \vee c_n$ as defined in section \ref{formal.step}.
+Given a component $a$ and a package list $pkgflist$, 
+$dependsOn(a,pkgflist)$ equals $a \rightarrow \bigvee  \bigcup \limits_{pkgf \in pkgflist} packagesThatSatisfy(pkgf) $.
+That is, $dependsOn(a,pkgflist)$ takes a the union of all components that satisfy a contained package formula to create the dependency constraint. 
 
-The function $dependsOn$ which take a component and a package list and returns a single dependency constraint of the form $a \rightarrow c_1 \vee \ldots \vee c_n$.
-Such that given a component $a$ and a package list $pkglist$, 
-$dependsOn(a,pkglist) = a \rightarrow \bigvee \bigcup \limits_{pkgf \in pkglist} packagesThatSatisfy(pkgf)$.
-That is $dependsOn(a,pkglist)$ takes a the union of all components that satisfy a contained package formula to create the dependency constraint. 
-
-The function $depends$ is then defined such that,
-for a given component $a$ and the set of package forumlae lists $PkgLists$ tuple of package lists from $property(a,$\verb+depends+$)$,
-$depends(a) = \bigcup \limits_{pkglst \in PKGLISTS} dependsOn(a,pkglst)$.
-That is, the set of dependency constraints for a given component is the union of all constraints created from individual package lists.
+The function $depends$ is then defined to return a set of all dependency constraints for a component.
+Given a package description $pd$, a component $a = c(pd)$, the set of sets of package formulae mapped from $property(pd,$\verb+depends+$)$ denoted as $listpkgflist$,
+$depends(a)$ is defined to equal $\bigcup \limits_{pkgflst \in listpkgflist} dependsOn(a,pkgflst)$.
+That is, the set of dependency constraints for a given component is the union of all constraints created from individual package formulae lists.
 
 Finally, the set of all dependency constraints is defined given the set of all components $\mathbb{C}$ defined in a CUDF document,
 such that the set of dependency constraints equals $\bigcup \limits_{c\in \mathbb{C}} depends(a)$.
 
 \paragraph{Conflict Constraint}
-The conflict constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property \verb+conflicts+.
-The conflicts property syntax is presented in figure \ref{formal.cudfconflictsyntax}.
+The conflict constraints of a given component defines the relationship where it will not be functional with another component in the system.
+The syntax of the \verb+conflicts+ property value is defined as \verb+Conflicts+ and is presented in figure \ref{formal.cudfconflictsyntax}.
 
 \begin{figure}[htp] 
 \begin{center}
@@ -1028,32 +1032,55 @@ Conflicts ::= PkgF ("," PkgF)*
 \end{center}
 \end{figure}
 
-This syntax is similar to that from the depends property syntax, except there is only one package formula list.
-Given a component $c$, $property(c,$\verb+conflicts+$)$ is of the form \verb+PkgF+$_1$ , \ldots , \verb+PkgF+$_n$,
-and can be mapped to a set of package formula $conflictPkgf = \{$\verb+PkgF+$_1$, \ldots, \verb+PkgF+$_n$ $\}$.
+This syntax is the same as defined above in the depends property syntax for \verb+PkgFList+ except it uses a different delimiter. 
+The mapping is also the same, where the property value is in the form \verb+PkgF+$_1$ , \ldots , \verb+PkgF+$_n$ and maps to a set of package formulae $conflictPkgF$.
 
-The function $conflictsWith$ takes a component and a package formula and returns a set of conflict constraints, each of the form $a \rightarrow \neg c$ as defined in section \ref{formal.step}.
-Given a component $a$ and a package formula $pf$,  $conflictsWith(a,pf) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf)]$.
-That is, for each component that satisfies the package formula, a conflict constraint is creates with the component $a$.
+Given a package description $pd$, a component $a = c(pd)$ and the set $conflictPkgF$ that is mapped from the package descriptions \verb+conflicts+ property.
+The function $conflictsWith$ is defined to return a set of conflict constraints, each of the form $a \rightarrow \neg c$ as defined in section \ref{formal.step}.
+Such that, $conflictsWith(a) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf) \mbox{ and } pf \in conflictPkgF]$.
+That is, a component conflicts with any component that satisfies a package formula in defined in its \verb+conflicts+ property.
 
-The function $conflicts$ is then defined as the set of all conflict constaints for a component.
-Given a component $a$ and set of package formulae $conflictPkgf$ from $property(a,$\verb+conflicts+$)$, $conflicts(a) = \bigcup \limits_{pf \in conflictPkgf} conflictsWith(a,pf)$.
-That is, the conflict constraints for a component is the union of all constraints created from each package formula in the conflicts property.
-
-Finally, the set of all conflict constraints given a set of components $\mathbb{C}$ defined in a CUDF document,
-is equal to $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
+Finally, given the $\mathbb{C}$ is the set of all components in a CUDF document,
+the set of all conflict constraints for a CUDF document is defined as $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 
 \subsubsection{Request}
-In a CUDF document there is exactly one request stanza that describes the change request to the component system.
-In section \ref{formal.step}, this request, denoted as $\Delta$,  was simplified to only include the installation of one component, or removal of one components.
-However, in a CUDF document there are three optional requests, to either install one of a set of components, remove all components, or update an installed component.
-These three requests are expressed by the properties \verb+install+, \verb+remove+ and \verb+update+ respectively.
+In section \ref{formal.step}, this request, denoted as $\Delta$, was simplified to only include the installation of one component, or removal of one components.
+However, in a CUDF document there are three possible requests, install, remove, or update, which can be defined using complex sets of package formulas.
+Here, the definition in section \ref{formal.step} of the request constraints are extended to include the semantics of the possible requests of a CUDF document.
 
-The definition in section \ref{formal.step} is then extended to allow for these requests of the CUDF document.
+In a CUDF document there exist exactly one request stanza, which has three optional properties \verb+install+, \verb+remove+ and \verb+update+ respectively.
+Each value for these properties has the same syntax, shown in figure \ref{formal.requestssyntax}.
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+Install ::= PkgFList
+Remove ::= PkgFList
+Update ::= PkgFList
+PkgFList ::= PkgF ("," PkgF)*
+\end{alltt}
+  \caption[CUDF Package conflicts syntax]{Structure of CUDF conflicts syntax}
+  \label{formal.requestssyntax}
+\end{center}
+\end{figure}
+
+The syntax of \verb+PkgFList+ is exactly the same defined above for the conflicts property, and can be mapped to the set of package formulae $pkgflist$.
+The installs property maps to the package formulae set  $installpkgflist$; the remove property maps to the package formulae set $removepkgflist$;
+the update property maps to the package formulae set  $updatepkgflist$.
+
 \paragraph{Install}
-The install property 
+An install constraint is of the form $a_1 \vee \ldots \vee a_n$,
+this is defined semantically as $a_1 \in E_{R \cup \Delta}(X)$ or \ldots or $a_n \in E_{R \cup \Delta}(X)$.
+
+The function  $install(pf)$ is defined to take a package formula $pf$ and returns one install constraint $\bigvee packagesThatSatisfy(pf)$.
+Each package formulae in the set $installpkgflist$ creates one install constraint,
+therefore the set of all install constraints is defined as $\bigcup \limits_{pf \in installpkgflist} install(pf)$
 
 \paragraph{Remove}
+A remove constraint is of the form $\neg a$,
+this is defined semantically as $a \not \in E_{R \cup \Delta}(X)$.
+
+The function remove is defined to 
 
 \paragraph{Install}
 
