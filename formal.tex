@@ -1072,7 +1072,7 @@ the update property maps to the package formulae set  $updatepkgflist$.
 An install constraint is of the form $a_1 \vee \ldots \vee a_n$,
 this is defined semantically as $a_1 \in E_{R \cup \Delta}(X)$ or \ldots or $a_n \in E_{R \cup \Delta}(X)$.
 
-The function  $install(pf)$ is defined to take a package formula $pf$ and returns one install constraint $\bigvee packagesThatSatisfy(pf)$.
+The function  $install(pf)$ is defined to take a package formula $pf$ and return one install constraint such that $\bigvee packagesThatSatisfy(pf)$.
 Each package formulae in the set $installpkgflist$ creates one install constraint,
 therefore the set of all install constraints is defined as $\bigcup \limits_{pf \in installpkgflist} install(pf)$
 
@@ -1080,16 +1080,61 @@ therefore the set of all install constraints is defined as $\bigcup \limits_{pf 
 A remove constraint is of the form $\neg a$,
 this is defined semantically as $a \not \in E_{R \cup \Delta}(X)$.
 
-The function remove is defined to 
+The function $remove(pf)$ is defined to take a package formula $pf$ and returns a set of remove constraints such that $[\neg a \mid  a \in packagesThatSatisfy(pf)]$.
+Then the set of remove constraints is the union of all constraints created from the $removepkgflist$ set, i.e. $\bigcup \limits_{pf \in removepkgflist} remove(pf)$.
 
-\paragraph{Install}
+\paragraph{Upgrade}
+%%%This is a difficult to express
+The upgrade semantics of CUDF are the most difficult to express, this is because it more closely resembles an optimisation criteria not a hard constraint on the system.
+i.e. to find if the upgrade request is sucessful it requires measuring the ``upgradeness'' of the system, not only satisfying some set of constraints.
+However, there are some constraints that are expressed in the CUDF semantics, in order to ensure the system is upgraded:
+For each package formula $pf$ in $updatepkgflist$, two types of constraints must be satisfied:
+\begin{enumerate}
+  \item exactly one package that satisfies $pf$ is in the system
+  \item no packages with a lesser version than the highest currently installed component with the name from $pf$ can be included.
+\end{enumerate} 
 
+Creating these constraints is a more complex challenge than the previous requests, as they require the excelusive-or operator $\oplus$, and comparison to the installed system. 
+
+The first type of constraint is of the form $a_1 \oplus \ldots \oplus a_i$, 
+whose defined semantics are $\{a_1,\ldots,a_i\} \subseteq E_{R \cup \Delta}(X)$ iff $|\{a_1,\ldots,a_i\}| = 1$.
+That is, a set of exactly one component that satisfies can be included in the resulting system.
+Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,
+such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf)$
+
+The second type of constraint is of the form $\neg a$,
+this is defined semantically as $a \not \in E_{R \cup \Delta}(X)$.
+
+Given the current system $X$ and the package formula $\langle n,v,op \rangle$ the set of installed packages with the same name as the package formula are defined as 
+$named(X,n) = X \wedge packagesThatSatisfy(\langle n,0,> \rangle)$.
+The greatest version of packages in this set is defined 
+$maxversion(X,n) = cv$  such that $\langle cn,cv \rangle \in named(X,n)$ and $\nexists \langle cn',cv' \rangle \in named(X,n)$ where $cv' > cv$.
+The set of components that are below this maximum version is then defined as
+$lowerC(X,n) = [\langle cn,cv \rangle \mid \langle cn,cv \rangle \in \mathbb{C} \mbox{ and } cv < maxversion(X,n)]$.
+This leads to the definition, $upgrade_2(X,\langle n,v,op \rangle) = [\neg a \mid a \in lowerC(X,n)]$.
+
+The set of all upgrade constraints is then the union of all constraints created for all package formulae in $updatepkgflist$,
+i.e. $\bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(X,pf))$.
 
 \subsubsection{Full Example}
-
+%%%TODO
 
 
 \subsection{Mancoosi Optimisation Format}
 %%%Describe the format by which mancoosi has required optimisation criteria formatted
+The description of how to represent the optimisation criteria is not defined in the CUDF specification.
+However, for the purpose of the MISC competition, the Mancoosi organisation did define a syntax and specification to represent different optimisation criteria.
+This representation was designed to be passed to the CUDF solver on the command line, therefore it has a simple BNF grammar as described in figure \ref{formal.optbnf}:
 
-%%%Not part of CUDF but closly related
+%\usepackage{graphics} is needed for \includegraphics
+\begin{figure}
+\begin{center}
+\begin{alltt}
+Optimisation ::= criteria (, criteria)*
+\end{alltt}
+  \caption[CUDF Package conflicts syntax]{Structure of CUDF conflicts syntax}
+  \label{formal.optbnf}
+\end{center}
+\end{figure}
+
+
