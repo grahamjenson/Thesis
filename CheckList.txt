@@ -16,6 +16,7 @@ chapter --> Chapter
 section --> Section
 singular criteria --> criterion
 
+\cite if directly reffered to \citep
 
 References are PRESENT TENSE
 What has been done is PAST TENSE

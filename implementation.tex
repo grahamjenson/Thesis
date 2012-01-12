@@ -1,30 +1,46 @@
 \chapter{Implementation}
 \label{implementation}
-%%%This should be about the lower level implementation of CDR to evolve a system
+\epigraph{What I cannot create, I do not understand.}
+{\textit{Richard Feynman, 1988}}
 
-The problem of finding the necessary changes to the system is NP-Complete, and as there can be many different possible solutions, optimising this problem is NP-Hard.
-Therefore, the implementation of CDR requires to be robust and fast.
-Recently, the use of Boolean satisfaction (SAT) solvers extended to handle pseudo Boolean constraints for optimisation, has become popular.
-This method takes a set of constraints that describe the problem and using a set of powerful tools quickly finds solutions to that satisfy all constraints.
+%%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
+As presented in the previous chapter, the problem of evolving a component system was shown to be NP-Complete, and the problem of finding an optimal evolution was shown to be NP-Hard.
+Therefore, to automate this complex evolution process it will require an efficient algorithm and implementation to not only find satisfiable solutions, but also optimal ones. 
+
+%%%The efficiency of the implementation is important as the problem can combinatorially grow into a hard problem 
+The efficiency of the implementations is necessary for many instances of CDR.
+The goal of many component models is to have large amounts of components with support creating multiple versions of each component.
+This directly makes the complexity of evolution grow in a combinatorial manner, making any ad-hoc or simplistic CDR implementation quickly overwhelmed.
+The CDR algorithm should then be implemented to allow 
+
+%%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
+The formal representation of this problem was presented as a set of constraints that must all be satisfied in order for a component relationships and the user request to be fulfilled.
+This structure closely resembles the Boolean Satisfiability Problem (SAT), which has fast, robust solver implementations that can be used.
+This has been noticed by other researchers \citep{leberre2008,Mancinelli2006} 
+and the use of SAT solvers to implement CDR in both academia \citep{abate2011} and industry \citep{leBerre2010} has become common.
+
+%%%Finding the optimial solutions requires extensions to SAT solvers
+The finding of an optimal solution though is difficult when using a ``pure'' SAT solver, as it cannot easily represent constraints relating to criteria. 
+However, through extending the SAT solver implementations to also handle other types of constraints, such as pseudo Boolean constraints, optimisation becomes significantly easier.
+
+In this chapter the algorithms and implementation of CDR using SAT solvers extended with pseudo Boolean constraints, are discussed.
+First the Davis-Putnam-Logemann-Loveland algorithm and its extensions, which are the basis for many current SAT solvers, are described.
+This will give a basic understanding of the internal workings of current SAT solvers and why they provide a stable backbone for a CDR implementation.
+The specific implementation of Eclipse P2 and P2CUDF by \cite{leBerre2010} is then described,
+this is given as a comparison of a current technology used by CDR implementations.
+Then the description of this researches CDR implementation GJSolver, is given.
+This also describes the process in which it was validated and compared against other solvers in the MISC 2011 competition.
 
 
 
-%%%The implementation of CDR is also a very important aspect of the problem, as the queries can be very large and complex to solve given its NP-Hard nature.
 
-%%%The implementation to these solvers is sometimes ad-hoc, this can be bad as the problem is similar across different domains, 
-%%%ad-hoc solution decrease the possibility to share knowledge and solutions, or extend your system
 
-%%%An efficient mechanism to find optimal solutions that is gaining popularity is through using a Boolean Satisfiability Solver (SAT)
 
-%%%We have already reduced the problem to a SAT problem in the previous chapter to show the problem is NP-Complete
 
 %%%Through a slight modification of these solvers to allow constraints with inequalities and cardinalities, Psuedo Boolean constraints,
 %%%we can include optimisation for the required criteria using Pseudo Boolean Optimisation (PBO)
 
 %%%There are other methods to find a solution, some of them faster, but SAT was chosen because of its simplicity and clear mapping to the core problem.
-
-%%%We discuss the format specified by the Mancoosi project, Common Upgradeability Description Format (CUDF),
-%%%which gives us a unified syntax and semantics to map many real world problems, like Debian and OSGi, to our formal definition.
 
 %%%We look at P2CUDF, an implementation by LeBerre and Rapicult using SAT with PBO to solve CUDF problems. 
 
@@ -93,7 +109,7 @@ Today, most solvers use a SAT solver as they represent a quick extendible way to
 %%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
 
 \subsection{Other Methods}
-This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution.
+This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
 
 
 \subsubsection{Integer Programming}
@@ -104,40 +120,6 @@ This \cite{Stuckenholz2007} study looks at using boolean optimisation with branc
 %%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
 
-\section{Debian Model to CUDF mapping}
-\label{DebToCUDF}
-%%%The modelling of Debain packages to CUDF is very similar 
-The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar. 
-However, there are a few instances where the Debian semantic causes complication with the CUDF format, and in this section we describe these in detail.
-The first of these complications occuurs with versioning, as in Debian the version model is different to the CUDF model.
-The second instance is because of the special relationships that virtual packages have in the Debian model, 
-these must be intergrated into the CUDF mapping. 
-Lastly the priority ranking, recommends, suggests and other extra information that is not standard in the CUDF format,
-but with CUDF's extencibility can be represented and used in the resolution process.
-The one difference we have from the Debian semantic is the ability to have multiple versions of the same package installed, this is impossible in debian, but we see it as a simplification of the problem.
-
-%%%How versions are handeled in this mapping, ordering all versions in a list and giving them the version of their index
-The versions in Debian follow a model that first describes the epoch,
-the upstream version, then the Debian revision (further described in the Debian policy manual). %TODO cite debian package manager
-When comparing two versions these values are compared lexicographically such that
-if the epoch is equal then the upstream versions are compared, 
-and if these are equal then the Debian revision is compared.
-As the CUDF version model is merely a single integer number, 
-the Debian versions are not easily mapped.
-To map these versions we order all Debian versions that are referenced in a repository into a single list, 
-such that the least version has the index 0, and the last element in the list is the greatest version.
-The index of the a Debian version in this list is then used as the CUDF version.
-
-%%%Virtual Packages must be handeled, there are some specific debian semantics that are particularly important
-A virtual package in
-
-%%%Priority ranking also must be handeled, as some packages are absolutly required to be in a system, these can be maked similarly in CUDF
-
-%%%We allow multiple versions of the same package to be installed, this is different from the debian 
-
-\subsection{OSGi Component Model to CUDF Mapping}
-
-%%%How versions are handeled, similar to the Debian model
 
 
 
@@ -162,9 +144,10 @@ As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no e
 
 %%%It is too expencive to recalculate cardinalities for each component given a specific solution, therefore the cardinalities of a component should be solution independant
 
+\section{GJSolver}
+%%%My Implementation, cut the fat, straight forward
 
-
-\section{Verification}
+\subsection{Verification}
 %%%We entered this solver into two Mancoosi MISC competitions
 
 %%%In the first competition we had only partially implemented much of the functionality, so we did not expect great results.
@@ -181,5 +164,7 @@ As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no e
 %%%The trendy track
 
 %%%The user track
+
+
 
 

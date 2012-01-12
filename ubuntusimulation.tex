@@ -1,6 +1,9 @@
 
 \chapter{Ubuntu Simulation}
 \label{ubunutsimulation}
+\epigraph{Experiment is the sole judge of scientific ``truth''}
+{\textit{The Feynman Lectures on Physics, Introduction, Richard Feynman, 1961.}}
+
 %%%Previously we defined the conceptual model, this contains configuration variables used to simulate component system evolution
 In the previous chapter the simulations conceptual model was defined.
 This model contains variables used to configure the simulation of component system evolution.
@@ -46,34 +49,100 @@ The time frame start was selected to coincide with the release of the Ubuntu ver
 This version was then selected to be used as the initial system, as if the user just installed a new Operating System onto their system.
 Specifically the desktop i386 distribution was selected as it is the most popular among the users of Ubuntu.
 
-\subsubsection{Repository function}
+\subsection{Repository function}
 %%%Repository function created through downloading the Ubuntu repository
 For any day in the time frame, the repository function must return the components in the repository as a CUDF file.
-This is a very detailed resolution of information, therefore much care must be taken in finding this information.
-This function was created through information gathered from the Ubuntu repository located at http://archive.ubuntu.com/.
-This repository contains the information to the minute of when the package was added, detailed enough for this simulation.
+This involves two distinct steps; collecting the Ubuntu packages with information at a resolution necessary for this simulation;
+mapping these packages to the CUDF specification used by this simulation.
+
+\subsubsection{Collecting the Packages}
+The information gathering must be accomplished with great care, as the resolution and detail must be precise.
+The Ubuntu repository located at http://archive.ubuntu.com/ has accessible data of the necessary detail to be used.
+It contains all packages that have ever been in the repository, and the information to the minute of when the package was added.
 
 %%%These are the steps that are taken to create the repository function
-The process from this repository to the simulations repositories function is as follows:
+To collect these packages and information from the repository, this process was followed:
 \begin{enumerate}
-  \item All the packages where downloaded from the repository, and for each package the date it was uploaded to the repository was stored.  
+  \item the repositories web site was recursively scrapped to create a set of pairs $P$ 
+  such that each pair contains a download link to a package and the date that package was uploaded to the repository
+  \item Each package in the set $P$ was then downloaded and the file tagged with its upload date
+  \item A dpkg package is a compressed set of files, 
+  which include the meta-data control file of the package; all packages are extracted and the control file is tagged with the upload date of its package 
+\end{enumerate}
+
+This process creates a set of control files $C$ each tagged with the date it was uploaded to the repository.
+
+\subsubsection{dpkg to CUDF mapping}
+The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar.
+This similarity is due to the Mancoosi organisation goals of looking at FOSS implementations, like Debian, and then basing CUDF on such systems.  
+There are a few differences however, these differences cause some problems when converting dpkg format to CUDF.
+In this section, firstly these problems will be described and their solutions explained, 
+then the process by which the set of control files is taken and the function $Rep(d)$ is created to return a CUDF file for a given date $d$.
+
+%%%Versioning problem
+\paragraph{Version Models}
+The first complication when mapping dpkg to CUDF is that the versioning models are incompatible.
+Debian uses a version mode \verb+[epoch:]upstream_version[-debian_revision]+,
+where \verb+epoch+ is an unsigned integer and \verb+upstream_version+ and \verb+debian_revision+ are strings.
+A Debian version is greater than another if its \verb+epoch+ is greater; 
+if their \verb+epoch+'s are equal then its \verb+upstream_version+ is lexically greater; 
+if their \verb+epoch+'s and \verb+upstream_version+'s are equal then its \verb+debian_revision+ is lexically greater.
+This lexical comparison (further explained in \cite{Barth2005}) differs greatly and is far more complicated than the CUDF integer based version model.
+
+To map a dpkg version to a integer cannot be done without knowledge of all component versions refeered to in the repository.
+Therefore, the most straight forward solution is to extract all refereed versions (not only package versions but those in package formulae as well),
+and then sort them into a list such that their CUDF version is their index in the list.
+
+\paragraph{Virtual Packages}
+%%%Virtual Packages must be handeled, there are some specific debian semantics that are particularly important
+Debian has a package type called a virtual package, this is an abstracted package, one that can be provided and depended upon but does not exist.
+These packages provide an interface to some common functionality that can be provided by multiple packages.
+For example any package providing the virtual package \verb+dhcp-client+ must include dhcp client functionality. 
+Unlike other component models where this interface is defined in a verifiable manner like code or an ADL,
+Debian defines virtual packages in documentation, a list of which is provided on the Debian site\footnote{http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt/}.
+
+The main aspect that requires consideration when mapping from dpkg to CUDF is that only dependencies where no version is specified can be fulfilled by a virtual package.
+For example, a dependency on \verb+foo+ can be satisfied by a package providing a \verb+foo+ virtual package, 
+however a dependency on \verb+foo >= 1+ cannot be satisfied by the same virtual package. 
+The solution to this difference is to change the name of all virtual packages to include the prefix \verb+virtual--+ and 
+alter dependencies that do not include version information to include an addition disjunction of the virtual package.
+For example, the line \verb+provides: foo+ is altered to be \verb+provides: virtual--foo+, 
+and the dependency \verb+depends: foo+ is altered to \verb+depends: virtual--foo | foo+.
+
+\paragraph{Priority}
+Lastly the priority ranking, recommends, suggests and other extra information that is not standard in the CUDF format,
+but with CUDF's extencibility can be represented and used in the resolution process.
+
+required
+
+
+
+%%%Priority ranking also must be handeled, as some packages are absolutly required to be in a system, these can be maked similarly in CUDF
+
+\begin{enumerate}
   \item All versions referenced in these packages where mapped to integers, and the packages control files were then mapped from Debian package format to CUDF (described in chapter \ref{implementation}).
   \item Using CUDFs extensible syntax, an integer property ``date'' was added to each CUDF file, referencing the time in seconds since the epoch of the package was added to the repository.
   \item All CUDF files where then filtered to include only packages that had the ``architecture'' property either ``i386'' or ``all'', ensuring the package could work on our simulated system.
   \item The CUDF files where aggregated into sets such that on a given day that is the set of packages that existed in the repository.
   \item The function then just returns the CUDF file that is for a given day.
 \end{enumerate}
+%%%dpkg and CUDF models are similar, due to mancoosi's directive for FOSS software
 
 \paragraph{Differences}
 %%%The main different is is that the entire repository is used here, where typically only a sub set is used
 The one significant difference between a real repository and this simulated repository function,
 is that a real Ubuntu user would likely use only a subset of the repository where this function uses all packages. 
+Also, the conversion from the dpkg format to CUDF allows multiple package versions installed in the same system where this is expressly forbidden in the Debian semantics. 
 
 Through the use of meta-data files which list subsets of packages inside the Ubuntu repository, a user can select portions of the repository to use.
 These meta-data files are used for different life cycle reasons (e.g. separating unstable from stable) and separating core packages from third party software.
 Creating a single repository out of all files was necessary as the states of the individual repositories are not stored,
 so finding what is included on a given date is impossible.
 To map a real user to this simulated user, the real user would select all meta-data files to use the entire repository of packages. 
+
+%%%We allow multiple versions of the same package to be installed, this is different from the debian 
+In some instances Debian allows multiple packages to be installed on the system, but not configured.
+
 
 \subsubsection{Probability a component will be selected}
 %%%The probability a component will be selected
