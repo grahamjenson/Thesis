@@ -1,4 +1,7 @@
-[F]or the present purposes, with the accuracy we want at first, we dont have to be very careful about defining the things very precicly. You say "That is a terrible thing! I learnt in science you must define everthing precicly." You cannot define anything precicly! Otherwise you get in that paralysis of thought that comes in philosophers that sit opposite each other and one says to the other, "You don't know what you are talking about." The other says "What do you mean by know? What do you mean by speech? What do you mean by you?" and so on.
+[F]or the present purposes, with the accuracy we want at first, we dont have to be very careful about defining the things very precicly. 
+You say "That is a terrible thing! I learnt in science you must define everthing precicly." You cannot define anything precicly! 
+Otherwise you get in that paralysis of thought that comes in philosophers that sit opposite each other and one says to the other, 
+"You don't know what you are talking about." The other says "What do you mean by know? What do you mean by speech? What do you mean by you?" and so on.
 In order to agree to talk we just have to agree we are talking about roughly the same thing!
 
 The Feynman lectures on physics, Motion, Richard Feynman, October 20th, 1961.
@@ -14,5 +17,11 @@ Feynman  Interview for BBC's Horizon program (1981).
 "A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. A simulation is the implementation of a model over time. A simulation brings a model to life and shows how a particular object or phenomenon will behave. It is useful for testing, analysis or training where real-world systems or concepts can be represented by a model."
 From: Systems Engineering Fundamentals. Defense Acquisition University Press, 2001.
 
-The universe is change; our life is what our thoughts make it.
-Marcus Aurelius, in Meditations, IV, 3
+\epigraph{The universe is change; our life is what our thoughts make it.}
+{\textit{Marcus Aurelius, in Meditations, IV, 3}}
+
+\epigraph{All parts should go together without forcing. You must remember that the parts you are reassembling were disassembled by you. 
+Therefore, if you can't get them together again, there must be a reason. By all means, do not use a hammer.}
+{\textit{IBM maintenance manual, 1925}}
+
+

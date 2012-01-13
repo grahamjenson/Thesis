@@ -8,10 +8,10 @@ As presented in the previous chapter, the problem of evolving a component system
 Therefore, to automate this complex evolution process it will require an efficient algorithm and implementation to not only find satisfiable solutions, but also optimal ones. 
 
 %%%The efficiency of the implementation is important as the problem can combinatorially grow into a hard problem 
-The efficiency of the implementations is necessary for many instances of CDR.
+The efficiency of the implementations is necessary for many instances of CDR problems.
 The goal of many component models is to have large amounts of components with support creating multiple versions of each component.
-This directly makes the complexity of evolution grow in a combinatorial manner, making any ad-hoc or simplistic CDR implementation quickly overwhelmed.
-The CDR algorithm should then be implemented to allow 
+This directly makes the complexity of evolution grow in a combinatorial manner, making any ad-hoc or overly simple CDR implementation quickly overwhelmed.
+The CDR algorithm should then be implemented to be robust and fast.
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
 The formal representation of this problem was presented as a set of constraints that must all be satisfied in order for a component relationships and the user request to be fulfilled.
@@ -23,71 +23,134 @@ and the use of SAT solvers to implement CDR in both academia \citep{abate2011} a
 The finding of an optimal solution though is difficult when using a ``pure'' SAT solver, as it cannot easily represent constraints relating to criteria. 
 However, through extending the SAT solver implementations to also handle other types of constraints, such as pseudo Boolean constraints, optimisation becomes significantly easier.
 
+%%%In this chapter\ldots
 In this chapter the algorithms and implementation of CDR using SAT solvers extended with pseudo Boolean constraints, are discussed.
-First the Davis-Putnam-Logemann-Loveland algorithm and its extensions, which are the basis for many current SAT solvers, are described.
-This will give a basic understanding of the internal workings of current SAT solvers and why they provide a stable backbone for a CDR implementation.
+First the Davis-Putnam-Logemann-Loveland algorithm \citep{Davis1960, davis1962machine} and its extensions, which are the basis for many current SAT solvers, are described.
+This will give a basic understanding of the internal workings of current SAT solvers.
 The specific implementation of Eclipse P2 and P2CUDF by \cite{leBerre2010} is then described,
 this is given as a comparison of a current technology used by CDR implementations.
-Then the description of this researches CDR implementation GJSolver, is given.
+Then the description of this research's CDR implementation, GJSolver, is given.
+The specific reason for the necessary changes, the differences from other solutions, and the advantages to using it.
 This also describes the process in which it was validated and compared against other solvers in the MISC 2011 competition.
 
-
-
-
-
-
-
-%%%Through a slight modification of these solvers to allow constraints with inequalities and cardinalities, Psuedo Boolean constraints,
-%%%we can include optimisation for the required criteria using Pseudo Boolean Optimisation (PBO)
-
-%%%There are other methods to find a solution, some of them faster, but SAT was chosen because of its simplicity and clear mapping to the core problem.
-
-%%%We look at P2CUDF, an implementation by LeBerre and Rapicult using SAT with PBO to solve CUDF problems. 
-
-%%%Finally, using this knowledge SAT solvers with PBO, and the format CUDF we were able to implement our own solver inspired by P2CUDF.
-%%%We discuss its implementation, its differences from P2CUDF, and its validation in the MISC competition (August TODO)
-
-%%%Here we discuss our method of implementation we used to solve CDR
-
-%%%The back end model for this solver though was OSGi specific, we decided to replace the back model with a more CUDF specific one.
-
-%%%Our model, expressed as a UML class diagram
-
-%%%We have altered the parser to fit our model
-
-%%%We have changed the mapping of their model to SAT, to our model to SAT
-
-%%%We also refactored SAT4J, to SlimSAT, this is identicle to SAT4J, except we removed significant portions of unused code, retained for competitions 
-%%%(i.e. MaxSat instances, and unused constraint implementations)
-
-
-\section{CDR implementaion with Boolean Satisfiability (SAT) Solvers}
+\section{Boolean Satisfiability Solvers}
 \label{impl.SAT}
+Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation return true.
+This problem was the first identified NP-Complete problem, meaning that no known algorithm exists that efficiently solves all instances of SAT problems.
+This also means that many proofs of NP-Completeness is through the reduction to SAT, and therefore many difficult problems have been expressed in the terms of a Boolean equation.
+The benefit of this is that algorithms and implementations of programs that solve SAT problems have received significant attention and research to provide solutions to these various problems.
+Taking advantage of these algorithms will help with the creation of a CDR implementation that can robustly evolve a component system.
 
-%%%The definition of SAT has been around for a while, it was the first problem to be given the complexity NP-Complete
+%%%SAT solvers are used to solve many problems, creating a community dedicated to creating fast implenmenations
+SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
+model verification \citep{dennis2006}, and, of course, component system evolution \citep{leBerre2010}.
+These uses have caused a great need to create efficient solvers, and this has spawned a community dedicated to creating efficient implementation.
+This community, creates and improves their solvers, 
+and as a means of validating their creations, regularly compare them against one another in a series of competitions \footnote{http://www.satcompetition.org/}.
+Using a competition for progress not only encourages the improvement of solvers for a particular problem set, but also general improvements to the algorithms and heuristics used. 
 
-%%%SAT solvers have been investigated and found as a common good solution to CDR (EDOS PAPER)
-Dependency Resolution is a NP-Complete problem, and NP-Hard given criteria to find an optimal solution.
-This problem has been found in many areas, and there have been efforts to standardise the solution in an extensible way.
-The EDOS project did a review of using SAT solvers, modified for optimisation, to solve dependecy resolution, and suggested that they were a satisfactory solution.
-Today, most solvers use a SAT solver as they represent a quick extendible way to implement this functionality.
+%%%In this section a common implementation of SAT solvers is discussed, the DPLL algorithm
+In this section, first a brief description of the DPLL algorithm is given, this shows the basis of most current SAT solvers.
+Current implementations of SAT solvers have altered the DPLL algorithm to become conflict driven,
+this alteration will give a more realistic view of the internal workings of current SAT solvers.
+Both the conflict analysis and the literal order of such conflict driven SAT solvers are briefly described.
+as these are key parts of the algorithm and require further description.
+The extension of this algorithm with Pseudo-Boolean constraints is then described,
+as this extension allows for more complicated optimisation problem to be represented.
+Finally, other methods of solving SAT problems are briefly discussed to give a broader description of the domain. 
 
-%%%SAT solvers are used to solve many problems, scheduling, model validity\ldots
-
-%%%SAT solvers are very good at solving these kinds of problems because they are tested for performance against each other, to find what works empirically   
-
-%%%We will breifly discuss their implementation and the algorithms associated, as it is the mechanism which we use to solve CDR problems
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
+The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} for solving SAT problems is a complete, meaning it will find a solution if one exists, 
+backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
+
+It runs by recursively selecting a variable from the Boolean formula, then assumes that it is true, calculates the implications of this assumption.
+If the implication is that this assumption leads to a formula that is unsatisfiable (determined by calling itself), then it assumes that the variable is false.
+A formula can be determined to be satisfiable if after the manipulation through the algorithm occurs only unit clauses are left (that is clauses with only one literal).
+The formula is determined to be unsatisfiable if either there exists an empty clause, which means all possible assignments making that clause true have been eliminated.
+
+Specifically, given a set of variables $V$, 
+each variable $v$ in $V$ having two literals $v$ and $\neg v$
+a clause is a set of literals, 
+and a CNF formula $F$ which is a set of clauses,
+$DPLL(F)$ will return true if there exists a set of literals that satisfy all clauses in $F$. 
+The DPLL algorithm in defined in figure \ref{impl.DPLL}:
+
+\begin{figure}[h]
+\begin{center}
+\begin{alltt}
+function DPLL(\(F\))
+   if \(F\) is a consistent set of unit clauses:
+       then return true;
+   if \(F\) contains an empty clause
+       then return false;
+   for every unit literal \(l\) in \(F\)
+      \(F\) = unit-propagate\((l, F)\);
+   for every literal \(l\) that occurs pure in \(F\)
+      \(F\) = pure-literal-assign\((l, F)\);
+   \(l\) = decide\((F)\);
+   return DPLL\((F \cup \{l\})\) or DPLL\((F \cup \{\neg l\})\);
+  		
+\end{alltt}
+  \caption{Recursive DPLL algorithm}
+  \label{impl.DPLL}
+\end{center}
+\end{figure}
+
+The first \verb+if+ branch of the DPLL algorithm finds if the formula is satisfiable only if it consists of consistent unit clauses.
+The second \verb+if+ branch determines if the formula is unsatisfiable by looking for a clause that contains no literals, thus it is unsatisfied.
+
+The first loop of the algorithm aims to remove literals from clauses in $F$ whose negation are in unit clauses.
+For example, if $F = \{c1,c2,c3\}$ where $c1 = \{v\}$ $c2 = \{\neg v, a\}$ and $c3 = \{\neg a , x\}$,
+the set of unit clauses in $F$ is $\{c1\}$ making $v$ the only unit literal.
+Therefore, \verb+unit-propagate+$(v,F)$ removes all $\neg v$ literals, making $c2 = \{a\}$.
+This propagation then made the clause $c2$ and literal $a$ unit, continuing the process with \verb+unit-propagate+$(a,F)$ which makes $c3 = \{x\}$, making $x$ unit.
+So this process of unit propagation turned $F$ into a set of unit clauses, making it satisfiable.
+
+The second loop simplifies the formula by removing the clauses which are known to be true, as they are superfluous to the formula.
+This is done by identifying literals which have no negation in the formula, and then removing any clause which contains that literal.
+For example, if the formula $F = \{c1,c2,c3\}$ where $c1 = \{v\}$ $c2 = \{\neg v, a\}$ and $c3 = \{\neg a , x\}$, 
+the set of pure literals equals $\{x\}$ as it has no negation in any clause.
+Therefore, \verb+unit-propagate+$(x,F)$ would remove the clause $c3$ from the formula, so $F = \{c1,c2\}$, this in turn makes $a$ pure.
+Once \verb+unit-propagate+$(a,F)$ then eliminates $c2$ from the formula to leave $F= \{c1\}$ making all clauses unit in the formula thus it is satisfiable.
+
+The function \verb+decide+ returns a literal that is not unit, nor whose negation is unit, i.e. given $l =$ \verb+decide+$(F)$, $\{l\} \not \in F$ and $\{\neg l\} \not \in F$.
+This literal is then added to the formula and checked for satisfiability, 
+and if it is not, the satisfiable of the formula where its negation is added is checked.  
+
+\subsection{Conflict driven Solvers}
+Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have altered to increase efficiency.
+The core change is from being a recursive propagation based algorithm to a conflict driven algorithm,
+where the reason for conflicts are calculated in order to prune the search tree.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+conflictDrivenDPLL:
+	c = propagate(F)
+	if c = null then
+		if all variables assigned then
+			return true
+		else
+			v = decide
+			F = F cup {c}
+	else
+		c = analyse(c)
+		if c conflicts with F
+			return Unsatisfiable
+		else
+			backtrack()
+			
+\end{alltt}
+  \caption{Conflict Driven SAT solver algorithm}
+  \label{impl.conflictSAT}
+\end{center}
+\end{figure}
 
 %%%Some improvements over the core algorithm have been appended over the years since DPLL was first proposed.
 
-\subsection{CHAFF Watched Literals}
-%%%Through having clauses watch the literals, rather than the other way around, the most expencive step, the propogation, can be reduced significantly.
-%TODO cite
-
-\subsection{Conflict Learning}
+\subsection{Conflict Analysis}
 %%%Simple resolution as proposed by Stallman was an effecient means to stop thrashing(looking at the same subtree repeatedly)
 
 %%%Improvement of this resolution can be made by finding smaller constraints, this can be accomplished by eliminating literals in a constraint
@@ -121,7 +184,8 @@ This \cite{Stuckenholz2007} study looks at using boolean optimisation with branc
 
 
 
-
+\section{GJSolver}
+%%%My Implementation, cut the fat, straight forward
 
 \subsection{Product and Lexicographic orders in Pseudo-Boolean Optimisation}
 %%%Here we descirbe the mapping from our Optimisation framework to PBO, product order is easy, lexicographic requires some muddling
@@ -143,9 +207,6 @@ As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no e
 %%%The only aggregation of numbers between integers is addition.
 
 %%%It is too expencive to recalculate cardinalities for each component given a specific solution, therefore the cardinalities of a component should be solution independant
-
-\section{GJSolver}
-%%%My Implementation, cut the fat, straight forward
 
 \subsection{Verification}
 %%%We entered this solver into two Mancoosi MISC competitions

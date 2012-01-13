@@ -28,7 +28,6 @@ These variables are are broken into two groups; the context variables, which do 
 and variables which are changed to answer specific questions.
 The implementation of the simulation processes are then described, with the necessary practical alterations made. 
 
-
 \subsection{Context Variables in the Configuration}
 %%%Context variables are common attributes
 Some variables form the context of the simulation, these are static points that stay at a default assignment across simulation runs.
@@ -73,9 +72,9 @@ To collect these packages and information from the repository, this process was 
 This process creates a set of control files $C$ each tagged with the date it was uploaded to the repository.
 
 \subsubsection{dpkg to CUDF mapping}
-The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta data is very similar.
-This similarity is due to the Mancoosi organisation goals of looking at FOSS implementations, like Debian, and then basing CUDF on such systems.  
-There are a few differences however, these differences cause some problems when converting dpkg format to CUDF.
+The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta-data is very similar.
+This similarity is due to the Mancoosi organisation goals basing CUDF on FOSS systems like Debian.  
+There are a few differences however, these differences require some explaining when converting dpkg format to CUDF.
 In this section, firstly these problems will be described and their solutions explained, 
 then the process by which the set of control files is taken and the function $Rep(d)$ is created to return a CUDF file for a given date $d$.
 
@@ -89,7 +88,7 @@ if their \verb+epoch+'s are equal then its \verb+upstream_version+ is lexically 
 if their \verb+epoch+'s and \verb+upstream_version+'s are equal then its \verb+debian_revision+ is lexically greater.
 This lexical comparison (further explained in \cite{Barth2005}) differs greatly and is far more complicated than the CUDF integer based version model.
 
-To map a dpkg version to a integer cannot be done without knowledge of all component versions refeered to in the repository.
+To map a dpkg version to an integer then cannot be done without knowledge of all component versions refereed to in the repository.
 Therefore, the most straight forward solution is to extract all refereed versions (not only package versions but those in package formulae as well),
 and then sort them into a list such that their CUDF version is their index in the list.
 
@@ -110,23 +109,35 @@ For example, the line \verb+provides: foo+ is altered to be \verb+provides: virt
 and the dependency \verb+depends: foo+ is altered to \verb+depends: virtual--foo | foo+.
 
 \paragraph{Priority}
-Lastly the priority ranking, recommends, suggests and other extra information that is not standard in the CUDF format,
-but with CUDF's extencibility can be represented and used in the resolution process.
+In the meta-data of the dpkg format there is a mechanism in which to state how important a package is to the system, this is called the package priority.
+This tag can be set to \verb+extra+, \verb+optional+, \verb+standard+, \verb+important+, and \verb+required+, where the last value expresses the necessity to have this package in a Debian system.
+The priority of a package is an optimisation problem, where selecting between components can take this into account, 
+except for the final value which expressly states that the package must be installed.
+Therefore, the mapping from the dpkg priority value to CUDF, is only done when the value is \verb+required+ and it sets the mapped CUDF packages \verb+keep+ value to \verb+package+.
 
-required
+\paragraph{Date}
+As CUDF has an extensible syntax, the date the package was uploaded to the repository can be described as a key/value pair in the packages CUDF description.
+As described above the control file which describes gives the dpkg description of the package has been tagged with the date of upload.
+This date is extracted and converted to seconds since the Unix epoch (midnight, Jan. 1st 1970) and mapped to the integer property \verb+date+ in the pacakges CUDF file.
+For example, if a Debian package was uploaded on the date of 13 Feb 2009, at exactly 23:31:30, 
+the mapped CUDF component $c$ would have the property \verb+date+ would equal $1234567890$, i.e $c$.\verb+date+ $= 1234567890$.
 
+\paragraph{Architecture}
+Another important property in the dpkg format is the architecture of the package.
+This describes the necessary CPU/hardware for the package to be functional.
+The architecture of a dpkg package is directly mapped to the architecture of the CUDF property \verb+architecture+, through using CUDF's extensible syntax.
+For example, is the archicteure expressed in the dpkg control file is \verb+i386+ then the mapped CUDF package $c$ has property $c$.\verb+architecture+ $=$ \verb+i386+.
 
-
-%%%Priority ranking also must be handeled, as some packages are absolutly required to be in a system, these can be maked similarly in CUDF
-
+\paragraph{Mapping}
+The function $Rep(d)$ takes a date $d$ and returns a CUDF file that contains all packages that exist in the repository on that date.
+After mapping all the individual dpkg control files to individual CUDF files, where one package exists per CUDF file,
+all the CUDF files are merged into one large file such, where $\mathbb{C}$ equals all CUDF components.
+The process to create the function $Rep$ is described below:
 \begin{enumerate}
-  \item All versions referenced in these packages where mapped to integers, and the packages control files were then mapped from Debian package format to CUDF (described in chapter \ref{implementation}).
-  \item Using CUDFs extensible syntax, an integer property ``date'' was added to each CUDF file, referencing the time in seconds since the epoch of the package was added to the repository.
-  \item All CUDF files where then filtered to include only packages that had the ``architecture'' property either ``i386'' or ``all'', ensuring the package could work on our simulated system.
-  \item The CUDF files where aggregated into sets such that on a given day that is the set of packages that existed in the repository.
-  \item The function then just returns the CUDF file that is for a given day.
+  \item Given the assumption the system that is evolved in the simulation is of the architecture i386, 
+  any component $c$ in $\mathbb{C}$ where $c$.\verb+architecture+ does not equal \verb+i386+ or \verb+all+ is removed.
+  \item The function $Rep(d)$ then simply returns the set of components whose upload date is less than $d$, i.e. $C_d = [c \mid c$.\verb+date+ $ \leq d]$
 \end{enumerate}
-%%%dpkg and CUDF models are similar, due to mancoosi's directive for FOSS software
 
 \paragraph{Differences}
 %%%The main different is is that the entire repository is used here, where typically only a sub set is used
@@ -140,8 +151,14 @@ Creating a single repository out of all files was necessary as the states of the
 so finding what is included on a given date is impossible.
 To map a real user to this simulated user, the real user would select all meta-data files to use the entire repository of packages. 
 
-%%%We allow multiple versions of the same package to be installed, this is different from the debian 
-In some instances Debian allows multiple packages to be installed on the system, but not configured.
+%%%We allow multiple versions of the same package to be installed, this is different from the debian
+Debian for the most part, does not allow multiple versions of the same package to be installed in a system simultaneously.
+However, in some instances Debian allows multiple packages to be installed on the system, as long as two such packages are not ``configured'' at the same time.
+If a package is not configured, then it's dependencies do not require to be satisfied and therefore differs from the CUDF model.
+In this simulation, this specific semantic of Debian is ignore, and multiple versions of a package are allowed to be installed into a system.
+Many of the criteria described in chapter \ref{strategies} discourage the inclusion of multiple version,
+therefore it is expected to have little impact on the results of the simulation.
+As this difference may effect the validity of the simulation however, during the simulation the effects will be measures and noted, and if the effects are significant discussed.
 
 
 \subsubsection{Probability a component will be selected}
