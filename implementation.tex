@@ -37,6 +37,7 @@ This also describes the process in which it was validated and compared against o
 \label{impl.SAT}
 Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
 This problem was the first identified NP-Complete problem, meaning that no known algorithm exists that efficiently solves all instances of SAT problems.
+It has been used previously in this thesis as a means in chapter \ref{formal} as a means of showing component evolution as being NP-Complete.
 This also means that many proofs of NP-Completeness is through the reduction to SAT, and therefore many difficult problems have been expressed in the terms of a Boolean equation.
 The benefit of this is that algorithms and implementations of programs that solve SAT problems have received significant attention and research to provide solutions to these various problems.
 Taking advantage of these algorithms will help with the creation of a CDR implementation that can robustly evolve a component system.
@@ -60,85 +61,88 @@ Finally, other methods of solving SAT problems are briefly discussed to give a b
 
 \subsection{The SAT Problem}
 As described above, the goal of a SAT algorithm is to find whether a set of variables in a Boolean equation can be assigned values in such a way as to make the equation equal true.
-The way in which such equations can be described is varied, though a common standard to use is the Conjunctive Normal Form (CNF).
-CNF describe a conjunction of clauses, where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
+A common representation of such a formula is in Conjunctive Normal Form (CNF), this is defined as a conjunction of clauses, 
+where each clause is a conjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
-Before we further describe the problem some of the language from this domain will be further defined here:
-\begin{itemize}
-  \item $V$ is a set of variables
-  \item The atomic formula of a variable or its negation is defined as a literal; each variable $v$ in $V$ maps to two literals, either $v$ or $\neg v$.
-  \item A clause is a set of literals, e.g. $\{\neg b, c\}$ which in CNF represents the equation $\neg b \vee c$
-  \item A CNF formula $F$ is a set of clauses, where each clause is a set of literals, e.g. $\{\{a, b\} , \{\neg b, c\} \}$ which in CNF represents the equation $(a \vee b) \wedge (\neg b \vee c)$.
-\end{itemize}
+This CNF representation of a SAT problem can be defined as such:
+\begin{defs}
+An instance of a SAT problem is a set of Boolean variables $V$ and a formula which is a set of clauses $F$.
+Each clause in $F$ is a set of literals, where a literal is a variable $v$ or its negation $\neg v$.
+A set of literals is said to be consistent if for any variable $v$, the set does not contain both $v$ and its negation $\neg v$.
+A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause in $c$ in $F$ there exists a literal in $c$ that is also in $P$.
+If there exists a $P$ that is a solution of a SAT formula $F$ the problem is said to be satisfiable, otherwise it is unsatisfiable. 
+\end{defs}
 
-Through this representation some of the terms used to define the algorithms are defined as:
-\begin{itemize}
-  \item A unit clauses is a clause with only one literal, i.e. a clause $c$ is unit iff $|c| = 1$.
-  \item A unit literal is the literal in a unit clause, e.g. a unit clause $\{l\}$ has the unit literal $l$.
-  \item A set of literals $L$ is said to be inconsistent if for any variable $v$, both literals $v$ and $\neg v$ are in $L$,
-  \item A set of literals $L$ is said to be consistent if it is not inconsistent
-  \item A set of clauses is said to be consistent (or inconsistent) if the set of its unit literals are consistent (or inconsistent)
-\end{itemize}
+That is, a SAT problem can have the variable $\{a,b,c\}$ and the formula $\{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
+A solution for this problem could be $\{a,\neg b,c\}$ as $a \in c_1$ and $\neg b \in c_2$.
+However $\{a, \neg b, b\}$ is not because it is not consistent, and $\{a, b, \neg c\}$ is not because it does not contain a literal in $c_2$.  
 
-Finally, the definition of the satisfiability of this CNF representation is given:
-\begin{itemize}
-  \item A clause $c$ is said to be satisfied given a set of literals $L$, if $|L| = |V|$, $L$ is consistent, and if there exists a literal $l$ in $c$, such that $l \in L$.
-  \item A formula $F$ is said to be satisfied given a set of literals $L$, if $|L| = |V|$, $L$ is consistent, and all constraints in $F$ are satisfied by $L$.
-  \item A formula $F$ is said to be satisfiable if there exists a set of literals $L$ where the $F$ is satisfied by $L$.
-\end{itemize}
-
-This representation of the SAT problem using CNF will be used in the following sections to define the algorithms used to solve it.
+This definition also follows some classical logic rules, such as literals and their negation can be defined as $\neg \neg v = v$.
+This rule can be extended to sets of literals where given a set of literals $P$, $\neg P = [\neg v \mid v \in P]$.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} for solving SAT problems is a complete (meaning it will find a solution if one exists), 
 backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
 
-It runs by selecting a variable from the Boolean formula, and altering the formula with the assumption that variable is true, then calling itself to find if the new formula is satisfiable.
-If it finds that the new formula is unsatisfiable, then it alters the formula by assuming that the variable is false, then searching again to see if the new formula is satisfiable.
-Though the search the formula is simplified through the processes of unit-propagation and pure literal elimination.
-When this reduction alters the formula to a state where it is trivial to identity whether it is either satisfiable or unsatisfiable, the algorithm returns the result.
+It runs by assuming a variable from the Boolean formula is true by adding it to the set of literals $P$ then calling itself to find if this new assignment is a solution.
+It first takes this new set of literals and calculates all the infered literals in a process called unit-propagation. 
+If this new set of literals contains a contradiction then the assumption was incorrect and it returns false, and negates the assumption to continue searching.
+However, if this assumption leads to a solution it then returns true, as it has found a solution that satisfies the  formula.
 
-The DPLL algorithm in defined in figure \ref{impl.DPLL}:
-
+The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \cite{dixon2004automating}:
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
-function DPLL(\(F\))
-   if \(F\) is a consistent set of unit clauses:
-       then return true;
-   if \(F\) contains an empty clause:
+function DPLL(\(F, P\))
+   P = unit-propagate(\(F, P\))
+   if \(P\) contains a contradiction:
        then return false;
-   for every unit literal \(l\) in \(F\):
-      \(F\) = unit-propagate\((l, F)\);
-   for every literal \(l\) that occurs pure in \(F\):
-      \(F\) = pure-literal-assign\((l, F)\);
-   \(l\) = decide\((F)\);
-   return DPLL\((F \cup \{l\})\) or DPLL\((F \cup \{\neg l\})\);
-  		
+   if \(P\) is a solution to \(F\):
+       then return true;
+   \(l\) = decide\((P)\);
+   if DPLL\((F, P \cup \{l\})\)
+       return true
+   else
+       return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
   \caption{Recursive DPLL algorithm}
   \label{impl.DPLL}
 \end{center}
 \end{figure}
 
-The first \verb+if+ branch of the DPLL algorithm finds if the formula is satisfiable only if it consists of consistent unit clauses.
-The second \verb+if+ branch determines if the formula is unsatisfiable by looking for a clause that contains no literals, thus it is unsatisfied.
+The first \verb+if+ branch of the DPLL algorithm finds if partial assignment $P$ is consistent, if it is not it returns false.
+The second \verb+if+ branch determines if the assignment $P$ is a solution to $F$, this would end the search by returning true.
+The \verb+unit-propagation+ function and the \verb+decide+ function are both described in the following sections. 
 
-The first loop of the algorithm aims to remove literals from clauses in $F$ whose negation are in unit clauses.
-For example, if $F = \{c1,c2,c3\}$ where $c1 = \{v\}$ $c2 = \{\neg v, a\}$ and $c3 = \{\neg a , x\}$,
-the set of unit clauses in $F$ is $\{c1\}$ making $v$ the only unit literal.
-Therefore, \verb+unit-propagate+$(v,F)$ removes all $\neg v$ literals, making $c2 = \{a\}$.
-This propagation then made the clause $c2$ and literal $a$ unit, continuing the process with \verb+unit-propagate+$(a,F)$ which makes $c3 = \{x\}$, making $x$ unit.
-So this process of unit propagation turned $F$ into a set of unit clauses, making it satisfiable.
+\subsubsection{Unit Propagation}
+The first part of this function is the call to infer new literals given the current assignment, this is known as unit-propagation.
+Given a possible assignment, a clause is called unit if the assignment does not contain one literal, and contains all of its other literals negation.
+That is, given an assignment $P$ and a clause $c$ if $|c \backslash \neg P| = 1$, then $c$ is unit.
+A unit literal is then defined given a unit clause as the literal $l$ where $ c \backslash \neg P = \{l\}$.
 
-The second loop simplifies the formula by removing the clauses which are known to be true, as they are superfluous to the formula.
-This is done by identifying literals which have no negation in the formula (known as pure literals), and then removing any clause which contains that literal.
-For example, if the formula $F = \{c1,c2,c3\}$ where $c1 = \{v\}$ $c2 = \{\neg v, a\}$ and $c3 = \{\neg a , x\}$, 
-the set of pure literals equals $\{x\}$ as it has no negation in any clause.
-Therefore, \verb+pure-literal-assign+$(x,F)$ would remove the clause $c3$ from the formula, so $F = \{c1,c2\}$, this in turn makes $a$ pure.
-Once \verb+pure-literal-assign+$(a,F)$ then eliminates $c2$ from the formula to leave $F= \{c1\}$ making all clauses unit in the formula thus it is satisfiable.
+This notion of ``unit'' allows a literal to be inferred to be in the solution given a current assignment.
+For instance, given a formula $\{c_1,c_2\}$, where $c_1 = {a,b}$ and $c_2 = {\neg b, c}$, and the assignment $\{\neg a\}$;
+clause $c_1$ is unit and literal $b$ is unit as $c_1 \backslash \neg \{\neg a\} = c_1 \backslash\{ a\} = \{b\}$.
+Through unit propagation, $b$ can be inferred to be in the solution, as it must be to make $c_1$ true.
+Therefore the assignment is extended to $\{\neg a, b\}$.
+This new assignment then makes $c_2$ unit, which through unit propagation infers the assignment be $\{\neg a, b, c\}$, and so on.
 
+The process of unit propagation is further defined in figure \ref{impl.propagation}
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+unit-propagate(\(F, P\)):
+    while P is consistent and there exists a \(c \in F\) that given \(P\) is unit:
+        \(l\) = unit literal in \(c\)
+        \(P\) = \(P \cup \{l\}\)
+\end{alltt}
+  \caption{Pseudo code of Unit Propagation}
+  \label{impl.propagation}
+\end{center}
+\end{figure}
+
+\subsubsection{Literal Order}
 The function \verb+decide+ returns a literal that is not unit, nor whose negation is unit, i.e. given $l =$ \verb+decide+$(F)$, $\{l\} \not \in F$ and $\{\neg l\} \not \in F$.
 This literal is then added to the formula and checked for satisfiability.
 If the formula is not satisfiable, then the negation is added to the formula and checked for satisfiability.  
@@ -146,97 +150,25 @@ The order in which the variables from the formula are selected will have a great
 This function will be described further in this chapter, as it clearly has a large impact on the DPLL algorithms use.
 
 
-\subsection{Conflict driven Solvers}
+\subsection{Advancements in SAT Solvers}
 Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been altered to increase efficiency.
 A common change is to alter it from being a recursive propagation based algorithm to a conflict driven, clause learning algorithm.
 This modern variant, analyses the reasons for conflicts that occur during the search, and then creates new clauses in order to prune the search tree efficiently.
-A conflict driven DPLL algorithm is described in figure \ref{impl.conflictSAT}.
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-conflictDrivenDPLL(F):
-    trail = \(\{\}\)
-    loop:
-        clause = propagate(F,trail)
-        if clause = null:
-            if trail satisfies F:
-                return true
-            else:
-                l = decide(trail)
-                trail = trail \(\cup \{ \) l \(\}\)
-        else:
-            conflict = analyse(clause)
-            F = F \(\cup\) conflict
-            if F is inconsistent:
-                return false
-            else:
-                backtrack(F,trail)
-			
-\end{alltt}
-  \caption{Conflict Driven SAT solver algorithm}
-  \label{impl.conflictSAT}
-\end{center}
-\end{figure}
 
 This particular conflict driven DPLL algorithm is based on MiniSAT, presented by \cite{een2003}.
 This implementation was built for efficiency and simplicity, and provides a basic description of the important aspects of such algorithms.
 
-The initial instruction in this algorithm is to create a set of literals, called the \verb+trail+, that store the set of assignments that are made during the loop.
+The initial instruction in this algorithm is to create a set denoted as the \verb+trail+.
+This set stores pairs of literals and the reasons for their assignment to be used in the analysis.
 This trail is typically implemented as a stack for efficiency reasons, though here for simplicity it is represented as a set.
-It contains the literals, which have either been inferred through propagation, or assumed through the \verb+decide+ method. 
-The goal of this algorithm is to find a set of literals to populate trail, where $F$ is satisfied by them.
+It contains the literals which have either been inferred through propagation paired with the clause which caused their propagation.
+It also stores the literals assumed through the \verb+decide+ method, paired with the empty set $\emptyset$.
+
+The set of literals in the trail will be denoted as \verb+trail.lits+, that is \verb+trail.lits+ $= [l \mid (l,r) \in $ \verb+trail+$]$. 
+The goal of this algorithm is to populate the \verb+trail+ such that \verb+trail.lits+ is a set of literals that satisfy $F$.
 
 The functions of \verb+propagate+, and \verb+decide+ have been altered slightly from the original DPLL algorithm, though are still in essence the same.
 The additional functions of \verb+analyse+ and \verb+backtrack+ give this algorithm a more efficient means of searching for a formula's satisfiability.
-
-\subsubsection{Propagation}
-%%%Propagate
-The propagation function in the base DPLL algorithm uses unit clauses in the formula to eliminate literals in the various clauses.
-In this conflict driven approach, the \verb+propagate+ function uses the formula clauses and the trail, to infer more literals to be added to the trail.
-If the inferred literals create a trail where a clause becomes inconsistent, the clause is returned as a flag that a conflict has been found.
-The \verb+propagration+ function is described in figure \ref{impl.conflictpropogate}.
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-propagate(F,trail):
-    continue = true
-    while continue:
-        continue = false
-        for clause in F:
-            lits = clause - trail
-            if |lits| = 0: #clause is inconsistent
-                return clause
-            if |lits| = 1: #clause is unit
-                trail = trail \(\cup\) lits
-                if trail is inconsistent:
-                    return clause
-                continue = true
-\end{alltt}
-  \caption{Conflict Driven SAT solver algorithm}
-  \label{impl.conflictpropogate}
-\end{center}
-\end{figure}
-
-This algorithm iterates until no more literals can be inferred into the trail, through using the flag \verb+continue+.
-The inner loop iterates over all the clauses in the formula looking for either an inconsistency created by the trail, or a clause which becomes unit because of the trail.
-If either a clause or the trail becomes inconsistent then the offending clause is returned to be used in conflict analysis.
-
-\subsubsection{Literal Order}
-%%%Decide
-Like in the original DPLL algorithm, the decide function greatly effects the efficiency of this algorithm.
-The main difference in this algorithm is the manner in which the variable is used to guide the search path.
-In the DPLL algorithm, the deciding literal is first added to the formula, and if that results in an unsatisfiable formula, then it's negation is added.
-In this conflict driven algorithm, the deciding literal is added to the trail, and the formula is left unaltered.
-
-\subsubsection{Conflict Analysis and Backtracking}
-The \verb+analyse+ function takes a clause and returns another clause that defines the reason for the conflict to of occurred.
-For this method to work
-This method of \cite{stallman1976}
-
-%%%Conflict learning
-
 
 \subsection{Pseudo-Boolean Optimisation of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities

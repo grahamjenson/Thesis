@@ -1,2 +1,2 @@
 #!/bin/bash
-cat *.tex | wc| awk '{print $2}'
+cat *.tex | grep -v ^% | wc| awk '{print $2}'
