@@ -86,9 +86,9 @@ The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962m
 backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
 
 It runs by assuming a variable from the Boolean formula is true by adding it to the set of literals $P$ then calling itself to find if this new assignment is a solution.
-It first takes this new set of literals and calculates all the infered literals in a process called unit-propagation. 
+It first takes this new set of literals and calculates literals that are inferred, in a process called unit-propagation. 
 If this new set of literals contains a contradiction then the assumption was incorrect and it returns false, and negates the assumption to continue searching.
-However, if this assumption leads to a solution it then returns true, as it has found a solution that satisfies the  formula.
+However, if this assumption leads to a solution it then returns that it is satisfiable, as it has found a solution that satisfies the formula.
 
 The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \cite{dixon2004automating}:
 \begin{figure}[h]
@@ -97,12 +97,12 @@ The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \cite{di
 function DPLL(\(F, P\))
    P = unit-propagate(\(F, P\))
    if \(P\) contains a contradiction:
-       then return false;
+       then return UNSATISIFABLE;
    if \(P\) is a solution to \(F\):
-       then return true;
+       then return SATISFIABLE;
    \(l\) = decide\((P)\);
    if DPLL\((F, P \cup \{l\})\)
-       return true
+       return SATISFIABLE
    else
        return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
@@ -111,8 +111,8 @@ function DPLL(\(F, P\))
 \end{center}
 \end{figure}
 
-The first \verb+if+ branch of the DPLL algorithm finds if partial assignment $P$ is consistent, if it is not it returns false.
-The second \verb+if+ branch determines if the assignment $P$ is a solution to $F$, this would end the search by returning true.
+The first \verb+if+ branch of the DPLL algorithm finds if partial assignment $P$ is consistent, if it is not it returns \verb+UNSATISIFABLE+.
+The second \verb+if+ branch determines if the assignment $P$ is a solution to $F$, this would end the search by returning \verb+SATISFIABLE+.
 The \verb+unit-propagation+ function and the \verb+decide+ function are both described in the following sections. 
 
 \subsubsection{Unit Propagation}
@@ -147,28 +147,60 @@ The function \verb+decide+ returns a literal that is not unit, nor whose negatio
 This literal is then added to the formula and checked for satisfiability.
 If the formula is not satisfiable, then the negation is added to the formula and checked for satisfiability.  
 The order in which the variables from the formula are selected will have a great impact on the speed at which the algorithm finds the formula to be satisfiable or not.
-This function will be described further in this chapter, as it clearly has a large impact on the DPLL algorithms use.
-
 
 \subsection{Advancements in SAT Solvers}
 Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been altered to increase efficiency.
-A common change is to alter it from being a recursive propagation based algorithm to a conflict driven, clause learning algorithm.
-This modern variant, analyses the reasons for conflicts that occur during the search, and then creates new clauses in order to prune the search tree efficiently.
+Some changes are briefly described here, these include the use of conflict learning, backjumping, and watched literals.
+This section should give a broad overview of the techniques used in current SAT solvers, 
+in order to show that their application to problems like component evolution is justified. 
 
-This particular conflict driven DPLL algorithm is based on MiniSAT, presented by \cite{een2003}.
-This implementation was built for efficiency and simplicity, and provides a basic description of the important aspects of such algorithms.
+\subsubsection{Conflict Learning}
+Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
+This is accomplished through remembering the clauses which inferred literals through unit propagation, these clauses are also known as reasons.
+These reasons are then used to derive a clause which prunes exactly the branches which created the conflict.
+This process basically works by identifying the inconsistent variable (a variable both inferred to be true and false) 
+then creating a new clause from the clauses that is the reason for them being inferred.
+This new clause is derived by disjoining the two reason clauses and removing both the references to the inconsistent variable.
+This process is defined in figure \ref{impl.clauselearning}. 
 
-The initial instruction in this algorithm is to create a set denoted as the \verb+trail+.
-This set stores pairs of literals and the reasons for their assignment to be used in the analysis.
-This trail is typically implemented as a stack for efficiency reasons, though here for simplicity it is represented as a set.
-It contains the literals which have either been inferred through propagation paired with the clause which caused their propagation.
-It also stores the literals assumed through the \verb+decide+ method, paired with the empty set $\emptyset$.
+\begin{figure}[htp]
+\begin{center}
+$\begin{array}{c}
+\{a_1,\ldots,a_k, l\} \\
+\{b_1,\ldots,b_m,\neg l\}\\
+\hline
+\{a_1,\ldots,a_k, b_1,\ldots,b_m \}
+\end{array}$
+  \caption{Clause Learning Definition}
+  \label{impl.clauselearning}
+\end{center}
+\end{figure}
 
-The set of literals in the trail will be denoted as \verb+trail.lits+, that is \verb+trail.lits+ $= [l \mid (l,r) \in $ \verb+trail+$]$. 
-The goal of this algorithm is to populate the \verb+trail+ such that \verb+trail.lits+ is a set of literals that satisfy $F$.
+For example, if the reason for the infered literal $a$ is clause $\{a, b\}$, and the reason for $\neg a$ is clause $\{\neg a, c\}$,
+then a new clause derived is $\{b,c\}$.
+This new clause is then added to the formula, which then stops the process from stepping through the branches which caused this exact conflict to occur again.
 
-The functions of \verb+propagate+, and \verb+decide+ have been altered slightly from the original DPLL algorithm, though are still in essence the same.
-The additional functions of \verb+analyse+ and \verb+backtrack+ give this algorithm a more efficient means of searching for a formula's satisfiability.
+More advanced methods of conflict learning occur by minimising the size of the learn clauses, as presented in \cite{sorensson2009}.
+This research describes search methods that use other reason clauses to find smaller more succinct conflict clauses.
+The smaller the clause the more of the search tree is pruned when it is added to the formula.
+
+\subsubsection{Backjumping}
+Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack, and then ``jumps'' up multiple levels to reduce the search space.
+This algorithm typically depends on the clause created through conflict learning in modern solvers by backjumping to a level where this clause is unit.
+
+\subsubsection{Watched Literals}
+As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation occurs.
+Attempts to increase the efficiency of this task was initially to find better heuristics \cite{JamesMCrawford1996} for the literal order, to encourage cascades of unit propagation.
+These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
+
+It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
+The naive approach to this solution was to examine every clause, and then every literal in the clause to find if it is unit or not.
+The idea of watched literals \citep{Madigan2001} was added so that instead of having the clauses examined, 
+the clauses maintain an index of the necessary literals that when added to the partial solution the clause becomes unit.
+This ``don't call us, we will call you'' function makes the function of finding unit clauses less dependent on the amount of clauses in the formula.
+
+Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \cite{Moskewicz2001}.
+Such algorithms enable larger formulae to be solved without necessary increasing the time to solve them.
 
 \subsection{Pseudo-Boolean Optimisation of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
@@ -203,8 +235,9 @@ This CDR implementation is know as GJSolver, and is directly designed to solve C
 
 SAT4J was used as a base for the satisfiability, where minor non-critical code was altered in order to interface with it correctly.
 
+\subsection{Component Evolution Mapping}
 
-\subsection{Product and Lexicographic orders in Pseudo-Boolean Optimisation}
+\subsection{Lexicographic Optimisation Mapping}
 %%%Here we descirbe the mapping from our Optimisation framework to PBO, product order is easy, lexicographic requires some muddling
 
 \subsection{Drawbacks of this Optimisation approach}
