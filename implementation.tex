@@ -230,10 +230,14 @@ The product of all the mapped literals with their integer counterpart is then su
 
 For example, a pseudo-Boolean constraint such that $\langle a, \neg b , c\rangle$ with integers $\langle 1, 2, 3\rangle$ and value $3$,
 can be denoted as the inequality $1a + 2 \neg b + 3c \geq 3$.
-For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true therefore this assignment satisifes this constraint.
+For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true therefore this assignment satisfies this constraint.
+
+In practise, the inequality can be not only $\geq$, but also $\leq$.
+Also as the values are integers on either side, by subtracting one from the left or right side the inequalities $>$ and $<$ can also be created.
+This makes the use of these constraints much more versatile when representing problems.
 
 Such constraints, can be translated into the standard CNF, but have been shown to be exponentially more concise \citep{dixon2004automating}.
-Also given the proper amendments to unit propagation and other algorithm, 
+Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints.
 Both of these reasons give ample reason to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
 
