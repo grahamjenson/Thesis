@@ -154,7 +154,7 @@ Some changes are briefly described here, these include the use of conflict learn
 This section should give a broad overview of the techniques used in current SAT solvers, 
 in order to show that their application to problems like component evolution is justified. 
 
-\subsubsection{Conflict Learning}
+\subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
 This is accomplished through remembering the clauses which inferred literals through unit propagation, these clauses are also known as reasons.
 These reasons are then used to derive a clause which prunes exactly the branches which created the conflict.
@@ -180,13 +180,17 @@ For example, if the reason for the infered literal $a$ is clause $\{a, b\}$, and
 then a new clause derived is $\{b,c\}$.
 This new clause is then added to the formula, which then stops the process from stepping through the branches which caused this exact conflict to occur again.
 
+Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack when a conflict is found.
+The higher up the tree that the technique ``jumps'' up the greater reduction of the search space.
+This algorithm typically depends on the clause created through conflict learning in modern solvers.
+This uses the derived learnt clause to determine the point in the search at which can be jumped to.
+The search is backtracked to the level where the learnt clause becomes unit, this can significantly improve the performance when solving problems.
+
 More advanced methods of conflict learning occur by minimising the size of the learn clauses, as presented in \cite{sorensson2009}.
 This research describes search methods that use other reason clauses to find smaller more succinct conflict clauses.
-The smaller the clause the more of the search tree is pruned when it is added to the formula.
+The smaller the clause the more of the search tree is pruned and the more levels are backjumped through the search.
+Therefore, significant improvements to the efficiency of modern SAT solvers is gained through the use of such methods.
 
-\subsubsection{Backjumping}
-Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack, and then ``jumps'' up multiple levels to reduce the search space.
-This algorithm typically depends on the clause created through conflict learning in modern solvers by backjumping to a level where this clause is unit.
 
 \subsubsection{Watched Literals}
 As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation occurs.
@@ -204,7 +208,36 @@ Such algorithms enable larger formulae to be solved without necessary increasing
 
 \subsection{Pseudo-Boolean Optimisation of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
+This DPLL algorithm can easily be adapted to solve problems with other types of constraints, not only SAT constraints.
+Through extending DPLL with such constraints, more problems can be expressed and solved.
+A typical extension is through using pseudo-Boolean constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
+Through this extension the optimisation of problems like the evolution of component systems can be accomplished.
 
+\subsubsection{Pseudo-Boolean Representation}
+The pseudo-Boolean representation is defined as such
+
+\begin{defs}
+A pseudo-Boolean constraint is a linear inequality over Boolean literals $x_i$ of the form
+
+$\sum a_i x_i \geq k$
+
+with $x_1 \in \{0,1\}$ and fixed integers $a_i$ and $k$.
+\end{defs}
+
+That is, the constraint is formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$ and an integer $k$.
+If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
+The product of all the mapped literals with their integer counterpart is then summed, and if greater than the value $k$ then the constraint is true. 
+
+For example, a pseudo-Boolean constraint such that $\langle a, \neg b , c\rangle$ with integers $\langle 1, 2, 3\rangle$ and value $3$,
+can be denoted as the inequality $1a + 2 \neg b + 3c \geq 3$.
+For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true therefore this assignment satisifes this constraint.
+
+Such constraints, can be translated into the standard CNF, but have been shown to be exponentially more concise \citep{dixon2004automating}.
+Also given the proper amendments to unit propagation and other algorithm, 
+it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints.
+Both of these reasons give ample reason to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
+
+\subsubsection{Pseudo-Boolean Optimisation}
 %%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
 
 %%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
