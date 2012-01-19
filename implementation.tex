@@ -236,46 +236,118 @@ In practise, the inequality can be not only $\geq$, but also $\leq$.
 Also as the values are integers on either side, by subtracting one from the left or right side the inequalities $>$ and $<$ can also be created.
 This makes the use of these constraints much more versatile when representing problems.
 
-Such constraints, can be translated into the standard CNF, but have been shown to be exponentially more concise \citep{dixon2004automating}.
+Such constraints, can be translated into the standard CNF, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
 Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
-it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints.
-Both of these reasons give ample reason to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
-
-\subsubsection{Pseudo-Boolean Optimisation}
-%%%Then through repeatdly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
-
-%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
-
+it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
+Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
+ 
 \subsection{MiniSat and SAT4J}
 MiniSAT presented in \cite{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
-SAT4J is a Java implementation, and extension, of that is used in a variety of domains as it is fast and thoroughly verified.
-Both of these solvers use similar conflict driven DPLL algorithms presetned earlier, and thus are complete, fast and efficient solvers of SAT problems.
-This can be seen, as both solvers have regularly been entered into SAT solving competitions, where their results are excellent.
+It uses the DPLL based conflict driven algorithm as discussed above.
+This solver has become popular and is the basis of many other SAT solvers due to its open source distribution.
+This has also lead to a track in the 2011 SAT competitions\footnote{http://www.satcompetition.org/2011/} that deals with only altering MiniSAT to increase performance.
+This means that MiniSAT has been repeatedly validated for performance by third parties across many difference SAT problems. 
 
-\subsection{Other Methods}
-This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
-
-
-\subsubsection{Integer Programming}
-%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
-\subsubsection{SMT Solvers}
-%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
-\subsubsection{Constraint Solver}
-%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
-
+SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
+The extensions SAT4J makes to MniSAT include the ability to find solutions to pseudo-Boolean constraints.
+SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
+This goal has created an easily modifiable and transparent implementation, able to be used in various circumstances.
 
 \section{GJSolver}
 %%%My Implementation, cut the fat, straight forward
 Through the course of this research an implementation grew out of the need to have a modifiable base to experiment with component dependency resolution.
 Other implementations of CDR where often platform specific, or involved difficult (or impossible) to modify code.
-This CDR implementation is know as GJSolver, and is directly designed to solve CDR problems represented in CUDF, with optimisation descriptions in Mancoosi format.
+The CDR implementation created through this research is known as GJSolver, 
+and is designed solely to solve CDR problems represented in CUDF with optimisation descriptions in Mancoosi format.
 
-SAT4J was used as a base for the satisfiability, where minor non-critical code was altered in order to interface with it correctly.
+The set of requirements that GJSolver was designed according to are briefly listed here:
+\begin{enumerate}
+  \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
+  A goal of the GJSolver is to be entered in the MISC in order to be compared against other solvers, and be validated to show the implementation is correct.
+  Following these standards ensures that the solver can be entered, and then competing can show the relative speed of the GJSolver implementation.
+  This will ensure that GJSolver is a valid and efficient implementation. 
+  \item \textbf{Anytime Algorithm}: Return a solution, even if it is not the optimal solution, within a predefined amount of time. 
+  CDR problems can be large and complex, finding the ``best'' solution can be difficult. 
+  This requirement ensures that the algorithm will return a solution in a practical time frame.
+  \item \textbf{Easily Creatable Criteria}: The ability to quickly implement and test criteria in a manner that enables experimentation, will increase the speed of research.
+\end{enumerate}
 
-\subsection{Component Evolution Mapping}
+The implementation details in the GJSolver that relate to these requirements will be discussed in the 
 
-\subsection{Lexicographic Optimisation Mapping}
-%%%Here we descirbe the mapping from our Optimisation framework to PBO, product order is easy, lexicographic requires some muddling
+
+\subsection{MISC Rules}
+Given a goal of the GJSolver implementation is to compete in the MISC competition, the interface and standards that are required must be followed.
+The interface defined  
+
+\subsubsection{Component Evolution Mapping}
+
+\subsubsection{Pseudo-Boolean Optimisation}
+%%%Then through repeatedly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+
+%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+
+\subsubsection{Iterative Strengthening}
+The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
+describes an anytime algorithm that iteratively finds better solutions.
+This is done by first finding a solution, then iteratively adding constraints to the formula that ensure the next solution found will be better than the previous.
+This continues until either the algorithm is interrupted by the formula is unsatisfiable, then taking the last found solution. 
+This algorithm is defined in figure \ref{impl.strength}
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+find-solution(\(F\),strengthen):
+    \(answer\) = DPLL(\(F\))
+    if \(answer\) = UNSAT:
+        return UNSAT
+    do:
+        \(model\) = \(answer\)
+        \(constraints\) = strengthen(\(model\))
+        \(F\) = \(F \cup constraints\)
+        \(answer\) = DPLL(\(F\))
+    while not interrupted() and \(answer\) != UNSAT
+    return \(model\) 
+\end{alltt}
+  \caption{Pseudo code of Iterative Strengthening Algorithm}
+  \label{impl.strength}
+\end{center}
+\end{figure}
+
+Firstly in this algorithm the \verb+DPLL+ algorithm has been altered slightly by only taking the formula $F$ and returning a set of literals $model$ that satisfy $F$.
+The second option is that DPLL returns \verb+UNSAT+
+
+\subsection{Lexicographic Optimisation}
+The basic iterative strengthening approach assumes that there is only one strengthen function.
+This is not the case in the lexicographically ordered criteria of the component system evolution problem.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{alltt}
+find-lex-solution(\(F\),criteria):
+    \(answer\) = DPLL(\(F\))
+    if \(answer\) = UNSAT:
+        return UNSAT
+    order = \(\langle \rangle\)
+    do:
+        current-criterion = criteria.pop()
+        order = order.append(current-criterion.order()))
+        updateorder(order)
+        do:
+            \(model\) = \(answer\)
+            \(constraints\) = current-criterion.strengthen(\(model\))
+            \(F\) = \(F \cup constraints\)
+            \(answer\) = DPLL(\(F\))
+        while not interrupted() and \(answer\) != UNSAT
+        \(F\) = \(F \backslash constraints\)
+        \(F\) = \(F \cup \) current-criterion.lock(\(model\))
+    while not interrupted() and current-criterion != null
+        
+    return \(model\) 
+\end{alltt}
+  \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
+  \label{impl.strength}
+\end{center}
+\end{figure}
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
@@ -314,5 +386,14 @@ As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no e
 %%%The user track
 
 
+\section{Other Methods}
+This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
 
+
+\subsection{Integer Programming}
+%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
+\subsection{SMT Solvers}
+%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
+\subsection{Constraint Solver}
+%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
