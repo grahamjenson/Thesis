@@ -206,7 +206,7 @@ This ``don't call us, we will call you'' function makes the function of finding 
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \cite{Moskewicz2001}.
 Such algorithms enable larger formulae to be solved without necessary increasing the time to solve them.
 
-\subsection{Pseudo-Boolean Optimisation of SAT Solvers}
+\subsection{Pseudo-Boolean Extension of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
 This DPLL algorithm can easily be adapted to solve problems with other types of constraints, not only SAT constraints.
 Through extending DPLL with such constraints, more problems can be expressed and solved.
@@ -256,11 +256,11 @@ This goal has created an easily modifiable and transparent implementation, able 
 \section{GJSolver}
 %%%My Implementation, cut the fat, straight forward
 Through the course of this research an implementation grew out of the need to have a modifiable base to experiment with component dependency resolution.
-Other implementations of CDR where often platform specific, or involved difficult (or impossible) to modify code.
+Other implementations of CDR where often component model specific, or involved difficult (or impossible) to modify code.
 The CDR implementation created through this research is known as GJSolver, 
-and is designed solely to solve CDR problems represented in CUDF with optimisation descriptions in Mancoosi format.
+and is designed to solve CDR problems represented in CUDF with optimisation descriptions in Mancoosi format.
 
-The set of requirements that GJSolver was designed according to are briefly listed here:
+Given the context under which GJSolver was developed, the set of requirements that it was designed according to are briefly listed here:
 \begin{enumerate}
   \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
   A goal of the GJSolver is to be entered in the MISC in order to be compared against other solvers, and be validated to show the implementation is correct.
@@ -274,10 +274,47 @@ The set of requirements that GJSolver was designed according to are briefly list
 
 The implementation details in the GJSolver that relate to these requirements will be discussed in the 
 
+\subsection{Mancoosi International Solver Competition}
+Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
+How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects to the development of GJSolver.
 
-\subsection{MISC Rules}
-Given a goal of the GJSolver implementation is to compete in the MISC competition, the interface and standards that are required must be followed.
-The interface defined  
+%%%They are executed on the command line
+The way in which the entered solvers are executed must be a standard allowing for the automation of the majority of the competition.
+The entered solvers should be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
+These arguments are defined as:
+\begin{itemize}
+  \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
+  \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution
+  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) that describes the 
+\end{itemize}
+The format of the output to the file whose relative path is given in the \verb+cudfout+ argument is a sub set of CUDF.
+This output is only the package name, version and installed properties of the package description stanzas of only the packages that are installed in the new system are required.
+This removes the preamble and request stanza, also all superfluous package information to simplify and limit the size of the output.
+
+%%%The environment POSIX, with 5minutes 1GB of memory
+The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of memory (RAM).
+It contains a Java runtime environment, allowing the use of Java as a primary language.
+The time in which the solver is allowed to run is 5 minutes, after this is will return a result of ABORT at which time the solver will be forcibly executed.
+This time limit either ensures that your algorithm returns a result quickly or is an anytime algorithm, where it can be return a result when interrupted during the search.
+The latter is the option that has been selected for GJSolver, and will be discussed in the next section.
+
+\subsection{Anytime Algorithm}
+As component system evolution is NP-Hard, the time required to find an optimal solution can be impractical.
+For this reason, GJSolver will be implemented with an anytime algorithm at its core.
+An anytime algorithm can return a valid solution to a problem if it is interrupted before it ends.
+This interruption could be a user or some other stimuli from another source.
+In the case of GJSolver, the interruption will be caused by an internal timer dedicated to ensure that the algorithm does not run in time exceeding the 5 minute deadline.
+
+Such anytime algorithms therefore create a trade-off between time and optimality, where the more time that is set aside for the algorithm to run the more optimal the solution. 
+They can also create inconsistent results, as any input may, on different runs, return many different possible solutions.
+This means that if it is necessary to interrupt the algorithm, it is possible to return non-optimal solutions.
+However, this is only if interuption is necessary, as GJSolver will encounter a wide range of difficult problems, 
+it is difficult, or impossible, to judge beforehand if a problem will require the algorithm to be interrupted. 
+
+\subsection{Expendable Criteria}
+The ability to test and experiment with a wide range of possible criteria to use in CDR is a goal of this research.
+This requirement is one which must be defined
+To enable this, GJSolver must be developed in a modular enough manner in which the criteria can be extended, modified, and executed quickly.
 
 \subsubsection{Component Evolution Mapping}
 
@@ -341,7 +378,6 @@ find-lex-solution(\(F\),criteria):
         \(F\) = \(F \backslash constraints\)
         \(F\) = \(F \cup \) current-criterion.lock(\(model\))
     while not interrupted() and current-criterion != null
-        
     return \(model\) 
 \end{alltt}
   \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
