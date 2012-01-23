@@ -481,11 +481,19 @@ The outer loop continue until there are no more criteria to optimise, or the loo
 
 \subsubsection{Criteria}
 %%%This algorithm shows the use of some methods that criteria must implement
-This new algorithm allows us to define the necessary requirements a criteria must define in order to be used.
+This new algorithm allows us to describe the necessary requirements a criteria must define in order to be used.
 Each criteria must define the functions \verb+strengthen+ and \verb+lock+ to be used in this algorithm.
 Further more, through altering the \verb+decide+, or literal order, function in the DPLL algorithm, each criteria could make the search for optimal solutions more efficient.
 This will help guide the search to near optimal solutions, which will lower the upper bound of the number of loops necessary to find the most optimal solution.
 
+%%%Initial constraints
+Some criteria also require the ability to add constraints to the formula before the outer loop starts.
+These constraints are typically used to limit quantities that have no direct variable available.
+The typical case for this is that of component names, where one criteria states that minimise the removed component names from the solution.
+There is no variable for a component name, therefore one must be added to the formula for the amount of component names to be measured and used in optimisation.
+For instance, if component $\langle a,2\rangle$ was removed and component $\langle a,3 \rangle$, the component name $a$ still exists in the solution therefore no change has been made.
+Further description of how initial constraints are used is given in chapter \ref{strategies}. 
+ 
 %%%Previous solution
 As defined in chapter \ref{formal}, the ranking functions which define the a criterion's measurement of optimality, take two arguments;
 the previous component system, and the proposed system.
@@ -500,9 +508,14 @@ These include, the optimisation criteria must be linear and real numbers cannot 
 
 %%%The optimisation must be represented linearly
 As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no easy solution to extending a SAT solver to handle non-linear constraints.
-
+Given the requirement that GJSolver uses a SAT solver as its core, there is no practical way using non-linear constraints for optimisation.
+This stops the definition of some criteria, however this also keeps the criteria practical and efficiently solvable.   
 
 %%%Real numbers must be truncated to fit the integer representation. 
+The psuedo-Boolean constraints use only integer coefficients as it allows the inequality to be easily converted from $\leq$ to $>$ and so on.
+This stops the use of real numbers in the definition of criteria, and thus the representation of different values, like percentages.
+The most direct solution to this is to multiply any real number by a large scale and truncate the prodcut to an integer representation.
+Scaling a value in such a manner, may remove a small amount of resolution of the value, though it does allow for such criteria to use real values numbers.
 
 %%These are necessary to keep the implementation practical
 These simplifications are seen as necessary in order to keep the problem manageable.
@@ -510,34 +523,79 @@ Including all aspects of our formal optimisation framework would be practically 
 
 \subsection{Verification}
 %%%We entered this solver into two Mancoosi MISC competitions
-The process of validation of the GJSolver implementation was through entering it into the Mancoosi International Solver Competition, whose requirements are described above.
-This process was taken twice, firstly in a MISC Live event, which is an interim event between the main competition.
-This was done as an initial trial run, to find and remove any large problems.
-GJSolver was then entered into the 
+The process of verification of the GJSolver implementation was through entering it into the Mancoosi International Solver Competition, whose requirements are described above.
+This process was taken twice, firstly in a MISC Live event, which is an interim competition held during the year;
+secondly at the MISC 2011 event, 
+which is the main competition, whose results are announced at the Workshop on Logics for Component Configuration\footnote{http://www.pps.jussieu.fr/~treinen/lococo/2011/}.
 
-http://mancoosi.org/misc-live/20101126/paranoid/
+\subsubsection{Tracks and Scoring}
+As MISC Live and MISC are competitions to compare solvers entered by different developers and researchers,
+criteria to select the ``best'' solver must be defined through a scoring system.
 
-\textbf{Mancoosi International Competition Ready}: 
- \textbf{Anytime Algorithm}: 
-  \textbf{Easily Creatable Criteria}: 
-  
+Each competition is broken down into three possible tracks, each defined by the criteria used to solve the set of problems.
+The first basic track, is 'paranoid', the second more advanced track is 'trendy', and third track is 'user'.
+Both 'paranoid' and 'trendy' have pre-defined criteria in set lexicographic order for the solvers to use, 
+however the 'user' track uses pre-defined set of criteria in different combinations to execute solvers.
+This means that 'paranoid' and 'trendy' can have solutions tailored to their specific criteria that is required, where the 'user' track cannot.
+The specific criteria and how they are defined, is discussed in the next chapter.
+
+For each track, a set of solvers is entered.
+Each track has a set of problems to solve, and all participating solvers are executed to return solutions to these problems.
+Each solution is scored and all are summed to get a final score of a solver for a given track, where the solver with the lowest amount of points is victor.
+
+The way in which a solution is scored is by first giving it one of three classes; a real solution; no solution; a incorrect solution.
+A real solution is any solution that is correct; no solution occurs when a solver finished without output, this can happen because of error, timeout, or there not being a satisfiable solution;
+an incorrect solution is the worst class, as it can cause an incorrect system to be created.
+
+If $m$ is the number of solvers entered into the competition,
+a real solution is given $1$ point if it is the best solution returned by any solver, and $1$ plus how ever many solvers found better solutions.
+For example, if solver $s1$ found a solution where solvers $s2,s3,s4$ found a more optimal solution given the criteria of the track, then $s1$ gets $4$ points for that solution.
+If no solution is returned then $2\times m$ are the points given, and if an incorrect solution is returned then $3 \times m$ points are given.
+
+If more than one solver has the same amount of points at the end of a track, then the time it took for them to find each solution is summed and the solver that took the least time wins.
+This is also a lexicographical order of points, where it is infinitely better to return good solutions, than to return solutions quickly.
+
+\subsubsection{MISC Live}
 %%%In the first competition we had only partially implemented much of the functionality, so we did not expect great results.
+The first competitions, MISC Live, was entered without GJSolver being fully implemented.
+Therefore, the only track that was possible to enter was the basic track 'paranoid'.
+The results for this track\footnote{http://mancoosi.org/misc-live/20101126/paranoid/} where promising, though there where some clearly necessary improvements.
+Due to the competition openly distributing the solutions and the output from the entered solvers, these problems could be analysed and solved easily.
 
-%%%In some instances we where returing non optimal solutions, The bug where we had to add all package versions of all components. 
+\subsubsection{MISC}
+The main verification of GJSolver was through the MISC 2011 event.
+In this event GJSolver was entered into all tracks, where the 'paranoid' track had a total of 5 solvers, the 'trendy' track had a total of 6 solvers, 
+and the 'user' track had a total of 4 solvers.
+Each track was also entered by the solver which GJSolver is based on, Eclipse P2, and another very efficient solver aspuncud.
 
-%%%These problems where fixed, through comparing the results we had gotten from the competition with those from other solvers.
-%%%We created our own miny competition which we ran to also ensure that time limits where adhered to.
+The scores and the times for each of the track compared to that from Eclipse P2 and aspuncud in table \ref{impl.misc2011}.
+\begin{table}
+\begin{tabular}{| l | c | c | c | c |}\hline
+Track & \# of Problems & GJSolver(score:time) & P2(score:time) & aspuncud(score:time)\\ \hline
+paranoid & 129 & (190 : 5,294) & (181 : 4,646) & (147 : 1,035) \\ \hline
+trendy & 129 & (197 : 13,073) & (232 : 13,435) & (151 : 1,767) \\ \hline
+user & 400 & (656 : 73,522) & (1392 : 87,956) & (1215 : 39,905) \\ \hline
+\end{tabular}
+\caption{Results from MISC 2011}
+\label{impl.misc2011}
+\end{table}
 
-%%%In the second competition we had fully implemented the solver and this allowed us to enter all tracks with EXCELLENT results
+The total winners for each track where for both 'paranoid' and 'trendy' aspuncud won, and for the 'user' track GJSolver won.
 
-%%%The paranoid track
+\subsubsection{Analysis}
+The main analysis of the results from the MISC competition is accomplished through comparing them to the previously stated requirements that
+GJSolver should be \textbf{Mancoosi International Competition Ready}, should implement an \textbf{Anytime Algorithm} and should be \textbf{Easily Creatable Criteria}.
 
-%%%The trendy track
+The results from MISC show that GJSolver was ready for its entrance, during the competition it had very consistent results.
+These results allowed it to compete with the other solvers, and even win the 'user' track.
 
-%%%The user track
+The implementation of the anytime algorithm was shown through the many hard problems required to be solved.
+For example, many of the problems in the 'trendy' track required a lengthy search, and timed out requiring the return of a solution before the optimal was found.
+Looking at many of these timed out problems, reveals that many of them returned optimal solutions regardless.
+This leads to the presumption that the finding of the optimal solution is not the time consuming part of the search, but the proof that there are no better solution remaining.
 
-
-
+The criteria that were defined in to enter this competition were wide ranging, and will be specifically discussed in chapter \ref{strategies}.
+Sufficly to say, the reason for GJSolvers win of the 'user' track could be put down to the easily defined and tuned criteria that allowed the quick testing of different heuristics.
 
 
 %\section{Other Methods}
@@ -549,3 +607,9 @@ http://mancoosi.org/misc-live/20101126/paranoid/
 %\subsection{Constraint Solver}
 %We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
+
+\section{Summary}
+In this chapter first Boolean satisfiability solvers were introduced, 
+describing the DPLL algorithm and its extensions through pseudo-Boolean constraints as a means to solve component evolution problems.
+Then the implementation produced through this research, GJSolver, was introduced with the modified iterative strengthening algorithm to find optimal solutions.
+Finally, the description of the MISC competition and GJSolver's results through it were given to show the verification of it as a suitable implementation to solve CUDF problems.
