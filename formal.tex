@@ -1148,9 +1148,9 @@ For each package formula $pf$ in $updatepkgflist$, two types of constraints must
   \item no packages with a lesser version than the highest currently installed component with the name from $pf$ can be included.
 \end{enumerate} 
 
-Creating these constraints is a more complex challenge than the previous requests, as they require the excelusive-or operator $\oplus$, and comparison to the installed system. 
+Creating these constraints is a more complex challenge than the previous requests as they require the use of a cardinality constraint and comparison to the installed system. 
 
-The first type of constraint is of the form $a_1 \oplus \ldots \oplus a_i$, 
+The first type of constraint is of the form $a_1 + \ldots + a_i = 1$, 
 whose defined semantics are $\{a_1,\ldots,a_i\} \subseteq E_{R \cup \Delta}(X)$ iff $|\{a_1,\ldots,a_i\}| = 1$.
 That is, a set of exactly one component that satisfies can be included in the resulting system.
 Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,

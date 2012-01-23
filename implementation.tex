@@ -27,7 +27,6 @@ However, through extending the SAT solver implementations to also handle other t
 In this chapter the algorithms and implementation of CDR using SAT solvers extended with pseudo Boolean constraints, are discussed.
 First the Davis-Putnam-Logemann-Loveland algorithm \citep{Davis1960, davis1962machine} and its extensions, which are the basis for many current SAT solvers, are described.
 This will give a basic understanding of the internal workings of current SAT solvers.
-The specific implementation of Eclipse P2 and P2CUDF by \cite{leBerre2010} is then described,
 this is given as a comparison of a current technology used by CDR implementations.
 Then the description of this research's CDR implementation, GJSolver, is given.
 The specific reason for the necessary changes, the differences from other solutions, and the advantages to using it.
@@ -210,18 +209,18 @@ Such algorithms enable larger formulae to be solved without necessary increasing
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
 This DPLL algorithm can easily be adapted to solve problems with other types of constraints, not only SAT constraints.
 Through extending DPLL with such constraints, more problems can be expressed and solved.
-A typical extension is through using pseudo-Boolean constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
+A typical extension is through using pseudo-Boolean (PB) constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
 Through this extension the optimisation of problems like the evolution of component systems can be accomplished.
 
 \subsubsection{Pseudo-Boolean Representation}
-The pseudo-Boolean representation is defined as such
+The pseudo-Boolean representation is defined as such:
 
 \begin{defs}
 A pseudo-Boolean constraint is a linear inequality over Boolean literals $x_i$ of the form
 
 $\sum a_i x_i \geq k$
 
-with $x_1 \in \{0,1\}$ and fixed integers $a_i$ and $k$.
+where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
 That is, the constraint is formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$ and an integer $k$.
@@ -240,7 +239,15 @@ Such constraints, can be translated into the standard CNF, but the original pseu
 Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
 Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
- 
+
+\subsubsection{Pseudo-Boolean Optimisation}
+The optimisation of pseudo-Boolean constraints is one of the goals of their addition to SAT solvers.
+This optimisation involves trying to assign the Boolean variables values in such a way to either minimise or maximise the value $k$ in a PB constraint.
+That is, the goal of pseudo-Boolean Optimisation, to assign values to the Boolean variables of $x_1,\ldots,x_i$ to make a given PB equation $a_1x_1 + \ldots + a_ix_i$ its maximum or minimum.
+
+This problem is difficult to solve and NP-Hard, and through algorithms described later in this chapter, can be solved using a DPLL based solver.
+It can also accurately describe many of the optimisation problems that component system evolution requires to solve to find a suitable system.
+
 \subsection{MiniSat and SAT4J}
 MiniSAT presented in \cite{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
 It uses the DPLL based conflict driven algorithm as discussed above.
@@ -260,6 +267,8 @@ Other implementations of CDR where often component model specific, or involved d
 The CDR implementation created through this research is known as GJSolver, 
 and is designed to solve CDR problems represented in CUDF with optimisation descriptions in Mancoosi format.
 
+\subsection{Requirements of GJSolver}
+
 Given the context under which GJSolver was developed, the set of requirements that it was designed according to are briefly listed here:
 \begin{enumerate}
   \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
@@ -274,7 +283,7 @@ Given the context under which GJSolver was developed, the set of requirements th
 
 The implementation details in the GJSolver that relate to these requirements will be discussed in the 
 
-\subsection{Mancoosi International Solver Competition}
+\subsubsection{Mancoosi International Solver Competition}
 Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
 How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects to the development of GJSolver.
 
@@ -298,7 +307,7 @@ The time in which the solver is allowed to run is 5 minutes, after this is will 
 This time limit either ensures that your algorithm returns a result quickly or is an anytime algorithm, where it can be return a result when interrupted during the search.
 The latter is the option that has been selected for GJSolver, and will be discussed in the next section.
 
-\subsection{Anytime Algorithm}
+\subsubsection{Anytime Algorithm}
 As component system evolution is NP-Hard, the time required to find an optimal solution can be impractical.
 For this reason, GJSolver will be implemented with an anytime algorithm at its core.
 An anytime algorithm can return a valid solution to a problem if it is interrupted before it ends.
@@ -311,24 +320,68 @@ This means that if it is necessary to interrupt the algorithm, it is possible to
 However, this is only if interuption is necessary, as GJSolver will encounter a wide range of difficult problems, 
 it is difficult, or impossible, to judge beforehand if a problem will require the algorithm to be interrupted. 
 
-\subsection{Expendable Criteria}
+\subsubsection{Expendable Criteria}
 The ability to test and experiment with a wide range of possible criteria to use in CDR is a goal of this research.
 This requirement is one which must be defined
-To enable this, GJSolver must be developed in a modular enough manner in which the criteria can be extended, modified, and executed quickly.
+To enable this, GJSolver was developed in a modular manner, in which the criteria can be extended, modified, and tested when solving problems quickly.
 
-\subsubsection{Component Evolution Mapping}
+\subsection{Implementation Decisions}
+%%%First decision we base our solver on Eclipse P2
+The first decision that was made in the development of the GJSolver, was to model GJSolver on another successful CDR solver, Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010}.
 
-\subsubsection{Pseudo-Boolean Optimisation}
-%%%Then through repeatedly finding a solution then adding a constraint to ensure the next solution is at least as good, the best solution is found
+%%%The advantages to this decision
+There are many advantages to basing GJSolver on P2; firstly P2 had already been modified to enter MISC, so had various tools (like a CUDF parser) that reduced the work significantly.
+The developers of Eclipse P2, are also the developers of the internal SAT solver SAT4J,
+This may of lead to difficulties in making changes as the dependencies between the two may have become intertwined.
+However, due to the requirement that P2 is deployed inside of the Eclipse framework, P2 and SAT4J are separated into OSGi bundles for easy reuse.
+Most importantly of all, both SAT4J and P2 are open source making internal investigation of issues, and modification possible reducing risk and increasing reuse.
 
-%%%Further optimisation can be made through quickly finding a satisfactory solution, this reduces the space in which to find a better solution
+GJSolver however is not just a modification of Eclipse P2, there where some core problems that would make such an effort impractical.
+Firstly, Eclipse P2 is a solver for the OSGi/Eclipse component models, and has much superfluous code and platform specific details.
+The way in which P2 solves CUDF problems, is to first change them into OSGi problems through an internal data structure that does not resemble CUDF.
+This additional layer of abstraction makes error checking, and solution checking a difficult process as the problem no longer directly resembles the original description.
+The implementation of criteria in Eclipse P2 is also difficult to alter as again the system is built for optimising OSGi specific CDR problems.
+
+Once this decision was made, this constrained the implementation of GJSolver to being Java based, 
+using SAT4J as a core and implementing a pseudo-Boolean optimisation algorithm.
+The conversion from CUDF into SAT and PB constraints for use by SAT4J is firstly discussed.
+Lastly the algorithm used to implement the pseudo-Boolean as this is the part of the problem that is most important to implement.
+
+\subsubsection{CUDF to SAT and PB Constraints}
+In chapter \ref{formal} the abstract definition of the problem was described using four types of constraints, keep, dependency, conflict and request.
+The mapping of a CUDF document to a set containing such instances was also described, where the request constraints where also extended.
+
+The mapping from these four constraints to the SAT and pseudo-Boolean formula as defined in this chapter is described here.
+
+Given the definitions above, where a formula $F$ is a set of clauses, a clause is a set of literals, and a literal is either a variable or its negation;
+The set of variables are then defined as the set of component $C$, therefore the literals are components or their negation.
+
+The mapping to this formalism from the keep, dependency, conflict constraints are: 
+\begin{itemize}
+  \item keep constraints of the form $a_1\vee \ldots \vee a_n$  can be represented as a clause $\{a_1,\ldots,a_n\}$
+  \item dependency constraints of the form $a \rightarrow c_1 \vee \ldots \vee c_n$ can be represented as the clause $\{\neg a, c_1, \ldots, c_n\}$
+  \item conflict constraints of the form $a \rightarrow \neg c$ can be represented as a clause $\{\neg a, \neg c\}$
+\end{itemize}
+
+The request constraints, which were extended in the CUDF mapping, can be mapped as:
+\begin{itemize}
+      \item install constraints of the form $a_1 \vee \ldots \vee a_n$  can be represented as a clause $\{a_1,\ldots,a_n\}$
+      \item remove constraints of the form $\neg a$ can be represented as a clause $\{\neg a\}$
+      \item update constraints have two clause types; one $\neg a$ can be represented as a clause $\{\neg a\}$;
+      the second $a_1 + \ldots + a_i = 1$ can be represented by the pseudo-Boolean clause with literals $\langle a_1,\ldots,a_i\rangle$, coefficients $\langle 1_1,\ldots,1_i \rangle$
+      and integer $1$, and the clause $\{a_1,\ldots,a_i\}$.
+\end{itemize}
+
+The update constraints of the form $a_1 + \ldots + a_i = 1$ accomplish the requirement of updated request to have exactly one version of a set of versions installed in the system.
+This constraint could be mapped to SAT constraints in CNF efficiently as described in \cite{silva2007}.
+However, as the requirement to use a pseudo-Boolean solver has already been defined, the most direct method is to map it to a PB constraint.
 
 \subsubsection{Iterative Strengthening}
 The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
 describes an anytime algorithm that iteratively finds better solutions.
 This is done by first finding a solution, then iteratively adding constraints to the formula that ensure the next solution found will be better than the previous.
-This continues until either the algorithm is interrupted by the formula is unsatisfiable, then taking the last found solution. 
-This algorithm is defined in figure \ref{impl.strength}
+This continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
+This algorithm is defined in figure \ref{impl.strength}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -350,12 +403,39 @@ find-solution(\(F\),strengthen):
 \end{center}
 \end{figure}
 
-Firstly in this algorithm the \verb+DPLL+ algorithm has been altered slightly by only taking the formula $F$ and returning a set of literals $model$ that satisfy $F$.
-The second option is that DPLL returns \verb+UNSAT+
+The first aspect to note in this algorithm is that the \verb+DPLL+ function has been altered slightly.
+This function now takes the formula $F$ as a parameter and return a solution, $answer$, that satisfies $F$, 
+or if the formula is unsatisfiable then it returns the flag \verb+UNSAT+.
+
+The first action in this algorithm is to check if the formula is satisfiable, by assigning the output of the \verb+DPLL+ function to the variable $answer$.
+If $answer$ is the flag \verb+UNSAT+, then the algorithm stops and returns that the formula is unsatisfiable.
+
+The main loop of this function first assigns the contents of the variable $answer$ to the variable $model$.
+
+The function \verb+strengthen+ is then called on $model$, to generate a set of constraints that when added to the formula ensure that only solutions more optimal are satisfiable.
+Therefore, given some function $d$ is measures how optimal a solution is, $model_1$ satisfies $F$, and $constraints = $ \verb+strengthen+$(model_1)$;
+any $model_2$ that satisfies $F \cup constraints$ must be of the relation $d(model_1) < d(model_2)$.
+That is, that given some measurement of optimal, adding the constraints ensure that only more optimal solutions satisfy the formula with the strengthened constraints. 
+
+These constraints are then added to the formula, and another $answer$ is found using \verb+DPLL+.
+This function is the mechanism to find the optimal solution given some criteria.
+As such, the criteria must be able to be represented in the formula, as to create constraints that will find more optimal solutions.
+
+To ensure that this algorithm will end, and not just have \verb+DPLL+ repeatedly return the same answer to the formula, 
+the found $model$ must not satisfy the formula with the strengthened constraints.
+If this is the case, the number of answers that \verb+DPLL+ can return will decrease by at least one per iteration.
+
+This main loop will continue until the function \verb+interrupted+ returns true, which may happen given some external cause (like a user stopping the algorithm or a timer running out),
+or the strengthened formula is found to be unsatisfiable.
+At this point the previously best solution discovered stored in the variable $model$ will be returned.
 
 \subsection{Lexicographic Optimisation}
-The basic iterative strengthening approach assumes that there is only one strengthen function.
-This is not the case in the lexicographically ordered criteria of the component system evolution problem.
+%%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
+The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be modified to handle lexicographically related criteria, so as to solve component evolution problems.
+By adding an additional outer loop, including other necessary alterations, the original algorithm has been modified to handle lexicographical criteria.
+
+The original iterative strengthening algorithm with the lexicographical extension has been implemented in GJSolver. 
+This altered algorithm is presented in figure \ref{impl.lexstrength}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -364,11 +444,8 @@ find-lex-solution(\(F\),criteria):
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSAT:
         return UNSAT
-    order = \(\langle \rangle\)
     do:
         current-criterion = criteria.pop()
-        order = order.append(current-criterion.order()))
-        updateorder(order)
         do:
             \(model\) = \(answer\)
             \(constraints\) = current-criterion.strengthen(\(model\))
@@ -377,35 +454,73 @@ find-lex-solution(\(F\),criteria):
         while not interrupted() and \(answer\) != UNSAT
         \(F\) = \(F \backslash constraints\)
         \(F\) = \(F \cup \) current-criterion.lock(\(model\))
-    while not interrupted() and current-criterion != null
+        \(answer\) = \(model\)
+    while not interrupted() and criteria.size() != 0
     return \(model\) 
 \end{alltt}
   \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
-  \label{impl.strength}
+  \label{impl.lexstrength}
 \end{center}
 \end{figure}
 
+The first alteration to the original algorithm is that this version takes two parameters, firstly the formula denoted as $F$;
+secondly a stack of criteria, where the top of the stack is the criteria most lexicographically important.
+
+Again the first action of this algorithm is to check whether the formula is at all satisfiable.
+
+The new outer loop is defined, whose first action is to $\verb+pop+$ off the most important criteria and store it in the variable \verb+current-criterion+.
+Then the inner loop based from original algorithms main loop starts.
+This inner loop's main difference to the original is that the \verb+strengthen+ function is now \verb+current-criterion.strengthen+, meaning that it is criterion specific.
+As this loop iterates, the lexicographically most important criteria is strengthened and the rest are ignored.
+
+After the \verb+current-criterion+ has been strengthened till is has created an unsatisfiable formula, then the constraints that made it unsatisfiable are removed.
+Then the function \verb+current-criterion.lock+ is called to create a set of constraints that ensure no worse solution satisfies the formula.
+This function is almost identical to the strengthening function, except that is allows the same solution to be found again.
+
+The outer loop continue until there are no more criteria to optimise, or the loop is interrupted, as like the original this algorithm maintains and anytime requirement.
+
+\subsubsection{Criteria}
+%%%This algorithm shows the use of some methods that criteria must implement
+This new algorithm allows us to define the necessary requirements a criteria must define in order to be used.
+Each criteria must define the functions \verb+strengthen+ and \verb+lock+ to be used in this algorithm.
+Further more, through altering the \verb+decide+, or literal order, function in the DPLL algorithm, each criteria could make the search for optimal solutions more efficient.
+This will help guide the search to near optimal solutions, which will lower the upper bound of the number of loops necessary to find the most optimal solution.
+
+%%%Previous solution
+As defined in chapter \ref{formal}, the ranking functions which define the a criterion's measurement of optimality, take two arguments;
+the previous component system, and the proposed system.
+This means that the functions \verb+strengthen+ and \verb+lock+ may take into consideration the previous system as a means of determining how optimal a solution is.
+For example, to measure the amount of added components to the system, the previous solution must be taken into consideration.
+Therefore, any constraints returned by \verb+strengthen+ or \verb+lock+ can be created through the use of the previous component system. 
+
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
-%%%These simplifications are mostly necessary for this problem as it keeps the problem manageable,
-%%%and including all aspects of our formal optimisation framework would be practically impossible
+Given this algorithm and these requirements, there are a few drawbacks to this approach.
+These include, the optimisation criteria must be linear and real numbers cannot be represented with integer pseudo-Boolean constraints.
 
 %%%The optimisation must be represented linearly
 As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no easy solution to extending a SAT solver to handle non-linear constraints.
 
+
 %%%Real numbers must be truncated to fit the integer representation. 
 
-%%%Only one solutin can be chosen so product orders are randomly selected to a degree, this can be mitigated by having no stochastic elements in the algorithm
-
-%%%No criterion can be of a partial order though through product composition the problem can be a partial order
-
-%%%The only aggregation of numbers between integers is addition.
-
-%%%It is too expencive to recalculate cardinalities for each component given a specific solution, therefore the cardinalities of a component should be solution independant
+%%These are necessary to keep the implementation practical
+These simplifications are seen as necessary in order to keep the problem manageable.
+Including all aspects of our formal optimisation framework would be practically impossible, and limit the efficiency of finding any solutions.
 
 \subsection{Verification}
 %%%We entered this solver into two Mancoosi MISC competitions
+The process of validation of the GJSolver implementation was through entering it into the Mancoosi International Solver Competition, whose requirements are described above.
+This process was taken twice, firstly in a MISC Live event, which is an interim event between the main competition.
+This was done as an initial trial run, to find and remove any large problems.
+GJSolver was then entered into the 
 
+http://mancoosi.org/misc-live/20101126/paranoid/
+
+\textbf{Mancoosi International Competition Ready}: 
+ \textbf{Anytime Algorithm}: 
+  \textbf{Easily Creatable Criteria}: 
+  
 %%%In the first competition we had only partially implemented much of the functionality, so we did not expect great results.
 
 %%%In some instances we where returing non optimal solutions, The bug where we had to add all package versions of all components. 
@@ -422,14 +537,15 @@ As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no e
 %%%The user track
 
 
-\section{Other Methods}
-This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
 
 
-\subsection{Integer Programming}
-%%%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
-\subsection{SMT Solvers}
-%%%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
-\subsection{Constraint Solver}
-%%%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
+
+%\section{Other Methods}
+%This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
+%\subsection{Integer Programming}
+%Discussion of this method as the best MISC solver uses this, it has a very complex implementation
+%\subsection{SMT Solvers}
+%SMT Solver, a slightly higher logic than SAT uses; it has to broad a definition when SAT suffices
+%\subsection{Constraint Solver}
+%We could just use Prolog, like SMT I think it is too broad when there are good SAT solvers
 
