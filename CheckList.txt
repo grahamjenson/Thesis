@@ -4,6 +4,10 @@ the words "we" "I" "our" "us" must be chaged
 However --> However, 
 package ---> component when not reffering specifically to an ubuntu or CUDF package
 
+
+upgrade -- is to replace an existing component with a newer version.
+
+
 \ref should have a space and \footnote should not
 
 Search pdf for "?"

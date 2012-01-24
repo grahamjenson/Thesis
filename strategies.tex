@@ -1,12 +1,43 @@
-\chapter{Strategies}
+\chapter{User Strategies}
 \label{strategies}
 \epigraph{Motion or change, and identity or rest, are the first and second secrets of nature: Motion and Rest. 
 The whole code of her laws may be written on the thumbnail, or the signet of a ring.}
 {\textit{Ralph Waldo Emerson in "Nature", Essays, Second Series (1844)}}
 
-%%%What is left to define
-Up till this point in this research, the actual criteria that is used to evolve a component system have been left abstract and undefined.
-Also, the way in which the users interact have been left to a set of actions that are possible to be requested.
+%%%We have not yet defined the user
+Up till this point in this thesis the user has been left disembodied and abstract.
+However, given the aims of this research are to look at not only the process of component system evolution, but also the consequences of different approaches.
+As the user is the actor that defines the approach taken to evolve a component system, this user will need to be described and explored.
+
+%%%The user evolves the system, they are important
+Lehman laws on software evolution state ``the system must continually grow to maintain user satisfaction''.
+In systems that are not component based, this evolution process was done completely by a third party.
+What extra functionality is included, what bugs are important and should be fixed, what font the buttons have. 
+However, in component systems some of these decisions are given to the user, and therefore are out of the developers control.
+For instance, a user of a component system may experience issues with a particular component, 
+and may decide to upgrade, or downgrade that component to fix these issues.
+
+%%%What possible decisions can they make? Add, remove, upgrade, and criteria
+A developer of a component can change the component at the code level, however the user does not have the ability to be that precise in their actions.
+Some of the possible actions a user can take to evolve their system have been described in the previous chapter,
+where the user can request a component to be installed, removed or upgraded.
+This limited set of actions can provide a great deal of choice when evolving a system, as their can be many components available to act upon.
+If the user automates this evolution they may also choose the criteria by which to judge and select a resulting component system.
+This criteria will guide the systems evolutions as the user selects the changes to be made to the system. 
+
+%%%What drives the users decisions?
+This user of a component system then has the power to change the system they are using.
+How do they use this power, what drives the decisions that they make?
+A fundamental influence on how the user would select a to evolve their system is the objectives of the system.
+These objectives determine the included functionality and as the objectives change the way in which this functionality is altered.  
+Another influence on what actions a user takes is the perceived risk of taking an action, or not taking an action.
+For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
+
+
+
+the actual criteria that is used to evolve a component system have been left abstract and undefined.
+
+Also, the way in which the users choose to evolve a component system, why certain actions are 
 Given this researches goals of studying the way in which component system evolve, both these areas must be defined.
 
 %%%What are strategies, Plans to employ to evolve a component system
@@ -18,10 +49,7 @@ Therefore, there are a two main aspects to these strategies;
 the users requests to fulfil the systems objectives and how the CDR implementation used fulfils these requests.  
 
 %%%Why are the users choices important
-As Lehman laws on software state, the system must continually grow to maintain user satisfaction.
-This required evolution of a component system forces a user to make decisions about how to evolve their system.
-In the CUDF component model, a component may be requested to be installed, removed or upgraded.
-These actions can be requested by the user in order to evolve the component system.
+
 
 %%%Why is the CDR criteria important
 Each request made by the user is resolved by a CDR implementation.
