@@ -4,36 +4,90 @@
 The whole code of her laws may be written on the thumbnail, or the signet of a ring.}
 {\textit{Ralph Waldo Emerson in "Nature", Essays, Second Series (1844)}}
 
-Up till this point in this research, the actual criteria and strategies used to evolve a component system have been left abstract and undefined.
+%%%What is left to define
+Up till this point in this research, the actual criteria that is used to evolve a component system have been left abstract and undefined.
+Also, the way in which the users interact have been left to a set of actions that are possible to be requested.
+Given this researches goals of studying the way in which component system evolve, both these areas must be defined.
+
+%%%What are strategies, Plans to employ to evolve a component system
+Together, the criteria and the users actions, are described as an evolution strategy.
+By strategy, it is meant the plan or pattern employed by a user to evolve a system to attain the systems objectives.
+That is, how the user chooses to evolve their system with CDR, given what they want their system to do.
+For example, if a system administrator wanted their system to be updated, then every day they would request the CDR implementation to update their system.
+Therefore, there are a two main aspects to these strategies; 
+the users requests to fulfil the systems objectives and how the CDR implementation used fulfils these requests.  
+
+%%%Why are the users choices important
+As Lehman laws on software state, the system must continually grow to maintain user satisfaction.
+This required evolution of a component system forces a user to make decisions about how to evolve their system.
+In the CUDF component model, a component may be requested to be installed, removed or upgraded.
+These actions can be requested by the user in order to evolve the component system.
+
+%%%Why is the CDR criteria important
+Each request made by the user is resolved by a CDR implementation.
+As many solutions may exist that can satisfy a user request, CDR must select a solution that should be optimal for the user.
+The way in which CDR selects a solution is through the criteria that define what an optimal solution is.
+This criteria will effect the way in which the component system evolves, so is part of the strategy used to evolve systems.
+
+%%%In this chapter\ldots
+In this chapter, a survey that was given to users in order to determine their strategies in how they evolve their component systems is discussed in section \ref{strat.usersurvey}.
+This surveys results are given and discussed in order to illuminate general user strategies when evolving component systems.
+Then, criteria that is or could be used in CDR implementations in order to evolve component systems is discussed.
+Each criteria is mapped to the formal description given in chapter \ref{formal} and the implementation description given in chapter \ref{implementation}.
+
+\section{User Survey}
+\label{strat.usersurvey}
+%%%The survey used to validate and refine the model
+An online survey was also completed with questions and results presented in appendix \ref{apx.survey}.
+This survey was conducted on a popular Internet forum reddit\footnote{http://reddit.com} by groups of Ubuntu users, GNU/Linux users and server administrators.
+This survey was completed by over 55 such people, who answered questions about package manager use, what and how they use it and the life cycle of its use.
+It also involved the submission of log files, which enable the processing for real update and install probabilities, further described in chapter \ref{ubunutsimulation}
 
 
-%%%An \textbf{Evolution Strategy} is the plan or pattern employed by a user through component resolution to evolve a system to attain the systems objectives
+\subsection{Questions}
+%%%The goals of the survey:
+
+What is the system for?
+How experienced with Package Managers are you?
+What system are you using?
+What package manager are you using?
 
 
-%%%The two core criteria a user must consider when evolving a component system (after the neccessity of having the systems constraints resolved)
-%%%are that the system should be up-to date while changing as little as possible
-The two core criteria considered during component system evolution are the maximisation of the versions of individual components, 
-and the minimisation of the change caused by the evolution to the system.
-Together these two criteria express that a system wants to be as up to date as possible, while changing as little as possible.
-Although these criteria must be considered in a CDR algorithm,
-they are not strictly defined, conflicting and for different users relate in different ways.
-In this chapter we explore the nature and definitions of the two criteria,
-and show that there is a significant gap between what is currently known and what we intend to explore. 
+Describe your initial interaction with the package manager.
+Describe your day to day interactions with the package manager.
+What usage life cycle do you have with the package manager.
+Describe an unusual scenario in which the Package Manager was used.
 
-%%%These constraints are clearly conflicting, causing a pareto front of possible solutions
-The first step toward finding optimal solutions is to define the criteria.
-The first criterion of a valid component solution is whether it has all its dependencies resolved,
-this can be tested by extracting information about dependencies from component meta-data.
-Suppose the user has also defined their preference for free and open source components;
-this is the second criterion where the licences of the components can be checked to match with this preference.
-Further suppose the system is in a resource constrained environment where size matters, 
-this motivates the final criterion to minimise solution size.
+What other questions should I have asked?
 
-%%%They are also ill/un defined criteria and relationships. 
-%%%This leaves a space open for exploration and experimentation of their defintion and relationships.
+\subsection{Results}
+%%%The results are summarised as:
 
+Mean experience 3.9/5 
 
-\section{Progressive vs. Conservative}
+\begin{table}
+\begin{tabular}{l | c | c | c | c |}
+Request & Init. & Daily & Weekly & Monthly \\
+Update  & 45 & 27 & 16 & 0 \\
+Install & 49 & 6 & 17 & 3 \\
+Remove & 6 & 4 & 1 & 0\\
+\end{tabular}
+\caption{Summary of action}
+\label{tablelabel}
+\end{table}
+
+``Daily. I update, upgrade and install daily. In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).''
+
+``I generally go through quickly and install my most used software. From then on, I'll add bits and pieces as required.
+ I think that's pretty standard behavior. I do system-wide updates manually -- weekly or monthly, in general.''
+
+``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
+
+``I update my packages whenever I log in each day, and will only install a new package when I have a new need to.''
+
+\subsection{System Goals: Progressive vs. Conservative}
+%%%What we learnt from the survey, progressive users, and conservative users, change and uptodateness
+
 
 
 %%%The force and resistance to change is a natural problem, here we use the metaphor of politics to show this.
@@ -76,19 +130,6 @@ The measurement of change that a system goes through during evolution is also di
 The added, removed, updated, total changed, have all been considered as metrics before. 
 As with the version metrics, none of these consider the dependencies when looking at the change that is performed on the system.
 
-\subsubsection{Update Criteria}
-{}In the previous chapter two version dependent criteria are presented and defined, one based on the Eclipse P2 concpet to minimise the ``uptodate distance'', 
-{}and the second based on Mancoosi version to minimise the amount of packages that are notuptodate. 
-{}The implications of using these criteria to update a system are discussed with relation to the order of the criteria, the average change in a system and the comparison of these values.
-
-The order consequences of the order of the crtieria when updating are important given the semantics of the CUDF standard.
-The key points when selecting to update a package in a CUDF standard is that there can only be one package and it must be of equal or greater version than the highest installed current version.
-This means that if a package has only one installed package then it does not need to change to be valid in the returned solution.
-Therefore, the returned system for any update command can be the initial system.
-This means that if a criteria, such as changed, or hamming where minimised as the most important  
-
-Dangers of Update Distance, as the distance for an uptodate components is 0, installing a new non upto date component costs nothing. If we set it to 1, then it will minimise solution size.
-\subsection{The Relationship between Criteria}
 %%%There are extremist views on both sides of these criteria; server admin will change a system reluctantly where developers will constantly stay up-to date.
 
 %%%The actual relationships between these criteria though are unknown, thus the reasons for either view is based on intuition or assumption and not fact. 
@@ -97,26 +138,30 @@ Dangers of Update Distance, as the distance for an uptodate components is 0, ins
 
 %%%These questions can be answered by looking at the dependencies and relationships between criteria.
 
-Each time a user decides to evolve a component system, the decision must be made about the risks of the evolution.
-In an environment which is mission critical, all risk is eliminated and an unecessary change to the system is too risky.
-In a development environment where the user may be trying to fix potential problem, 
-or test different packages, then the risk is accepted as the system is essentially disposable, and a complete re-installation is not out of the question.
-These two strategies are represented in by the current depenceny resolution implementations, however very little middle ground is available for the customisation of applications.
-This was noted in the paper %TODO cite mancoosi CBSE 2011 paper
-
-
-\subsection{Efficient Ordering of Criteria}
-%%%Conflicting criteria should be lexicographically last, as they have the hardest time optimising if it times out it will still have a pretty good solution
-
-%%%The last lex criteria should always be weighted such that it is availble for each component. The first half of the strategy guides the solution towards what is wanted.
-%%%An exmaple is we want to maximise pagerank in our solutions, +sum(pagerank) will work, but the optimal solution would then be to install as many components as possible.
-%%%So we minimise change first -change,+sum(pagerank), this will install as many components that have the same name. 
-%%%-changed,-newc,+sum(pagerank) will minimise change from original system, minimise the amount of new components that can be added, and then maximise pagerank, 
-%%%so only installing new components with the largest pagerank.
-
-%%%Criteria that group components are more efficient as they have smaller constraints, criteria should be ordered lexicographically as efficiently as possible.
 
 \section{Criteria}
+%%%The two core criteria a user must consider when evolving a component system (after the neccessity of having the systems constraints resolved)
+%%%are that the system should be up-to date while changing as little as possible
+The two core criteria considered during component system evolution are the maximisation of the versions of individual components, 
+and the minimisation of the change caused by the evolution to the system.
+Together these two criteria express that a system wants to be as up to date as possible, while changing as little as possible.
+Although these criteria must be considered in a CDR algorithm,
+they are not strictly defined, conflicting and for different users relate in different ways.
+In this chapter we explore the nature and definitions of the two criteria,
+and show that there is a significant gap between what is currently known and what we intend to explore. 
+
+%%%These constraints are clearly conflicting, causing a pareto front of possible solutions
+The first step toward finding optimal solutions is to define the criteria.
+The first criterion of a valid component solution is whether it has all its dependencies resolved,
+this can be tested by extracting information about dependencies from component meta-data.
+Suppose the user has also defined their preference for free and open source components;
+this is the second criterion where the licences of the components can be checked to match with this preference.
+Further suppose the system is in a resource constrained environment where size matters, 
+this motivates the final criterion to minimise solution size.
+
+%%%They are also ill/un defined criteria and relationships. 
+%%%This leaves a space open for exploration and experimentation of their defintion and relationships.
+
 %%%Here we specifically define different criteria/heuristics from academia (Mancoosi, Lehman), industry (JDepend, P2, aptitude, apt-get), and our own PageRank, predictive change,
 %%%All defined formally, and ready for use for the simulation in the next chapter
 
@@ -223,4 +268,8 @@ this will minimise the necessary changes over a long period of time.
 %%%Discuss information from component testing (e.g. treaty, unit tests)
 
 %%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
+
+
+\section{Summary}
+
 

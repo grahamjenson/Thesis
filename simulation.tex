@@ -442,7 +442,7 @@ are represented using a set of pairs, each pair containing the action and the pr
 These variables are formally defined as:
 \begin{itemize}
   \item the initial system as $InitialSystem$ which is a CUDF object.
-  \item the update criteria $UCRIT$ and install criteria $ICRIT$ as strings in the format of given in chapter \ref{criteria}
+  \item the update criteria $UCRIT$ and install criteria $ICRIT$ as strings in the Mancoosi optimisation format as given in chapter \ref{implementation}
   \item the update probability as $UpdateProb$ is a number between 0 and 1
   \item the dates between the start date and the start date plus the number of days as $DATES$ is a list of integers of seconds since the epoch.
   \item the repository function $Rep(d)$ which returns a CUDF object for the given date $d$
@@ -703,7 +703,7 @@ and the processors used to execute the simulation given a configuration.
 If some significant aspect of the system was missed, or if some aspect was incorrectly defined, the simulation may produce results that are incomprehensible,
 or worse, misunderstood.
 Therefore, the validation of these artifacts is essential to move forward. 
-This validation was accomplished though regular stakeholder meetings, and an online survey with subject matter experts.
+This validation was accomplished though regular stakeholder meetings, and an online survey with subject matter experts (as described in chapter \ref{strategies}).
 
 \subsection{Stakeholder Meetings}
 %%%Weekly meetings with stakeholders (i.e. supervisors)
@@ -713,15 +713,9 @@ These are the people who are asking the questions and are also impacted by the o
 Meetings where held at regular intervals to ensure the projects progress and direction where correct.
 
 \subsection{Subject Matter Expert Survey}
-\label{usersurvey}
-%%%The survey used to validate and refine the model
-An online survey was also completed with questions and results presented in appendix \ref{survey}.
-This survey was conducted on a popular Internet forum reddit\footnote{http://reddit.com} by groups of Ubuntu users, GNU/Linux users and server administrators.
-This survey was completed by over 55 such people, who answered questions about package manager use, what and how they use it and the life cycle of its use.
-It also involved the submission of log files, which enable the processing for real update and install probabilities, further described in chapter \ref{ubunutsimulation}
-This survey was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
-
 %%%Results from what else should be asked, install stuff not from repository, installs break
+The survey described in chapter \ref{strategies}, 
+was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
 The questions asked in this survey helped gauge the necessity and frequency of user actions,
 so that only the most important aspects of the problem can be selected to be simulated.
 It also filled in gaps of what was missing from the survey and model, giving direction for exploration.
