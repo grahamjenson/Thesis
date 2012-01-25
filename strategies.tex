@@ -1,4 +1,4 @@
-\chapter{User Strategies}
+\chapter{User's Evolution Strategies}
 \label{strategies}
 \epigraph{Motion or change, and identity or rest, are the first and second secrets of nature: Motion and Rest. 
 The whole code of her laws may be written on the thumbnail, or the signet of a ring.}
@@ -22,8 +22,8 @@ A developer of a component can change the component at the code level, however t
 Some of the possible actions a user can take to evolve their system have been described in the previous chapter,
 where the user can request a component to be installed, removed or upgraded.
 This limited set of actions can provide a great deal of choice when evolving a system, as their can be many components available to act upon.
-If the user automates this evolution they may also choose the criteria by which to judge and select a resulting component system.
-This criteria will guide the systems evolutions as the user selects the changes to be made to the system. 
+As any action can be accomplished with various solutions, the user must choose the criteria by which to judge and select a resulting component system.
+This criteria will guide the systems evolutions through returning solutions that have attributes the user desires.
 
 %%%What drives the users decisions?
 This user of a component system then has the power to change the system they are using.
@@ -33,102 +33,145 @@ These objectives determine the included functionality and as the objectives chan
 Another influence on what actions a user takes is the perceived risk of taking an action, or not taking an action.
 For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
 
-
-
-the actual criteria that is used to evolve a component system have been left abstract and undefined.
-
-Also, the way in which the users choose to evolve a component system, why certain actions are 
-Given this researches goals of studying the way in which component system evolve, both these areas must be defined.
-
 %%%What are strategies, Plans to employ to evolve a component system
-Together, the criteria and the users actions, are described as an evolution strategy.
+The choices the user makes to evolve the component system is described as the users evolution strategy.
 By strategy, it is meant the plan or pattern employed by a user to evolve a system to attain the systems objectives.
-That is, how the user chooses to evolve their system with CDR, given what they want their system to do.
-For example, if a system administrator wanted their system to be updated, then every day they would request the CDR implementation to update their system.
-Therefore, there are a two main aspects to these strategies; 
-the users requests to fulfil the systems objectives and how the CDR implementation used fulfils these requests.  
-
-%%%Why are the users choices important
-
-
-%%%Why is the CDR criteria important
-Each request made by the user is resolved by a CDR implementation.
-As many solutions may exist that can satisfy a user request, CDR must select a solution that should be optimal for the user.
-The way in which CDR selects a solution is through the criteria that define what an optimal solution is.
-This criteria will effect the way in which the component system evolves, so is part of the strategy used to evolve systems.
 
 %%%In this chapter\ldots
-In this chapter, a survey that was given to users in order to determine their strategies in how they evolve their component systems is discussed in section \ref{strat.usersurvey}.
-This surveys results are given and discussed in order to illuminate general user strategies when evolving component systems.
-Then, criteria that is or could be used in CDR implementations in order to evolve component systems is discussed.
+In this chapter, the users that evolve component systems are described, and their choices of criteria defined.
+Firstly, a survey that was given to users in order to determine their strategies of how they evolve their component systems is discussed in section \ref{strat.usersurvey}.
+This survey was conducted in order to illuminate general user strategies and discuss aspects like interactions while evolving component systems.
+The criteria a user judges solutions by are then discussed, the reasons and system objectives they fulfil are described.
 Each criteria is mapped to the formal description given in chapter \ref{formal} and the implementation description given in chapter \ref{implementation}.
+This chapter is finished with a brief discussion on how criteria can be composed to fulfil different user objectives. 
 
 \section{User Survey}
 \label{strat.usersurvey}
 %%%The survey used to validate and refine the model
-An online survey was also completed with questions and results presented in appendix \ref{apx.survey}.
-This survey was conducted on a popular Internet forum reddit\footnote{http://reddit.com} by groups of Ubuntu users, GNU/Linux users and server administrators.
-This survey was completed by over 55 such people, who answered questions about package manager use, what and how they use it and the life cycle of its use.
-It also involved the submission of log files, which enable the processing for real update and install probabilities, further described in chapter \ref{ubunutsimulation}
+To describe and define the strategies that different users employ to evolve their component systems an online survey was conducted.
+This survey targeted users of GNU/Linux distributions, specifically Ubuntu, and also server administrators through the online forum reddit\footnote{http://reddit.com}.
+In this context the way in which component systems are evolved is through package managers, as described in chapter \ref{background}.
+It was completed by 59 users, who answered questions about them selves, the system they are evolving, and the way in which they evolve it.
+It also involved the submission of package manager log files, which enable the processing for real update and install probabilities.
+These logs are not analysed here, but are used further in chapter \ref{ubunutsimulation}.
 
+In this section a brief description of the survey and an analysis of what was learnt is given.
+The full set of questions in the survey is presented in section \ref{apx.survey}. 
 
 \subsection{Questions}
 %%%The goals of the survey:
+There are two types of questions in the survey; a set to identify the type of user, and a set to describe their interactions with package managers.
 
-What is the system for?
-How experienced with Package Managers are you?
-What system are you using?
-What package manager are you using?
+A set of questions used to identify the user are:
+\begin{itemize}
+  \item How experienced with package managers are you? 
+  \item What system are you using?
+  \item What package manager are you using?
+\end{itemize}
+These can be used to categorise the type of user and put into context the answers that they give.
+They can also be used to weigh their answers for credibility and potentially exclude results from novice or inexperienced users. 
 
+A set of questions asked about their use of package mangers are:
+\begin{itemize}
+  \item Describe your initial interaction with the package manager.
+  \item Describe your day to day interactions with the package manager.
+  \item What usage life cycle do you have with the package manager.
+  \item Describe an unusual scenario in which the package manager was used.
+\end{itemize}
+The main focus of these questions is to identify the life-cycle of interactions that the user has when evolving a system.
+This is mainly of interest latter in chapters \ref{simulation} and \ref{ubunutsimulation} when these variables must be defined.
+However, it also provides us with reasons for these actions to occur, and illuminates the users objectives and strategies.
 
-Describe your initial interaction with the package manager.
-Describe your day to day interactions with the package manager.
-What usage life cycle do you have with the package manager.
-Describe an unusual scenario in which the Package Manager was used.
-
-What other questions should I have asked?
+The survey finished with the question:
+\begin{itemize}
+  \item What other questions should I have asked?
+\end{itemize}
+This question tried to illicit comments and possible information that I could of gathered.
+It also provided a small verification of the survey, as to see if anything was missing that should of been asked.
 
 \subsection{Results}
 %%%The results are summarised as:
+The type of user that submitted the survey is important to be able to put in context their replies.
+Most users (29/59) used dpkg component model either in Debian or Ubuntu systems, and the majority of those uses used apt-get as their package manager.
+The next largest component model used was ArchLinux\footnote{http://www.archlinux.org/} (13/59) each one using the package manager pacman\footnote{http://www.archlinux.org/pacman/}.
+Other represented component models and package mangers include, Fedora with the rpm component model and yum package manger,
+Slackware with pkgtools, and Gentoo with portage.
 
-Mean experience 3.9/5 
+The users mean experience was recorded as 3.9/5.
+This is of course a subjective measure but describes the confidence in which the participants answered the questions. 
 
-\begin{table}
+The life cycle questions have been summarised into the frequency of each action in table \ref {strat.tblaction}.
+
+\begin{table}[htp]
 \begin{tabular}{l | c | c | c | c |}
 Request & Init. & Daily & Weekly & Monthly \\
-Update  & 45 & 27 & 16 & 0 \\
+Upgrade  & 45 & 27 & 16 & 0 \\
 Install & 49 & 6 & 17 & 3 \\
 Remove & 6 & 4 & 1 & 0\\
 \end{tabular}
-\caption{Summary of action}
-\label{tablelabel}
+\caption{Summary of the frequency of user actions with package managers}
+\label{strat.tblaction}
 \end{table}
 
-``Daily. I update, upgrade and install daily. In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).''
+This table shows the amount of users from the survey who perform the actions of upgrading their system, installing or removing a package 
+initially, when the system is first created, daily, weekly or monthly.
+It shows that the vast majority of users when they create a system upgrade the system and install required packages.
+This also shows that most users upgrade their system daily, and if they will likely install a package weekly.
 
-``I generally go through quickly and install my most used software. From then on, I'll add bits and pieces as required.
- I think that's pretty standard behavior. I do system-wide updates manually -- weekly or monthly, in general.''
+The unusual scenarios which the user described using the package manager included 
+11 of the 59 users stating that they had installed a set of packages to fulfil a specific task only to remove them the next day.
+This is described by the users responce ``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
+Also, 3 of the users stated that use of the package manager broke their system, which then required to be fixed through the package manager.
 
-``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
+In the final question asked if there is any more questions the general themes include, 
+the mitigation of failed actions, installing multiple versions of packages, and using a graphical user interface v.s. console based package manager.
+The majority (37/59) users did not fill out this option in the survey, hopefully showing that the majority expressed all they wished throughout the survey.
+One user even remarked ``Quite an all encompassing survey!'' in this field.
 
-``I update my packages whenever I log in each day, and will only install a new package when I have a new need to.''
+\subsection{Progressive vs. Conservative Users}
+The main outcome of this survey was the identification of different attitudes towards evolving a component system, with respect to the systems objectives.
+These attitudes, or stereotypes, the users have are described as \textbf{conservative} and \textbf{progressive}.
+These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society,
+and progressivism promotes change and reform to governments.
+These ideologies are caused because of risk; risk of change introducing new problems, and the risk of not changing having old problems persist.
+These two conflicting ideologies must be resolved, if the system is to function. 
+As described in the quote by Ralph Waldo Emerson that introduced this chapter, both these forces are natural;
+the force to stay in motion, and the force to rest.
 
-\subsection{System Goals: Progressive vs. Conservative}
-%%%What we learnt from the survey, progressive users, and conservative users, change and uptodateness
+These ideologies are analogous to component system evolution where there is a force that wishes to reduce the risk to a system by not altering it,
+and one to reduce risk by installing new versions of components.
+The majority of users will find some middle ground in which to mitigate both types of risk.
 
+For example, a users response that express a slight conservative attitude:
+\begin{quotation}
+In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).
+\end{quotation}
 
+Another example of a users response expressing a slight progressive attitude:
+\begin{quotation}
+I update my packages whenever I log in each day
+\end{quotation}
 
-%%%The force and resistance to change is a natural problem, here we use the metaphor of politics to show this.
-Changing to what is newer and better, but being wary of the change because of cost and risk is a conflicting problem in many domains.
-For instance, in politics, conservitism is the philosophy that emphasises minimal and gradual change in society, %TODO cite
-where progressivism promotes change and reform to governments.
-These two conflicting ideaologies must be resolved, if a government is to function. 
-As with component systems, 
-the forces of change brought about by newer versions of components and the resistance to change brought about by the harm it may cause
-are competing forces that must be resolved for a system to evolve.
-In this section we discuss the nature of these criteria, why they are important to consider and how they conflict.
+Both of these ideologies have extremes though, users who try to eliminate all risk of one of the opposing idea.
 
-%%%Both forces are caused because of risk, risk of change introducing new problems, risk of not changing having old problems linger
+For example, a user's response in the survey with an extreme progressive attitude:
+\begin{quotation}
+I do run an unstable system all the time, I help mitigate this with some redundancy in my most frequently used components, 
+using packages which perform the same function, but have different dependencies, since it's less likely to have multiple packages break at the same time. 
+If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.
+\end{quotation}
+This user has components in their system that are so new as to not be fully tested, these are described as unstable packages.
+To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system to ensure that it can be used.
+This users system will almost certainly be completely up to date, as any new component versions will be immediately integrated into their system.
+
+An example of an extremely conservative user's response when asked about the frequency with which they interact with the package manager:
+\begin{quotation}
+As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
+Following the configuration and construction, only the occasional upgrade is necessary. 
+Unless, of course, I receive a security notice about something.
+\end{quotation}
+So after the setting up of a system, this user will not evolve the system unless there is a direct security risk.
+This non-change will result in the system quickly becoming out of date.
 
 \subsection{Updating vs. Minimal Change}
 %%%These forces must also be resolved in software as well
@@ -168,6 +211,14 @@ As with the version metrics, none of these consider the dependencies when lookin
 
 
 \section{Criteria}
+%%%What do we mean by criteria
+Any requested change to a system may be satisfied by many possible solutions.
+When a user is confronted with this problem, they are forced to select a system that suits their needs.
+The mechanism by which they select a system is to judge the system based on certain criteria, and then select the one they find most acceptable.
+
+If the evolution process is automated through a mechanism like CDR, then this criteria must be strictly defined.
+
+
 %%%The two core criteria a user must consider when evolving a component system (after the neccessity of having the systems constraints resolved)
 %%%are that the system should be up-to date while changing as little as possible
 The two core criteria considered during component system evolution are the maximisation of the versions of individual components, 
@@ -297,6 +348,7 @@ this will minimise the necessary changes over a long period of time.
 
 %%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
 
+\section{Criteria Composition}
 
 \section{Summary}
 
