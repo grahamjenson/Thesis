@@ -207,14 +207,26 @@ Such algorithms enable larger formulae to be solved without necessary increasing
 
 \subsection{Pseudo-Boolean Extension of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-This DPLL algorithm can easily be adapted to solve problems with other types of constraints, not only SAT constraints.
-Through extending DPLL with such constraints, more problems can be expressed and solved.
+This DPLL algorithm can be adapted to solve problems with constraints that are not represented as CNF clauses.
+Through extending DPLL to be able to handle such constraints, problems can be more easily expressed and solved.
 A typical extension is through using pseudo-Boolean (PB) constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
-Through this extension the optimisation of problems like the evolution of component systems can be accomplished.
+Through this extension the method of pseudo-Boolean optimisation can be used to define criteria and optimise the evolution of component systems.
 
 \subsubsection{Pseudo-Boolean Representation}
-The pseudo-Boolean representation is defined as such:
+A pseudo-Boolean function is a function that takes a set of Boolean literals and returns a real number, i.e. $f:B^n \rightarrow \mathbb{R}$ where $B = \{0,1\}$.
+A psuedo-Boolean constraint is then an inequality relating the function to a number, e.g. $f(x) \leq k$.
 
+This is a broad definition of these concepts, to be efficiently included into the DPLL algorithm the pseudo-Boolean representation has been restricted to a linear equation.
+That is,
+\begin{defs}
+A pseudo-Boolean equation is a linear function over Boolean literals $x_i$ of the form
+
+$\sum a_i x_i$
+
+where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
+\end{defs}
+
+A pseudo-Boolean constraint is then defined as:
 \begin{defs}
 A pseudo-Boolean constraint is a linear inequality over Boolean literals $x_i$ of the form
 
@@ -222,6 +234,7 @@ $\sum a_i x_i \geq k$
 
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
+
 
 That is, the constraint is a tuple formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$, an inequality $\geq$, and an integer $k$.
 If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
@@ -488,6 +501,11 @@ When the \verb+current-criterion+ has strengthened the formula to make it unsati
 This is necessary to continue the search for more optimal solutions judged by the next criteria.
 The formula then has constraints from the function \verb+current-criterion.lock+ added to it, this ensures no worse solution will be found on the next iteration.
 
+These loops will iterate until either all the criteria have been optimised, or they are interupted.
+The result is a set of literals that satisfy the constraints in the variable $model$.
+These literals can be easily mapped to a set of components that are non-negative literlas in the model.
+That is, the resulting system of components is equal to $[c \mid c \in \mathbb{C}$ and $c \in model]$.
+
 \subsubsection{Criteria}
 %%%This algorithm shows the use of some methods that criteria must implement
 This new algorithm allows us to describe the necessary requirements a criteria must define in order to be used.
@@ -517,13 +535,13 @@ $RS_{min} = \langle L_{min}, \{F,T\}, \mathbb{L} \rangle$ and $RS_{max} = \langl
 
 The ranking function that goes with the maximising or minimising ranking system is denoted as either $Rank^{min}$ or $Rank^{max}$.
 These functions are defined to take two sets of literals, the previous solution and the proposed model and return a natural number to be either minimised or maximised.
-These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number cardinalities.
-That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of cardinalities $a$ to define a pseudo-Boolean equation. 
+These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number coefficients.
+That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of coefficients $a$ to define a pseudo-Boolean equation. 
 
-The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, cardinalities, inequality and natural number such that:
+The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, coefficients, inequality and natural number such that:
 \begin{itemize}
-  \item if the criteria function is $Rank^min$ with literals $l$ and cardinalities $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
-  \item if the criteria function is $Rank^max$ with literals $l$ and cardinalities $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
+  \item if the criteria function is $Rank^min$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
+  \item if the criteria function is $Rank^max$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
 \end{itemize}
 The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
 

@@ -220,7 +220,10 @@ Finally in this section the discussion of the use of these criteria, how they re
 The first criteria that will be defined is based on the \textbf{hamming} code distance metric \cite{hamming1950error}.
 This metric defines the distance between two sets by counting the size of their union subtracting their intersection (also known as symmetric difference).
 
-The ranking function is then $Rank^{min}_{hamming}(\gamma_1,\gamma_2) = |\gamma_1 \cup \gamma_2| - |\gamma_1 \cap \gamma_2|$.
+The list of literals that make up the pseudo-Boolean equation that define
+the hamming criteria are the negations of all literals in the previous solution, and the list of coefficients is  
+Given the previous solution is $\gamma_1$
+The ranking function is then $Rank^{min}_{hamming}(\gamma_1,\gamma_2) = [a]$
 
 This conservative criteria defines change as any addition or removal of a component from the resulting solution.
 It is a simply definition, lumping all types of change into the fundamental alteration of the set of components in the resulting system.

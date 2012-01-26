@@ -421,7 +421,7 @@ i.e. have a least upper bound and a greatest lower bound.
 A complete lattices satisfies these requirements, therefore is used as the representation. 
 
 %%%these complete lattice criteria using the product and lexicographic orders.
-These complete lattices are able to be composed using the lexicographic and product orders.
+These complete lattices are able to be composed using a lexicographic order.
 This provides a convenient, intuitive way to express relationships between criteria.
 
 %%%This framework can then be used to describe and discuss the multicritera problem of CDR.
@@ -509,48 +509,17 @@ For instance given a problem which is ranked with either $Correct$ or $Incorrect
 the optimal solution could be $Incorrect$ if there exists no solutions that are $Correct$. 
 
 \subsection{Composition of Complete Lattices}
-%%%This section is mostly identicle to the section in our APSEC paper, it just proves that combining two complete lattices with lexicographic or product order returns a complete lattice
 \label{sec:composition}
 As a complete lattice with a ranking system is the representation of a criterion,
 the composition of criteria is the way of expressing their relationships to one another. 
-Two separate composition operators of complete lattices are defined as the product and lexicographic orders.
+The composition operator of complete lattices is defined as lexicographic order.
 
-It is shown here that the lexicographical and product compositions of complete lattices result in a complete lattice,
-this enables any combination of these orders to be used and remain within our framework.
+It is shown here that the lexicographical composition of complete lattices will result in a complete lattice,
+this enables any combination to be used and remain within our framework.
 This is proven by deriving the join (unique least upper bound) and meet (unique greatest lower bound) operations,
 and showing there exists a least element ($0$) within the lattice \cite{davey1990introduction}. 
 
-The ranking systems are defined to be composed with these orderings.
-
-\begin{defs}
-\label{def:product_order}
-Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
-$L_1 \otimes L_2$ creates a product composition $L_P = \langle A_1 \times A_2, \leq_P \rangle$
-where $\leq_P$ is a product order; 
-$(a,b) \leq_{P} (a',b') \mbox{ iff } a \leq_{1} a' \mbox{ and } b \leq_{2} b'$.
-\end{defs}
-
-The product order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
-composed with its self is given in the diagram in Figure \ref{fig:product}.
-%\begin{figure}[htp]
-%\begin{center}
-%  \includegraphics[height=.1\textheight]{productorder.png}
-%  \caption{Hasse diagram of the product composition of classical lattices}
-%  \label{fig:product}
-%\end{center}
-%\end{figure}
-
-The product order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
-\begin{prop}
-The product composition of two complete lattices is a complete lattice.  
-\end{prop}
-\begin{prof}
-For any two points $(a,b)$ and $(a',b')$;
-their join is the join of each element $(a \vee a', b \vee b')$, 
-inversely their meet is the meet of each element $(a \wedge a', b \wedge b')$.
-This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
-$\Box$\end{prof}
-
+The ranking systems are defined to be composed with the lexicographic ordering:
 \begin{defs}
 \label{def:lex_order}
 Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
@@ -558,16 +527,6 @@ $L_1 \odot L_2$ creates a lexicographical composition  $L_L = \langle A_1 \times
 where $\leq_L$ is a lexicographic order;
 $(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
 \end{defs}
-
-The lexicographic order of a classical lattice $L = \langle \{T,F\}, \leq \rangle$ 
-composed with its self is given in the diagram in Figure \ref{fig:lex}.
-%\begin{figure}[htp]
-%\begin{center}
-%  \includegraphics[height=.1\textheight]{lexicograhicorder.png}
-%  \caption{Hasse diagram of the lexicographical composition of classical lattices}
-%  \label{fig:lex}
-%\end{center}
-%\end{figure}
 
 The lexicographical order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
 \begin{prop}
@@ -610,18 +569,6 @@ Suppose a lattice $K$ has a non linear order, and a lattice $L$ has no least bou
 For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ are incomparable.
 This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
 $\Box$\end{prof}
-
-In figure \ref{fig:stacking} is presented some examples of how our composition operators can be stacked
-by using a classical lattice ($L = \langle \{T,F\}, \leq \rangle$) composed in different ways.
-In these examples the domain has been simplified for brevity, 
-e.g., $\langle T, \langle T,T\rangle\rangle$ is represented with $\langle T,T,T\rangle$
-%\begin{figure}[htp]
-%\begin{center}
-%  \includegraphics[width=.45\textwidth]{all.png}
-%  \caption{Hasse diagrams of the composition of a classical complete lattice}
-%  \label{fig:stacking}
-%\end{center}
-%\end{figure}
 
 The composition of the ranking systems is defined as:
 \begin{defs}
