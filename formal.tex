@@ -405,9 +405,7 @@ A naive solution for this problem is to create a function that for each criteria
 Then by aggregating these numbers through addition or multiplication (possibly with weights) a single function to minimise can be created. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
-This method has some drawbacks;
-information is lost in the conversion to the totally ordered real numbers,
-e.g. the reason why one system was selected over another.
+This method has some drawbacks; information is lost in the conversion to real numbers, for instance the reason why a specific system was selected over another.
 The relationships between criteria are also difficult to define, as getting an intuitive system order requires altering weights which makes the function complicated to maintain.
 This leads to the problem that assigning preferences to criteria with arbitrary weights is not intuitive,
 e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information about the weighting decision, or its impact.
@@ -422,15 +420,13 @@ A complete lattices satisfies these requirements, therefore is used as the repre
 
 %%%these complete lattice criteria using the product and lexicographic orders.
 These complete lattices are able to be composed using a lexicographic order.
-This provides a convenient, intuitive way to express relationships between criteria.
+This order is a convenient intuitive way to rank the importance of criteria without the need for arbitrary weights.
 
 %%%This framework can then be used to describe and discuss the multicritera problem of CDR.
 This framework defines criteria as a ranking system over a complete lattice.
 The ranking system describes a mechanism in which to rank a solution to a complete lattice. 
 The complete lattice gives an order to the solutions based on their ranking.
 By combining these criteria (ranking systems and complete lattices) multi-criteria problems can be composed.
-Then using a general algorithm that can search these structures, 
-optimal solutions for any defined problem can be found.
 
 \subsection{Complete Lattice}
 %%%Complete Lattices have been used in other optimisation frameworks.
@@ -472,12 +468,7 @@ a ranking system is defined over this lattice as a triple $RS = \langle L, D, V 
 where $V$ is a finite set of variables and $D$ is their finite domain.
 \end{defs}
 
-%%%Given we specifically look at components, the variables are components and their domain is \{T,F\}, whether they are installed or not
-Given the focus of this research is on component system evolution,
-this abstract definition of a ranking system can be further defined.
-Within dependency resolution, 
-each variable in this problem is a component and their domain is whether they are included or excluded from the final solution.
-Therefore, $D = \{F,T\}$ and $V = C$, where $C$ is the set of components in the problem.
+These domains can be latter defined given the specific problem of component evolution that is being focused on.
 
 %%%A solution (system) is a mapping of variables to the domain
 \begin{defs}
@@ -485,13 +476,12 @@ A solution is a variable binding $\gamma: V \rightarrow D$, a mapping of each va
 and $\Gamma$ is the set of all solution functions.
 \end{defs}
 
-This definition of solution does not take order into account, where a solution could be the worst possible solution.
+This definition of solution does not take order into account, e.g. a solution could be the worst possible solution.
 
 %%%The ranking function, takes two solutions, and returns the distance between them 
-%TODO increase the ranking function to take two solutions and return a distance between them
 \begin{defs}
 Consider a complete lattice $L = \langle A, \leq \rangle$ and a ranking system $RS = \langle L, D, V \rangle$.
-A ranking function ($Rank$) maps the distance from the current solution and a new solution to elements from $A$,
+A ranking function ($Rank$) returns a metric of the current solution compared to a new solution to elements from $A$,
 $Rank: \Gamma \times \Gamma \rightarrow A$.
 \end{defs}
 
@@ -560,7 +550,8 @@ where under the same conditions $((a,b) \wedge_{L} (a', b')) \vee_{L} ((a,b) \we
 $\Box$\end{prof}
 
 Secondly, two lattices (not complete lattices) lexicographically combined together may not be a lattice. 
-This is another reason for the choice of complete lattices as the structure of representation.
+If a lattice was the base representation, this would make it impossible to use a lexicographic composition and be certain that the resulting structure be usable.
+This is an important reason for the choice of complete lattices as the structure of representation.
 \begin{prop}
 The lexicographic composition of two lattices may not result in a lattice.
 \end{prop}
@@ -570,19 +561,19 @@ For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ a
 This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
 $\Box$\end{prof}
 
-The composition of the ranking systems is defined as:
+The final part of this formalism is to show how the remadiner of the structures are composed with the lexicographic orders.
+The lexicographic composition of the ranking systems is defined as:
 \begin{defs}
 Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2,\leq_2 \rangle$ and
 the ranking systems over them $RS_1 = \langle L_1,D,V \rangle $ and $RS_2 = \langle L_2,D,V \rangle$,
 with defined ranking functions as $Rank_1: \Gamma \times \Gamma \rightarrow A_1 $ and $Rank_2: \Gamma \times \Gamma \rightarrow A_2$.
-The combination $RS_1 \odot RS_2$ (resp. $RS_1 \otimes RS_2$) results in the ranking system 
-$RS = \langle L_1 \odot L_2, D, V \rangle$ (resp. $RS = \langle L_1 \otimes L_2, D, V \rangle$), 
+The combination $RS_1 \odot RS_2$  results in the ranking system 
+$RS = \langle L_1 \odot L_2, D, V \rangle$, 
 and the combination of the ranking functions is 
 $Rank: \Gamma \times \Gamma \rightarrow A_1 \times A_2$ where $Rank(\gamma_1,\gamma_2) = \langle Rank_1(\gamma_1,\gamma_2), Rank_2(\gamma_1,\gamma_2) \rangle$.
 \end{defs}
 
-The main point in this definition is that to combine ranking systems they must have the same set of variables 
-and the same domain.
+The main point in this definition is that to combine ranking systems they must have the same set of variables and the same domain.
 
 \subsection{Semi-ring constraint incompatibility}
 %%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
@@ -592,7 +583,6 @@ and if their $\times$ operator is idempotent, it coincides with meet.
 Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
 In their framework $\times$ must distribute over $+$, this gives a distributive lattice.
 However, since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
-
 
 \section{Common Upgradeability Description Format}
 \label{formal.cudf}
@@ -1255,10 +1245,9 @@ Therefore, given this criteria $E_{R \cup \Delta}(X)$ will return  $s_1$.
 \subsection{Mancoosi Optimisation Format}
 \label{formal.mancoosioptimisationformat}
 %%%Describe the format by which mancoosi has required optimisation criteria formatted
-The description of how to describe the optimisation criteria is not defined in the CUDF specification.
-However, for the purpose of the MISC competition, 
-the Mancoosi organisation gave a specification to represent optimisation criteria to allow the differing solvers to be compared.
-This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line, in human readable text.
+The CUDF specification does not specify one important aspect of the component evolution problem, the criteria used to select a solution.
+However, for the purpose of the MISC competition, the Mancoosi organisation gave a specification to represent optimisation criteria to allow the differing solvers to be compared.
+This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
 This results in the relatively simple BNF grammar, as opposed to other possible specifications such as presented in \cite{treinen2009}. 
 This grammar is described in figure \ref{formal.optbnf}.
 
@@ -1280,13 +1269,6 @@ Given that the domain $D = \{F,T\}$ and the variables $V = C$;
 each criterion $criterion_i$ is mapped to a ranking system over a complete lattice $RS_i = \langle L_i,D,V \rangle$
 and ranking function $Rank_i$.
 The composition of the criteria is then the lexicographic stacking of all the $criterion_1 \oplus \ldots \oplus criterion_n$ as described in section \ref{formal.opt}.
-
-%%%Why is there no product order
-This Mancoosi specification does not express the possible product order of the criteria in this optimisation problem.
-This is likely due to the fact that product orders can create a large amount of incomparable solutions,
-where the goal of the MISC competition is to compare solutions from competing solvers.
-Further practical reasons for the exclusion of product orders from this standard are given in chapter \ref{implementation},
-and further definition of exactly what the criteria can be used and how they can be composed is given in chapter \ref{strategies}.
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.

@@ -226,40 +226,30 @@ $\sum a_i x_i$
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
+That is, a pseudo-Boolean equation is a tuple formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, 
+a list of integers $\langle a_1,\ldots,a_i \rangle$.
+If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
+The product of all the mapped literals with their integer counterpart is then summed, resulting in a natural number. 
+
 A pseudo-Boolean constraint is then defined as:
 \begin{defs}
 A pseudo-Boolean constraint is a linear inequality over Boolean literals $x_i$ of the form
 
-$\sum a_i x_i \geq k$
+$\sum a_i x_i \geq k$ , $\sum a_i x_i > k$, $\sum a_i x_i \leq k$ or $\sum a_i x_i < k$
 
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
+A pseudo-Boolean constraint is an equation with an inequality (either $\geq$,$>$,$\leq$, or $<$) and an integer $k$.
 
-That is, the constraint is a tuple formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$, an inequality $\geq$, and an integer $k$.
-If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
-The product of all the mapped literals with their integer counterpart is then summed, and if greater than the value $k$ then the constraint is true. 
-
-For example, a pseudo-Boolean constraint such that $\langle a, \neg b , c\rangle$ with integers $\langle 1, 2, 3\rangle$ and value $3$,
+For example, a pseudo-Boolean constraint with a list of literals $\langle a, \neg b , c\rangle$, with integers $\langle 1, 2, 3\rangle$, inequality $\geq$, and $k$ value of $3$,
 can be denoted as the inequality $1a + 2 \neg b + 3c \geq 3$.
-For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true therefore this assignment satisfies this constraint.
-
-In practise, the inequality can be not only $\geq$, but also $\leq$.
-Also as the values are integers on either side, by subtracting one from the left or right side the inequalities $>$ and $<$ can also be created.
-This makes the use of these constraints much more versatile when representing problems.
+For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true as this assignment satisfies the inequality.
 
 Such constraints, can be translated into the standard CNF, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
 Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
 Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
-
-\subsubsection{Pseudo-Boolean Optimisation}
-The optimisation of pseudo-Boolean constraints is one of the goals of their addition to SAT solvers.
-This optimisation involves trying to assign the Boolean variables values in such a way to either minimise or maximise the value $k$ in a PB constraint.
-That is, the goal of pseudo-Boolean Optimisation, to assign values to the Boolean variables of $x_1,\ldots,x_i$ to make a given PB equation $a_1x_1 + \ldots + a_ix_i$ its maximum or minimum.
-
-This problem is difficult to solve and NP-Hard, and through algorithms described later in this chapter, can be solved using a DPLL based solver.
-It can also accurately describe many of the optimisation problems that component system evolution requires to solve to find a suitable system.
 
 \subsection{MiniSat and SAT4J}
 MiniSAT presented in \cite{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
@@ -360,7 +350,7 @@ using SAT4J as a core and implementing a pseudo-Boolean optimisation algorithm.
 The conversion from CUDF into SAT and PB constraints for use by SAT4J is firstly discussed.
 Lastly the algorithm used to implement the pseudo-Boolean as this is the part of the problem that is most important to implement.
 
-\subsubsection{CUDF to SAT and PB Constraints}
+\subsubsection{CUDF Mapping}
 In chapter \ref{formal} the abstract definition of the problem was described using four types of constraints, keep, dependency, conflict and request.
 The mapping of a CUDF document to a set containing such instances was also described, where the request constraints where also extended.
 
@@ -389,7 +379,40 @@ The update constraints of the form $a_1 + \ldots + a_i = 1$ accomplish the requi
 This constraint could be mapped to SAT constraints in CNF efficiently as described in \cite{silva2007}.
 However, as the requirement to use a pseudo-Boolean solver has already been defined, the most direct method is to map it to a PB constraint.
 
-\subsubsection{Iterative Strengthening}
+\subsubsection{Pseudo-Boolean Optimisation}
+%%%Map psuedo boolean optimisation to formal optimisation definition
+The method that 
+The core reason for the inclusion of pseudo-Boolean constraints is to define component evolution as a pseudo-Boolean optimisation problem.
+This optimisation involves trying to assign the Boolean variables values in such a way to either minimise or maximise a pseudo-Boolean equation.
+
+This optimisation method can be shown to be consistent and mapped to the framework defined in chapter \ref{formal}.
+Two complete lattices are defined to either minimise or maximise natural numbers; $L_{min} = \langle \mathbb{N}, \geq \rangle$ and $L_{max} = \langle \mathbb{N}, \leq \rangle$.
+Both these lattices are totally orders sets, so trivially shown to have a join, meet and be partially ordered.
+Given the set of variables $V$, these lattices are used to form either a minimising or maximising  ranking system;
+$RS_{min} = \langle L_{min}, \{F,T\}, V \rangle$ and $RS_{max} = \langle L_{max}, \{F,T\}, V \rangle$. 
+
+A solution $\gamma$ in this ranking system can be mapped to a set of literals $l$
+where all variables in the system are mapped to a positive literal is they return $T$ or a negative literal otherwise.
+That is, $l = [v \mid v \in V \wedge \gamma(v) = T] \cup [\neg v \mid v \in V \wedge \gamma(v) = F]$
+
+The ranking functions of these ranking systems are defined to be either maximising ($Rank^{max}$) or minimising ($Rank^{min}$) a pseudo-Boolean equation.
+The ranking function takes two solutions mapped to literals, to create a function that 
+The list of literals and set of
+
+These functions are defined to take two sets of literals, the previous solution and the proposed model and return a natural number to be either minimised or maximised.
+These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number coefficients.
+That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of coefficients $a$ to define a pseudo-Boolean equation. 
+
+The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, coefficients, inequality and natural number such that:
+\begin{itemize}
+  \item if the criteria function is $Rank^min$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
+  \item if the criteria function is $Rank^max$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
+\end{itemize}
+The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
+
+Therefor to define any criteria, only the intention to maximise of minimise a list of literals and list of natural numbers that form a pseudo-Boolean equation is necessary. 
+
+\subsection{Iterative Strengthening}
 The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
 describes an anytime algorithm that iteratively finds better solutions.
 This is done by first finding a solution, then iteratively adding constraints to the formula that ensure the next solution found will be better than the previous.
@@ -442,7 +465,7 @@ This main loop will continue until the function \verb+interrupted+ returns true,
 or the strengthened formula is found to be unsatisfiable.
 At this point the previously best solution discovered stored in the variable $model$ will be returned.
 
-\subsection{Lexicographic Optimisation}
+\subsubsection{Lexicographic Optimisation}
 %%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
 The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be modified to handle lexicographically related criteria, so as to solve component evolution problems.
 By adding an additional outer loop, including other necessary alterations, the original algorithm has been modified to handle lexicographical criteria.
@@ -453,7 +476,7 @@ This altered algorithm is presented in figure \ref{impl.lexstrength}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-find-lex-solution(\(F\),prev,criteria):
+find-lex-solution(\(F\),criteria):
 	\(F\) = \(F \cup \) criteria.initial-constraints()
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSAT:
@@ -462,12 +485,12 @@ find-lex-solution(\(F\),prev,criteria):
         current-criterion = criteria.pop()
         do:
             \(model\) = \(answer\)
-            \(constraints\) = current-criterion.strengthen(prev,\(model\))
+            \(constraints\) = current-criterion.strengthen(\(model\))
             \(F\) = \(F \cup constraints\)
             \(answer\) = DPLL(\(F\))
         while not interrupted() and \(answer\) != UNSAT
         \(F\) = \(F \backslash constraints\)
-        \(F\) = \(F \cup \) current-criterion.lock(prev,\(model\))
+        \(F\) = \(F \cup \) current-criterion.lock(\(model\))
         \(answer\) = \(model\)
     while not interrupted() and criteria.size() != 0
     return \(model\) 
@@ -477,9 +500,8 @@ find-lex-solution(\(F\),prev,criteria):
 \end{center}
 \end{figure}
 
-The first alteration to the original algorithm is that this version takes three parameters, firstly the formula denoted as $F$;
-secondly the previous system as a set of literals denoted as \verb+prev+;
-thirdly a stack of criteria, where the top of the stack is the criteria most lexicographically important.
+The first alteration to the original algorithm is that this version takes two parameters, firstly the formula denoted as $F$;
+secondly  a stack of criteria, where the top of the stack is the criteria most lexicographically important.
 
 The first action of this algorithm is to include initial criteria constraints,
 these constraints may define new literals that can be used in other criteria functions.
@@ -494,8 +516,8 @@ The first action is to $\verb+pop+$ off the currently most important criteria an
 
 Then the inner loop based from original algorithms main loop is then defined.
 This main difference between this and the originals inner loop is the \verb+strengthen+ function is now defined per criteria from the function \verb+current-criterion.strengthen+.
-It also takes into consideration the previous solution, which in this case is the previous component system that is being evolved.
-Therefore, as this loop iterates the solution becomes better, until no more better solutions can be found.
+This means the \verb+strengthen+ function changes throughout the outer loop, as it optimises for different criteria.
+As this inner loop iterates more optimal solutions are found, until no their exist no more to be found.
 
 When the \verb+current-criterion+ has strengthened the formula to make it unsatisfiable, the constraints that made it unsatisfiable are removed.
 This is necessary to continue the search for more optimal solutions judged by the next criteria.
@@ -524,28 +546,7 @@ Further description of how initial constraints are used is given in chapter \ref
 
 \subsubsection{Formal Criteria}
 \label{impl.formalcrit}
-The mapping of the formal definition of a criterion as a ranking system over complete lattice given in chapter \ref{formal} can be mapped to the required function \verb+strengthen+.
-Given the implementation that is used is based on pseudo-Boolean optimisation, 
-each of criteria must be able to be defined as either minimising or maximising of a pseudo-Boolean equation.
-
-This psuedo-Boolean equation can be mapped to the formal framework presented in chapter \ref{formal}.
-Two complete lattices are defined to either minimise or maximise natural numbers; $L_{min} = \langle \mathbb{N}, \geq \rangle$ and $L_{max} = \langle \mathbb{N}, \leq \rangle$.
-Given the set of literals is $\mathbb{L}$, these lattices are used to form either a minimising or maximising  ranking system;
-$RS_{min} = \langle L_{min}, \{F,T\}, \mathbb{L} \rangle$ and $RS_{max} = \langle L_{max}, \{F,T\}, \mathbb{L} \rangle$. 
-
-The ranking function that goes with the maximising or minimising ranking system is denoted as either $Rank^{min}$ or $Rank^{max}$.
-These functions are defined to take two sets of literals, the previous solution and the proposed model and return a natural number to be either minimised or maximised.
-These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number coefficients.
-That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of coefficients $a$ to define a pseudo-Boolean equation. 
-
-The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, coefficients, inequality and natural number such that:
-\begin{itemize}
-  \item if the criteria function is $Rank^min$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
-  \item if the criteria function is $Rank^max$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
-\end{itemize}
-The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
-
-Therefor to define any criteria, only the intention to maximise of minimise a list of literals and list of natural numbers that form a pseudo-Boolean equation is necessary. 
+%TODO
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
