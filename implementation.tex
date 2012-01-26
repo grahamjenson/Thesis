@@ -223,7 +223,7 @@ $\sum a_i x_i \geq k$
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
-That is, the constraint is formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$ and an integer $k$.
+That is, the constraint is a tuple formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, a list of integers $\langle a_1,\ldots,a_i \rangle$, an inequality $\geq$, and an integer $k$.
 If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
 The product of all the mapped literals with their integer counterpart is then summed, and if greater than the value $k$ then the constraint is true. 
 
@@ -440,7 +440,8 @@ This altered algorithm is presented in figure \ref{impl.lexstrength}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-find-lex-solution(\(F\),criteria):
+find-lex-solution(\(F\),prev,criteria):
+	\(F\) = \(F \cup \) criteria.initial-constraints()
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSAT:
         return UNSAT
@@ -448,12 +449,12 @@ find-lex-solution(\(F\),criteria):
         current-criterion = criteria.pop()
         do:
             \(model\) = \(answer\)
-            \(constraints\) = current-criterion.strengthen(\(model\))
+            \(constraints\) = current-criterion.strengthen(prev,\(model\))
             \(F\) = \(F \cup constraints\)
             \(answer\) = DPLL(\(F\))
         while not interrupted() and \(answer\) != UNSAT
         \(F\) = \(F \backslash constraints\)
-        \(F\) = \(F \cup \) current-criterion.lock(\(model\))
+        \(F\) = \(F \cup \) current-criterion.lock(prev,\(model\))
         \(answer\) = \(model\)
     while not interrupted() and criteria.size() != 0
     return \(model\) 
@@ -463,21 +464,29 @@ find-lex-solution(\(F\),criteria):
 \end{center}
 \end{figure}
 
-The first alteration to the original algorithm is that this version takes two parameters, firstly the formula denoted as $F$;
-secondly a stack of criteria, where the top of the stack is the criteria most lexicographically important.
+The first alteration to the original algorithm is that this version takes three parameters, firstly the formula denoted as $F$;
+secondly the previous system as a set of literals denoted as \verb+prev+;
+thirdly a stack of criteria, where the top of the stack is the criteria most lexicographically important.
 
-Again the first action of this algorithm is to check whether the formula is at all satisfiable.
+The first action of this algorithm is to include initial criteria constraints,
+these constraints may define new literals that can be used in other criteria functions.
+These constraints are just a union of sets of constraints given by individual criteria. 
 
-The new outer loop is defined, whose first action is to $\verb+pop+$ off the most important criteria and store it in the variable \verb+current-criterion+.
-Then the inner loop based from original algorithms main loop starts.
-This inner loop's main difference to the original is that the \verb+strengthen+ function is now \verb+current-criterion.strengthen+, meaning that it is criterion specific.
-As this loop iterates, the lexicographically most important criteria is strengthened and the rest are ignored.
+The next action of this algorithm is to check whether the formula is satisfiable,
+and if it is not, return unsatisfied.
 
-After the \verb+current-criterion+ has been strengthened till is has created an unsatisfiable formula, then the constraints that made it unsatisfiable are removed.
-Then the function \verb+current-criterion.lock+ is called to create a set of constraints that ensure no worse solution satisfies the formula.
-This function is almost identical to the strengthening function, except that is allows the same solution to be found again.
+A new outer loop is defined, that loops over the criteria until either there is none left or it is interrupted.
+This loop find optimal solutions for each criteria then moves to the next.
+The first action is to $\verb+pop+$ off the currently most important criteria and store it in the variable \verb+current-criterion+.
 
-The outer loop continue until there are no more criteria to optimise, or the loop is interrupted, as like the original this algorithm maintains and anytime requirement.
+Then the inner loop based from original algorithms main loop is then defined.
+This main difference between this and the originals inner loop is the \verb+strengthen+ function is now defined per criteria from the function \verb+current-criterion.strengthen+.
+It also takes into consideration the previous solution, which in this case is the previous component system that is being evolved.
+Therefore, as this loop iterates the solution becomes better, until no more better solutions can be found.
+
+When the \verb+current-criterion+ has strengthened the formula to make it unsatisfiable, the constraints that made it unsatisfiable are removed.
+This is necessary to continue the search for more optimal solutions judged by the next criteria.
+The formula then has constraints from the function \verb+current-criterion.lock+ added to it, this ensures no worse solution will be found on the next iteration.
 
 \subsubsection{Criteria}
 %%%This algorithm shows the use of some methods that criteria must implement
@@ -487,19 +496,38 @@ Further more, through altering the \verb+decide+, or literal order, function in 
 This will help guide the search to near optimal solutions, which will lower the upper bound of the number of loops necessary to find the most optimal solution.
 
 %%%Initial constraints
-Some criteria also require the ability to add constraints to the formula before the outer loop starts.
-These constraints are typically used to limit quantities that have no direct variable available.
+Some criteria also require the ability to add constraints to the formula before the outer loop starts,
+this is implemented in the function \verb+criteria.initial-constraints+.
+These constraints are typically used to measure quantities that have no direct variable available.
 The typical case for this is that of component names, where one criteria states that minimise the removed component names from the solution.
 There is no variable for a component name, therefore one must be added to the formula for the amount of component names to be measured and used in optimisation.
 For instance, if component $\langle a,2\rangle$ was removed and component $\langle a,3 \rangle$, the component name $a$ still exists in the solution therefore no change has been made.
 Further description of how initial constraints are used is given in chapter \ref{strategies}. 
- 
-%%%Previous solution
-As defined in chapter \ref{formal}, the ranking functions which define the a criterion's measurement of optimality, take two arguments;
-the previous component system, and the proposed system.
-This means that the functions \verb+strengthen+ and \verb+lock+ may take into consideration the previous system as a means of determining how optimal a solution is.
-For example, to measure the amount of added components to the system, the previous solution must be taken into consideration.
-Therefore, any constraints returned by \verb+strengthen+ or \verb+lock+ can be created through the use of the previous component system. 
+
+\subsubsection{Formal Criteria}
+\label{impl.formalcrit}
+The mapping of the formal definition of a criterion as a ranking system over complete lattice given in chapter \ref{formal} can be mapped to the required function \verb+strengthen+.
+Given the implementation that is used is based on pseudo-Boolean optimisation, 
+each of criteria must be able to be defined as either minimising or maximising of a pseudo-Boolean equation.
+
+This psuedo-Boolean equation can be mapped to the formal framework presented in chapter \ref{formal}.
+Two complete lattices are defined to either minimise or maximise natural numbers; $L_{min} = \langle \mathbb{N}, \geq \rangle$ and $L_{max} = \langle \mathbb{N}, \leq \rangle$.
+Given the set of literals is $\mathbb{L}$, these lattices are used to form either a minimising or maximising  ranking system;
+$RS_{min} = \langle L_{min}, \{F,T\}, \mathbb{L} \rangle$ and $RS_{max} = \langle L_{max}, \{F,T\}, \mathbb{L} \rangle$. 
+
+The ranking function that goes with the maximising or minimising ranking system is denoted as either $Rank^{min}$ or $Rank^{max}$.
+These functions are defined to take two sets of literals, the previous solution and the proposed model and return a natural number to be either minimised or maximised.
+These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number cardinalities.
+That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of cardinalities $a$ to define a pseudo-Boolean equation. 
+
+The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, cardinalities, inequality and natural number such that:
+\begin{itemize}
+  \item if the criteria function is $Rank^min$ with literals $l$ and cardinalities $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
+  \item if the criteria function is $Rank^max$ with literals $l$ and cardinalities $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
+\end{itemize}
+The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
+
+Therefor to define any criteria, only the intention to maximise of minimise a list of literals and list of natural numbers that form a pseudo-Boolean equation is necessary. 
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
