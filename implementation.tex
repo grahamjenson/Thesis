@@ -226,8 +226,8 @@ $\sum a_i x_i$
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
-That is, a pseudo-Boolean equation is a tuple formed by a list of literals $\langle x_1,\ldots,x_i \rangle$, 
-a list of integers $\langle a_1,\ldots,a_i \rangle$.
+That is, a pseudo-Boolean equation is a tuple formed by a list of literals $l = \langle x_1,\ldots,x_i \rangle$, 
+a list of coefficients $c = \langle a_1,\ldots,a_i \rangle$, i.e. $\langle l, c \rangle$.
 If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
 The product of all the mapped literals with their integer counterpart is then summed, resulting in a natural number. 
 
@@ -241,6 +241,9 @@ where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
 \end{defs}
 
 A pseudo-Boolean constraint is an equation with an inequality (either $\geq$,$>$,$\leq$, or $<$) and an integer $k$.
+This is represented as a tuple including the list of literals, the list of coeficients, the inequality, and the integer.
+That is, given a pseudo-Boolean equations is represented by the tuple $\langle l, c \rangle$, a pseudo-Boolean constraint is $\langle l,c,ineq,k \rangle$
+where $ineq \in \{\leq,>,<,\geq\}$ and $k$ is an integer.
 
 For example, a pseudo-Boolean constraint with a list of literals $\langle a, \neg b , c\rangle$, with integers $\langle 1, 2, 3\rangle$, inequality $\geq$, and $k$ value of $3$,
 can be denoted as the inequality $1a + 2 \neg b + 3c \geq 3$.
@@ -354,7 +357,7 @@ Lastly the algorithm used to implement the pseudo-Boolean as this is the part of
 In chapter \ref{formal} the abstract definition of the problem was described using four types of constraints, keep, dependency, conflict and request.
 The mapping of a CUDF document to a set containing such instances was also described, where the request constraints where also extended.
 
-The mapping from these four constraints to the SAT and pseudo-Boolean formula as defined in this chapter is described here.
+The mapping from these four constraints to the SAT and pseudo-Boolean constraints is described here.
 
 Given the definitions above, where a formula $F$ is a set of clauses, a clause is a set of literals, and a literal is either a variable or its negation;
 The set of variables are then defined as the set of component $C$, therefore the literals are components or their negation.
@@ -381,8 +384,7 @@ However, as the requirement to use a pseudo-Boolean solver has already been defi
 
 \subsubsection{Pseudo-Boolean Optimisation}
 %%%Map psuedo boolean optimisation to formal optimisation definition
-The method that 
-The core reason for the inclusion of pseudo-Boolean constraints is to define component evolution as a pseudo-Boolean optimisation problem.
+The method that Eclipse P2 uses to optimise the component evolution problem is through a method called pseudo-Boolean optimisation.
 This optimisation involves trying to assign the Boolean variables values in such a way to either minimise or maximise a pseudo-Boolean equation.
 
 This optimisation method can be shown to be consistent and mapped to the framework defined in chapter \ref{formal}.
@@ -396,21 +398,18 @@ where all variables in the system are mapped to a positive literal is they retur
 That is, $l = [v \mid v \in V \wedge \gamma(v) = T] \cup [\neg v \mid v \in V \wedge \gamma(v) = F]$
 
 The ranking functions of these ranking systems are defined to be either maximising ($Rank^{max}$) or minimising ($Rank^{min}$) a pseudo-Boolean equation.
-The ranking function takes two solutions mapped to literals, to create a function that 
-The list of literals and set of
+The ranking function takes two solutions mapped to sets of literals, to create a pseudo-Boolean function to be optimised. 
+That is, given two solutions mapped to sets of literals $l_1,l_2$, $Rank(l_1,l_2)$ returns a pseudo-Boolean equation function such that $f(l_2)$ returns a natural number.
+As a pseudo-Boolean equation can be represented by a list of literals, and a list of coefficients, each criterion must define a ranking function to return both.
 
-These functions are defined to take two sets of literals, the previous solution and the proposed model and return a natural number to be either minimised or maximised.
-These ranking functions are then defined as pseudo-Boolean equations by defining a list of literals and a list of natural number coefficients.
-That is the function $Rank(l_1,l_2)$ must define a set literals $l$ and a set of coefficients $a$ to define a pseudo-Boolean equation. 
+For example, given the criterion to minimise the amount of added components to the system, 
+it should define a function that returns a list of literals and list of coefficients that represent the pseudo-Boolean function to minimise.
+Therefore, $Rank(l_1,l_2)$ is defined to return a list of literals that represent components not in the previous solution, but are in the current solution.
+That is, the list equal to all positive literals that are negative in the previous solution and represent components, i.e. $l = [x \mid \neg x \in l_1 \wedge x \in \mathbb{C}]$.
+The list of coefficients is the size of $l$ all equalling $1$, as this will sum the total added, i.e. $|l| = |coefs|$ where for any $coef \in coefs$, $coef = 1$. 
+The psuedo-Boolean equation then sums the amount of components that where not in the previous solution, that are in the current solution.
 
-The function \verb+strengthen+ of the criteria then returns a pseudo-Boolean constraint, a tuple of literals, coefficients, inequality and natural number such that:
-\begin{itemize}
-  \item if the criteria function is $Rank^min$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,<,Rank(l_1,l_2)\rangle$
-  \item if the criteria function is $Rank^max$ with literals $l$ and coefficients $a$ then the returned constraint is $\langle l,a,>,Rank(l_1,l_2)\rangle$
-\end{itemize}
-The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
-
-Therefor to define any criteria, only the intention to maximise of minimise a list of literals and list of natural numbers that form a pseudo-Boolean equation is necessary. 
+The way in which such pseudo-Boolean equations are minimised is discussed in the following sections. 
 
 \subsection{Iterative Strengthening}
 The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
@@ -545,8 +544,18 @@ For instance, if component $\langle a,2\rangle$ was removed and component $\lang
 Further description of how initial constraints are used is given in chapter \ref{strategies}. 
 
 \subsubsection{Formal Criteria}
-\label{impl.formalcrit}
-%TODO
+Each criterion in the stack \verb+criteria+ contains a pseudo-Boolean equation that either requires minimisation or maximisation.
+This equation, represented by a list of literals and coefficients, is used to define the \verb+strengthen+ function.
+
+The ranking function \verb+rank+ is defined for a criterion such that it takes a set of literals and returns the value of the pseudo-Boolean equation of the criterion.
+
+Given a criterion's pseudo-Boolean equation is represented by the tuple $\langle l, c \rangle$,
+the function \verb+strengthen+ the criterion is defined to return a pseudo-Boolean constraint, where if:
+\begin{itemize}
+  \item if the equation is being minimised then the returned constraint is $\langle l,a,<,$\verb+rank+$(l_2) \rangle$
+  \item if the equation is being maximised then the returned constraint is $\langle l,a,>,$\verb+rank+$(l_2) \rangle$
+\end{itemize}
+The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
