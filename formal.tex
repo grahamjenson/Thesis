@@ -3,7 +3,7 @@
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
 
-The exact definition of component system evolution is required in order to express and study it.
+In order to express and study component system evolution, its exact definition is required.
 This definition is abstracted from any algorithm or process, as the evolution of a system could be performed manually.
 
 The evolution of a system is made through iterative evolutionary steps over a period of time.
@@ -25,17 +25,17 @@ this means a spell checker component must be installed for the text editor to be
 There are three spell checker components available that satisfy this dependency,
 this means that one of these spell checkers should be selected for installation as well.
 
-Or suppose, the use already has the text editor installed, and wants to update it to a newer version to increase stability and functionality.
+Or suppose, the user already has the text editor installed, and wants to update it to a newer version to increase stability and functionality.
 There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
 where the lesser up to date text editor can use the current spell checker.
-This requires a selection of which to install, based on the users objectives for the system.
+These two possible systems have different properties, and therefore can be selected based on the users preferences.
 
-The first step in solving these problems is to represent them formally, this allows the study of the problems properties.
-This definition must represent the component relationships and the change that is requested to be made. 
-It also must include some way to choose between solutions, an optimisation framework that lets the users criteria be expressed.
+The first step in solving such component evolution situations is to represent them formally, this allows the study of the problems properties.
+This definition must represent the core aspects of component relationships and the evolution of the system.
+An optimisation framework must also be included, in order to choose between various possible solutions.
 
-In this section, a formal definition for a evolutionary step of a component based system is given.
-This definition includes the ability to be optimised to choose a solution using a distance metric.
+In this section, a formal definition for an evolutionary step of a component based system is given.
+This definition includes a simple optimisation framework to choose a solution using a distance metric.
 This problem is then shown to be NP-Complete in finding a solution and NP-Hard when finding the best solution.
 
 \subsection{Formal Definition}
@@ -48,58 +48,56 @@ A component system is represented by a set of components.
 The relationships between all components are described by a set of constraints denoted as $R$.
 
 %%%What the change is
-The evolutionary change that is requested to a system is defined as a set of constraints $\Delta$.
+The evolutionary change requested to be made to a system is defined as a set of constraints $\Delta$.
 
 %%%The evolutionary function
 The function that takes a component system and evolves it to another system is defined as $E$.
 The evolutionary step function is then defined as $E_{R \cup \Delta}: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
-such that it takes a component system and returns another component system that satisfy all component constraints in $R$ and the requested change $\Delta$.
-This function will then take a component system, the constraints from the component relationships and the change request,
-and return a system that satisfies all component relationships and the change request.
+such that it takes a component system and returns another component system that satisfies all component relationships in $R$ and the requested change $\Delta$.
 
 %%%Component realtionships constraints
-The constraint in $R$ can be either: 
+The constraints in $R$ can be either: 
 \begin{itemize}
   \item keep constraint in the form $a \vee \ldots \vee b$, e.g. $a \vee b$ means the $a$ or $b$ must be in the system
   \item dependency constraint in the form $a \rightarrow c_1 \vee \ldots \vee c_n$, e.g. $a \rightarrow b \vee c$ means $a$ depends on $b$ or $c$
   \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
 \end{itemize}
-These constraints are defined semantically such that
-a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or \ldots or $b \in E_{R \cup \Delta}(X)$ (note: this can be unit i.e. $a$ is a valid keep constraint),
-a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in E_{R \cup \Delta}(X)$ then $c_1 \in E_{R \cup \Delta}(X)$ or \ldots or $c_n \in E_{R \cup \Delta}(X)$,
+These constraints are defined semantically such that;
+a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or \ldots or $b \in E_{R \cup \Delta}(X)$ (note: this can be a singleton e.g. $a$ is a valid keep constraint);
+a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in E_{R \cup \Delta}(X)$ then $c_1 \in E_{R \cup \Delta}(X)$ or \ldots or $c_n \in E_{R \cup \Delta}(X)$;
 and a conflict constraint $a \rightarrow \neg c$ means if $a \in E_{R \cup \Delta}(X)$ then $c \not \in E_{R \cup \Delta}(X)$.
-These constraints are expressive enough to describe many of the component models described in section \ref{background.models}.
+These constraints are expressive enough to describe many of the relationships from the component models described in section \ref{background.models}.
 
 %%%Change constraints
 The constraints in $\Delta$ are of the form of either adding or removing a single component.
-they can be in the form of $a$ or $\neg a$, where $a$ means to install component $a$ and $\neg a$ means to remove component $a$.
-Semantically $a$ means to $a \in E_{R \cup \Delta}(X)$ and $\neg a$ means $a \not \in E_{R \cup \Delta}(X)$. 
+they can be in the form of $a$ or $\neg a$, where $a$ means to install component $a$, and $\neg a$ means to remove component $a$.
+Semantically $a$ means that $a \in E_{R \cup \Delta}(X)$ and $\neg a$ means $a \not \in E_{R \cup \Delta}(X)$. 
 This is a limited set of changes that can be requested to be made to the system.
-This will be extended in section \ref{formal.cudf} to express more, but for now is all that is required.
+This will be extended in section \ref{formal.cudf} to express more, but for now these are sufficient requests.
 
 %%%What is the change conflicts with R
 A possibility that can occur is that the requested change creates constraints that conflict with the set of component relationships,
 i.e. $R \cup \Delta$ is unsatisfiable.
-For instance, a component $a$ depends on component $b$, 
-if a request to add $a$ and remove $b$ will cause a conflict as no system exists that satisfy both $R$ and $\Delta$  
-Given the subtle relationships between components, a request may be in conflict that intuitively should not cause a conflict.
-To resolve this issue, many component systems check the request to ensure that it is consistent, and if it is not make no change.
-This is the resolution used here;
-if $R \cup \Delta$ is unsatisfiable, $E_{R \cup \Delta}(X) = X$.
-Therefore, if the constraints are unable to be saisfied, the system will not be changed.
+For instance, if there exists a keep constraint $a$ and the request $\neg a$, $R$ and $\Delta$ will be a conflicting set of constraints.   
+A popular solution to resolve this issue is to check to see if the constraints a conflicting, and if they are make no change.
+This is the resolution used here,
+where if $R \cup \Delta$ is unsatisfiable, $E_{R \cup \Delta}(X) = X$.
 
 \subsection{Solution Selection}
 \label{formal.solsel}
-This definition of an evolutionary step requires a mechanism to select between solutions.
-This is an optimisation problem as the solution that is selected should be optimal by some criterion.
+Many different possible sets of components may be able to satisfy the set of constraints $R \cup \Delta$.
+As each system has different properties, and the user may have preferences on certain system attributes,
+the evolutionary step function requires a mechanism to select solutions.
+This is an optimisation problem as the solution that is selected should be optimal given some criteria.
 
-For instance, given there are three components $a$,$b$ and $c$, and there is a component system of two components $a$ and $b$ (i.e. $\{a,b\}$).
+%%%An example where 
+For instance, there are three components $a$,$b$ and $c$, and there is a component system of two components $a$ and $b$ (i.e. $\{a,b\}$).
 There is only one relationship where $a$ depends on $b$, i.e. $R$ consists of only the dependency constraint $a \rightarrow b$,
 and the defined change is to add a component $c$, i.e. $\Delta = \{c\}$.
-
 The resulting system $E_{R \cup \Delta}(\{a,b\})$ could be one of three systems; $\{c\}$, $\{b,c\}$ or $\{a,b,c\}$.
 Intuitively the correct answer is $\{a,b,c\}$, because unnecessarily removing a component from the system may be detrimental.
-Therefore, some mechanism to select between the returning system is required in the function.
+However, this intuition does not exist in the function, and the system $\{c\}$ is just as valid as $\{a,b,c\}$. 
+Therefore, some mechanism to select between the possible systems is required.
   
 %%%The defintiion if extended to include the ability to minimise a heuristic
 The function $E_{R \cup \Delta}$ is then extended to include the ability to select to return a solution that is superior to other possible solutions by some criterion.
@@ -122,7 +120,6 @@ This type of criterion could represent system size, which does not require the c
 \subsection{Component System Evolution is NP-Complete}
 Finding a solution that satisfies all relationship and request constraints is shown to be NP-Complete through reduction to a Boolean Satisfiability (SAT) problem,
 and not belonging to a class given in Schaefer's dichotomy theorem \cite{Schaefer1978}.
-The problem of optimising the evolutionary step function is then shown to be NP-Hard.
 This is not the first proof that this problem is NP-Complete \cite{edos2005report}, 
 though it may be the first through using Schaefer's dichotomy theorem which may be found to be more intuitive than reduction to 3-SAT.
 
@@ -148,7 +145,7 @@ These classes are:
   \item the problem is solvable by assigning each variable true
   \item every clause has at most one negated variable
   \item every clause has at most one unnegated variable
-  \item every clause has 2 literals (2-SAT problem)
+  \item every clause has two literals (2-SAT problem)
   \item all relations are equivalent to a conjunction of affine formulae (i.e. $x_1 \oplus \ldots \oplus x_n = true$ or $x_1 \oplus \ldots \oplus x_n = false$)
 \end{enumerate} 
 
@@ -157,35 +154,33 @@ The first two classes state that this problem is not NP-Complete if a component 
 As the request constraints can state that a component has to be included or has to be excluded, the problem may exist such that it is not in either of these classes.  
 
 The third and fourth classes state that either the problem can be represented by a set of Horn or dual-Horn clauses, such problems are known to be solvable in linear time \cite{dowling1984linear}.
-Given a component and conflict with another creating a clause such as $\neg a \vee \neg c$, and a component can depend on multiple other components represented by a constraint such as
-$\neg a \vee c_1 \vee c_2$, this problem does not belong to either of these classes.
+Given a conflict relationship creates a dual-Horn clause ($\neg a \vee \neg c$) and a dependency conflict can create a clause Horn clause ($\neg a \vee c_1 \vee \ldots \vee c_n$), 
+this problem does not belong to either of these classes.
 
-The fifth class states that the CNF problem cannot be represented as a series of clauses with only 2 literals.
-This class will exist in the problem if the dependence tree creates a strongly connected component, 
-which has been shown to be reducible to 2-SAT \cite{aspvall1979linear} and therefore solvable in linear time.
+The fifth class states that the CNF problem cannot be represented as a series of clauses with only two literals,
+such a problem has been shown to be solvable in linear time \citep{aspvall1979linear}.
 
 The sixth class states that for this problem to be NP-Complete it must not be representable as a linear equation over a two element field $\{0,1\}$
 That is, the CNF formula can be represented as a conjunction of clauses using the XOR ($\oplus$) operator.
  
 The evolutionary step problem can be shown to be in neither the fifth or sixth classes 
-through mapping to an equivalent problem called ``exactly one in three'' presented in \cite{Schaefer1978} as problem ``NP1.
+through mapping to an equivalent problem called ``exactly one in three'' presented in \cite{Schaefer1978} as problem ``NP1''.
 This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
-For example, given components $a$,$b$ and $c$, the only possible solutions that satisfy the constraints ($R \cup \Delta$) are $\{a\}$,$\{b\}$ and $\{c\}$.
+This problem can be described in component constraints with three components $a$,$b$ and $c$.
+Given the keep clause $a \vee b \vee c$ and the conflict clauses  $\neg a \vee \neg b$, $\neg b \vee \neg c$ and $\neg a \vee \neg c$, 
+the only satisfiable solutions are $\{a\}$,$\{b\}$ and $\{c\}$. 
 This problem is shown to not belong to any of the above classes in lemmas 3.1A, 3.1B and 3.1W in \cite{Schaefer1978}.
-By stating the keep clause of $a \vee b \vee c$ and the conflict clauses of $\neg a \vee \neg b$, $\neg b \vee \neg c$ and $\neg a \vee \neg c$, 
-the only possible solutions are $\{a\}$,$\{b\}$ and $\{c\}$. 
 
 %%%This problem may be in fact P if it can exist to one of these classes
 This evolutionary step problem then has the potential to be NP-Complete, though many practical problems may be solvable in linear time.
 For instance, a problem that has no conflict constraints would be in the third class where it would have at most one negated variable in each clause.
 As some component models, such as Maven, have no means of defining conflicting components, they will be in this class of problems and therefore not be NP-Complete. 
 
-The complexity of the problem impacts the possiblility of completeing the evolution manually, or if automated through CDR, the implementation possibilities.
-
 \subsection{Component System Evolution is NP-Hard}
 As noted by \cite{leberre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
-Also noted, is the fact that some of these solutions are not as good as others.
-By creating a function to attribute a measurement to each set of possible solutions and searching for the optimal system given this measurement, this problem becomes NP-Hard. 
+Also noted, is the fact that some of these solutions are not as ``good'' as others.
+By creating a function to attribute a measurement to each set of possible solutions and searching for the optimal system given this measurement, 
+the evolution of a component system becomes NP-Hard. 
 This can be shown through mapping it to an equivalent problem of that has already been shown to be NP-Hard, the binate covering problem \cite{Coudert1996}.
 
 This problem is defined:

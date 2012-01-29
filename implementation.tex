@@ -208,46 +208,40 @@ Such algorithms enable larger formulae to be solved without necessary increasing
 \subsection{Pseudo-Boolean Extension of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
 This DPLL algorithm can be adapted to solve problems with constraints that are not represented as CNF clauses.
-Through extending DPLL to be able to handle such constraints, problems can be more easily expressed and solved.
+Through extending DPLL to be able to handle such constraints, some problems can be more easily expressed and solved.
 A typical extension is through using pseudo-Boolean (PB) constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
 Through this extension the method of pseudo-Boolean optimisation can be used to define criteria and optimise the evolution of component systems.
 
 \subsubsection{Pseudo-Boolean Representation}
-A pseudo-Boolean function is a function that takes a set of Boolean literals and returns a real number, i.e. $f:B^n \rightarrow \mathbb{R}$ where $B = \{0,1\}$.
-A psuedo-Boolean constraint is then an inequality relating the function to a number, e.g. $f(x) \leq k$.
+A pseudo-Boolean function takes a set of Boolean literals and returns a real number, i.e. $f:B^n \rightarrow \mathbb{R}$ where $B = \{0,1\}$.
+A pseudo-Boolean constraint is then an inequality relating the function to a number, e.g. $f(x) \leq k$.
 
-This is a broad definition of these concepts, to be efficiently included into the DPLL algorithm the pseudo-Boolean representation has been restricted to a linear equation.
+This is a broad definition of these concepts, 
+to be efficiently included into the DPLL algorithm the pseudo-Boolean representation has been restricted to natural numbers and a linear equation.
 That is,
 \begin{defs}
-A pseudo-Boolean equation is a linear function over Boolean literals $x_i$ of the form
+A pseudo-Boolean function is a linear function over Boolean literals $x$ of the form
 
-$\sum a_i x_i$
+$f(x) = a_1x_1 + b_1\neg x_1 + a_2x_2 + b_2\neg x_2 \ldots +  a_nx_n + b_n\neg x_n$
 
-where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
+where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $b_i$.
 \end{defs}
+For example, the pseudo-Boolean function $f(x) = 1x_1 + 0\neg x_1 + 0x_2 + 3\neg x_2$, when taking the input $\langle x_1, \neg x_2 \rangle$ will return $4$.
+This function can be simplified by removing all members whose coefficient is $0$, e.g. $f(x) = 1x_1 + 3\neg x_2$.
+It can also be represented by a set of pairs where each pair a literal and a coefficient, e.g. $f(x) = \{ (1,x_1), (3,\neg x_2) \}$.
 
-That is, a pseudo-Boolean equation is a tuple formed by a list of literals $l = \langle x_1,\ldots,x_i \rangle$, 
-a list of coefficients $c = \langle a_1,\ldots,a_i \rangle$, i.e. $\langle l, c \rangle$.
-If the literal $x_i$ resolves to true then in the constraint it is mapped to $1$, otherwise  if $x_i$ resolves to false it is resolved to $0$.
-The product of all the mapped literals with their integer counterpart is then summed, resulting in a natural number. 
-
-A pseudo-Boolean constraint is then defined as:
+This function can become a constraint such that:
 \begin{defs}
-A pseudo-Boolean constraint is a linear inequality over Boolean literals $x_i$ of the form
+A pseudo-Boolean constraint is a linear inequality over Boolean literals $x$ and pseudo-Boolean function $f$ of the form
 
-$\sum a_i x_i \geq k$ , $\sum a_i x_i > k$, $\sum a_i x_i \leq k$ or $\sum a_i x_i < k$
+$f(x) \geq k$ , $f(x) > k$, $f(x) \leq k$ or $f(x) < k$
 
-where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $k$.
+where $k$ is a fixed integer
 \end{defs}
 
-A pseudo-Boolean constraint is an equation with an inequality (either $\geq$,$>$,$\leq$, or $<$) and an integer $k$.
-This is represented as a tuple including the list of literals, the list of coeficients, the inequality, and the integer.
-That is, given a pseudo-Boolean equations is represented by the tuple $\langle l, c \rangle$, a pseudo-Boolean constraint is $\langle l,c,ineq,k \rangle$
-where $ineq \in \{\leq,>,<,\geq\}$ and $k$ is an integer.
-
-For example, a pseudo-Boolean constraint with a list of literals $\langle a, \neg b , c\rangle$, with integers $\langle 1, 2, 3\rangle$, inequality $\geq$, and $k$ value of $3$,
-can be denoted as the inequality $1a + 2 \neg b + 3c \geq 3$.
-For an assignment $\{a , \neg b, \neg c\}$, this equation would resolve to $1 + 2 + 0 \geq 3$, which is true as this assignment satisfies the inequality.
+For example, the pseudo-Boolean function $f(x) = 1x_1 + 3\neg x_2$ can be used to create the constraint $f(x) > 2$.
+This constraint will be satisfied by the literals $\langle x_1, \neg x_2 \rangle$ as $f(x) = 4$, but not by the literals $\langle x_1,  x_2 \rangle$ as $f(x) = 2$.
+A pseudo-Boolean constraint can be therefore be represented by a pseudo-Boolean function $f$, an inequality and an integer.
 
 Such constraints, can be translated into the standard CNF, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
 Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
@@ -262,7 +256,7 @@ This has also lead to a track in the 2011 SAT competitions\footnote{http://www.s
 This means that MiniSAT has been repeatedly validated for performance by third parties across many difference SAT problems. 
 
 SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
-The extensions SAT4J makes to MniSAT include the ability to find solutions to pseudo-Boolean constraints.
+The extensions SAT4J makes to MniSAT include the ability to find resolve pseudo-Boolean constraints.
 SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
 This goal has created an easily modifiable and transparent implementation, able to be used in various circumstances.
 
@@ -351,7 +345,7 @@ The implementation of criteria in Eclipse P2 is also difficult to alter as again
 Once this decision was made, this constrained the implementation of GJSolver to being Java based, 
 using SAT4J as a core and implementing a pseudo-Boolean optimisation algorithm.
 The conversion from CUDF into SAT and PB constraints for use by SAT4J is firstly discussed.
-Lastly the algorithm used to implement the pseudo-Boolean as this is the part of the problem that is most important to implement.
+Lastly the method of pseudo-Boolean optimisation is discussed as the chosen method to find optimal solutions to component evolution.
 
 \subsubsection{CUDF Mapping}
 In chapter \ref{formal} the abstract definition of the problem was described using four types of constraints, keep, dependency, conflict and request.
@@ -384,8 +378,8 @@ However, as the requirement to use a pseudo-Boolean solver has already been defi
 
 \subsubsection{Pseudo-Boolean Optimisation}
 %%%Map psuedo boolean optimisation to formal optimisation definition
-The method that Eclipse P2 uses to optimise the component evolution problem is through a method called pseudo-Boolean optimisation.
-This optimisation involves trying to assign the Boolean variables values in such a way to either minimise or maximise a pseudo-Boolean equation.
+The method that Eclipse P2 uses to optimise the component evolution problem is through a method called pseudo-Boolean optimisation (PBO).
+PBO involves trying to assign the Boolean variables values in such a way to either minimise or maximise a pseudo-Boolean function.
 
 This optimisation method can be shown to be consistent and mapped to the framework defined in chapter \ref{formal}.
 Two complete lattices are defined to either minimise or maximise natural numbers; $L_{min} = \langle \mathbb{N}, \geq \rangle$ and $L_{max} = \langle \mathbb{N}, \leq \rangle$.
@@ -394,22 +388,21 @@ Given the set of variables $V$, these lattices are used to form either a minimis
 $RS_{min} = \langle L_{min}, \{F,T\}, V \rangle$ and $RS_{max} = \langle L_{max}, \{F,T\}, V \rangle$. 
 
 A solution $\gamma$ in this ranking system can be mapped to a set of literals $l$
-where all variables in the system are mapped to a positive literal is they return $T$ or a negative literal otherwise.
+where all variables in the system are mapped to a positive literal if they return $T$ or a negative literal otherwise.
 That is, $l = [v \mid v \in V \wedge \gamma(v) = T] \cup [\neg v \mid v \in V \wedge \gamma(v) = F]$
 
-The ranking functions of these ranking systems are defined to be either maximising ($Rank^{max}$) or minimising ($Rank^{min}$) a pseudo-Boolean equation.
-The ranking function takes two solutions mapped to sets of literals, to create a pseudo-Boolean function to be optimised. 
-That is, given two solutions mapped to sets of literals $l_1,l_2$, $Rank(l_1,l_2)$ returns a pseudo-Boolean equation function such that $f(l_2)$ returns a natural number.
-As a pseudo-Boolean equation can be represented by a list of literals, and a list of coefficients, each criterion must define a ranking function to return both.
+The ranking function ($Rank$) for either of these ranking systems must be defined to be a pseudo-Boolean function.
+To define a psuedo-Boolean function the previous system is used to define the function, and the proposed system is used as input to the function.
+This makes the ranking functions higher order functions, they return a pseudo-Boolean equation to be maximised or minimised.
 
-For example, given the criterion to minimise the amount of added components to the system, 
-it should define a function that returns a list of literals and list of coefficients that represent the pseudo-Boolean function to minimise.
-Therefore, $Rank(l_1,l_2)$ is defined to return a list of literals that represent components not in the previous solution, but are in the current solution.
-That is, the list equal to all positive literals that are negative in the previous solution and represent components, i.e. $l = [x \mid \neg x \in l_1 \wedge x \in \mathbb{C}]$.
-The list of coefficients is the size of $l$ all equalling $1$, as this will sum the total added, i.e. $|l| = |coefs|$ where for any $coef \in coefs$, $coef = 1$. 
-The psuedo-Boolean equation then sums the amount of components that where not in the previous solution, that are in the current solution.
+For example, the criteria to minimise the amount of components added to the system can be defined in such a manner.
+The function $Rank^{added}$ must then be defined to return a pseudo-Boolean function that measures the amount of added components.
+To calculate the amount of added components all variables that are components, and are not in the initial solution should be added in the function.
+Therefore, $Rank^{added}(l_1,l_2)$ returns a pseudo-Boolean function $f$ defined as a set of pairs such that $f(l_2) = [(1, x) \mid x \in \mathbb{C} \wedge \neg x \in l_1]$.
+That is, all components that are not in the original system, but are in the proposed solution are counted. 
+This function can then be used to search for a minimal amount of added components.
 
-The way in which such pseudo-Boolean equations are minimised is discussed in the following sections. 
+The way in which such pseudo-Boolean equations are minimised through the use of pseudo-Boolean constraints is discussed in the following sections. 
 
 \subsection{Iterative Strengthening}
 The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
@@ -547,13 +540,14 @@ Further description of how initial constraints are used is given in chapter \ref
 Each criterion in the stack \verb+criteria+ contains a pseudo-Boolean equation that either requires minimisation or maximisation.
 This equation, represented by a list of literals and coefficients, is used to define the \verb+strengthen+ function.
 
-The ranking function \verb+rank+ is defined for a criterion such that it takes a set of literals and returns the value of the pseudo-Boolean equation of the criterion.
+The ranking function \verb+criteria+.$f$ is the pseudo-Boolean function that defines the criteria.
+This function is created through the $Rank$ function of the criteria, which takes the previous solution to build the pseudo-Boolean function that defines the criteria (as described above).
 
-Given a criterion's pseudo-Boolean equation is represented by the tuple $\langle l, c \rangle$,
-the function \verb+strengthen+ the criterion is defined to return a pseudo-Boolean constraint, where if:
+Given a criterion's pseudo-Boolean function $f$,
+the function \verb+strengthen+ the criterion is defined to return a pseudo-Boolean constraint such that:
 \begin{itemize}
-  \item if the equation is being minimised then the returned constraint is $\langle l,a,<,$\verb+rank+$(l_2) \rangle$
-  \item if the equation is being maximised then the returned constraint is $\langle l,a,>,$\verb+rank+$(l_2) \rangle$
+  \item if the function is being minimised then the returned constraint is $\langle f,<,f(l_2) \rangle$
+  \item if the function is being maximised then the returned constraint is $\langle f,>,f(l_2) \rangle$
 \end{itemize}
 The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
 
@@ -568,12 +562,12 @@ Given the requirement that GJSolver uses a SAT solver as its core, there is no p
 This stops the definition of some criteria, however this also keeps the criteria practical and efficiently solvable.   
 
 %%%Real numbers must be truncated to fit the integer representation. 
-The psuedo-Boolean constraints use only integer coefficients as it allows the inequality to be easily converted from $\leq$ to $>$ and so on.
+The pseudo-Boolean constraints use only integer coefficients as it allows the inequality to be easily converted from $\leq$ to $>$ and so on.
 This stops the use of real numbers in the definition of criteria, and thus the representation of different values, like percentages.
 The most direct solution to this is to multiply any real number by a large scale and truncate the prodcut to an integer representation.
 Scaling a value in such a manner, may remove a small amount of resolution of the value, though it does allow for such criteria to use real values numbers.
 
-%%These are necessary to keep the implementation practical
+%%%These are necessary to keep the implementation practical
 These simplifications are seen as necessary in order to keep the problem manageable.
 Including all aspects of our formal optimisation framework would be practically impossible, and limit the efficiency of finding any solutions.
 
