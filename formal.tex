@@ -179,29 +179,8 @@ As some component models, such as Maven, have no means of defining conflicting c
 \subsection{Component System Evolution is NP-Hard}
 As noted by \cite{leberre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
 Also noted, is the fact that some of these solutions are not as ``good'' as others.
-By creating a function to attribute a measurement to each set of possible solutions and searching for the optimal system given this measurement, 
-the evolution of a component system becomes NP-Hard. 
-This can be shown through mapping it to an equivalent problem of that has already been shown to be NP-Hard, the binate covering problem \cite{Coudert1996}.
-
-This problem is defined:
-\begin{itemize}
-  \item $v$ is the set $\{0,1\}$, $y$ is a variable, and $y^v$ is the assignment of $y$ to $v$
-  \item $f(y_1, \ldots, y_n)$ is a Boolean function from $\{0,1\}^n$ to $\{0,1\}$
-  \item $cost$ is a function that associates a positive cost with the assignment of a variable $y_k$ to $1$ or $0$
-  \item the cost of a n-tuple $(v_1,\ldots,v_n)$ is defined as $\sum^n_{k=1}cost(y^{v_k}_{k})$
-\end{itemize}
-The binate covering problem then consists of finding a minimum $cost$ n-tuple that evaluates $f$ to $1$.
-
-This evolutionary step can be mapped to this problem by defining:
-\begin{itemize}
-  \item each variable $y_1,\ldots,y_n$ represents a component in $\mathbb{C}$
-  \item an n-tuple assignment represents a component system such that any component $y_k$ is assigned $1$ iff it is in the component system 
-  \item $f(v_1,\ldots,v_n)$ returns $1$ if the n-tuple assignment creates a system that satisfies $R$ and $\Delta$
-  \item the cost of a component system is is defined as the function $d : {0,1}^n \rightarrow A$ defined as $\sum^n_{k=1}cost(y^{v_k}_{k})$
-\end{itemize}
-The goal of the evolutionary step problem then consists of finding an n-tuple that creates a system that satisfies $R$ and $\Delta$,
-with the minimum value for $d$.
-This cost function only considers \textit{static} measurements, as described in section \ref{formal.solsel}, though could be extended to consider \textit{dynamic} measurements.
+By trying to find an optimal solution given some criteria the evolution of a component system becomes NP-Hard.
+This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
 
 This NP-Hard class of problem is notably intractable to solve, and will impact any attempt to solve it, manual or computational.
 The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
