@@ -602,7 +602,7 @@ An interesting relationship was noticed when looking at the release cycles of di
 components will often release a versions very close together then have long periods of not releasing.
 
 %%%It might be caused by this
-This effect may be caused by users of the package updating to the newly released verion, 
+This effect may be caused by users of the package updating to the newly released version, 
 finding and posting bug report to the maintain, who then quickly fixes the bug and releases a new versions to resolve the issue.
  
 %%%Here is a real example of this happening
@@ -705,7 +705,7 @@ This criteria will then wait a certain amount of time once a package has been re
 This idea is called ``Stable Version'', the main parameter that is required is the time in which to wait for a package to become stable.
 
 This stable release criteria is defined as a hard constraint that can be added to a users update criteria.
-%%%TODO
+%%%TODO This constraint is added, though it is not a criteira, TODO if there is only one package that has been released recently and asked to be installed will cause conflict
 
 To test this criteria, to see if it reduces the effects of a set of user values is selected from the logs and extremes to build sets of user actions.
 Through altering our progressive and conservative criteria to include the stable version criteria a range of values for the parameter of stable version is tested and measured for performance.

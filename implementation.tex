@@ -392,15 +392,17 @@ where all variables in the system are mapped to a positive literal if they retur
 That is, $l = [v \mid v \in V \wedge \gamma(v) = T] \cup [\neg v \mid v \in V \wedge \gamma(v) = F]$
 
 The ranking function ($Rank$) for either of these ranking systems must be defined to be a pseudo-Boolean function.
-To define a psuedo-Boolean function the previous system is used to define the function, and the proposed system is used as input to the function.
-This makes the ranking functions higher order functions, they return a pseudo-Boolean equation to be maximised or minimised.
+However, a different pseudo-Boolean function exists for each previous solution, as during search for a new system the previous system does not change.
+This means that $Rank(l_1,l_2)$ will equal a pseudo-Boolean function given a previous solution, i.e. $f_{l_1}(l_2)$.
+This function can be represented by a set of pairs of coefficients to literals as described in previous sections.
 
 For example, the criteria to minimise the amount of components added to the system can be defined in such a manner.
-The function $Rank^{added}$ must then be defined to return a pseudo-Boolean function that measures the amount of added components.
-To calculate the amount of added components all variables that are components, and are not in the initial solution should be added in the function.
-Therefore, $Rank^{added}(l_1,l_2)$ returns a pseudo-Boolean function $f$ defined as a set of pairs such that $f(l_2) = [(1, x) \mid x \in \mathbb{C} \wedge \neg x \in l_1]$.
-That is, all components that are not in the original system, but are in the proposed solution are counted. 
-This function can then be used to search for a minimal amount of added components.
+The function $Rank^{added}(l_1,l_2)$ can be defined to return the size of the set of components that are a negative literal in $l_1$ and a positive literal in $l_2$,
+i.e. $Rank^{added}(l_1,l_2) = |[x \mid x \in \mathbb{C} \wedge \neg x \in l_1 \wedge x \in l_2]|$.
+Given the restrictions on PBO, this function must be able to be able to be defined as pseudo-Boolean function, otherwise it is unable to be used.
+This function $f_{l_1}(l_2)$ is created by counting all literals that are negative in the previous system, that are positive in the proposed solution,
+i.e. $f_{l_1}(l_2) = [(1, x) \mid x \in \mathbb{C} \wedge \neg x \in l_1]$.
+This function can then be used to search for a solution.
 
 The way in which such pseudo-Boolean equations are minimised through the use of pseudo-Boolean constraints is discussed in the following sections. 
 
@@ -572,6 +574,7 @@ These simplifications are seen as necessary in order to keep the problem managea
 Including all aspects of our formal optimisation framework would be practically impossible, and limit the efficiency of finding any solutions.
 
 \subsection{Verification}
+\label{impl.verif}
 %%%We entered this solver into two Mancoosi MISC competitions
 The process of verification of the GJSolver implementation was through entering it into the Mancoosi International Solver Competition, whose requirements are described above.
 This process was taken twice, firstly in a MISC Live event, which is an interim competition held during the year;

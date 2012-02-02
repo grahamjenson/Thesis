@@ -216,93 +216,251 @@ Each criteria is defined as a pseudo-Boolean equation that is represented as a s
 The criteria that are defined are from academia, industry, and other domains.
 Finally in this section the discussion of the use of these criteria, how they relate each other and the possible actions the user can take to evolve their component systems.  
 
-%%%TODO Dynamic criteria vs Static criteria, and conservative vs Progressive
-\subsection{Hamming}
-The first criteria that will be defined is based on the \textbf{hamming} code distance metric \cite{hamming1950error}.
-This metric defines the distance between two sets by counting the number of elements that have been added and removed.
-This can be calculated by measuring the cardinality of their symmetric difference.
+\subsection{Simple Criteria}
+There are simple definitions of criteria to minimise change and maximise versions.
+These basic definitions should be intuitively correct to use, thought they can create complications.
+Such criteria are defined in this section.
 
-To find the hamming distance between two sets of literals using a psuedo-Boolean equation, all negations of the literals in the initial set can be counted.
+\subsubsection{Added, Removed and Changed Components}
+The three most direct measurements of change of a system is through the summing the added, removed, or total changed components in the system.
+These three measurements can be used to define criteria such that:
+\begin{defs}
+	  The added components criterion is defined to minimise the function
+	represented by the set of pairs $[(1,x) \mid x \in \mathbb{C} \neg x \in l_1]$.
+	That is, it sums the components that are not in the previous system, that are in the proposed solution.
+	This criterion is defined in the Mancoosi optimisation format as \verb+-addedcomp+.
 
-The list of literals that make up the pseudo-Boolean equation that define 
-the hamming criteria are the negations of all literals in the previous solution, and the list of coefficients is  
+\end{defs}
 
-This conservative criteria defines change as any addition or removal of a component from the resulting solution.
-It is a simply definition, lumping all types of change into the fundamental alteration of the set of components in the resulting system.
-As discussed above this is an inaccurate representation of the risks of changing a system, as adding a component is seen as less risky than removing one.
+\begin{defs}
+	 The removed components criterion is defined to minimise the function 
+	represented by the set of pairs $[(1,\neg x) \mid x \in \mathbb{C} x \in l_1]$.
+	That is, it sums the components that are in the previous system, that are not in the proposed solution.
+	This criterion is defined in the Mancoosi optimisation format as \verb+-removedcomp+.
+\end{defs}
+
+\begin{defs}
+	 The changed components criterion is defined to minimise the function
+	represented by the set of pairs $[(1,\neg x) \mid x \in \mathbb{C} x \in l_1] \cup [(1,x) \mid x \in \mathbb{C} \neg x \in l_1]$.
+	That is, it sum both added and removed components as described above.
+	This criterion is defined in the Mancoosi optimisation format as \verb+-changedcomp+.
+\end{defs}
+
+These criteria define change as addition or removal of a component to or from the resulting solution, the fundamental alterations of the system during evolution.
+These measurements may be an inaccurate representation of the risks of changing a system.
+This is best seen with the example of updating a component, which involves removing a old version, and adding a newer version of a component with the same name.
+By many users the act of updating is seen as less risky than removing a component, as shown in the survey presented earlier in this chapter,
+though here it is measured as twice the value.
+These simple criteria do not take into account the name of a component, which is seen as (and may indeed) have an impact on the risk of an evolution.
+
+\subsubsection{Maximise Version}
+%%%Maximise version, just sum up all versions and maximise their value
+The problems with measuring the up-to-dateness of a component system (as described above), and this leads to difficulty in defining appropriate criteria.
+The simplest criterion that can be defined to keep the system up to date, would be to simply maximise the sum of the versions.
+This criteria is defined:
+
+\begin{defs}
+	The version criterion is defined to maximise the pseudo-Boolean function 
+	represented by the set of pairs $[(x$.\verb+version+$,x) \mid x \in \mathbb{C}]$.
+	That is, it maximises the sum of versions of components in the system.
+	This criterion is defined in the Mancoosi optimisation format as \verb!+version!.
+\end{defs}
+
+This is only possible in the CUDF component model as the versions are integers, therefore easily added in the pseudo-Boolean function.
+Other component model's versioning models may require to be converted into integers.
+
+%%%Problem is some versions jump further, like av1, av10, av20, vs component cv1,cv2,cv3
+The core issue with this criterion, is that different components can use a version model in different manners, making the summation of two different component versions meaningless.
+For example, a component $a$ may version their components by factors of $10$, e.g. $a_{10},1_{20},a_{30}$, 
+and another component $b$ may version their components by factors of $1$, e.g. $b_1,b_2,b_3$.
+A situation may arise where a system can evolve to either include $a_20$ and $b_1$, or $a_10$ and $b_9$.
+This criterion would select the former solution although $a_10$ is only one version out of date, and $b_1$ is eight versions out of date. 
+
+Another problem with this criterion is that it optimises for large solutions where two older versions can be measured as better than a single newer version.
+For example, a system with only the component $b_4$ is deemed less optimal that a system with both $b_2$ and $b_3$.
+
+These problems make the use of this criterion very difficult, although it initially may seem a reasonable definition of a criterion.   
+
 
 \subsection{Mancoosi Criteria}
-%%%Here we define the criteria from Mancoosi
+The Mancoosi organisation for its MISC competitions (discussed in section \ref{impl.verif}) defined a set of criteria in order to compare different solvers.
+Three types of criteria where defined, types that measure change, types that measure version, and an aggregating criteria. 
 
-The Mancoosi organisation uses a metric that minimises the number of components in a system that have better versions, 
-e.g. a system $a-1,b-1$ if $a-2$ exists is $1$ out of date. 
-The Eclipse P2 implementation counts the amount of versions that are better for each component,
-e.g. a system $a-1,b-1$ if $a-2$ and $a-3$ exist, is $2$ out of date.
-Both of these take into account only the component and not the components that depend on it.
-%%%not up to date
+\subsubsection{Change}
+The Mancoosi criteria use an abstraction of a component, a component name. 
+As a component is defined as a name version pair ($\langle n,v \rangle$), a component name is just the name ($n$) element of the component. 
+This means that the change of a system can be measured by the change of component names in the system.
+The implications of such an abstraction are that updating a component will not add a component name to the system so can be ignored.
+It also means that adding all versions of a component will not change the name, so such criteria must be used carefully.
 
-%%%removed
+%%%Initial constraints to define literals\
+The first step that must be taken to include this criteria is to define literals that represent a component name.
+In section \ref{impl.lexstrength} the function of \verb+initial-constraints+ was described to allow criteria to contribute constraints to the formula.
+Such constraints let the criteria define literals to be able to optimise the solution.
+Given all components with name $n$ are denoted as $a^n_1,\ldots,a^n_k$,
+what is required is a literal $d_n$ such that iff any component $a^n_i$ is positive in a set of literals, then $d_n$ is positive.
 
-%%%new
+This can be represented by the constraint $d_n \Leftrightarrow a^n_1 \vee \ldots \vee a^n_k$, which
+is equivalent to $d_n \rightarrow a^n_1 \vee \ldots \vee a^n_k \bigwedge a^n_1 \vee \ldots \vee a^n_k \rightarrow d_n$.
+The left term can create the CNF clause $\neg d_n \vee a^n_1 \vee \ldots \vee a^n_k$;
+the right term is equal to $\neg(a^n_1 \vee \ldots \vee a^n_k) \vee d_n$,
+through De Morgans laws $(\neg a^n_1 \wedge \ldots \wedge \neg a^n_k) \vee d_n$,
+and through distributivity equals $\neg a^n_1 \vee d_n \bigwedge \ldots \bigwedge \neg a^n_k \vee d_n$.      
+For every component name in the set of components, these clauses are added to the formula.
 
-%%%Reccommends
+%%%removed and new
 
-%%%Trendy which is lex(removed, not up to date, reccommends, new)
+Given the set of all names $N$ and the function $Name$ which takes a set of literals and returns all names of components that are positive,
+two criteria for minimising the newly added and removed names are defined.
+\begin{defs}
+The Mancoosi removed criterion is then defined using the pseudo-Boolean function
+represented by the set of pairs $[(1,\neg d_n) \mid n \in N(l_1)]$.
+This criterion is defined in the Mancoosi optimisation format as \verb+-removed+.
+\end{defs}
 
-The \textbf{Paranoid} distance function, 
-defined by the Mancoosi (\textit{MANaging the COmplexity of the Open Source Infrastructure}) project\footnote{http://www.mancoosi.org/}, 
-is the lexicographic composition of two distance functions $removed$ and $changed$.
-It is defined such that each component has a name $C \rightarrow Name$,
-where the function $V: 2^C \times Name \rightarrow 2^C$ returns all components with a name in a set of components 
-(these are the different versions of a component).
-They are defined such that $removed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name) $ is nonempty and $V(C_2,name)$ is empty $\}|$,
-and $changed(C_1,C_2)$ $=$ $|\{name \mid V(C_1,name)$ is different to $V(C_2,name)\}|$.
-The removed function therefore only considers when all components of a name are removed. 
+\begin{defs}
+The Mancoosi changed criterion is then defined using the pseudo-Boolean function
+ represented by the set of pairs $[(1,d_n) \mid n \in N \wedge n \not \in N(l_1)]$.
+This criterion is defined in the Mancoosi optimisation format as \verb+-new+.
+\end{defs}
 
-The distance function is then defined $d_P(C_1,C_2)$ to return a pair $(a,b)$ such that $a = removed(C_1,C_2)$ and $b = changed(C_1,C_2)$.
-The distance order $\leq_{P}$ is lexicographically defined with respect to $C_R(X)$ as given two models $C_1,C_2$,
-$(a,b)$ equals $d_P(C_R(X),C_1)$ and $(a',b')$ equals $d_P(C_R(X),C_2)$ then
-$C_1 \leq_{P} C_2 $ iff $a < a' \vee (a = a' \wedge b \leq b')$.
-This definition states that removing a component is infinitely worse than adding one, 
-therefore we should expect this to generate larger solutions.
+The last change based Mancoosi criterion to describe the component names that have changed.
+This criterion minimises the amount of names that have had a component with that name either be removed or added.
+For example, if a component of name $c$ is removed, and replaced with two components of name $c$, then this is only one component name changed.
 
-\subsection{Lehman}
-%%%Lehman has outlined laws of evolution though empirical research, we can adapt these laws to see if they hold true and to what degree in component systems
+To measure this change some constraints from the function \verb+initial-constraints+ must be defined.
+What is required is a literal for each component name that is true if no literal of that component name is altered between solutions.
+That is, given the name $n$, the previous solution $l_1$, and the literals $a^n_1, \ldots , a^n_k$ that are all literals with name $n$ (this includes negative literals);
+the literal $h_n$ for a given name $n$ is defined to be true if no component of name $n$ changes from the initial system $l_1$.
 
-\subsection{JDepend}
-%%%Coupling 
+That is $h_n \Leftrightarrow a^n_1 \wedge \ldots \wedge a^n_k$, 
+which equals $h_n \rightarrow a^n_1 \wedge \ldots \wedge a^n_k \bigwedge a^n_1 \wedge \ldots \wedge a^n_k \rightarrow h_n$.
+The left term equals $\neg h_n  \vee (a^n_1 \wedge \ldots \wedge a^n_k)$,
+through distribution equals the CNF clauses $\neg h_n \vee a^n_1 \bigwedge \ldots \bigwedge \neg h_n \vee a^n_k$.
+The right term equals $\neg(a^n_1 \wedge \ldots \wedge a^n_k) \vee h_n$,
+which equals the CNF clause $\neg a^n_1 \vee \ldots \vee \neg a^n_k \vee h_n$.
+For every component name, this set of constrains must be added to the formula in order for this criterion to function.
 
-%%%Instability
+\begin{defs}
+The Mancoosi changed criterion is then defined using the pseudo-Boolean function
+that sums all literals $h_n$ that are negated in the changed system. 
+This function is represented by the set of pairs $[(1,\neg h_n) \mid n \in N]$.
+This criterion is defined in the Mancoosi optimisation format as \verb+-changed+.
+\end{defs}
+
+\subsubsection{Up to Date}
+The criteria that Mancoosi defined in order to maximise the up-to-dateness of the system is the \verb+-notuptodate+ 
+criterion that minimises the amount of component names that are included but do not have their newest version installed.
+
+To define this criterion a variable is required that describes whether a name of a component is installed but it does not have the newest version installed.
+For this, the component $b_n$ is defined as the highest version of the components of name $n$,
+and the use of the variable $d_n$ defined previously to be positive iff a component with name $n$ is in the proposed system.
+
+A set of constraints for the function \verb+initial-constraints+ are defined
+such that a variable $u_n$ is positive if the name $n$ is in the system, and the component $b_n$ is not.
+That is, $u_n \Leftrightarrow d_n \wedge \neg b_n$, which equals
+$u_n \rightarrow d_n \wedge \neg b_n \bigwedge (d_n \wedge \neg b_n) \rightarrow u_n$.
+The left term equals $\neg u_n \vee (d_n \wedge \neg b_n)$, 
+which with distributivity equals the two CNF clauses $\neg u_n \vee d_n \bigwedge \neg u_n \vee \neg b_n$.
+The right term equals $\neg (d_n \wedge \neg b_n) \vee u_n$,
+which with De Morgans laws equals the CNF clause $\neg d_n \vee b_n \vee u_n$. 
+
+\begin{defs}
+The Mancoosi not up to date criterion is then defined using the pseudo-Boolean function
+represented by the set of pairs $[(1,\neg u_n) \mid n \in N]$.
+This criterion is defined in the Mancoosi optimisation format as \verb+-notuptodate+.
+\end{defs}
+
+
+This progressive criterion optimises a system to have as little not up to date components as possible.
+This can result in some un-intuitive results.
+For example, given a set of component versions $c_1$, $c_2$ and $c_3$, if $c_3$ is the highest verison a and is not installed in the system, 
+this criteria does not consider the better version between $c_1$ and $c_2$.
+Therefore, this criteria will not try to maximise the versions in the system, merely try to make sure the maximum version is installed.
+
+\subsubsection{Sum}
+The final Mancoosi defined criteria are functions that either minimises or maximises the sum of a property of the installed components. 
+The property is left as a variable, and as long as each component has a value for that property the criteria can be used.
+
+These are defined as:
+\begin{defs}
+The criterion to maximise a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C}]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!+sum(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to minimise a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C}]$.
+This criterion is defined in the Mancoosi optimisation format as \verb+-sum(+$X$\verb+)+.
+\end{defs}
+
+The property $X$ is arbitrary though practically is must be defined in the CUDF document.
+For example, the property $size$ that defines the size in kB of the component could be minimised with the criteria definition \verb+-sum(+$size$\verb+)+.
+Using the expendable nature of the CUDF specification many various properties of a component could have can be represented and optimised for.
+Some such properties that can be used, like PageRank or instability, are defined later in this section.
 
 \subsection{P2}
 %%%Looking at the criteria from the P2 solver
 Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
-Its optimisation function minimises the removed components, while maximising the version of installed components, 
-we denote it's distance function as $d_{P2}$.
-This function is fully described by Le Berre and Parrin in \cite{leBerre2010}.
-The goal of combining these two criteria is to simultaneously update components while altering the system.
-This strategy can be seen as a preemptive change, so that a user will not need to later update currently installed components,
-therefore minimising future change.
-As this is the only minimal criteria that includes the goal to maximise the currently installed version 
-we expect more change during evolution.
+Its optimisation, as described in chapter \ref{background}, are focused on minimising the amount of components with no dependencies, the removal of components,
+the age of the installed components, and changing components unnecessarily.
+These are mapped to pseudo-Boolean functions that are then added together to create a single function \citep{leBerre2010}.
+This differs from the lexicographic relationship that is defined through our optimisation framework.
 
-\subsection{Propagation Based Criteria}
-%%%We can create more informative criteria by analyising progation effects.\\
-{}A components dependence on another component creates a tangible connection that should be considered when evolving a system.
-{}This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
-{}or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
-{}This should be considered when making the choice to either remove or add a component to a system.
-{}By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+Most of P2's criteria focus on minimising change within the system which is analogous to the definition given previously.
+However, the criterion to minimise the age of a component is the most interesting as it provides a definition that removes many of the problems
+discussed with the  \verb!+version! and \verb+-notuptodate+ criteria.
 
-%%%Page rank as a metric, calculate page rank value for all 
-The structure of component dependencies can be abstracted to a graph, 
-and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
-we attempt to quantify the value of a component in a system.
-PageRank with priors estimates the probability of stopping on a node in a random walk over a directed graph given a set of starting nodes.
-We see this as an approximation to the probability that a component is depended on in a system.
+\begin{defs}
+Given a sorted list of all components of the same name by versions $[a_n,\ldots,a_0]$, where $a_0$ is the least version, and $a_n$ is the highest version,
+the function $age$ is then defined to take a component and return its index from this list.
+The criteria is then defined to minimise the function represented by the set of pairs $[(age(x), x) \mid x \in \mathbb{C}]$.
+\end{defs}
+
+This age metric, eliminates the problem with the criteria, where versions can be dependent on a components versioning model.
+This is done by creating a relative measure of what version of a component is, which is the number of newer components that exist.
+This allows this method to compare components that version differently to determine the up-to-dateness of a system.
+However, this criteria can still be mislead by different components.
+For example, if a component constantly releases versions, with little changes or no changes, the age of a component can quickly force an update, 
+although their may be little risk of not upgrading. 
+
+
+
+
+
+\subsection{Dependency Based Criteria}
+A components dependence on another component creates a tangible connection that should be considered when evolving a system.
+This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
+or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
+This should be considered when making the choice to either remove or add a component to a system.
+By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+
+The structure of component dependencies can be abstracted to a graph.
 A directed graph $G = (V,E)$ is generated from the
 dependency rules such that $V$ is the set of components, and $(a,b) \in E$ iff there is a dependency constraint in $R$ 
 where $a \rightarrow c_1 \vee \ldots \vee c_n$ where $b = c_i$ for some $i$.
+
+
+\subsubsection{Matrin Metrics}
+Presented in \cite{} are metrics to measure the nature of classes in a
+
+%%%Afferent coupling
+number of in edges
+
+%%%Efferent Coupling
+Number of out edged
+
+%%%Coupling 
+
+
+%%%Instability
+efferent coupling/ efferent coupling plus afferent coupling
+
+\subsubsection{PageRank}
+
+%%%Page rank as a metric, calculate page rank value for all 
+and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
 The function $PR(a)$ denotes the PageRank of $a$,
 so given the set $C_R(X) \cup \{\Delta\}$ is the starting set of nodes, and the generated graph $G$,
 the distance function $d_{PR}(C_1,C_2) = \sum_{a \in (C_1 \ominus C_2)} PR(a)$,

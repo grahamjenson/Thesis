@@ -42,6 +42,7 @@ This problem is then shown to be NP-Complete in finding a solution and NP-Hard w
 %%%What a component is
 First the space of components is denoted as $\mathbb{C}$.
 Each component is described by a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
+A component can be denoted as $n_v$, where the version is subscript of the name e.g. $c_2$ equals a component $\langle c, 2\rangle$.
 
 %%%What a component system is and the relationships
 A component system is represented by a set of components.
@@ -181,6 +182,7 @@ As noted by \cite{leberre2008}, this problem is often under constrained, creatin
 Also noted, is the fact that some of these solutions are not as ``good'' as others.
 By trying to find an optimal solution given some criteria the evolution of a component system becomes NP-Hard.
 This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
+This means, once a solution is found that satisfies all component relationships, it is impossible to say that this solution is optimal without further steps. 
 
 This NP-Hard class of problem is notably intractable to solve, and will impact any attempt to solve it, manual or computational.
 The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
