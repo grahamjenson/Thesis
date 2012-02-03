@@ -36,6 +36,8 @@ For example, upgrading a system may introduce new bugs and problems, yet not upg
 %%%What are strategies, Plans to employ to evolve a component system
 The choices the user makes to evolve the component system is described as the users evolution strategy.
 By strategy, it is meant the plan or pattern employed by a user to evolve a system to attain the systems objectives.
+This term is taken from the domain of game theory, 
+in that area a strategy is defined as a plan of action for whatever situation might arise, which fully determines the users behaviour.
 
 %%%In this chapter\ldots
 In this chapter, the users that evolve component systems are described, and their choices of criteria defined.
@@ -348,7 +350,7 @@ This function is represented by the set of pairs $[(1,\neg h_n) \mid n \in N]$.
 This criterion is defined in the Mancoosi optimisation format as \verb+-changed+.
 \end{defs}
 
-\subsubsection{Up to Date}
+\subsubsection{Up-to-Date}
 The criteria that Mancoosi defined in order to maximise the up-to-dateness of the system is the \verb+-notuptodate+ 
 criterion that minimises the amount of component names that are included but do not have their newest version installed.
 
@@ -400,6 +402,52 @@ For example, the property $size$ that defines the size in kB of the component co
 Using the expendable nature of the CUDF specification many various properties of a component could have can be represented and optimised for.
 Some such properties that can be used, like PageRank or instability, are defined later in this section.
 
+\subsubsection{Added, Removed, and Changed Properties}
+Three further functions, added, removed, and changed, that are useful to define criteria are defined.
+These were not defined in by the Mancoosi group, but they are similar to the definition of the sum functions, therefore are presented here..
+The added criteria sums the values of a property added to a system, 
+the removed criteria sums the properties removed from the system,
+ and changed criteria sums the properties changed in the system. 
+Each of these is used to define two criteria, to either maximise or to minimise the function.
+
+\begin{defs}
+The criterion to maximise the added value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!+added(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!-added(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to maximise the removed value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge  c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!+removed(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!-removed(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to maximise the changed value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in l_1] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!+changed(!$X$\verb+)+.
+\end{defs}
+
+\begin{defs}
+The criterion to minimise the changed value of a property $X$ is defined by the pseudo-Boolean function 
+represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in l_1] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in l_1]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!-changed(!$X$\verb+)+.
+\end{defs}
+
+These criteria, like the sum criteria, can be used in a versatile manner to optimise for various component properties.
+
 \subsection{P2}
 %%%Looking at the criteria from the P2 solver
 Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
@@ -415,7 +463,8 @@ discussed with the  \verb!+version! and \verb+-notuptodate+ criteria.
 \begin{defs}
 Given a sorted list of all components of the same name by versions $[a_n,\ldots,a_0]$, where $a_0$ is the least version, and $a_n$ is the highest version,
 the function $age$ is then defined to take a component and return its index from this list.
-The criteria is then defined to minimise the function represented by the set of pairs $[(age(x), x) \mid x \in \mathbb{C}]$.
+The criterion is then defined to minimise the function represented by the set of pairs $[(age(x), x) \mid x \in \mathbb{C}]$.
+This criterion is defined in the Mancoosi optimisation format as \verb!-uptodateage+.
 \end{defs}
 
 This age metric, eliminates the problem with the criteria, where versions can be dependent on a components versioning model.
@@ -426,71 +475,152 @@ For example, if a component constantly releases versions, with little changes or
 although their may be little risk of not upgrading. 
 
 
-
-
-
 \subsection{Dependency Based Criteria}
 A components dependence on another component creates a tangible connection that should be considered when evolving a system.
 This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
 or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
-This should be considered when making the choice to either remove or add a component to a system.
-By analysing dependencies between components we can give a weight to a component-based on the structure of its relationships.
+Such metrics of a component could be considered when making the choice to either remove or add a component to a system.
 
-The structure of component dependencies can be abstracted to a graph.
-A directed graph $G = (V,E)$ is generated from the
-dependency rules such that $V$ is the set of components, and $(a,b) \in E$ iff there is a dependency constraint in $R$ 
+Many such metrics are based on dependency graph analysis, that is the study of the graph caused by the dependency relationships between components. 
+To use such metrics, the structure of component dependencies must be abstracted to a directed graph $G = (V,E)$;
+such that the vertices $V$ are a set of components from $\mathbb{C}$, 
+and the edges are created from the dependency rules where $(a,b) \in E$ iff there is a dependency constraint in $R$ 
 where $a \rightarrow c_1 \vee \ldots \vee c_n$ where $b = c_i$ for some $i$.
 
+%%%What set of components is used to create the graph
+The set of components used to create this dependency graph is defined as the set of all components.
+This implies that given the set of all components does not change, the following metrics presented will be invariable.
+That is, the dependency graph that is referred to is not created with a subset of components, such as the previous system.
+Using all components has one significant practical benefit, it makes recalculations of metrics unnecessary.
+If each metric was calculated with respect to the graph of the previous solution, 
+it would require that each problem using the same set of components recalculate possibly expensive metrics to be used in optimisation.
 
-\subsubsection{Matrin Metrics}
-Presented in \cite{} are metrics to measure the nature of classes in a
+%%%Metrics that return Real Numbers not integers for Pseudo Boolean function, must be scaled by multiplication and truncation.
+Another aspect of note is that some of the presented metrics return real numbers not integers which are required for pseudo-Boolean functions.
+This is solved by scaling the values of these metrics by multiplying with a large number and then rounding the result to an integer.
+The selection of this large integer, is made per metric, and is selected to provide the required resolution to make the metric useful.
 
-%%%Afferent coupling
-number of in edges
+\subsubsection{Martin Metrics}
+The first metric that is defined is based on the ``instability'' metric presented in \cite{martin2003}.
+This metric was created to measure the a components resistance to change using the incoming and outgoing edges of a package.
 
-%%%Efferent Coupling
-Number of out edged
+\begin{defs}
+The number of components that depend on a component, the incoming edges of a node in a dependency graph, is described as the afferent couplings, denoted as $Ca$.
+The number of components that a component depends on, the outgoing edges of a node in a dependency graph, is described as the efferent couplings, denoted as $Ce$. 
+The instability of a component is then the ratio of efferent couplings to to total couplings, that is $Ce/(Ce+Ca)$.
+\end{defs}
 
-%%%Coupling 
+This metric could be said to measure the unimportance of a component, or the relative safety of changing a component.
+For example, given a component $a$ depends on no other components and has three other components depending on it, $a$'s ``instability'' would be $0$.
+The component $a$ is then important and also may be a risk to change in the system, as it may effect components that depend upon it.
+This is opposed to a component $b$ that is not depended upon by any components but depends on three other components, $b$'s ``instability'' would be $1$.
+That is to say that is is unimportant to other components, but has little to no risk when changing as any change will only effect itself.
 
-
-%%%Instability
-efferent coupling/ efferent coupling plus afferent coupling
+This criteria can then be used by a conservative user to minimise the risk of a change by minimising the removed stability,
+that is by maximising the removed instability.
+Given the instability of a component is assigned to the property \verb+instability+,
+the removed instability can be maximised with the criteria \verb!+removed(instability)!.
 
 \subsubsection{PageRank}
+The measurement of the instability of a component only takes into consideration other components that are directly connected to it.
+Such a metric, does not take into consideration the entire structure of a graph, therefore can give only local information about a component.
 
-%%%Page rank as a metric, calculate page rank value for all 
-and by analysing the importance of nodes in this graph using the \textbf{PageRank} with priors function \cite{White:2003:AER:956750.956782}, 
-The function $PR(a)$ denotes the PageRank of $a$,
-so given the set $C_R(X) \cup \{\Delta\}$ is the starting set of nodes, and the generated graph $G$,
-the distance function $d_{PR}(C_1,C_2) = \sum_{a \in (C_1 \ominus C_2)} PR(a)$,
-i.e. the distance is the sum of the PageRank values in the symmetric difference of the systems.
-This distance is the only one to consider the components relationships when calculating the effect of removing or adding them.
-Our hope is that by minimising the impact on the structure of the system, 
-this will minimise the necessary changes over a long period of time.
+PageRank, presented in \cite{page1998}, is a link analysis algorithm designed to measure the importance of a node in a directed graph.
+This algorithm, originally designed to rank the popularity of web pages in returned results from a search engine.
+It can also be used over a dependency graph to measure a components relative importance.
+It propagates values though the graph, meaning that the importance of a component will depend on importance of components that do not directly upon it. 
 
-%%%HITS, where we can identify hubs and authorities of packages and use this as criteria
+This PageRank function is defined;
+Given a node in a graph $a$, the function $PR(a)$ returns the PageRank of $a$, 
+the function $L(a)$ returns the number of outbound links from $a$, 
+and the function $I(a)$ returns the set of nodes with edges incoming to $a$.
+The PageRank of a node $a$ is then $PR(a) = 1-d + d\sum\limits_{v \in I(a)} \frac{PR(v)}{L(v)}$,
+where $d$ is the damping factor (typically set to $.85$).
+Also to note, a node that has no outbound edges, i.e. $L(a) = 0$, is assumed to link to all nodes (including itself) in the graph.
+This function is iteratively applied and normalised so the sum of all PageRanks equals $1$, until it stabilises.
+The specific implementation used to calculate PageRank is from the library networkx\footnote{http://networkx.lanl.gov/}.
 
-%%%Propagation of positive and negative, changin a package that has very little depending on it should be better than changing a large package
+Like the instability metric, the PageRank of a component represents the risk of changing a component.
+The higher the PageRank, the more depended upon it could be in a given system.
+If given the choice in the system between removing a component that is highly depended upon, or one that is less so,
+the clear choice would be removing the latter as it will potentially effect less of the other components in the system.
+Therefore given the PageRank a component is assigned to the property \verb+pagerank+, the criteria to minimise the removed PageRank is defined as \verb!-removed(pagerank)!.
 
-\section{Optimisation}
-%%%What can be optimised? Here we go over these criteria and discuss given the limitation that PBO imposes on optimisation, how we can optimise.
 
-\section{Other Criteria}
-{}There are many other types of criteria that can be considered when judging the optimality of a solution.
-{}As we are trying to stay component model agnostic, the only information that can be used comes from the definition of components and component models laid out in Chapter \ref{background}.
-{}However, there are other criteria that maybe component model dependent from information in component meta-data (e.g., size, vendor and licence),
-{}component contracts and composition testing (e.g., reliability and speed),
-{}and community sourced meta-data stored in repositories (e.g., popularity).
+\subsubsection{HITS}
+The HITS algorithm, like PageRank, is a link analysis algorithm that returns two metrics for each component, hubs and authority measures.
+The hub metric measures the amount a component depends on authorities, and the authorities measures the amount it is depended on by hubs.
+
+This recursive definition can be defined:
+given the function $auth(a)$ returns the authority metric of node $a$, $hub(a)$ returns the hub metric of node $a$,
+$I(a)$ returns the set of nodes with edges incoming to $a$, and $O(a)$ returns the set of nodes with edges outgoing from $a$;
+$auth(a) = \sum \limits_{i \in I(a)} hub(i)$ and  $hub(a) = \sum \limits_{i \in O(a)} auth(i)$.
+To calculate these values, they are itertivly applied till they stabalise.
+The specific implementation used to calculate HITs values is from the library networkx\footnote{http://networkx.lanl.gov/}.
+
+The authority metric this is similar to the PageRank and instability metrics, in that it can be used as a measure of risk in changing a component.
+Removing a component that has a high authority may increase the risk of change in the system.
+Therefore, given the authority measure is assigned to property \verb+auth+, the criteria to minimise the removed authority is defined as \verb!-removed(auth)!.
+
+\subsection{Other Criteria}
+There are many other types of criteria that can be considered when judging the optimality of a solution.
+Criteria that maybe component model dependent, that use properties located in component meta-data (e.g., size, vendor and licence),
+generated through component contracts and composition testing (e.g., reliability and speed),
+or community sourced meta-data stored in repositories (e.g., popularity) could be used through optimisation.
 
 %%%Discuss information from component met-data
+Component meta-data such as the examples presented in the chapter \ref{background}, can be an ample source of information when evolving a system.
+Users may have preferences on any range of contained information that could be extracted, such as licence agreements, developers, vendors,
+or other more specific information like date of release or certification.
+This information may effect the desirability of a system, therefore could be considered. 
+For example, there are many users of systems that have a preference for open source software, 
+which can be released under licences like the GNU General Public Licence\footnote{http://www.gnu.org/copyleft/gpl.html} (GPL).
+This preference could come from the moral decision that freed software is better or from some business rule stating that GPL licences conform to a business model.
+Therefore, a component that has such a licence is preferred over one that does not.
+Allowing the specification of such criteria may allow more users to evolve systems to be more suited to their needs.
 
 %%%Discuss information from component testing (e.g. treaty, unit tests)
+The functional testing of components, through predefined test cases or component contracts, may allow for functional and non-functional metrics to be included optimised.
+Some components make public test suites that are used in order to show the process by which they are developed,
+such test suites could be used to compare versions of the same component, or competing component with the same functionality in order to select the best component.
+Implemented component contracts, which verify the interaction between components, could also be used with different components in order to select the correct one. 
+For example, given a test suite has been developed to test spell checkers, 
+this suite could be run against various spell checker components and the number of passed tests and the time it took to pass them measured.
+Then a criteria could be developed in order to select the spell checker that passed the most tests, then took the least average time.
 
 %%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
+Community efforts to rank and review different components could also be used in order to optimise evolution.
+Many such communities already exist that discuss and rate components, they provide a unique source of information that the user may use to evolve their system.
+For example, the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/} is an automated survey that collects information from the community to find popular components.
+If such information was used, more popular components could be installed with the assumption they are more developed and maintained.
+
+%%%Why have we not defined such criteria
+There are two core reasons why these types of criteria have not been fully defined in this chapter,
+they are difficult to implement, and they may be impossible to validate within the scope of this research.
+The discussed criteria in this chapter may require large amount of effort, including coding, testing and specification to implement them.
+Even if this i accomplished, the scope of this defined project, which does not deal with the specific implementation details of a component model,
+may make the validation of such criteria difficult or impossible.
+Therefore, these criteria may be used and be useful in the future, but in this project are not further defined.
 
 \subsection{Criteria Composition}
-The use of these criteria must be 
+The composition of criteria, the way in which they are lexicographically related through the Mancoosi optimisation format,
+will effect the selected solution.
+Each different action that a user can take, e.g. add a component, remove a component or upgrade a component, may have a different composition of criteria to optimise its evolutionary step.
+
+Defining such compositions must be carefully accomplished as sometimes intuitively correct criteria may result in unforeseen complications.
+For example, when defining the criteria to optimise the upgrade action a users goals may be to minimise the changed components during the upgrade.
+With the composition \verb+-changedcomp,-uptodateage+, the system may never upgrade anything, as the upgrade command (as defined in CUDF) does not require any component to change.
+Another example would be to set the install instructions to minimise the size of installed components then minimise change,
+e.g. \verb!-sum(size),-changedcomp!, this may remove much of the system as the size of most components is above zero.
+
+How the criteria are ordered, is just as important as the criteria selected, and he consequences of incorrectly defining a composition can be significant.
 
 \section{Summary}
-
+In this chapter the strategies a user may employ in order to evolve their component systems were discussed.
+These strategies, first elicited from a survey given to users of component systems, are defined into two sterotypes, progressive and conservative.
+Both of these sterotypes are defined given some risk to the system, progressive users are more concerned with the risk of being not up-to-date,
+and conservative users are more concerned with the risk of change to the system.
+Criteria where defined that express these risks, and can be used to optimise the evolution of component systems.
+Each criterion is defined using a pseudo-Boolean function, that can be used in the algorithms provided in the previous chapter to select systems that reflect the users goals.
+In the following chapters, a simulation is defined to imitate the evolution of a system.
+This will enable the testing and validation of these strategies and criteria, to find if the users goals are achieved through their use. 

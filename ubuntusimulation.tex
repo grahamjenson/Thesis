@@ -778,29 +778,29 @@ This effect is felt mostly by users the update often and those that update progr
 
 The stable criteria as defined mitigates some of this effect of this system by waiting for the components to stabalize in their changes.
 
-\subsection{What is the effect of updating for while satisfying maximising recomends satisfaction?}
-As well as their explicit dependencies, components can define dependencies that they recommend should be installed.
-These components are usually what has been tested and are likely to interact with little friction with other components.
-Therefore, by satisfying these recomendation the system should be functional, though these recomendation may conflict with other users criteria.
-
-Installing recommended pieces of software may duplicate functionality in  
-
-Testing how the maximising the recomendations impacts the evolution of the system using the three 
-
-Specifically, 10 runs for each of 5 selected users where executedusing the a
-conservative criteria ``-removed,-new,-unsat\_recommends,-uptodatedistance'', a progressive criteria ``-unsat\_recommends,-uptodatedistance,-removed,-new''
-and a mixed criteria ``-removed,-unsat\_recommends,-uptodatedistance,-new''.
-
-\subsubsection{Results}
-Graphs of system size, system change are compared to the typical P2, APT and extreme progressive crtieria.
-
-Life cycle, clearly the first update will hurt the most.
-
-Show the trade offs.
-
-
-\subsubsection{Conclusion}
-Installing with recommendation may be prefered to increase stability, though it significantly increases the amount of change in a system, mostly at the begning.
+% \subsection{What is the effect of updating for while satisfying maximising recomends satisfaction?}
+% As well as their explicit dependencies, components can define dependencies that they recommend should be installed.
+% These components are usually what has been tested and are likely to interact with little friction with other components.
+% Therefore, by satisfying these recomendation the system should be functional, though these recomendation may conflict with other users criteria.
+% 
+% Installing recommended pieces of software may duplicate functionality in  
+% 
+% Testing how the maximising the recomendations impacts the evolution of the system using the three 
+% 
+% Specifically, 10 runs for each of 5 selected users where executedusing the a
+% conservative criteria ``-removed,-new,-unsat\_recommends,-uptodatedistance'', a progressive criteria ``-unsat\_recommends,-uptodatedistance,-removed,-new''
+% and a mixed criteria ``-removed,-unsat\_recommends,-uptodatedistance,-new''.
+% 
+% \subsubsection{Results}
+% Graphs of system size, system change are compared to the typical P2, APT and extreme progressive crtieria.
+% 
+% Life cycle, clearly the first update will hurt the most.
+% 
+% Show the trade offs.
+% 
+% 
+% \subsubsection{Conclusion}
+% Installing with recommendation may be prefered to increase stability, though it significantly increases the amount of change in a system, mostly at the begning.
 
 \subsection{Graph metrics to lower change?}
 The selection of the newest version is selected as it is presumed that the highest version is the best in the range of possible versions.
@@ -815,6 +815,9 @@ If the value always decreases then the least updated version is always installed
 
 \subsubsection{Results}
 Results from graph metrics that can be used.
+Given a change, the number of components that depend on the changed components can be measured.
+This could be described as the set of components that may through an error given a certain change.
+If this is lower than using other conservative criteria this would be a sucessful use of criteira.
 
 \subsection{What are the effects of a typical installation criteria?}
 When a component is installed into a system the criteria is always conservative as the installation action is meant to change only parts of the system related to the selected components to install.
