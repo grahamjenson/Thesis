@@ -4,96 +4,134 @@
 
 
 \begin{center}
-  \includegraphics[width=9cm]{introductionpics/lego}
+  \includegraphics[width=9cm]{introductionpics/lego}\\
+  \textit{XKCD Lego}
 \end{center}
-\textit{XKCD Lego}
-
-
-%\begin{quotation}
-%\textbf{Man}: When you take apart a Lego house and mix the pieces into the bin, where does the house go?\\
-%\textbf{Woman}: It's in the bin.\\
-%\textbf{Man}: No, those are just pieces. They could become spaceships or trains. 
-%The house was just an arrangement. The arrangement doesn't stay with the pieces and it doesn't go anywhere else. It's just gone\\
-%--XKCD Lego
-%\end{quotation}
 
 %%%The start of this thesis leads the reader to the idea that when building a complex system, breaking the probelm into parts is a natural and beneficial instinct\\
-{}When confronted with building a complex system, our first instinct in an attempt to construct the system is often to break it into smaller, simpler components. 
-{}These are defined by their contribution to the system and their relationships to other components.
-{}Through this ``divide and conquer'' method, the design and construction of a complex system becomes a manageable task.
+When confronted with building a complex system, an analytical person's first instinct is often to break the system into smaller, simpler components. 
+These components can be defined by their contribution to the whole system and their relationships to other components.
+Through such a ``divide and conquer'' method, the design and construction of a complex system becomes a manageable task.
 
-%%%We use the metaphor of building a car to explain the benefits of breaking systems into components
-When building a complex system like a car, you would not attempt to build the car as a whole, but break it into parts for design and construction.
-A car requires a body, electrical system, interior, suspension and steering, engine \ldots. 
+%%%The metaphor of building a car to explain the benefits of breaking systems into components
+For example, a car, being a complex system, is manufactured by breaking it into parts for design and construction.
+It requires a body, electrical system, interior, suspension and steering, engine \ldots. 
 The engine can be further broken into other parts like cooling, oil system, exhaust and intake systems, fuel, and so on.
-Each of these parts have relationships that lead to complex dependencies; for instance, the \textit{carburettor} blends the air from the \textit{intake} with petrol from the \textit{fuel system}.
+Each of these parts have relationships to one another; for instance, the \textit{carburettor} blends the air from the \textit{intake} with petrol from the \textit{fuel system}.
 
-%%%The benefits of breaking apart systems are gained during design, implementation, maintenance and evolution. 
-The benefits of breaking a system apart are gained through the entire product process; design, implementation, deployment, maintenance and evolution.
+%%%Software can also be compoentised
+Software systems are also complex, they can be broken apart into components for design, implementation, deployment and evolution.
+At each of these stages, the separation of the system into components provides benefits to their goals.
 
 %%%During Design; more informed planning, understanding the "big picture", risk analysis
-
+During software design the abstraction into larger units of composition allows a broader understanding of the system, a ``big picture'' view of the system.
+This view gives a better ability to analysis the risks in the system, as the interactions of the components are exposed to the designer.
+ 
 %%%During implementation; specialization of people to tasks, concurent development, testing each part separtly, risk mitigation (if an individual component fails, the entire system is salvageable)
+During implementation of the system, each component can be developed concurrently by specialists, where teams of people who are experts in a components function can be better managed.
+The validation of the system can also be accomplished through testing each component separately from the whole system.
+This will enable greater detail in planning and progress tracking throughout development.
 
-%%%During maintenance; a component can be replace with known side effects, problems can be detected and solved.
-The apocryphal story of George Washington's axe which has three times had its handle replaces and twice its head replaced deomstrates the power of maintence on a system of parts.
+%%%During Deployment, customisation to a users specific needs
+During the deployment of a component system, the configuration of components can be customised for a specific user.
+Given users can have different requirements of their systems, being able to install the best set of components for a specific user will increase user satisfaction.
+A simple example, is if a user prefers blue to red, and a user interface component can be selected by colour, 
+then a blue component will satisfy the user without having to change anything else in the system.
 
 %%%During Evolution; replacing a component with a superior part, extra components can be added to improve and add functionality.
+Evolving a component based piece of software requires only changing parts of the system.
+If a part of a system is old, and requires a new version, or if a component can be added to improve or add functionality,
+the rest of the system does not need to be altered in order to make such changes.
 
-\section{Software Components}
-{}The use of components in software systems has additional benefits over their use in physical systems.
-{}Software components can be reused in different contexts, replaced ``on the fly" without interruption to the system, validated for correctness before being used, 
-{}and automatically composed into a system through resolving their defined dependencies.
+Though many other benefits exist to the use of component software, the focus of this research is on the evolution of component systems.
 
-%%%A software component can provide its services to many other components all for different purposes.
-In a physical car there are pumps which accomplish many different tasks, pumping oil, air, water.
-In a software system such replication is unnecessary as a single component could provide a service that pumps, 
-and other components can use this service for many different purposes.
-A software component, not bound by physical limitations, can be in many places at once, doing many similar jobs simultaneously.
-A component providing a http server can be used for web site hosting, communication, internal and external web-sites, REST and SOAP communication.
-This is done all by the same component, as the abstraction of the http service is broad enough to accomplish many tasks.
+\section{Evolution}
+%%%Biological evolution to software evolution
+In biology the process of evolution is the change that occurs to life forms, over generations, through natural selection and mutation.
+This evolution is chaotic and disorganised, where the evolution of a software has a plan and objectives to be followed and attained.
+The generations of organisms are analogous to the versions of software and the mutations become the developers alterations to code.
+Where the environment guides and constrains the evolution of an organism, the users and developers guide the evolution of software.
+This guidance through software evolution is typically through conveyed user requirements to developers, who alter their software to suit.
 
-%%%Changing components while the system is running is possible in software.
-Replacing a tire or repairing a windshield while continuing to drive the car is at the very least difficult, if not impossible.
-Inside a software system, where changes in state are accomplished so quickly that they are unperceivable, the replacement of parts of a system are easily accomplished while the system is running.
+The fundamental investigations into this software evolution is presented by \cite{lehman1980}.
+This research shows that all software systems (above a certain complexity) must evolve to maintain user satisfaction.
+It also shows the consequences of such evolution, such as increasing complexity and decreasing quality of the software over time.
 
-%%%If the software component relationships are well defined, with contracts and requirements a system or component can be validated to be correct before use (e.g. treaty)
-If an enthusiast adds a turbo to a car, it may not work correctly in that context, it may create too much pressure and blow the engine.
-A component can have complex mechanisms like contracts or strictly defined specifications to automatically detect these incompatibilities before they cause problems.
+%%%Software evolution to Component system evolution
+The process of software evolution is then instigated by the user, and resolved by the developer.
+This is a different process from the evolution of component systems, 
+where the user both instigates and resolves their issue from set of defined actions and a set of pre-developed components.
+A user can install, remove or upgrade a component from a repository of provided components, without the direct interaction with the developer. 
+For example, if a user requires a text-editor in their component system, they may add a text-editor component to fulfil their need.
 
-%%%Given the relationships in a software component system are strictly defined, we can use these to then find valid combinations with user requirements
-Imagine being able to define the car you want by describing the functionality you require, and then a custom car, one that may exist no where else in the world,
-is automatically built for you. 
-While then driving this car your requirements change, you want to drive off road, then the car changes parts to adapt to your new requirements, new tires, engine, gearbox\ldots
-This is the power that dependency resolution offers component systems, automatic resolution of a users requirements.
+This user resolved alteration of component systems is the specific focus of this thesis, and is described with the term ``\textbf{component system evolution}''.
+This is opposed to the evolution of an individual component, described as ``\textbf{component evolution}''.
+As with the work presented by \cite{lehman1980}, 
+this research is investigating the process of component system evolution, and the consequences of this process on the systems being evolved.
+
+\subsection{Strategies}
+A user can then force an action to evolve a system, such actions are typically imprecise.
+For instance, selecting to text-editor neither specifies the specific type of text-editor, the version of text-editor,
+and under what conditions the text-editor should be selected.
+The guiding plan of the user in this study is described as their ``\textbf{strategy}''.
+
+In game theory, a strategy is a player's plan of action that determines behaviour, designed to produce a desirable outcome.
+In component system evolution, a strategy is the users plan to evolve their system to maintain their satisfaction with the system.
+This strategy includes the users criteria used to determine the best course of action when a system is being evolved.
+This strategy is an important aspect in component system evolution as any required evolution can be accomplished in potentially many different ways.
+For example, given a request to install a text-editor, there may be many versions of many different possible text-editors to install.
+Each component must be weighed for benefits and risks to the user and system and selected given the users strategy. 
+
+\subsection{Automation}
+In practise, a user rarely evolves a component system without assistance.
+This is because any evolution action may involve many components, each with many relationships that must be satisfied, which creates a complex problem to solve.
+If components in a system explicitly state the relationships between one another, and their is a way to manipulate the component system,
+then an algorithm can be defined to find solutions to evolution actions.
+This algorithm must take into account the users strategy, and practical concerns like time to find a solution.
+This algorithm in this research is called ``\textbf{component dependency resolution}'' or ``\textbf{CDR}''.
+
+CDR takes a single evolutionary action on a component system, and returns an evolved system given the users strategy.
+Over time as the user requests many actions to evolve the system, the component system will resemble less and less the original system.
+The way in which such a system evolves given the strategies of the user has yet to be explored. 
+This knowledge is what this research intends to produce. 
 
 \section{Research Goals}
-{}The aspect of the vast research areas of software components we will look at throughout this thesis is the final point made in the previous section, 
-{}the automatic composition of software components through resolving component dependencies.
-{}Specifically we will try to answer the question:\\
-{}\begin{quote}
-%``What effect does using component resolution with different evolution strategies have on component system evolution?''.
-{}What are the \textbf{consequences to a component system} while \textbf{optimising for different criteria} during evolution when using \textbf{Component Dependency Resolution (CDR)}?
-{}\end{quote}
+The core areas that are explored in this thesis are component system evolution, user strategies and CDR.
+The main research question of this research is:
+\begin{quote}
+What are the consequences of evolving a component system with CDR given the strategy being used?
+\end{quote}
 
-{}This question leads to three lines of inquiry; component dependency resolution, the optimisation with different criteria, and the consequences of CDR optimisation on component systems.
+This question leads to various lines of inquiry; component system evolution, component dependency resolution, the user strategies, and the consequences of evolving component systems.
 
-%%%The questions we aim to answer related to CDR:\\
-%%%What is CDR and why use it?; CDR chapter \ref{background}\\
-%%%What is necessary of a component model for CDR?; Background chapter \ref{background}\\
-%%%How do we formally define CDR?; CDR chapter \ref{cdr}\\
-%%%How do we implement CDR?; Implementation chapter \ref{implementation}
+TODO
+The research questions related to component system evolution are:
+\begin{itemize}
+	\item What is the current state of component system evolution?; chapter \ref{background}
+	\item What is necessary of a component model to allow for component system evolution?; chapter \ref{background}
+	\item How do we formally define component system evolution?; chapter \ref{formal}
+\end{itemize}
 
-%%%The questions we aim to answer related to the optimisation of CDR with different criteria are:\\
-%%%How do we represent optimisation in CDR?; CDR chapter \ref{cdr}\\
-%%%How do we optimise for criteria?; Implementation chapter \ref{implementation}\\
-%%%What criteria are important?; Criteria chapter \ref{criteria}
+The research questions related to CDR are:
+\begin{itemize}
+  \item How can CDR be implemented?; chapter \ref{implementation}
+  \item How
+\end{itemize}
 
-%%%The questions we aim to answer related to the consequences of such optimisation:\\
-%%%What consequences are we looking for?; Criteria chapter \ref{criteria}\\
-%%%Are component models  similar enough to generalise our results?; Comparisons chapter \ref{comparison}\\
-%%%How can we measure the consequences of criteria?; Simulation chapter \ref{simulation}\\
-%%%What are the consequences?; Simulation chapter \ref{simulation}
+The questions we aim to answer related to the optimisation of CDR with different criteria are:
+\begin{itemize}
+	\item How do we represent optimisation in CDR?; CDR chapter \ref{cdr}
+	\item How do we optimise for criteria?; Implementation chapter \ref{implementation}
+	\item What criteria are important?; Criteria chapter \ref{criteria}
+\end{itemize}
+
+The questions we aim to answer related to the consequences of such optimisation:
+\begin{itemize}
+	\item What consequences are we looking for?; Criteria chapter \ref{criteria}
+	\item Are component models  similar enough to generalise our results?; Comparisons chapter \ref{comparison}
+	\item How can we measure the consequences of criteria?; Simulation chapter \ref{simulation}
+	\item What are the consequences?; Simulation chapter \ref{simulation}
+\end{itemize}
 
 \section{Thesis Overview}
 %%%A list and breif explination of each of the chapters and how they relate to our Research Goals 
