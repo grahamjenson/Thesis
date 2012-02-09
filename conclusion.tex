@@ -1,76 +1,74 @@
 \chapter{Conclusion}
 \label{conclusion}
-%%%The conclusions from this work are the answers to our initial questions
+%%%Answers to our initial questions
+The main research goal of this thesis is:
+\begin{quote}
+Conceptualise component system evolution strategies and access them using a simulation that has been developed.
+\end{quote}
+This research has been directed towards this objective.
+To provide an answer the semantics of component system evolution where defined, a CDR algorithm implemented and validated, user strategies for evolution explored,
+and finally a simulation of the evolution of Ubuntu component systems conducted.
+Through this simulation some consequences of evolving a component system where described.
 
-%%%What is necessary of a component model for CDR? Explicit Dependencies, Evolution Support
+TODO DESCRIBE THE FOUND CONSEQUENCES I.E. How fast a system goes out of date when
 
-%%%What is CDR and why use it?; CDR will help with the tedious task of evolution of component systems.
+How well has this research answered the original question?
+Firstly; the consequences that have been found are component model (Ubuntu) specific. 
+Secondly; not all consequences and strategies were enumerated and analysed.
 
-%%%How do we formally define CDR? SAT constraints 
+Finding the consequences of component evolution on further component models (like the ones listed in chapter \ref{background}) to make generalisations is impractical and may be impossible.
+This is because component models may not have enough information to create a simulation and the effort required to simulate them may exceed available resources of this project.
 
-%%%How do we implement CDR?; SAT Solver
+To simulate the evolution of a component model enough information to populate the variables of the conceptual model is required.
+This information, like the likely hood a user will install a component, is often not accessible or does not exist.
+The most difficult conceptual model attribute to assign is the repository function that returns a set of components that were available given a time. 
+Many component models do not have a set of publicly available components, as their main users create proprietary components or do not see an advantage in sharing.
+Component models that do make sets of component public often neglect to keep historical information, e.g. the OSGi repository OSGi Bundle Repository.
+In some instances information is gathered but it may be incomplete or be stopped as it is seen to lack value,  
+e.g. the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project was shut down as it was deemed not to have a significant return on investment.  
 
-%%%How do we represent optimisation in CDR? Formal composition of complete lattices
+If enough information was available for a simulation to be conducted, the effort of multiple simulations exceeds the resources of this project.
+The computational power required to analyse just a single component model required many hours of high performance computers.
+Each evolution problem is itself a hard problem to solve, to simulate generations of a single system was a massive undertaking.
+The resources in both man hours and computational hours would need to be increased in order to analyse further component models.
 
-%%%How do we optimise for criteria? Pseudo Boolean Optimistion
+Finding a complete set of all consequences for all user strategies is an impractical goal.
+The amount of possible user strategies is massive, and only the common strategies where used in the simulation.
+When these strategies where simulated only specific consequences where measured to answer the questions asked in chapter \ref{ubunutsimulation}.
+Creating then simulating all possible user strategies would create a massive amount of data.
+Then the extensive analysis of this data to find all consequences would likely be uninteresting and unusable.
+Finding the consequences to a strategy that is not currently used provides little practical information.
 
-%%%What criteria are important? Minimal Change and Uptodat, measured through different Heurisitcs.
+What was presented in this thesis to answer the research question was 
+\text{some} of the consequences when evolving an \textbf{Ubuntu} component system with CDR with \textbf{common} user strategies where described in this thesis.
+This is believed to be significant enough to state that this research has been successful.  
 
-%%%What consequences are we looking for? The dependence between the criteria
+To conclude this thesis, a list of contributions is briefly given as these are the ultimate outcomes of the research.
+Then similar and used research from third parties are described to give a more general view of this domain.
+Finally, the future of this research is outlined and the final thoughts are discussed.
 
-%%%How to select good criteria?
+\section{Contributions}
+To answer the research questions various artifacts where created.
+The artifacts that could be deemed useful to further study, that are also relatively unique are seen as contributions knowledge. 
+These contributions include; the formal definition of component evolution, the implementation of CDR that evolves a component system,
+the simulation that  
 
-%%%Are component models  similar enough to generalise our results? YES/NO
+%%%Formalisation of evolution, the semantics
 
-%%%How can we measure the consequences of criteria?; Simulation chapter \ref{simulation}
+%%%GJSolver implementation 
 
-%%%What are the consequences? Also Yet to Do
+%%%Simulation -- conceptual model
 
-%%%Final thoughts
+%%%List of consequences
+
+%%%New stable components shown to reduce certain problems for certain user strategies
 
 \section{Related Work}
-Researchers often look at the mechanisms of component evolution \cite{Wang2006}, how to add or remove a changed component in a system.  
-However, we are looking at the architectural level into the properties of the component system as it evolves.
-This paper has many similarities to the empirical work into software evolution by Lehman \cite{lehman1980},
-which looks for laws and relationships between software and its evolutionary process.
-In this paper we aimed to look into the evolution of component systems through CDR,
-and identify the consequences of different definitions of minimal change. 
+Throughout this research the domains of software evolution, component based software engineering (CBSE) and component dependency resolution.
+Research from these domains has shaped and informed this research, and in this section such research is discussed and contrasted with this thesis.
 
-Research into how the finer-grained evolution of individual components integrates with the larger architectural view of component systems, which
-usually focuses on component versioning \cite{Bauml2009,Stuckenholz2005}.
-This work aims to add well-defined semantics to component versions, 
-allowing them to describe if a component has changed its external requirements or if it has only changed internally.
-Adding this to component models would allow CDR to make more informed decisions during evolution, 
-and through experiments similar to the one described in this paper,
-their semantics could be tested to find if their effect is positive to system evolution.
-
-%%%Mancoosi is by far the most related work, though its focus is slightly different than ours
-As mentioned many times throughout this paper, 
-the Mancoosi organisation is producing significant research in the area of Component Dependency Resolution.
-They have defined the format CUDF \cite{treinen2009common}, to express and solve the CDR problems.
-They also run constant comparisons against different CDR implementations through the Mancoosi International Solver Competition (MISC),
-which we based our experiment on.
-They also contribute significantly in the areas of modelling the problem \cite{Cosmo2010} 
-and defining and researching solutions for it \cite{Trezentos2010}.
-%TODO write more here
-
-Belief revision is an area of logic that focuses on changing beliefs to take into account new knowledge.
-The Alchourr\'on, G\"ardenfors, and Makinson (AGM) \cite{alchourron1985logic} postulates give a set of eight properties 
-that a revision operator needs to satisfy in order to be considered rational.
-An intention of these postulates to ensure minimal change of the set of knowledge when it is revised.
-For example, if you saw what you thought was a flying pig, but you later found out it was a bird;
-when using belief revision you should revise the minimal amount of knowledge, therefore only discard the belief it was a pig, 
-while maintaining the belief it was flying.
-By stating whether a component is installed or not as a fact,
-and revising these facts with user requests, we are able to define CDR w.r.t. belief revision.
-This area of logic is very focused on what is minimal and how to define a minimal operator that is considered rational; 
-we have taken much inspiration from this domain.
-
-
-
-%%%Daniel Le Beere and Pascal Rapicault making EclipseP2 P2CUDF and Sat4J are all very related
-
-%%%Lehmans Laws of Evolution inspired our research into Component System Evolution
+\subsection{Software Evolution}
+%%%Lehman, other stuff on evolution
 Software evolution is continual management of change to software. 
 Software maintenance is often used to describe this,
 however is considered an invalid description of evolution, as it conveys a
@@ -84,6 +82,44 @@ continuing growth \cite{lehman_rules_2001} to name a few. These empirically prov
 display the importance of software evolution as a process within software
 engineering.
 
+
+\subsection{CBSE}
+%%%All the CBSE stuff, Szyperski \ldots
+
+Research often looks at the mechanisms of component evolution \citep{Wang2006}, how to add or remove a changed component in a system.  
+However, this research looks at the architectural level into the properties of the component system as it evolves.
+The mechanisms of exactly 
+
+Research into how the finer-grained evolution of individual components integrates with the larger architectural view of component systems, which
+usually focuses on component versioning \cite{Bauml2009,Stuckenholz2005}.
+This work aims to add well-defined semantics to component versions, 
+allowing them to describe if a component has changed its external requirements or if it has only changed internally.
+Adding this to component models would allow CDR to make more informed decisions during evolution, 
+and through experiments similar to the one described in this paper,
+their semantics could be tested to find if their effect is positive to system evolution.
+
+\subsection{Component Dependency Resolution}
+%%%Le Berre and Parrain + Mancoosi 
+
+
+This paper has many similarities to the empirical work into software evolution by Lehman \cite{lehman1980},
+which looks for laws and relationships between software and its evolutionary process.
+In this paper we aimed to look into the evolution of component systems through CDR,
+and identify the consequences of different definitions of minimal change. 
+
+%%%Mancoosi is by far the most related work, though its focus is slightly different than ours
+As mentioned many times throughout this paper, 
+the Mancoosi organisation is producing significant research in the area of Component Dependency Resolution.
+They have defined the format CUDF \cite{treinen2009common}, to express and solve the CDR problems.
+They also run constant comparisons against different CDR implementations through the Mancoosi International Solver Competition (MISC),
+which we based our experiment on.
+They also contribute significantly in the areas of modelling the problem \cite{Cosmo2010} 
+and defining and researching solutions for it \cite{Trezentos2010}.
+%TODO write more here
+
+
+
+
 Le Berre and Parrain \cite{Berre2008} describe methods for solving dependency resolution with minimal optimisation.
 Dependency resolution is used in such areas as software product lines,
 for instance Savolainen et al. \cite{savolainen_analyzing_2007} uses dependency analysis to identify and remove unnecessary features.
@@ -93,35 +129,16 @@ The algorithms that do optimise for other properties,
 such as one proposed by Aleti et al. \cite{Aleti2009} that uses ant colony optimisation for quality optimisation,
 usually are not based on a formal framework for multi-criteria optimisation but defines a specific model for each problem.
 
-Instances of different complete lattices used for constraint solving can be found in a similar framework based on c-semirings, 
-by Bistarelli et al. \cite{Bistarelli1997}.
-They prove that all instances of their framework are complete lattices, and their $+$ operator coincides with join
-and if their $\times$ operator is idempotent, it coincides with meet.
-Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
-In their framework $\times$ must distribute over $+$, this gives a distributive lattice,
-since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
-The c-semiring framework is still greatly useful as c-semirings are complete lattices all instances of this framework will work in ours.
-
-Instances of complete lattices representing criteria can also be found from Fern\'{a}ndez and Hill's \cite{Fernandez} framework,
-this represents constraint problems as intervals over lattices.
-They give ample examples of lattices including binary strings, intervals and non negative integers ordered by division.
-In their framework are presented lexicographic and product orders, and used intervals to describe constraints.
-This framework has more of a focus on constraint representation and solution, 
-where our framework is focuses on criteria composition.
-
-Lexicographically ordered constraint satisfaction problems \cite{Freuder2009} has many similar ideas to this research.
-It is an exploration of an idea (originally defined in as a part of valued constraints \cite{schiex1995valued})
-where by ordering variables in the problem lexicographically you can represent user preferences.
-This research offers definitions, proofs and background to lexicographical orderings.
-
-Formally modelling preferences is explored in the article by Ozt\"urk et al. \cite{Ozturk}.
-They define many types of preference orders, most assume either a total order, or a semi-order (where the order may not be transitive).
-As our framework uses only complete lattices orders, the problem of composition and definition is simplified. 
-They also discuss the concept of ``near'' which defines similarity or indifference between solutions.
-
 \section{Future Work}
 %%%Future work may be looking at different component models, and the application of CDR to them (e.g. Web Services).
 
 %%%Exploring more component models, and mapping them to CUDF to experiment with, and solve more problems.
 
 %%%Making more criteria, based on testcases contracts user communities, as discuesed in chapter \ref{strategies}
+
+\section{Final Thoughts}
+The study of software evolution is fundamental to the domain of software engineering.
+This study includes the evolution of component systems.
+The discussion of user strategies and their consequences is the focus of this research 
+
+ 
