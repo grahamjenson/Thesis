@@ -10,40 +10,37 @@ Through such a ``divide and conquer'' method, the design and construction of a c
 
 %%%The metaphor of building a car to explain the benefits of breaking systems into components
 For example, a car, being a complex system, is manufactured by breaking it into parts for design and construction.
-It requires a body, electrical system, interior, suspension and steering, engine \ldots. 
-The engine can be further broken into other parts like cooling, oil system, exhaust and intake systems, fuel, and so on.
-Each of these parts have relationships to one another; for instance, the \textit{carburettor} blends the air from the \textit{intake} with petrol from the \textit{fuel system}.
+It requires a body, electrical system, interior, suspension, steering, engine \ldots. 
+The engine can be further broken into other parts like cooling, oil system, exhaust, intake, fuel, carburettor and so on.
+Each of these parts can be defined by their provided function to the engine, and their relationships to other engine components.
+For instance, the \textit{carburettor} is the fuel delivery system that blends the air from the \textit{intake} with petrol from the \textit{fuel system}.
 
-%%%Software can also be compoentised
-Software systems are also complex, they can be broken apart into components for design, implementation, deployment and evolution.
-At each of these stages, the separation of the system into components provides benefits to their goals.
+%%%Software is complex and components can be used to manage their complexity.
+Software systems are also complex as they have many intricate, and interrelated parts, that when combined should provide a function.
+This complexity has tried to be managed through various approaches; the hierarchical decomposition of object orientation \citep{cox1986}, 
+the decoupling of relationships through dependency inversion \citep{martin1996dependency}, the abstraction of knowledge through model driven engineering. 
+Another such method to manage the complexity of software is to break the system apart into independent units of composition, \textbf{software components} \citep{Szyperski2002}. 
 
-%%%During Design; more informed planning, understanding the "big picture", risk analysis
-During software design the abstraction into larger units of composition allows a broader understanding of the system, a ``big picture'' view of the system.
-This view gives a better ability to analysis the risks in the system, as the interactions of the components are exposed to the designer.
- 
-%%%During implementation; specialization of people to tasks, concurent development, testing each part separtly, risk mitigation (if an individual component fails, the entire system is salvageable)
-During implementation of the system, each component can be developed concurrently by specialists, where teams of people who are experts in a components function can be better managed.
-The validation of the system can also be accomplished through testing each component separately from the whole system.
-This will enable greater detail in planning and progress tracking throughout development.
+%%%What are Software components
+The exact definition of ``software component'' is still in dispute (as further discussed in chapter \ref{background}),
+though the one definition agreed upon ``software components are able to be composed''.
+The exact method of composition and the necessary attributes of software components are left unclear, though these details are unnecessary here.
 
-%%%During Deployment, customisation to a users specific needs
-During the deployment of a component system, the configuration of components can be customised for a specific user.
-Given users can have different requirements of their systems, being able to install the best set of components for a specific user will increase user satisfaction.
-A simple example, is if a user prefers blue to red, and a user interface component can be selected by colour, 
-then a blue component will satisfy the user without having to change anything else in the system.
+%%%Why use software components
+The key arguments for developers to construct a system using software components are enumerated in \cite{Szyperski2000} as:
+\begin{enumerate}
+	\item \textit{Extensibility}: the system taking into consideration the future addition of functionality
+	\item \textit{Evolvability}: changing a software system to reflect a changing environment
+\end{enumerate}
 
-%%%During Evolution; replacing a component with a superior part, extra components can be added to improve and add functionality.
-Evolving a component based piece of software requires only changing necessary parts of the system.
-If a part of a system is old, and requires a new version, or if a component can be added to improve or add functionality,
-the rest of the system does not need to be altered in order to make such changes.
-This is opposed to evolving a non-component based system, may require the entire removal and replacement of the system.
-
-Though many other benefits exist to the use of component software, the focus of this research is on the evolution of component systems.
+Extensibility and evolvability as keys to component software come from the understanding that a system must change over time to be maintained, enhanced or fixed.
+The economic incentive of being able to quickly adapt to the users needs is clear as it will increase a users satisfaction of the system.
+Both of these can be put under the category of \textit{software evolution}, the alteration of software after deployment.
+This research focuses on the evolution of component systems, which are the key arguments to use software components.
 
 \section{Evolution}
 %%%Biological evolution to software evolution
-In biology the process of evolution is the change that occurs to life forms, over generations, through natural selection and mutation.
+In biology the process of evolution is the change that occurs to life forms over generations through natural selection and mutation.
 This evolution is chaotic and disorganised, where the evolution of a software has a plan to be followed and objectives to be attained.
 The generations of organisms are analogous to the versions of software and the mutations become the developers alterations to code.
 Where the environment guides and constrains the evolution of an organism, the users and developers guide the evolution of software.
