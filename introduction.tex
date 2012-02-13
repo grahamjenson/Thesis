@@ -3,13 +3,13 @@
 \epigraph{E pluribus unum -- Latin for "Out of many, one"}
 {\textit{de facto motto of the United States 1782 - 1956}}
 
-%%%The start of this thesis leads the reader to the idea that when building a complex system, breaking the probelm into parts is a natural and beneficial instinct\\
+%%%The start of this thesis leads the reader to the idea that when building a complex system, breaking the probelm into parts is a natural and beneficial instinct
 When confronted with building a complex system, an analytical person's first instinct is often to break the system into smaller, simpler components. 
 These components can be defined by their contribution to the whole system and their relationships to other components.
 Through such a ``divide and conquer'' method, the design and construction of a complex system becomes a manageable task.
 
-%%%The metaphor of building a car to explain the benefits of breaking systems into components
-For example, a car, being a complex system, is manufactured by breaking it into parts for design and construction.
+%%%The metaphor of building a car to explain breaking systems into components
+A car is such a complex system that is manufactured by breaking it into parts for design and construction.
 It requires a body, electrical system, interior, suspension, steering, engine \ldots. 
 The engine can be further broken into other parts like cooling, oil system, exhaust, intake, fuel, carburettor and so on.
 Each of these parts can be defined by their provided function to the engine, and their relationships to other engine components.
@@ -17,86 +17,104 @@ For instance, the \textit{carburettor} is the fuel delivery system that blends t
 
 %%%Software is complex and components can be used to manage their complexity.
 Software systems are also complex as they have many intricate, and interrelated parts, that when combined should provide a function.
-This complexity has tried to be managed through various approaches; the hierarchical decomposition of object orientation \citep{cox1986}, 
-the decoupling of relationships through dependency inversion \citep{martin1996dependency}, the abstraction of knowledge through model driven engineering. 
-Another such method to manage the complexity of software is to break the system apart into independent units of composition, \textbf{software components} \citep{Szyperski2002}. 
+An objective of software engineering is to manage this complexity and through various approaches like the hierarchical decomposition of object orientation \citep{cox1986}, 
+the decoupling of relationships through dependency inversion \citep{martin1996dependency}, the abstraction of knowledge through model driven engineering \citep{schmidt2006}. 
+Another such method to manage the complexity of software is to break the system apart into independent units of composition called \textbf{software components} \citep{Szyperski2002}. 
 
-%%%What are Software components
+%%%What are Software components, why use software components
 The exact definition of ``software component'' is still in dispute (as further discussed in chapter \ref{background}),
 though the one definition agreed upon ``software components are able to be composed''.
-The exact method of composition and the necessary attributes of software components are left unclear, though these details are unnecessary here.
-
-%%%Why use software components
 The key arguments for developers to construct a system using software components are enumerated in \cite{Szyperski2000} as:
 \begin{enumerate}
-	\item \textit{Extensibility}: the system taking into consideration the future addition of functionality
+	\item \textit{Extensibility}: a software system allowing the future addition of functionality
 	\item \textit{Evolvability}: changing a software system to reflect a changing environment
 \end{enumerate}
 
-Extensibility and evolvability as keys to component software come from the understanding that a system must change over time to be maintained, enhanced or fixed.
-The economic incentive of being able to quickly adapt to the users needs is clear as it will increase a users satisfaction of the system.
-Both of these can be put under the category of \textit{software evolution}, the alteration of software after deployment.
-This research focuses on the evolution of component systems, which are the key arguments to use software components.
+%%%This research is looking at the key arguments of evolvability and extensibility through software evolution
+Extensibility and evolvability of component software come from the understanding that a system must change over time to be maintained, enhanced or fixed.
+The easier it is to adapt a system to a users needs, the more satisfied a user will be with that system.
+Both extensibility and evolvability can be put under the category of \textit{software evolution}, which is the repeated alteration of software after deployment.
+Looking at component systems through the lens of software evolution is the focus of this thesis.
 
 \section{Evolution}
 %%%Biological evolution to software evolution
 In biology the process of evolution is the change that occurs to life forms over generations through natural selection and mutation.
-This evolution is chaotic and disorganised, where the evolution of a software has a plan to be followed and objectives to be attained.
-The generations of organisms are analogous to the versions of software and the mutations become the developers alterations to code.
-Where the environment guides and constrains the evolution of an organism, the users and developers guide the evolution of software.
-This guidance through software evolution is typically through conveyed user requirements to developers, who alter their software to suit.
+The evolution of organisms is constrained and guided by the environment in which they live.
+This evolution is chaotic and disorganised.
+Software evolution however, follows a plan with guidelines and objectives to be attained.
+Versions are the generations of software, these are mutated through the developers alterations to code.
+The environment that molds software is created through the users and developers requirements and constraints.
 
-The fundamental investigations into this software evolution process are presented by \cite{lehman1980}.
-This research shows that all software systems (above a certain complexity) must evolve to maintain user satisfaction.
-It also shows the consequences of such evolution, such as increasing complexity and decreasing quality of the software over time.
+%%%Software evolution, Lehman
+The fundamental investigations into the process of software evolution are presented by \cite{lehman1980}.
+This empirical research shows that all software systems (above a certain complexity) must evolve to maintain user satisfaction.
+It also shows the consequences of such evolution, like the increasing complexity and decreasing quality of the system over time.
 
 %%%Software evolution to Component system evolution
-The process of software evolution is instigated by the user, and resolved by the developer.
-This is a different process from the evolution of component systems, 
-where the user both instigates and resolves their issue from set of defined actions and a set of pre-developed components.
-A user can install, remove or upgrade a component from a repository of provided components, without direct interaction with the developer. 
-For example, if a user requires a text-editor in their component system, they may add a text-editor component to fulfil their need.
+The typical software evolution process is enacted by the developer.
+How to change the system, when to change the system, and the order in which to change the system are all decided by the developer.
+This typical evolution process is different from the evolution of component systems, 
+where the user alters their system through a set of defined actions using a set of pre-developed components.
+A user can install, remove or upgrade a component from a repository of provided components, without direct interaction with the developer.
+If a user requires some functionality not in their system that is available in the repository, then the user selects can evolve their system by installing it.
+This is evolution not directed by the developer, but by the user. 
 
-This user resolved alteration of component systems is the specific focus of this thesis, and is described with the term ``\textbf{component system evolution}''.
+%%%Terms
+This user initiated evolution of component systems is the specific focus of this thesis, and is described with the term ``\textbf{component system evolution}''.
 This is opposed to the evolution of an individual component, described as ``\textbf{component evolution}''.
 The situation where a user requests an action to evolve their system is described as an ``\textbf{evolution problem}'' whose solution is the resulting system when that action is completed.
 
-This research aims to be analogous to the work presented by \cite{lehman1980} in investigating the process of component system evolution.
-The overall goal is to explore the consequences of evolution on component systems.
+This research aims to be analogous to the work presented by \cite{lehman1980} by investigating the process of component system evolution.
+The overall goal is to explore the consequences when evolving component systems.
 
 \subsection{Strategies}
-At any point in a systems life a user may request many different actions to evolve their system.
-The evolution problems created by these user actions is typically under constrained, meaning that many solutions can be possible to any requested user action.
-The guiding plan that the user employs to select they select actions to evolve their system and which solution to select given an evolution problem, is described as their ``\textbf{strategy}''.
-
+%%%What is a strategy
+The guiding plan that a user employs evolve their system is described as their ``\textbf{strategy}''.
 In game theory, a strategy is a player's plan of action that determines behaviour, designed to produce a desirable outcome.
-In component system evolution, a strategy is the users plan to evolve their system to maintain their satisfaction with the system.
-The definition of ``satisfaction'' may differ between users, one user may want their system as up-to-date as possible, 
-and another may be satisfied with a more stable system.
+In component system evolution, a strategy is the users plan to maintain their satisfaction with the system through software evolution.
+
+%%%A strategy includes\ldots
+A strategy is made up of all the behaviours that a user employs to evolve their system.
+Behaviours like when to evolve their system, what actions to use, how to select between multiple solutions, are defined within the strategy.
+For example, if a strategy included the behaviour to upgrade the system every day, the user would upgrade the system daily. 
+
+%%%What is satisfaction
+Strategies can differ between users depending on their systems objectives, and the users perception of risk.
+If the objectives of a system change the system will require to be evolved.
+This evolution is often weighed against the risk to change or the risk of not changing.
+Changing a system can introduce errors, and not changing can let old errors linger. 
+A strategy must take both the objectives and risk into account in order to satisfy the user.
+
+%%%How to measure an effective strategy
+The effectiveness of a strategy can be measured through comparing it to the satisfaction the user.
+A strategy is defined with incomplete information because of the complex nature of developers, users and components.
+Therefore the user must approximate their strategy using heuristics and half measures.
+For example, if the goal of the system is to be small, and the users strategy to accomplish this is to install every component, it can be said that this is a bad strategy. 
+However, a strategy where the user attempts to remove unnecessary components and install new components sparingly would satisfy the user more and be better.
 
 \subsection{Automation}
+%%%The problem is difficult
 In practise, a user rarely selects the exact solution to an evolution problem.
-This is because any evolution action may involve many components, 
-where each component can have multiple conflicts and dependencies on other components.
+This is because any evolution action may involve many components, where each component can have multiple relationships to other components.
 This makes many evolution problems complex to solve.
 
-An algorithm may be defined in order to find solutions to evolution problems.
+An algorithm can be defined in order to find solutions to evolution problems.
 This algorithm requires that components in the system explicitly state the relationships between one another, and there is a way to automatically manipulate the component system.
-To find an optimal solution, this algorithm must take into account the users strategy.
-It must also consider practical concerns like time to find a solution.
-This algorithm in this research is called ``\textbf{component dependency resolution}'' or ``\textbf{CDR}''.
+As many solutions may exist for an evolution problem, to find the best solution the users strategy must be taken into account.
+It must also consider practical concerns like time to find a solution, as the problem can be quite complex.
+In this research this algorithm is called ``\textbf{component dependency resolution}'' or ``\textbf{CDR}''.
 
 CDR takes a single evolutionary problem and attempts to return an evolved system given the users strategy.
-Over time as the user requests many actions to evolve the system, the component system will resemble less and less the original system.
+Over time, as the user requests many actions to evolve the system, the component system will resemble less and less the original system.
 The way in which such a system evolves over time given the strategies the user employs has yet to be explored. 
 
 \section{Research Goals}
 The core themes of this thesis are component system evolution, user strategies and CDR.
-The selected method to explore these themes is through the simulation the environment in which component evolution occurs.
-Data can be collected and analysed through altering the variables of the simulation to model various user strategies.
+The selected method to explore these themes is through the simulation of the environment in which component evolution occurs.
+Various user strategies can be compared through altering the variables of the simulation and comparing their output.
 The main research goal is then to:
 \begin{quote}
-Conceptualise component system evolution strategies and access them using a simulation that has been developed.
+Model component system evolution strategies and access them using a simulation that has been developed.
 \end{quote}
 
 This goals leads to various lines of inquiry; component system evolution, component dependency resolution, user strategies, and the simulation of component system evolution.
@@ -110,22 +128,22 @@ The research questions related to component system evolution (and the chapters t
 
 The research questions related to component dependency resolution are:
 \begin{itemize}
-  \item What algorithms are required for CDR to be implemented?; chapter \ref{implementation}
-  \item What technology is required to efficiently implement CDR?; chapter \ref{implementation}
+  \item What algorithms can be used to implement CDR?; chapter \ref{implementation}
+  \item How can a CDR implementation be validated?; chapter \ref{implementation}
 \end{itemize}
 
 The research questions related to user strategies are: 
 \begin{itemize}
-	\item How can a user strategy be optimised for in CDR?; chapter \ref{implementation}
+	\item How can a user strategies be optimised for in CDR?; chapter \ref{implementation}
 	\item What general objectives are user strategies?;  chapter \ref{strategies}
-	\item What specific criteria are currently, and proposed to be, used to obtain these objectives?; chapter \ref{strategies}
+	\item What criteria can be used in user strategies?; chapter \ref{strategies}
 \end{itemize}
 
 The research questions related to the simulation of component system evolution are: 
 \begin{itemize}
 	\item What is the method used to create a valid and verified simulation?;  chapter \ref{simulation}
 	\item How is the simulation implemented, and what values are assigned to variables?;  chapter \ref{ubunutsimulation}
-	\item What are the consequences of evolving a component system with CDR given the strategy being used?;  chapter \ref{ubunutsimulation}
+	\item What are the best strategies to be used given the objectives of a user?;  chapter \ref{ubunutsimulation}
 \end{itemize}
 
 \section{Thesis Overview}
@@ -134,14 +152,13 @@ Towards the research goal, this thesis starts with an exploration of the backgro
 This chapter also attempts to give a suitable definition of what a ``software component'' is, and then examines different component models that fit such a definition.
 Other concepts such as user strategies, software evolution and component system evolution are described in this chapter.
 
-There are two core aspects of the component system evolution problem; 
+There are two core aspects of any component system evolution problem; 
 finding a solution to an evolution problem, and finding an optimal solution to an evolution problem.
-These two related problems are addressed in this research, and their semantics, syntax and implementations given.
+These two related problems are addressed in this research, and their semantics, syntax and implementations described.
 
 In chapter \ref{formal} the formal semantics of a component evolution problem is defined using a set of constraints that ensure the resulting system satisfies the users requested action.
-By reducing this problem to the Boolean satisfaction problem (SAT) it is shown that finding a solution to the evolution problem is NP-Complete.
 The optimisation of this evolution problem is defined using a multi-criteria framework of lexicographically composed ranking systems over complete lattices.
-Optimising the evolution problem is shown to be NP-Hard, this may effects the efficiency of the implementations.
+The complexities of both these problems are discussed as they will impact the implementation of any algorithm required.
 
 To syntactically represent the evolution problem and its optimisation the Common Upgradeability Description Format (CUDF) and the Mancoosi Optimisation Format (MOF) are used.
 These are both defined by the Mancoosi research project for use in the Mancoosi International Solver Competition (MISC), 
@@ -153,27 +170,27 @@ To find a solution to the evolution problem a DPLL algorithm based SAT solver wi
 This algorithm finds a solution that satisfies a set of constraints which are mapped from the CUDF problem.
 The criteria used to find an optimal solution to the evolution problem is represented by a list of pseudo-Boolean functions that can be minimised or maximised.
 This pseudo-Boolean optimisation (PBO) is shown to be consistent with the formal optimisation framework.
-To find an optimal solution the algorithm iterative strengthening is modified to allow for lexicographic constraints.
-This iteratively finds a solution and adds pseudo-Boolean constraints to ensure the next solution is more optimal.
-This CDR implementation is validated by entering it into MISC where it is competed and compared against other solvers with the same functionality.
+To find an optimal solution the algorithm iterative strengthening is modified to allow lexicographic criteria.
+This algorithm iteratively finds a solution and adds pseudo-Boolean constraints to ensure the next solution is more optimal.
+This CDR implementation is validated by entering it into MISC where it was competed and compared against other solvers.
 
 The various strategies and criteria that a user can employ are described in chapter \ref{strategies}.
 An online survey was conducted over a targeted group of users to find what strategies they employ to evolve their systems.
 These strategies where grouped into two stereotypes based on risk;
 progressive that attempts to minimise risk of being out-of-date
 and conservative that attempts to minimise risk of change to the system.
-An assorted set of criteria is then presented as pseudo-Boolean equations.
+An assorted set of criteria is then presented and defined as pseudo-Boolean functions.
 Each criteria is discussed for its positive and negative attributes that may effect evolution.
 
-A simulation of component evolution is the selected method to explore the consequences of evolving a component system.
+A simulation of component evolution is the selected method to explore the evolution of component systems.
 This simulation is defined in chapter \ref{simulation} using a method presented in \cite{Law2005} to create a valid and credible simulation.
-Firstly the process by which simulation was selected is described and compared to using real systems or using a controlled environment.
+Firstly, the process by which simulation was selected is described and compared to using real systems or using a controlled environment.
 Then the methodology is described; it involves creating a conceptual model that describes the aspects of reality which are to be simulated.
-The validation of this simulation is accomplished through stakeholder meetings, and through the survey used to find user strategies.
+The validation of this simulation is accomplished through stakeholder meetings, and through the user survey.
 
-Chapter \ref{ubunutsimulation} sets to answer the research question by implementing the simulation using the Ubuntu component model 
-and studying the evolution using various user strategies.
-The assignment of variables in the conceptual model and the validation of this instance of the simulation are discussed.
+Chapter \ref{ubunutsimulation} discusses the implementation of the simulation using the Ubuntu component model. 
+This simulation is used to study various evolution strategies and measure their effectiveness.
+The assignment of variables in the conceptual model and the validation of this simulation are discussed.
 The analysis of this simulation is accomplished through asking questions of interest like ``what are the consequences of using criteria from current CDR implementations?''.
 The answers to these questions illuminate the consequences of evolving a component system using different strategies.
 
