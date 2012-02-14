@@ -215,78 +215,74 @@ Methods to evolve component systems are discussed \cite{Ryan2005} and \cite{Luo2
 and the mitigation of the negative effects caused by such evolution is discussed in the paper \cite{Stuckenholz2007}.
 This area of research is quite new, the evolution of component systems that are occurring today are having unknown and unpredictable emergent effects that remain to be studied.
 
+A formal definition of the component system evolution problem is given in chapter \ref{formal}.
+
 \subsection{Component Dependency Resolution}
 %%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
-The relationships between component represent constraints on the system that must be satisfied to create a valid component composition.
-These constraints must be satisfied when evolving a system.
+The relationships that a component has represent constraints on the system that describe what is necessary for that component to be functional.
+When changing a system these constraints must be satisfied to ensure the system remains functional.
 For example, a user wants to install a new text editor component into their system, and the selected text editor has a dependency on a spell checker.
 This means a spell checker component must be installed for the text editor to be functional.
-As the spell checker can have its own relationships such as dependencies, 
-the satisfaction of all constraints while evolving a component system can be a tedious, time consuming and error prone task.
+As the spell checker can have its own relationships such as dependencies, the process of satisfying all constraints is a recursive problem. 
+Therefore, creating a valid system that satisfies all constraints can be a tedious, time consuming and error prone task.
 
-For these constraints to be automatically satisfied, the relationships between component must be explicit and computer readable.
-This enables the function Component Dependency Resolution (CDR) \cite{Jenson2010} to be used to resolve these constraints and evolve a component system.
-Use of this function lowers the cost of evolving a system, and allows for different criteria to be specified to guide evolution.
-This function is implemented in many different systems, in many component models, all with the general goal of automatically altering a component system.
-
-%%%CDR lowers cost of evolution
-CDR lowers the cost to evolve a system as it removes much of the effort to satisfy constraints from the user.
-It also can increase the quality of the created system, as many evolutionary steps can have multiple solutions and CDR can examine and discard undesired changes.
-For example, a  text editor component requires a spell checker, and three different spell checkers exist each with their own various dependencies and relationships.
-To calculate a system manually may take a very long time and may not be optimal, however through the automated CDR algorithm many systems can be examined and the optimal system returned.
+The task of satisfying the component relationships can be automated into a function called Component Dependency Resolution (CDR) \cite{Jenson2010}.
+This function takes a users requested change and alters the system while satisfying component constraints.
+CDR can also evolve a system with respect to a user's strategy by examining multiple solutions selecting the optimal one.
+To find and examine many systems manually then select the optimal solution found is costly, however through the automated CDR algorithm the cost of evolving a system is lowered.
 
 %%%CDR can be used at design-time and run-time on component models.
-The value of this function has been seen and implemented for many different component models.
+For CDR to be usable with a component system, the relationships between component must be explicit and computer readable.
+The overhead of explicitly stating component relationships and the lack of fine grained control when altering the system
+can be weighed against the benefit of automating the evolution of a system through CDR.
+Some component models reject the use of CDR, 
+for example the Slackware GNU/Linux distribution community states in \cite{Lumens2000}:
+\begin{quote}
+``Dependency management is left up to the sysadmin, and that's the way we like it.''
+\end{quote}
+Many other component models use various CDR functions all with the general goal of automatically altering a component system.
 CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \cite{casey_better_2008}),
 at run time to evolve or extend a component-based system (as in Eclipse P2 \cite{leBerre2010}),
 or it can be used to build and restructure software product lines \cite{savolainen_analyzing_2007}.
 CDR is also used in package management systems, like apt-get \cite{Barth2005},
 for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com}. 
 
-A formal definition of CDR is given in chapter \ref{cdr}, and discussion of the implementation from this study in chapter \ref{implementation}.
+An implementation of CDR is described in chapter \ref{implementation}.
 
 \subsection{Evolution Strategies}
 Given any point throughout the life of a system, there are choices to be made about the systems evolution.
-Should a component be removed, should one be added, should the system be upgraded and what is the way in which a system should be selected given multiple possibilities exist.
-The two fears that guide these decisions are caused by the risk that change will damage the system, and the risk that not changing will leave the system out of date.
+Should a component be removed, should one be added, should the system be upgraded and what is the way in which a system should be selected if multiple possibilities exist.
+The evolution strategy is a combination of behaviours that the user employs to evolve their system to maintain satisfaction.
+The two opposing forces that are considered in the user's strategy are that change to the system will increase complexity and decrease quality, 
+and that without change the user's satisfaction on the system will decrease.
 
 %%%The decisions that lead to an evolution strategy
-The strategy that a user employs to evolve their system must take into the environment in which the system exists.
-For example, if a system is a mission critical system only the necessary changes will be made to it.
-Where a users desktop computer may add components for testing, and make many unnecessary changes through trial and error.
-These differences are through the strategy that is used to evolve a system, the pattern to evolve the system.
+Lehman's laws of software evolution \citep{lehman1980,lehman1997} describe two opposing forces,
+the need to change and the resistance to change.
+When change occurs it is inevitable that it will introduce more complexity and the quality of the system will be reduced.
+It is also inevitable that without change the user will become dissatisfied with their system.
+A user's strategy must take into account both these forces when employing behaviour to evolve their system.
+As each user and each system have different requirements and objectives, each strategy can be different for any given user.
 
-%%%The risk of change to a system
-When changing any software system problems can be caused by either the process of the change, or the change itself.
-These problems can manifest themselves in many ways, from friction caused by an incompatibility in the system to completely destabilising the system.
-They can also effect the user, as the resulting change may make the system too different from the previous system.
-This problem with change is expressed in the laws of evolution stating that with each change complexity increases and quality declines.
-
-%%%The risk of not being up to date
-Why would a user ever select to evolve their system, if it is inevitable that the system will be more complex with less quality. 
-The laws of evolution also state that a system must go through continually changed and grown as user satisfaction decreases with time.
-As discussed, this is caused by the feedback cycle of the system effecting the environment it is made for.
-For example, a system is created to digitise photos from a photo album, if it is successful the resulting change to the environment is then the large amount of digitised pictures.
-The system must then adapt to service the new requirement of managing a large amount of pictures, which itself may change the environment.
-
-How to define such a strategy and what elements must be considered is discussed in chapter \ref{strategies}.
+Further discussion on strategies and how they are defined is presented in chapter \ref{strategies}.
 
 \section{What is a Software Component?}
 \label{background.components}
 %%%What is a component in a larger context
-A component is a natural concept that describes a part or element of a larger system or process,
-a broad definition of a component is ``components can be composed together''.
-They are usually physical, as in electrical or mechanical components, where their properties and how they are composed are documented to be used in construction.
-Typically, components can be used in many different contexts, e.g. an resistor component, they can be used in electrical systems from space stations to cellphones.   
+A component is a natural concept that describes a part or element of a larger system or process.
+A broad definition of a component is ``components can be composed together''.
+They can be physical, as in electrical or mechanical components, where their properties and how they are composed are documented to be used in construction.
+Typically, components can be used in many different contexts, e.g. a resistor component, they can be used in electrical systems from space stations to cellphones.   
 
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
+Software components are units of encapsulated code that interact together to create a software system.
 Software components ideals can be traced to \cite{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
 However, there is still much debate over how to define what a software component is, and what features it should have.
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
-A discussion between two leading researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight this difficultly of defining exactly what a software component is. 
-They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000,} the definitions of what a software component is and the importance of their use.
+A discussion between two leading researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining exactly what a software component is. 
+They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000,} the definitions of what a software component is and the importance of their features.
 
 %%%Szyperski's definition
 Szyperski defines components in \cite{Szyperski2002} as having three characteristic properties:
@@ -300,10 +296,8 @@ Szyperski defines components in \cite{Szyperski2002} as having three characteris
 Meyer's definition of software components is enumerated as:
 \begin{enumerate}
   \item May be used by other software elements (clients)
-  \item May be used by clients without the intervention of the components
-  developers
-  \item Includes a specification of all dependencies (hardware and software
-  platform, versions, other components)
+  \item May be used by clients without the intervention of the components developers
+  \item Includes a specification of all dependencies (hardware and software platform, versions, other components)
   \item Includes a precision specification of the functionality it offers
   \item Is usable on the sole basis of that specification
   \item Is composable with other components
@@ -322,7 +316,7 @@ A component model defines a set of standards for component implementation, namin
 \end{quotation}
 
 %%%Other differences, architectural/implementation
-Exactly what is, and what is not a software component is then in dispute amongst the community,
+Exactly what is, and what is not a software component is in dispute amongst the community,
 and a definitive description of a software component is elusive \cite{vasa2007patterns}.
 As such, many different components models have been developed, each targeting various domains with different functionality and technical aspects.
 This diversity has inspired a classification approach from \cite{Crnkovic2011}, where components and component models are classified into a scheme.
@@ -330,7 +324,7 @@ This effort highlights the difficulty in creating an exact definition of a softw
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
 These problems with exactly defining a software component may stem from the fact that ``component'' is a natural concept.
-The problem, observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002}, is that it is impossible to
+The problem, as observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
 ``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
@@ -338,38 +332,30 @@ The problem, observed from the area of formal concept analysis \cite{Ganter1999}
 
 %%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
 However, a definition can be found, not by feature enumeration but through stating the intention for the concept and exploring the technically inevitable consequences \cite{Szyperski2002}. 
-As the intention of this study is to investigate component dependency resolution and evolution strategies,
-the definition of software component used will be in respect to these aspects.
+As the intention of this study is to investigate component system evolution, CDR, and evolution strategies
+the definition of software component will be with respect to these concepts.
 
 %%%This will not fit all views of what a component is (no definition will), but it eliminates unnecessary arguments so we can focus on CDR
 This view of a software components definition will not agree with every persons view of what a software component is, but (as described above) no precise view can.
-By only looking at aspects that are necessary for our topic, the arguments over unnecessary semantics are eliminated, leaving only the core aspects of this research. 
+By only looking at aspects that are necessary for this research, the arguments over unnecessary semantics can be eliminated. 
 
 \subsection{Software Component}
-The definition of a software component is given with respect to the evolution of the system using component dependency resolution.
-Both these areas have already been discussed in this chapter which will be used define the concept of ``software component''.
+The definition of a software component is given with respect to the evolution of a component system using component dependency resolution.
+Both these areas have already been discussed in this chapter and will be used to define the concept of ``software component''.
 This definition specifies requirements on the component model that ensure it is applicable in this research.
 
 For CDR to be used with a component system, there are two core requirements, the component model must:
 \begin{enumerate}
-  \item require the explicit definition of dependencies between components
+  \item require the explicit definition of relationships between components
   \item include mechanisms in which to programmatically compose or evolve a component system
 \end{enumerate}
-This definition leaves undefined many aspects of component model, however these are ignored as they are not related to CDR of component system evolution.
-
-%%%A component must have explict (computer readable) requirements on the context in which it can be used. Different from COTS requirements which are meant to be human readable.
-To automate the resolution of dependencies between components, these dependencies must be explicitly defined and computer readable.
-These dependencies constraint the environment in which the component can be executed.
-As CDR requires the ability to calculate systems that will function, this requirement is necessary.
-
-%%%The component model should specifiy mechanisms to support evolution of the system; e.g. the addition and removal of components from a composition.
-The creation or evolution of a component system must be able to be automated for CDR to be usable.
-This means that CDR should have the ability to add, remove and replace components in a system, and create a functioning system.
-These actions can occur at either at compile-time or run-time of the system.
+To automate the evolution of a system with CDR, as discussed above, the relationships between components must be explicitly defined and computer readable.
+This automation also requires an interface for CDR to evolve the system.
+This means that CDR should have the ability to add, remove and replace components in a system.
 As CDR would evolve a system automatically, these actions must be able to be enacted either through a function call, or well defined command interface.
 
-%%%Aspects such as semantics of composition, distribution, development, are outside the scope of CDR, therefore ignored in this definition (that is not to say they are unimportant).
-The classification, from \cite{Crnkovic2011}, of a component model is partially described as:
+This definition leaves undefined many aspects of component model undefined. 
+This can be seen though the classification from \cite{Crnkovic2011}, of what a component model should define, partially enumerated:
 \begin{itemize}
   \item Lifecycle 
   		\begin{itemize}
@@ -391,13 +377,13 @@ The classification, from \cite{Crnkovic2011}, of a component model is partially 
 	  		\item Composability
 		\end{itemize}	
 \end{itemize}  
-This list displays the complexity in defining a component model.
-In this classification scheme, the two aspects that are included in this definition are lifecycle deployment for the evolution of a component system, 
+These categories show the lacking complexity that the definition of component model from this research.
+The only two aspects that this research is concerned with are the lifecycle deployment for the evolution of a component system, 
 and construction interface specification for the explicitly defined dependencies.
-All the other aspects that practically must be defined, are here ignored as their definition is superfluous to the core topic of this research.
+All the other aspects are ignored as their definition is superfluous to the core topic of this research.
+This may make the definition in this research broad, though it also makes it focused.
 
-These core aspects will be explored in the following sections, with examples of different component models and CDR implementations being presented.
-
+This definition of software component will be examined through examples of different component models that conform to it.
 
 \section{Component Models}
 \label{background.models}
@@ -1018,16 +1004,4 @@ and how component dependency resolution and evolution strategies are used to evo
 Given these goals of this study, software components are defined, and examples given that fit this deinfition.
 
 In the next chapter the evolution of a component system is further defined.
-
-
-
-
-
-
-
-
-
-
-
-
 
