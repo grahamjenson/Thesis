@@ -282,7 +282,7 @@ However, there is still much debate over how to define what a software component
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
 A discussion between two leading researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining exactly what a software component is. 
-They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000,} the definitions of what a software component is and the importance of their features.
+They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000} the definitions of what a software component is and the importance of their features.
 
 %%%Szyperski's definition
 Szyperski defines components in \cite{Szyperski2002} as having three characteristic properties:
@@ -391,38 +391,40 @@ This definition of software component will be examined through examples of diffe
 Given the definition of a software component for this research, some current component models are described and discussed.
 These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
 
-The typical mechanism in which components, from these frameworks, describe their relationships is through meta-data files.
-These files contain what the component requires and provides, as well as other information like versions and provider details.
-The way in which these component models express their relationships will be described.
+%%%Meta data of component models is discussed
+The typical mechanism in which components from these frameworks express their explicit relationships is through meta-data files.
+These files contain what a component requires and provides, as well as other information like versions and provider details.
+These meta-data files are then a core element in the description of a component model.
 
-Typically, the component model also provides a mechanism to alter the system of components.
-This is usually a low level interface, such that the addition of a component is an atomic step and does not lead to the addition of other components.
-These basic mechanisms are usually abstracted to be more usable, by automatically resolving dependencies using a CDR implementation.
-These implementations have their various criteria and strategies to evolve their component systems.
-When applicable the mechanisms, CDR implementations and their criteria will be discussed.
+%%%How to change a system is discussed
+A component model must also provide a mechanism to alter the system of components.
+This is usually a low level interface, where the addition or removal of a component is an atomic step.
+A CDR implementation can then use these interfaces to evolve a system.
 
-Together, the declaration of the component relationships, and the mechanisms to alter the system mean these models fall within our component definition.
+%%%Exisiting CDR implementations are discussed
+Some component models have a CDR implementation already available.
+These implementations are described and the possible user strategies that they allow will be discussed. 
 
-To compare these component models, the relationship of a text editor component, that requires a spell checker component is used.
-This is a simple example, however it highlights the possible differences in these models.
-
+To compare these component models, the example of a text editor component that depends on a spell checker component is used.
+It is hoped this simple situation will highlight the similarities and differences between the various component models.
 
 \subsection{OSGi}
 %%%What OSGi is? Bundle Service
 OSGi is a mature component model from the OSGi Alliance.
-It has a significant presence in industry \cite{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework and Apache with Felix framework.
+It has a significant presence in industry \citep{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
+and the Apache foundation with their framework Felix\footnote{http://felix.apache.org/}.
 
-OSGi components are refereed to as bundles, these contain JVM classes with meta-data describing their relationships.
-A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the unit of deployment the service.
+OSGi components are refereed to as bundles, each contains a meta-data file describing the bundles relationships, and a set of Java packages and classes as implementation.
+A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit the service.
 These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
-This service layer allows third-party frameworks to describe service relationships, e.g. Spring Dynamic Modules.
-These relationships and the interaction with services make themselves a component, under our definition.
-A standard way of interacting with this layer is defined in the OSGi compendium is Declarative Services (DS).
+This service layer can also have explicit relationship through frameworks like Spring Dynamic Modules.
+Under the definition of component in this research, this makes both the bundle layer and the service layer software components.
 
-OSGi is implemented to allow dynamic interaction, the addition and removal of bundles at run-time.
-This can be done through a console implemented in the Equinox OSGi framework, this enables user interaction.
+\subsubsection{Bundle Layer}
+The bundle layer of OSGi is implemented to allow dynamic addition and removal of bundles.
+This can be done either through an implemented console, like the one in the Equinox framework, or through a programmatic interface.
 
-An example of a bundle which defines a text editor that depends on a spell checker is described in figure \ref{osgibundle}.
+An example of the meta-data which defines a text editor bundle that depends on a spell checker is described in figure \ref{osgibundle}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -446,9 +448,14 @@ This meta-data shows the name, version and vendor of the component, as well as t
 The \verb+Require-Bundle+ key expressed the direct dependence on another bundle.
 The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
 
-This meta-data only contains the necessary relationships to install a bundle, not what it requires to be functional.
-This information is in the service layer, described by the meta-data available in DS.
-An example of this meta-data is in figure \ref{dsmetadata}.
+\subsubsection{Service Layer}
+This bundle meta-data only contains information necessary for the execution of a component.
+However, for the component to be functional the service layer relationships must be considered.
+
+This service layer is left undefined in the core OSGi specification \citep{osgicore2007}, therefore a number of frameworks have emerged that define its relationships, e.g
+Spring Dynamic Modules\footnote{http://www.springsource.org/osgi}.
+OSGi's compendium specification \citep{osgicompendium2007} also defines service layer meta-data format called Declarative Services(DS).
+An example of DS meta-data is in figure \ref{dsmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -474,18 +481,15 @@ An example of this meta-data is in figure \ref{dsmetadata}.
 
 This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
 These relationships can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programmatic features.
-The goal of this service meta-data, like the bundle meta-data, is to express the environment in which this component can be used by others.
 The \verb+service+ tag describes the services provided, and the \verb+reference+ tag expresses a dependence on another services.
 
 %%%DS provides no versioning
 One aspect of DS that is lacking, is the ability to explicitly version services.
-The version of the bundle that is providing the service and the version of the package that is provided by the bundle, implicitly version the service being provided.
-However, for the evolution of a component model, some type of versioning is required to give a relative timestamp of it's development.
-This may make the evolution of these services difficult to predict, and therefore difficult to use CDR to evolve them. 
-
+The version of the bundle that is providing the service and the version of the package that is provided by the bundle, implicitly give a version to the service being provided.
+However, for the evolution of a component model, some type of versioning is typically defined.
 
 \subsubsection{Evolution of OSGi}
-The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance \footnote{http://www.osgi.org/javadoc/r4v43/}, therefore are OSGi framework agnostic.
+The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance \footnote{http://www.osgi.org/javadoc/r4v43/}.
 The installation and removal of both the bundles and services from the OSGi system are defined as such:
  
 \begin{itemize}
@@ -495,13 +499,12 @@ The installation and removal of both the bundles and services from the OSGi syst
   \item To unregister a service: \verb+org.osgi.framework.ServiceRegistration.unregister+
 \end{itemize}
 
-OSGi therefore has the necessary elements in order to be considered a component model for this research. 
-It has the ability to explicitly describe relationships between either bundles or services, and to install and remove bundles from the system.
+These methods can sometimes be wrapped in a console that allows direct user interaction in adding and removing bundles.
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
-A CDR implementation for OSGi was proposed by Peter Kriens and Richard S. Hall in RFC-0112 \cite{the_osgi_alliance_rfc-0112_2006}.
-This is called the OSGi Bundle Repository and consists of collection of components documented in an XML format and documentation which describe a component as a resource.
+A CDR implementation for OSGi was proposed by Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006}.
+This is called the OSGi Bundle Repository and consists of collection of components described in an XML format and a function to reason about them.
 An example of this document is shown in figure \ref{obrmetadata}.
 
 \begin{figure}[htp]
@@ -531,23 +534,24 @@ An example of this document is shown in figure \ref{obrmetadata}.
 \end{center}
 \end{figure}
 
-This meta-data was designed so that it can merge such meta-data as described in figures \ref{osgibundle} and \ref{dsmetadata}.
-This then would be a complete model at both the OSGi bundle and service layers, to be used by CDR to create a complete system. 
+This meta-data was designed so that it can merge the bundle and service meta-data as described in figures \ref{osgibundle} and \ref{dsmetadata}.
+This then would be a complete model at both these OSGi layers, which can be used by CDR to evolve a system. 
 
-OBR has been seen as a solution to to simplify deployment of OSGi applications \cite{jung_integrating_2007}, 
-distribution and deployment to embedded ubiquitous systems \cite{jung_embedded_2006}, 
-smart home applications \cite{gouin-vallerand_managing_2007} and 
-dynamic distribution of drivers \cite{kriens_osgi_2008}. 
+OBR has been seen as a solution to to simplify deployment of OSGi applications \cite{Jung2007}, 
+distribution and deployment to embedded ubiquitous systems \cite{Jung2006}, 
+smart home applications \cite{Gouin-Vallerand2007} and 
+dynamic distribution of drivers \cite{Kriens2008}. 
 
-The most mature implementation of OBR client is offered by Apache, it is bundled with their core OSGi framework, Apache Felix. 
+The most mature implementation of OBR client is offered by the Apache foundation, which is bundled with their core OSGi framework Apache Felix. 
 This can be used with any of the large public or private OBR collections of bundles.
 An example of one such public repository is the Paremus repository\footnote{http://www.osgi.org/Repository/} which contains (as of December 2011) over 2000 bundles.
 
-The specification of OBR does not define the criteria by which evolutions are made to the system.
-The strategy used is then described outside of the specification in the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} help page,
+The specification of OBR does not define a specific strategy, or a mechanism to define strategies to be used during evolution.
+The implementation specific strategy that is used by the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} 
+is described on its help page as,
 
 \begin{quotation}
-\[OBR\] might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
+OBR might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
 In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.
 \end{quotation}
 
@@ -555,11 +559,11 @@ This shows that when updating a system of bundles, newer bundles may be installe
 
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
-Eclipse is a widely used IDE and an extencible plugin platform for createing Java applications.
+Eclipse is a widely used IDE and an extensible plugin platform for creating Java applications.
 It is built on top of the OSGi framework, but ignore OSGi's service layer and re-implements it with its own Eclipse plugin runtime.
-Therefore, like the declaritive services, the distruted elements are OSGi bundles but the run time elements are plugins.
+Therefore, the distrusted components are OSGi bundles and the run time elements are plugin services.
 
-These plugins are defined using extensions and extension points, these are the relationships between the plugins.
+These plugins are defined using extensions and extension points, where extensions provide a service for an extension point.
 An example of the meta-data describing a plugin is given in figure \ref{eclipseplugin}. 
 
 \begin{figure}[htp]
@@ -591,7 +595,7 @@ An example of the meta-data describing a plugin is given in figure \ref{eclipsep
 \end{figure}
 
 This plugin defines the name, version and provider of the plugin, and using the tags \verb+requires+ defines the requirements of this plugin to function.
-The \verb+extension-point+ tag defines not only what the plugin provides, but also the required information it requires in order to provide it, described in a schema.
+The \verb+extension-point+ tag defines not only what the plugin provides, but also the required information in order to provide it, described in a schema.
 This is a special feature of the Eclipse plugin framework, as other component models generally do not specify these parameters on this type of relationship. 
 
 The schema of an extension point, as shown in figure \ref{eclipseextensionschema}, describes the elements to use an extension.
@@ -624,11 +628,9 @@ This is the only requirement for this extension point, but other parameters of t
 \subsubsection{Eclipse Evolution}
 The programmatic evolution of an Eclipse system is through the use of the previously OSGi methods and with interaction with the plugin registry.
 
-As an eclipse plugin is an OSGi bundle, and the eclipse framework uses OSGi, the methods for installing and removing a plugin are the same as for OSGi.
-
 The extensions and extension points, for an Eclipse system, can be altered in the plugin registry.
-This is the storage of all the extensions and extension points for interaction, and the core interaction with this layer of the plugins.
-The methods used to add and remove these are then:
+This registry contains all references to the extensions and extension points in a system.
+The methods used to add and remove these are:
 
 \begin{itemize}
   \item add extensions and extension points described in an XML file : \verb+org.eclipse.core.runtime.IExtensionRegistry.addContribution+
@@ -636,8 +638,8 @@ The methods used to add and remove these are then:
   \item remove extension point: \verb+org.eclipse.core.runtime.IExtensionRegistry.removeExtensionPoint+
 \end{itemize}
 
-The Eclipse plugin system can therefore be defined as a component system in this study.
-It contains the necessary explicit relationships, and the programmatic evolution requirements necessary for CDR to be used.
+The Eclipse plugin system is a component system in this study, 
+as it contains explicit relationships, and the programmatic evolution requirements necessary for CDR to be used.
 
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
@@ -656,14 +658,13 @@ Some of the criteria used by Eclipse P2 to evolve the system are described in \c
   \item minimise changing an installed component if they are unrelated to the request being made
 \end{enumerate} 
 
-Some of the Eclipse specific criteria have been removed from this list.
-The presented criteria are general enough to be selected for any component system, and can be reused.
+These criteria represent the strategy that it employed to choose a solution when multiple are available. 
 
 \subsection{Fractal}
 Fractal is a component model developed by France Telecom R\&D and INRA.
-It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse.
+It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse that both depend on Java specific elements.
 The most notable aspect, and the reason for its name, is that a components can be composed together to make a new component.
-This recursive nature of composition, actually means the the system of components is itself a component.
+This recursive nature of composition, actually means the the system of components can itself be a component.
 
 An example of meta-data to define a Fractal component is given in figure \ref{fractalmetadata}.
 
@@ -686,7 +687,7 @@ An example of meta-data to define a Fractal component is given in figure \ref{fr
 \end{center}
 \end{figure}
 
-This meta-data describes the relationship between components as the metaphor of client and server.
+This meta-data describes the relationship between components as a metaphor between a client and a server.
 The interface tag with the role attribute assigned to ``server'', defines the provided functionality of the component.
 The interface tag with the role attribute assigned to ``client'' then defines the required functionality of the component.  
 
@@ -716,20 +717,18 @@ An example of the definition of a recursive component can be seen in figure \ref
 </definition>
 \end{alltt}
   \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
-  \label{fractalmetadata}
+  \label{fractalrecursve}
 \end{center}
 \end{figure}
 
-In this description of a recursive component structure, as well as defining both the text editor and spell checker components it also defines and instructs their relationships.
-The tag \verb+definition+ is then used as a container of components, rather than the deifnition of a single component.
-This composite component defines that it provides a service of \verb+textEditorWithSpellChecker+.
+This description of a recursive component structure defines both the text editor and spell checker components, as well as their relationships.
+The tag \verb+definition+ is then used to define a composition of components that provides a service of \verb+textEditorWithSpellChecker+.
 To provide this the spell checker must be bound (described in the tag \verb+binding+) to the text editor,
 and the text editors provided interface bound to the output interface. 
 
+\subsubsection{Fractal Evolution}
 The programmatic evolution of a Fractal component system can differ between implementations.
 To simplify this, only the Java implementation is described. 
-
-\subsubsection{Fractal Evolution}
 In this implementation the methods to edit the configuration are\footnote{http://fractal.ow2.org/current/doc/javadoc/fractal/}:
 \begin{itemize}
   \item to create a component: \verb+org.objectweb.fractal.api.factory.GenericFactory.newFcInstance+
@@ -742,17 +741,18 @@ the recursive nature of Fractal, and the lack of required version information ab
 
 %%%Fractal requires not only the selection of components but the configuration
 Given the recursive nature of the components described, any system may provide the same functionality with the same components in a combinatorial number of configurations.
-Therefore, not only would a CDR algorithm require to select a set of components but also provide or select the composites to configure them.
+Therefore, not only would a CDR algorithm require to select a set of components but also group those component into composites.
 The simplest solution to this problem is to ignore the recursive nature of this component model,
 and use a CDR algorithm to create exactly one composite with all components in it.
-More difficult solutions could be created by reusing user composites, or analyzing the graph structure and grouping into clusters using algorithms like the one presented in \cite{dietrich2008cluster}.
+More difficult solutions could be created by reusing user composites,
+or analyzing the graph structure to extract relationship by using algorithms like the one presented in \cite{dietrich2008cluster}.
 
 Another aspect of Fractal that will make the automatic evolution of systems difficult will be the lack of versioning information.
-Like DS, this component model doesn't not explicitly require the version of the component and the interfacs they provide.
+Like DS, this component model doesn't not explicitly require the version of the component and the interfaces they provide.
 As versions are typically the atomic unit of evolution, the process of selecting a newer version will be made more difficult if not impossible. 
 
 \subsection{Maven}
-Maven is a build automation tool, designed to be programming language agnostic but primarily used with Java.
+Maven is a build automation tool, designed to be programming language agnostic, but primarily used with Java.
 The core component aspect of Maven is that it can dynamically select and download files from a repository to be used to build a system.
 Although Maven is built using a plugin architecture, the focus in this section is on the use of Maven as a component model and not Maven itself.
 
@@ -790,19 +790,21 @@ It also defines the dependencies on other projects through the \verb+dependency+
 where it states that it depends on the artifact \verb+spellChecker+ from versions 0.0.1 to (but excluding) version 1.0.0.
 
 \subsubsection{Maven Evolution}
-The use of Maven as a development time component model, does not exclude it from the definition of being a component model in this study.
-Though it puts it in a unique situation, where it does not evolve a component system by altering it, but by recompiling and replacing it.
-Therefore, the evolution of a Maven based system is done simply by selecting the projects to build, and using Maven to compile them into a system. 
+The use of Maven primarily during development does not exclude it from the definition of being a component model in this study.
+Maven both explicitly declares relationships and provides an interface to evolve its component systems. 
+This unique characteristic of Maven does mean that evolving a component system is done in two stages where first it is altered, then it is recompiled and replaced.
+The evolution of a Maven based systems are therefore done simply by selecting the projects to build, and using Maven to compile them into a system. 
 
 Another core difference from the other presented component models is that Maven POM objects do not declare what they provide.
 For example, an OSGi bundle can declare provided packages and a Fractal component declares provided interfaces, where a Maven project can only provide itself.
-This will simplify a CDR algorithm by not having to resolve another layer of dependencies.
+This will simplify a CDR algorithm by not having to resolve another layer of dependencies, 
+though this means it goes against component principles like dependency on interface or specification \citep{Szyperski2002}.
 
 \subsection{Debian Packages}
-Debian is a GNU/Linux based operating system provided by the Debain Project \citep{Barth2005}.
-This operating system most prominent feature is that it is composed of packages, unit of deployment with explicit dependencies.
+Debian is a GNU/Linux based operating system provided by the Debian Project \citep{Barth2005}.
+This operating system most prominent feature is that it is composed of packages, a unit of deployment with explicit relationships.
 
-Each package is defined using a control file, an example presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
+Each package is defined using a control file, an examples presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -834,33 +836,30 @@ The text editor states using the \verb+Depends+ key that is requires a spellChec
 and through the \verb+Conflicts+ key states that it cannot be installed with another text editor.
 The spell checker package defines that it provides a spell checker  using the \verb+Provides+ key.
 
-The semantics of these control files is further described in the section \ref{DebToCUDF}.
+The semantics of these control files is further described in the chapter \ref{ubunutsimulation}.
 
 One aspect that differentiates the Debian package model from the many other models, is that it does not specify the rules of composition between components.
 That is, there is no formal specification of the semantics of the communication and relationships between packages.
-For instance, OSGi bundles exist in a very constrained environment that manages their interactions, dependning on another bundle gives has run-time implications.
-For Debian, the dependence has no run-time effects, only whether the package is functional or not.
-The way in which a package, uses or communcates with a depended upon package is then defined between the packages and not in the component model.
-
-Since the composition of packages is not an aspect of this study, this is a valid component model, though some may disagree.
-
+For instance, OSGi bundles exist in a very constrained environment that manages their interactions, depending on another bundle has run-time implications.
+For Debian, the dependence has no prescribed run-time effects, only whether the package is functional or not.
+The way in which a package, uses or communicates with a depended upon package is then defined between the packages and not in the component model.
 
 \subsubsection{Debian Evolution}
-The application dpkg is the command line tool use to modify a Debian package system.
+The application ``dpkg'' is the command line tool use to modify a Debian package system.
 
-The commands to modify a Debain package system are:
+The commands to modify a Debian package system are:
 \begin{itemize}
   \item to add a package: dpkg --install <package file>
   \item to remove a package: dpkg --remove <package>
 \end{itemize}
 
-These commands define the atomic actions to change a Debain system.
+These commands define the atomic actions to change a Debian system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
 \subsubsection{Apt-get}
 The application dpkg can only remove and add a single component at a time, it does not resolve the dependencies of the component.
-There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the apt pacakage.
-This package is built on top of dpkg, to provide an interface to simplyfy and extend its functionality.
+There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the ``apt'' application.
+This package is built on top of dpkg, to provide an interface to simplify and extend its functionality.
 
 From the Apt manual:
 \begin{quotation}
@@ -874,7 +873,7 @@ apt-get is the command-line tool for handling packages, and may be
 
 Apt is purely a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
 
-The criteria it uses to update the system and install components into the system is explained in the apt-get manaual:
+The strategy used to update the system and install components into the system is explained in the apt-get manual:
 
 \begin{quotation}
 \begin{alltt}
@@ -888,8 +887,6 @@ The criteria it uses to update the system and install components into the system
 
 Another application that extends APT further is Aptitude \cite{Burrows2005}.
 This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
-
-%%%TODO Write about the crtieria that are used to insall and update components
 
 \subsection{SOFA 2.0}
 Software Appliance (SOFA) is a component model developed at Charles University in Prague.
@@ -916,17 +913,17 @@ An example definition of a frame is given in figure \ref{SOFAmetadata}.
 \end{center}
 \end{figure}
 
-This meta-data descirbes two components, a text editor and a spell checker, using the tag \verb+frame+.
-The sub elements \verb+requires+ and \verb+provides+ describes their relationship through an externally defined interface with the namespace \verb+sofatype://nz.geek.maori.spellChecker+.
+This meta-data describes two components, a text editor and a spell checker, using the tag \verb+frame+.
+The sub elements \verb+requires+ and \verb+provides+ describes their relationship through an externally defined interface with the name-space \verb+sofatype://nz.geek.maori.spellChecker+.
 This interface is defined using an Architecture Definition Language (ADL) and added to a repository to be re-used. 
 
 
 \subsubsection{SOFA Evolution}
-SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at runtime. 
+SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at run-time. 
 Unlike other component systems,
 it only allows for controlled evolution; 
 Many component models allow the change of the component system on a fine grained level of adding or removing a component.
-However this model only allows more grainular changes to be made to the system, these changes must conform to specified evolution patterns.
+However this model only allows more granular changes to be made to the system, these changes must conform to specified evolution patterns.
 This restriction is meant to increase the manageability and predictability of a component systems evolution. 
 
 Three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
@@ -981,7 +978,7 @@ install:textEditor
 
 The CUDF file is defined using key/value pairs, where each component is defined using the two tags \verb+package+ and \verb+version+.
 This file does not only represent the components but also the evolutionary change with the tag \verb+request+.
-Further definition of the syntax and semantics of CUDF is in chapter \ref{cdr}, as it is used extensively throughout this study.
+Further definition of the syntax and semantics of CUDF is in chapter \ref{formal}, as it is used extensively throughout this study.
 
 \subsubsection{Mancoosi MPM}
 %%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
@@ -996,12 +993,11 @@ In the study the solver first minimised the amount of packages removed from the 
 Further discussion of these criteria and how they are combined is discussed in chapter \ref{strategies}. 
 
 \section{Summary}
-
 In this chapter, first the evolution of software was discussed, and the nature and laws of this process described.
-The area of component based software engineering and the benefits its provides to the process of software evolution.
-The evolution of a component based system, through the individual component evolution and the evolution of a component system is discussed
-and how component dependency resolution and evolution strategies are used to evolve a component system.
-Given these goals of this study, software components are defined, and examples given that fit this deinfition.
-
-In the next chapter the evolution of a component system is further defined.
+Component evolution and component system evolution are then described and compared as separate software evolution processes.
+Automating the evolution of component systems is then defined through the function component dependency resolution.
+The strategies that a user employs to evolve a system is then discussed, and the forces that are considered in the strategy.
+Software components are defined with respect to the objectives of this research as having explicit relationships and an interface to evolve a component system.
+Various component models that conform to this definition are then discussed and their properties explored.
+In the next chapter concepts such as component system evolution are formalised and further discussed.  
 
