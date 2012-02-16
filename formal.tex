@@ -2,21 +2,27 @@
 \label{formal}
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
-In order to express and study component system evolution, its exact definition is required.
-This definition is abstracted from any algorithm or process, as the evolution of a system could be performed manually.
+In order to study component system evolution its definition an behaviour, its semantics, must first be given.
+How an evolution problem is described, the syntax used to convey the problem, is also necessary to be defined.
+By defining both the syntax and semantics of the evolution of a component system the problem can be conveyed and a solution can be found.
+This then leads to an algorithm or process that practically evolves the system, which is described in the next chapter \ref{implementation}.
 
-The evolution of a system is made through iterative evolutionary steps over a period of time.
-As any evolutionary step can have many outcomes, the optimisation of the process is necessary.
-This optimisation may also include many various criteria that must be combined and optimised for.
-The overall evolution of a system can then be defined, and the process discussed in a formal light.
-This evolution then requires a representation, a format in which to describe then evolve a system.
+The atomic problem in the evolution of a system is an \textbf{evolution problem}, which is where a user requests an action to evolve their system.
+Through iteratively solving evolution problems of a user a system will evolve over time.
+The formal definition and the properties of the evolution problem and system evolution are presented in section \ref{formal.step}.
 
-In this chapter, the formal definition of an evolutionary step is given and shown to be NP-Hard problem in section \ref{formal.step}.
-Then the definition of an optimisation framework for this process is described in section \ref{formal.opt}.
-The overall formal description of an evolving system is then defined in section \ref{formal.evo}.
-Finally, the CUDF description language (previously discussed in chapter \ref{background}) is defined for this problem in section \ref{formal.cudf}.
+Each evolution problem may have many possible solutions.
+A user's strategy defines the behaviour that selects which solution is deemed optimal.
+The way in which this behaviour is represented in this research is through the use of a multi-criteria problem,
+where each criterion is lexicographically composed.
+This problem is represented as a ranking system over a complete lattices in section \ref{formal.opt}. 
 
-\section{Formal Definition}
+The syntactic representation of the evolution problem and the user strategy's criteria 
+are through the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF).
+These allow an evolution problem to be described completely in order to be solved.
+They are defined and mapped to their semantic counterparts in section \ref{formal.cudf}.
+
+\section{Evolution Problem}
 \label{formal.step}
 Suppose a user wants to install a new text editor component into their component system.
 The selected text editor has a dependency on a spell checker;
