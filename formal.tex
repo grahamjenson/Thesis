@@ -2,166 +2,192 @@
 \label{formal}
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
-In order to study component system evolution its definition an behaviour, its semantics, must first be given.
-How an evolution problem is described, the syntax used to convey the problem, is also necessary to be defined.
-By defining both the syntax and semantics of the evolution of a component system the problem can be conveyed and a solution can be found.
-This then leads to an algorithm or process that practically evolves the system, which is described in the next chapter \ref{implementation}.
+Suppose a user wants to install a new text editor component into their system.
+The selected text editor has a dependency on a spell checker;
+meaning a spell checker component must be installed for the text editor to be functional.
+There are three spell checker components available that satisfy this dependency,
+this means that at least one of these spell checkers must be selected for installation as well.
+How can the user select between which spell-checker to install? 
 
-The atomic problem in the evolution of a system is an \textbf{evolution problem}, which is where a user requests an action to evolve their system.
-Through iteratively solving evolution problems of a user a system will evolve over time.
+In another example the user already has the text editor installed, and wants to update it to a newer version to increase its stability and functionality.
+There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
+where the lesser up to date text editor can use the currently installed spell checker.
+The different versions of the spell-checker component conflict with each other, they cannot coexist in the same component system.
+Where one solution installs the newest text-editor it also requires reinstalling the spell-checker, 
+while the alternate solution only requires changing the text-editor.
+Both solutions will resolve the user's request, therefore the selection of an optimal solution is required.  
+
+The first step in solving such component evolution problems is to represent them formally, i.e. the semantics.
+These problems have constraints from component relationships, e.g. ``depends'' and ``conflicts''.
+What exactly these relationships mean must be defined, before the concept of a ``solution'' can be explored.
+These problems also require a framework in which to choose between various possible solutions.
+The user's strategy will define which solution to select, but how to define which solution to pick is a difficult task.
+
+The second step in solving component evolution problems is to be able to describe and convey them efficiently, i.e. the syntax.
+A well formed language which maps to the semantics will enable a concise description of an evolution problem.
+This description which will fully contain an evolution problem can then be used to find a solution.
+
+In this chapter the semantics and syntax of the evolution of a component system is formally defined.
+The core atomic problem in component system evolution is an evolution problem, the change made to the system at the user's requests.
 The formal definition and the properties of the evolution problem and system evolution are presented in section \ref{formal.step}.
+Through iteratively solving evolution problems, generations of the system is created over a period of time,
+A discussion on this generational evolution of a component system is given in section \ref{formal.evo}
 
-Each evolution problem may have many possible solutions.
-A user's strategy defines the behaviour that selects which solution is deemed optimal.
-The way in which this behaviour is represented in this research is through the use of a multi-criteria problem,
-where each criterion is lexicographically composed.
-This problem is represented as a ranking system over a complete lattices in section \ref{formal.opt}. 
+The way in which the user's strategy selects and optimal solution is represented in this research through the use of a criteria composed lexicographically.
+Each criterion is represented as a ranking system over a complete lattices, described in section \ref{formal.opt}.
+It is shown that when such criteria are composed they remain a ranking system over a complete lattice allowing the stacking of criteria.
 
 The syntactic representation of the evolution problem and the user strategy's criteria 
-are through the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF).
-These allow an evolution problem to be described completely in order to be solved.
-They are defined and mapped to their semantic counterparts in section \ref{formal.cudf}.
+are through the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
+and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/} (MOF).
+These allow an evolution problem to be described and how an optimal system is defined in order to find solution.
+Both CUDF and MOF are defined and mapped to their semantic counterparts in section \ref{formal.cudf}. 
 
 \section{Evolution Problem}
 \label{formal.step}
-Suppose a user wants to install a new text editor component into their component system.
-The selected text editor has a dependency on a spell checker;
-this means a spell checker component must be installed for the text editor to be functional.
-There are three spell checker components available that satisfy this dependency,
-this means that one of these spell checkers should be selected for installation as well.
-
-Or suppose, the user already has the text editor installed, and wants to update it to a newer version to increase stability and functionality.
-There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
-where the lesser up to date text editor can use the current spell checker.
-These two possible systems have different properties, and therefore can be selected based on the users preferences.
-
-The first step in solving such component evolution situations is to represent them formally, this allows the study of the problems properties.
-This definition must represent the core aspects of component relationships and the evolution of the system.
-An optimisation framework must also be included, in order to choose between various possible solutions.
-
-In this section, a formal definition for an evolutionary step of a component based system is given.
-This definition includes a simple optimisation framework to choose a solution using a distance metric.
-This problem is then shown to be NP-Complete in finding a solution and NP-Hard when finding the best solution.
+In this section, a formal definition for an evolutionary problem is given.
+This definition includes a simple optimisation framework to represent a user's strategy in selecting a solution.
+This problem of finding a solution to an evolution problem is then shown to be NP-Complete,
+and the problem of selecting and optimal solution is shown to be NP-Hard.
 
 \subsection{Formal Definition}
 %%%What a component is
 First the space of components is denoted as $\mathbb{C}$.
 Each component is described by a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
-A component can be denoted as $n_v$, where the version is subscript of the name e.g. $c_2$ equals a component $\langle c, 2\rangle$.
+A component can be denoted as $n^v$, where the version is superscript of the name e.g. $c^2$ is a component $\langle c, 2\rangle$.
+If version and name are inconsequential, then components can be denoted as $a$,$b$,$c$\ldots
 
 %%%What a component system is and the relationships
-A component system is represented by a set of components.
+A component system is represented by a set of components, e.g. $\{a_1,c_2\}$ is a system with components $a_1$ and $c_2$ in it.
+A component system is typically denoted as $\alpha$ or $\beta$, and a set of component systems is typically denotes as $A$ or $B$.
 The relationships between all components are described by a set of constraints denoted as $R$.
 
 %%%What the change is
-The evolutionary change requested to be made to a system is defined as a set of constraints $\Delta$.
+The user's requested change to be made to their component system is defined as a set of constraints denoted as $\Delta$.
+
+%%%What is a solution
+An evolutionary problem is then the set of component relationship constraints with the user's request constraints, i.e. $R \cup \Delta$.
+A solution to an evolutionary problem is then a set of components (a component system) that satisfies all constraints in $R \cup \Delta$.
+The function $solutions$ is defined such that it takes a set of constraints and returns all solutions to the constraints,
+i.e. $solutions(R \cup \Delta)$ equals all solutions of $R \cup \Delta$.
+
+%%%Selecting a solution
+Many component systems may satisfy the set of constraints $R \cup \Delta$ but only one system can be selected.
+The function $rank$ is defined to take the previous component system and proposed system and return a measure of optimality to be maximised or minimised. 
+For example, given the current component system $\alpha$ and a proposed systems $\beta_1$ and $\beta_2$, 
+if $rank$ is to be maximised, and $rank(\alpha,\beta_1) > rank(\alpha,\beta_2)$\footnote{the range of $rank$ (e.g. $\mathbb{R}$ or $\mathbb{N}$) and the relationship $>$ are left undefined here},
+then system $\beta_1$ is said to be better, or more optimal than system $\beta_2$.
+The $rank$ function is then the mechanism the user's strategy selects the optimal system.
+
+It is important to note that the $rank$ function takes both the current and proposed system when measuring the system.
+This allows it to measure the change to the system as well as the proposed systems overall optimality.
+A ranking function that measures change between systems is described as \textbf{dynamic} and one that measures only the proposed system is described as \textbf{static}.
+For example, a ranking function that measured the amount of removed components from the system is dynamic, but one that measures the resulting systems size is static.
 
 %%%The evolutionary function
-The function that takes a component system and evolves it to another system is defined as $E$.
-The evolutionary step function is then defined as $E_{R \cup \Delta}: 2^\mathbb{C} \rightarrow 2^\mathbb{C}$, 
-such that it takes a component system and returns another component system that satisfies all component relationships in $R$ and the requested change $\Delta$.
+The function that takes a component system and evolves it to another system is described as an evolutionary step function and denoted as $E$.
+This function then takes the evolution problem (the set of relationship and user request constraints), 
+the user's strategy (the rank function), and the previous component system and returns the evolved, optimal system.
+Given the previous system $\alpha$, the constraints $R \cup \Delta$ and the function $rank$ to be maximised the function $E$ is defined as
+$E(\alpha, R \cup \Delta,rank) = \max \limits_{\beta \in solutions(R \cup \Delta)} rank(\alpha,\beta)$.
+That is, $E$ evolves system $\alpha$ to another system that is a solution of $R \cup \Delta$ and that maximises the function $rank$.
+If $rank$ is to be minimised the function is defined with $\min$ instead of $\max$.
+
+\subsection{Relationships and Requests}
+The relationship constraints and request constraints that form the sets $R$ and $\Delta$ can be further described. 
 
 %%%Component realtionships constraints
 The constraints in $R$ can be either: 
 \begin{itemize}
-  \item keep constraint in the form $a \vee \ldots \vee b$, e.g. $a \vee b$ means the $a$ or $b$ must be in the system
+  \item keep constraint in the form $a_1 \vee \ldots \vee a_n$, e.g. $a \vee b$ means the $a$ or $b$ must be in the system
   \item dependency constraint in the form $a \rightarrow c_1 \vee \ldots \vee c_n$, e.g. $a \rightarrow b \vee c$ means $a$ depends on $b$ or $c$
   \item conflict constraints in the form $a \rightarrow \neg c$, meaning $a$ conflicts with $c$
 \end{itemize}
-These constraints are defined semantically such that;
-a keep constraint  $a \vee \ldots \vee b$ means $a \in E_{R \cup \Delta}(X)$ or \ldots or $b \in E_{R \cup \Delta}(X)$ (note: this can be a singleton e.g. $a$ is a valid keep constraint);
-a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ means if $a \in E_{R \cup \Delta}(X)$ then $c_1 \in E_{R \cup \Delta}(X)$ or \ldots or $c_n \in E_{R \cup \Delta}(X)$;
-and a conflict constraint $a \rightarrow \neg c$ means if $a \in E_{R \cup \Delta}(X)$ then $c \not \in E_{R \cup \Delta}(X)$.
+
+These constraints are defined semantically such that:
+\begin{itemize}
+	\item a keep constraint  $a_1 \vee \ldots \vee a_n$ in $R$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, $a_1 \in \alpha$ or \ldots or $a_n \in \alpha$ 
+	(note: this can be a singleton e.g. $a$ is a valid keep constraint)
+	\item a dependency constraint $a \rightarrow c_1 \vee \ldots \vee c_n$ in $R$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, then $c_1 \in \alpha$ or \ldots or $c_n \in \alpha$
+	\item conflict constraint $a \rightarrow \neg c$ in $R$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, if $a \in \alpha$ then $c \not \in\alpha$
+\end{itemize}
 These constraints are expressive enough to describe many of the relationships from the component models described in section \ref{background.models}.
+The main relationships that is not described here is that of composite relationships that exist in such component models like Fractal.
 
 %%%Change constraints
-The constraints in $\Delta$ are of the form of either adding or removing a single component.
-they can be in the form of $a$ or $\neg a$, where $a$ means to install component $a$, and $\neg a$ means to remove component $a$.
-Semantically $a$ means that $a \in E_{R \cup \Delta}(X)$ and $\neg a$ means $a \not \in E_{R \cup \Delta}(X)$. 
-This is a limited set of changes that can be requested to be made to the system.
-This will be extended in section \ref{formal.cudf} to express more, but for now these are sufficient requests.
+The constraints in $\Delta$ are created from the user requests to either install, remove or upgrade a component:
+\begin{itemize}
+  \item an installation constraint is in the form $a_1 \vee \ldots \vee a_n$, e.g. $a \vee b$ means $a$ or $b$ should be installed
+  \item a remove constraint is of the form $\neg a$, e.g. $\neg a$ means $a$ should be removed from the system
+  \item an upgrade constraint is of the form $a_1 + \ldots + a_n = 1$, e.g. $a + b = 1$ means exactly one of either $a$ or $b$ is installed.   
+\end{itemize} 
+The most complex constraint in this set is the upgrade constraint, this is used to state that exactly one component must be installed.
+
+The semantics of these constraints is such that;
+\begin{itemize}
+  \item an installation constraint $a_1 \vee \ldots \vee a_n$ in $\Delta$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, $a \in \alpha$ or \ldots or $a_n \in \alpha$ 
+  \item a remove constraint  $\neg a$ in $\Delta$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, $a \not \in \alpha$
+  \item an upgrade constraint $a_1 + \ldots + a_n = 1$ in $\Delta$ means for any solution $\alpha$ in $solutions(R \cup \Delta)$, $|\{a_1,\ldots,a_n\} \cap \alpha| = 1$
+\end{itemize} 
+Here the semantics of the upgrade constraint is expressed as a constraint on the cardinality of the intersection between the solution and the included components.
+This cardinality constraint is used to define the request that a component must be replaced by exactly one of a higher version.
+How this constraint is used is further described in section \ref{formal.cudf.request}. 
 
 %%%What is the change conflicts with R
 A possibility that can occur is that the requested change creates constraints that conflict with the set of component relationships,
 i.e. $R \cup \Delta$ is unsatisfiable.
 For instance, if there exists a keep constraint $a$ and the request $\neg a$, $R$ and $\Delta$ will be a conflicting set of constraints.   
-A popular solution to resolve this issue is to check to see if the constraints a conflicting, and if they are make no change.
-This is the resolution used here,
-where if $R \cup \Delta$ is unsatisfiable, $E_{R \cup \Delta}(X) = X$.
-
-\subsection{Solution Selection}
-\label{formal.solsel}
-Many different possible sets of components may be able to satisfy the set of constraints $R \cup \Delta$.
-As each system has different properties, and the user may have preferences on certain system attributes,
-the evolutionary step function requires a mechanism to select solutions.
-This is an optimisation problem as the solution that is selected should be optimal given some criteria.
-
-%%%An example where 
-For instance, there are three components $a$,$b$ and $c$, and there is a component system of two components $a$ and $b$ (i.e. $\{a,b\}$).
-There is only one relationship where $a$ depends on $b$, i.e. $R$ consists of only the dependency constraint $a \rightarrow b$,
-and the defined change is to add a component $c$, i.e. $\Delta = \{c\}$.
-The resulting system $E_{R \cup \Delta}(\{a,b\})$ could be one of three systems; $\{c\}$, $\{b,c\}$ or $\{a,b,c\}$.
-Intuitively the correct answer is $\{a,b,c\}$, because unnecessarily removing a component from the system may be detrimental.
-However, this intuition does not exist in the function, and the system $\{c\}$ is just as valid as $\{a,b,c\}$. 
-Therefore, some mechanism to select between the possible systems is required.
-  
-%%%The defintiion if extended to include the ability to minimise a heuristic
-The function $E_{R \cup \Delta}$ is then extended to include the ability to select to return a solution that is superior to other possible solutions by some criterion.
-The evolutionary step function is then extended to return a minimal system given some criterion given by the function $d: 2^\mathbb{C} \times 2^\mathbb{C} \rightarrow A$,
-where the set $A$ is ordered by some order $<: A \times A$.
-
-Therefore, given a component system $X$, a set of constraints $R$ and a change request $\Delta$,
-$E_{R \cup \Delta}(X) = X_1$ iff there does not exist another system $X_2$, such that $X_2$ satisfies $R$ and $\Delta$, 
-and $d(X,X_2) < d(X,X_1)$.
-That is, $E_{R \cup \Delta}$ will return a solution that is minimal given the function $d$ and the order $<$.
-
-%%%This optimisation function can be simplified to a function where the previous solution is not compared, but some static metric of the system is measured.
-The function $d$ then compares the previous system to the evolved system, this could be seen as measuring the distance the system evolved.
-This kind of criterion is \textit{dynamic}, it compares the change necessary for an evolutionary step.
-A dynamic criterion could then be used to minimise the amount of components removed from the system, as it compares the previous system to the possible returned one.
-
-This function can be simplified to represent \textit{static} measurements by defining, $d: 2^\mathbb{C} \rightarrow A$, which returns a direct measure of the evolved system.
-This type of criterion could represent system size, which does not require the comparison with the previous system.
+A practical solution to resolve this issue is to check to see if the constraints a conflicting, and if they are make no change.
+That is, if the set $R \cup \Delta$ is unsatisfiable, $E(\alpha, R \cup \Delta,rank) = \alpha$.
 
 \subsection{Component System Evolution is NP-Complete}
 Finding a solution that satisfies all relationship and request constraints is shown to be NP-Complete through reduction to a Boolean Satisfiability (SAT) problem,
-and not belonging to a class given in Schaefer's dichotomy theorem \cite{Schaefer1978}.
-This is not the first proof that this problem is NP-Complete \cite{edos2005report}, 
-though it may be the first through using Schaefer's dichotomy theorem which may be found to be more intuitive than reduction to 3-SAT.
+and not belonging to a class of simple SAT problems given in Schaefer's dichotomy theorem \citep{Schaefer1978}.
+This is not the first proof that this problem is NP-Complete, as presented in \cite{edos2005report} it is shown to be reducible to 3-SAT. 
+Though it may be the first through using Schaefer's dichotomy theorem, which may be found to be more intuitive than reduction to 3-SAT.
 
 SAT problems where the initial problem given the class NP-Complete in \cite{cook1971}.
-This class of problem is described by its properties of being able to verify a solution quickly, but have no efficient way to find a solution initially.
+This class of problem is described as being able to verify a solution quickly, but have no efficient way to find a solution initially.
 To show that this problem is NP-Complete, the first step is to reduce the problem into SAT problem represented by a Boolean equation in Conjunctive Normal Form (CNF).
 CNF is a conjunction of clauses, where each clause is a disjunction of literals.
 
-The constraints in this problem are converted to CNF clauses:
+Given all components are represent variables in the problem, the constraints from an evolution problem are reduced to CNF clauses:
 \begin{itemize}
-  \item keep constraint: $a \vee \ldots \vee b$ is directly represented as a single clause in CNF
-  \item dependency constraint: $a \rightarrow c_1 \vee \ldots \vee c_n$ can be represented in CNF as a clause $\neg a \vee c_1 \vee \ldots \vee c_n$
+  \item keep constraint: $a_1 \vee \ldots \vee a_n$ is directly reduced to a single clause in CNF
+  \item dependency constraint: $a \rightarrow c_1 \vee \ldots \vee c_n$ can be reduced to a CNF as a clause $\neg a \vee c_1 \vee \ldots \vee c_n$
   \item conflict constraint: $a \rightarrow \neg c$ can be represented in CNF as a clause $\neg a \vee \neg c$
-  \item request constraint: $a$ and $\neg a$ can be represented directly as CNF clauses
+  \item installation constraint: $a_1 \vee \ldots \vee a_n$ is directly reduced to a single clause in CNF
+  \item remove constraint: $\neg a$ is directly representable as a CNF clause
 \end{itemize}
-All clauses are combined through $\wedge$ to form a complete CNF formula, the representative SAT problem.
 
-According to Schaefer's dichotomy theorem \cite{Schaefer1978}, iff a SAT problem can be represented in CNF as one of six classes the problem is not NP-Complete.
-Therefore showing that a problem SAT created by the evolution step can be in none of these classes, then the problem can be NP-Complete.
+The upgrade constraint requires multiple CNF clauses to create a logically equivalent statement.
+An upgrade constraint $a_1 + \ldots + a_n = 1$ states one component of $a_1$,\ldots,$a_n$ must be installed, but no two of them can be installed.
+This can be created using a CNF clause $a_1 \vee \ldots \vee a_n$ with a set of clauses $\neg a_i \vee \neg a_j$ where where $i$ and $j$ are from $1$ to $n$, $i \neq j$ and $i < j$.
+For example, the upgrade constraint $a_1 + a_2 + a_3 = 1$ is translated into the four CNF constraints $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
+The amount of CNF clauses grows quadratically with the size of the upgrade constraint. 
+
+All clauses are combined through $\wedge$ to form a complete CNF formula which represents the SAT problem.
+
+There are trivial SAT problems that can be solved easily.
+To show that the evolution problem is not a trivial Schaefer's dichotomy theorem \cite{Schaefer1978} is used.
+According to this theorem, a SAT problem represented in CNF is not NP-Complete iff it is in one of six classes.
 These classes are:
 \begin{enumerate}
   \item the problem is solvable by assigning each variable false
   \item the problem is solvable by assigning each variable true
-  \item every clause has at most one negated variable
-  \item every clause has at most one unnegated variable
+  \item every clause has at most one negated variable (Horn clause)
+  \item every clause has at most one unnegated variable (dual-Horn clause)
   \item every clause has two literals (2-SAT problem)
   \item all relations are equivalent to a conjunction of affine formulae (i.e. $x_1 \oplus \ldots \oplus x_n = true$ or $x_1 \oplus \ldots \oplus x_n = false$)
 \end{enumerate} 
 
-As each literal represents whether a component is included or excluded from the system, these classes can be described in terms of the component system.
-The first two classes state that this problem is not NP-Complete if a component system can be created with no components or all components.
-As the request constraints can state that a component has to be included or has to be excluded, the problem may exist such that it is not in either of these classes.  
+An evolution problem is not in the first or second classes as a problem could contain the clauses $\neg a$ and $b$, 
+where both clauses would not be satisfied if both variables assigned true, or false. 
 
-The third and fourth classes state that either the problem can be represented by a set of Horn or dual-Horn clauses, such problems are known to be solvable in linear time \cite{dowling1984linear}.
-Given a conflict relationship creates a dual-Horn clause ($\neg a \vee \neg c$) and a dependency conflict can create a clause Horn clause ($\neg a \vee c_1 \vee \ldots \vee c_n$), 
-this problem does not belong to either of these classes.
+The third and fourth classes state that the problem can either be represented by a set of Horn or a set of dual-Horn clauses.
+Such problems are known to be solvable in linear time \cite{dowling1984linear}.
+An evolution problem can be defined with the conflict and dependency clauses $\neg a \vee \neg c$ and $\neg a \vee c_1 \vee \ldots \vee c_n$. 
+As one is a dual-Horn clause and the other a Horn clause, an evolution problem does not fit into either the third or fourth class.
 
 The fifth class states that the CNF problem cannot be represented as a series of clauses with only two literals,
 such a problem has been shown to be solvable in linear time \citep{aspvall1979linear}.
@@ -172,54 +198,45 @@ That is, the CNF formula can be represented as a conjunction of clauses using th
 The evolutionary step problem can be shown to be in neither the fifth or sixth classes 
 through mapping to an equivalent problem called ``exactly one in three'' presented in \cite{Schaefer1978} as problem ``NP1''.
 This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
-This problem can be described in component constraints with three components $a$,$b$ and $c$.
-Given the keep clause $a \vee b \vee c$ and the conflict clauses  $\neg a \vee \neg b$, $\neg b \vee \neg c$ and $\neg a \vee \neg c$, 
-the only satisfiable solutions are $\{a\}$,$\{b\}$ and $\{c\}$. 
+This problem can is defined as an upgrade constraint $a_1 + a_2 + a_3 = 1$,  
+with the translated CNF clauses $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
 This problem is shown to not belong to any of the above classes in lemmas 3.1A, 3.1B and 3.1W in \cite{Schaefer1978}.
 
 %%%This problem may be in fact P if it can exist to one of these classes
-This evolutionary step problem then has the potential to be NP-Complete, though many practical problems may be solvable in linear time.
-For instance, a problem that has no conflict constraints would be in the third class where it would have at most one negated variable in each clause.
-As some component models, such as Maven, have no means of defining conflicting components, they will be in this class of problems and therefore not be NP-Complete. 
+Finding a solution to an evolutionary problem is then is NP-Complete. 
 
 \subsection{Component System Evolution is NP-Hard}
 As noted by \cite{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
 Also noted, is the fact that some of these solutions are not as ``good'' as others.
-By trying to find an optimal solution given some criteria the evolution of a component system becomes NP-Hard.
+Finding an optimal solution by maximising or minimising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
 This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
-This means, once a solution is found that satisfies all component relationships, it is impossible to say that this solution is optimal without further steps. 
+This means, once a solution is found that satisfies all constraints, it is impossible to say that this solution is optimal without further steps. 
 
-This NP-Hard class of problem is notably intractable to solve, and will impact any attempt to solve it, manual or computational.
+This NP-Hard class of problem is notably intractable to solve, and will impact any algorithm designed to find an optimal system.
 The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
 
 \subsection{Generational Component System Evolution}
 \label{formal.evo}
-The evolution of a component system is typically made up of many of the evolutionary steps defined above. 
-With each successive change, the system resembles less of the starting system.
-Each stage of the system is an analogy of a generation in the evolution of a biological organism, this process is the generational evolution of a component system.
-This is a time dependent, recursive and complex process. 
+The atomic action is component system evolution is changing one system to the next through the evolutionary step function.
+Each change creates a new generation of the system, this is an analogy to a generation of a biological organism.
+Over time the changes to the system may make each generation resemble less and less what the system once was.
+This process is the evolution of a component system from the perspective seen in this research. 
 
 %%%This process depends on time
-This process can occur over large periods of time, over which the set of components can change making the evolution of a system time dependent.
-Due to component evolution, newer versions of components can be added to the set of components.
-Also newer components can be developed and added to the set.
-This means that the set of components changes in relation to the time, which in turn changes the relationships between components changing the constraints in $R$.
-For example, component $a$ depends on all versions of a component whose name is $b$.
-Initially there is only one version of $b$, $bv1$, making the dependence constraint $a \rightarrow bv1$.
-However, due to component evolution at a latter date a newer version of $b$ is created, $bv2$, this then created the constraint $a \rightarrow bv1 \vee bv2$.
-This time dependence is defined, given a specific time $t$, the component constraints that exist at time $t$ are denoted as $R_t$.
+This process can occur over large periods of time, over which the environment of components changes.
+Over time, newer component versions and new components are developed.
+This means that any given time the set of components and therefore the set of component relationships change.
+Therefore, the set of components at time $t$ is denoted $\mathbb{C}_t$, and the set of component relationships at time $t$ is denoted $R_t$.
 
 %%%The requests should be aggregated into one request, if there is a conflict then newer requests should be prioritised
-The requested changes to the system should also be considered even after they have been made.
-A request to change the system is usually performed in order to maintain or extend the system.
-A possible problem occurs when after the change has been made, the next evolution may undo that change, even if it is not necessary.
-For instance, if a component is requested to be installed, in a latter evolution it may be removed even though it was avoidable.
-
+Each change alters the system, but some parts of the system should remain static.
+The requested changes to the system should not be able to be undone in subsequent evolutions.
+That is, if a user selects to install a text-editor one change, the next change should not allow it to be removed.  
 The simple solution to this is to aggregate all previous requests into one set of constraints;
 Given a series of evolutionary changes denoted as the tuple $\langle \Delta_1, \ldots, \Delta_i \rangle$ in order from least to most recent,
 the constraints for the request would be the $\Delta_1 \cup \ldots \cup \Delta_i$.
-However, these requests can conflict, e.g. a component is requested to be installed, and later requested to be removed.
-As a more recent request is of higher importance than an older request, a simple process of finding a non-conflicting set of request constraints can be defined.
+However, requests can conflict, e.g. a component is requested to be installed, and later requested to be removed.
+As a more recent request is of higher importance than an older request, a process of finding a non-conflicting set of request constraints can be defined.
 Therefore: given a series of requests $\langle \Delta_1, \ldots, \Delta_i \rangle$ in order from least to most recent,
 the set of request constraints is defined as $\Delta_G = [\Delta_n \mid n \in \{1, \ldots , i\} \mbox{ and } \Delta_n \cup \ldots \cup \Delta_i \mbox{ is satisfiable}]$.
 That is, $\Delta_G$ is the subset of request constraints that includes all constraints that do not conflict with a more recent constraint.
@@ -227,34 +244,39 @@ That is, $\Delta_G$ is the subset of request constraints that includes all const
 %%%This process is then defined as
 Given the tuple of evolutionary changes denoted as $\langle \Delta_1, \ldots, \Delta_n \rangle$
 which occur at times  $\langle t_1, \ldots, t_n \rangle$.
-A generation is defined as $G_i = E_{R_{t_i} \cup \Delta_G}(G_{i-1})$ where $i$ is an integer between $1$ and $n$.
+A generation is defined as $G_i = E(G_{i-1},R_{t_i} \cup \Delta_i,rank)$ where $i$ is an integer between $1$ and $n$.
 The initial generation of this process, $G_0$, is the starting point that could either be an system with no components, or a system that is a pre-defined configuration of components.
 
 %%%This makes a sometimes counter intuitive complexity
-This process can be counter-intuitive and complex.
-For instance, a single step of evolution that is optimised to reduce change may cause more change over generations of evolution.
-Given an initial system $G_0 = \{\}$ a series of changes is defined as $\langle \{a\}, \{d\}\rangle$, 
-and a set of constraints (time invariant) $R = \{a \rightarrow bv1 \vee bv2, bv1 \rightarrow \neg bv2, bv2 \rightarrow c, d \rightarrow bv2\}$;
-if the evolution function is optimised to minimise change the first generation would be $G_1 = \{a,bv1\}$ as this system would install $a$ with only changing two components (installing $a$ and $bv1$).
-The second generation when attempting to install $d$ would result in $G_2 = \{a,bv2,c,d\}$, which changed four components (removed $bv1$ and installed $a$,$bv2$,$c$ and $d$).
-A better evolution of this system would of been $G_1 = \{a,bv2,c\}$ then $G_2 = \{a,bv2,c,d\}$ which would change a total of four times across its evolutions as apposed to the six previously described.
+This process of component system evolution can be counter-intuitive and complex, as the optimal solution for an evolutionary step may not be optimal over generations.
+For instance, given the $rank$ function that tries to minimise the number of components altered (the symmetric difference between the solutions), i.e. $rank(\alpha,\beta) = |\alpha \Delta \beta|$,
+an initial system $G_0 = \{\}$, a series of user requests $\langle \{a\}, \{d\}\rangle$, 
+and a set of constraints (time invariant) $R = \{a \rightarrow b^1 \vee b^2, b^1 \rightarrow \neg b^2, b^2 \rightarrow c, d \rightarrow b^2\}$;
+$G_1 = \{a,b^1\}$ where $rank(G_0,G_1) = 2$, and $G_2 = \{a,b^2,c,d\}$ where $rank(G_1,G_2) = 4$.
+The total change between generations by minimising change using rank is then $6$, where in the first evolution $a$ and $b^1$ are added, 
+and in the second evolution $b^1$ is removed and $b^2$, $c$ and $d$ are added.
 
-This complexity is the reason for the study of the evolution process throughout this research. 
-This counter-intuitive impact on the evolution of component systems, opens up research questions that should be answered to use component systems.
+This is not an optimal solution when looking at the problem in generational perspective.
+A better evolution of this system would have been $G_1 = \{a,b^2,c\}$ then $G_2 = \{a,b^2,c,d\}$.
+This would change only a total or $4$ components as opposed to $6$.
+Therefore, although the individual evolution $rank$ function is intuitive, the overall result is not optimal.
+
+This counter-intuitive and complex behaviour of component system evolution requires further study.
+This is one of the reasons for this being the focus of this research. 
 
 \subsubsection{Belief Revision}
 This formalism of generational evolution is similar to the formal logic of belief revision \cite{alchourron1985logic}.
 This logic deals with the process in which a set of beliefs can be revised when confronted with new information.
 The complexity of belief revision comes from the many ways in which a set of beliefs can be revised when necessary.
-For instance, if you see an object that is black and is flying towards you, where you also know that birds fly; then you infer it is a bird.
-However, an expert in flying things then tells you that it is a bat that is flying towards you; given this new information your previous beliefs require revision to stay consistent.
-How this revision occurs can be complex; for instance, is the object still black?
+For instance, you see a flying black object, you know that birds fly so you infer that it is a bird.
+An expert in flying things then tells you that it is a bat; given this new information your previous beliefs require some revision.
+How this revision occurs can be a complex task, as previously held beliefs must be questioned; for instance, is the object still black?
 
 The Alchourrón, G\"ardenfors, and Makinson (AGM) \cite{alchourron1985logic} postulates for belief revision give a set of eight properties 
-that a such a revision operator needs to satisfy in order to be considered ``\textit{rational}''.
+that a such a revision operator needs to satisfy in order to be considered \textit{rational}.
 These postulates (not enumerated here) were rephrased for propositional languages by \cite{katsuno1991propositional}. 
-Given a set of propositional formula $Y$ representing the belief set and a single formula $A$ representing new information, the revision of $Y$ by $A$, denoted by $Y \circ A$,
-should have these properties:
+Given a set of propositional formula $Y$ representing the belief set, and a single formula $A$ representing new information, the revision of $Y$ by $A$, denoted by $Y \circ A$.
+This should have these properties:
 
 \begin{itemize}
   \item (KM1) \textit{ $Y \circ A$  implies $A$}
@@ -266,8 +288,8 @@ should have these properties:
 \end{itemize} 
 
 The first four KM postulates are equivalent to the first six AGM postulates, describing the basic nature of revision;
-new information is always included in the new beliefs (KM1); if the new information does not conflict with old information the revision is equviliant to conjunction (KM2);
-if the new information is satisfiable then the revised beliefs should be satisfiable (KM3); revision should be deterministic where given equal scenarios the results are equal (KM4).
+new information is always included in the new beliefs (KM1); if the new information does not conflict with old information the revision is equivalent to conjunction (KM2);
+if the new information is satisfiable then the revised beliefs should be satisfiable (KM3); given equal scenarios the results are equal (KM4).
 
 The last two KM postulates are equivalent to the last two AGM postulates, which describe the intended minimal change of revision.
 That is, revision should only change a minimal set of beliefs given new information is conflicting.
@@ -281,7 +303,7 @@ Through weakening (KM6) to two more postulates (KM7) and (KM8), \cite{katsuno199
 \cite{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
 given the set of all models $M$, a function is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
 where the strict order is defined as $m <_Y m'$ if and only if $m \leq_Y m'$ and $m' \not \leq_Y m$. 
-This assignment is described as ``\textit{faithful}'' if three conditions hold:
+This assignment is described as \textit{faithful} if three conditions hold:
 \begin{enumerate}
   \item If $m,m' \in Mod(Y)$, then $m <_Y m'$ does not hold
   \item If $m \in Mod(Y)$ and $m' \not\in Mod(Y)$, then $m <_Y m'$ holds
@@ -315,8 +337,8 @@ The formula $A$ defines a change to the beliefs of what is best for the user, wh
 %%%Discuss the mapping of the function to the revision operator
 The component relationships are facts in this logic, and not beliefs; they are axioms that are defined as integrity constraints by \cite{katsuno1991propositional}.
 The revision operator is then denoted with respect to the component relationships $R$ as $\circ_R$.
-This revision operator $\circ_R$ is mapped to the the evolutionary function $E$;
-given the evolutionary function $E_{R \cup \Delta}(X) = X_1$, $Mod(Y) = \{X\}$ and $Mod(Y \circ_R \Delta) = \{X_1\}$.
+This revision operator $\circ_R$ is mapped to the the evolutionary step function $E$;
+given the evolutionary function $E(\alpha,R \cup \Delta,rank) = X_1$, $Mod(Y) = \{\alpha\}$ and $Mod(Y \circ_{R} \Delta) = \{X_1\}$.
 This restricts the possible models of $Y$ and the revised models to a singleton sets of $\{X\}$ and $\{X_1\}$,
 as there can only exist a single component system at a time.
 
@@ -324,51 +346,52 @@ as there can only exist a single component system at a time.
 An order $\leq_{Y}$ that holds to the properties stated previously must be defined in order to consider this revision operator ``rational''.
 This property, that is the basis of belief revision operators gives component system evolution a foundation.
 It states that the changes that are made to a component system are reasonable with respect to the beliefs that it is satisfiable for the user.
-The benefit of this mapping would provide evolution with a set of revision operators already defined, and another set of research to contribute to.
+The benefit of this mapping would provide evolution with a set of revision operators already defined, and another area of research to contribute to.
 
 %%%However, this mapping is incompatible with our definition.
-Although this mapping may provide some benefits to component system evolution, their are fundamental differences which make the mapping incompatible.
-The optimisation function $d$ with its order $<$ is analogous to the order $\leq_{Y}$.
-They both describe the measures of optimality, however $d$ can be static, measure the optimality of a system separate from a previous system,
+Although this mapping may provide some benefits to component system evolution, their are fundamental differences which make it incompatible.
+The optimisation function $rank$ with is analogous to the order $\leq_{Y}$.
+They both describe the measures of optimality, however $rank$ can be static, measure the optimality of a system separate from a previous system,
 where $\leq_Y$ is only dynamic, measuring the change from previous to new system.
 This difference creates a incompatibility, given the constraint on $\leq_Y$ which requires no change if necessary,
-and $d$ which can make changes which may not be minimal.
+and $rank$ which can make changes which may not be minimal.
 For example, if a system is requested to install a component that is already installed, a belief revision operator will never change the system,
-however a component evolution function may identify there exists a newer version and attempt to update the component.
+however the evolution step function may identify there exists a newer version and attempt to update the component.
 
 %%%Therefore it is not used
 This fundamental difference excludes the use of belief revision as the basis of component system evolution formalisation.
-Although, the extension of belief revision may be possible to accurately describe component system evolution, 
-the necessary changes will remove belief revision from its foundation of minimal change,
-therefore is seen as extreme.
-Instead, this research directly defines the problem using belief revision as inspiration.
+Although an extension of belief revision may be possible to accurately describe component system evolution, 
+the necessary changes will remove core attributes of belief revision, making it an unreasonable mapping.
+This area of belief revision has informed and inspired the research into component system evolution.
 
-\section{Evolution Optimisation}
+\section{Multi-criteria Optimisation}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
-Any requested evolution of a component system can have many different possible resulting systems \cite{leBerre2010}.
-This is because the problem is generally under-constrained \cite{Berre2008}, which enables many various possible systems available to satisfy the component relationships.
-Up till now in this chapter, the function to optimise the evolution of the system has been left largely undefined.
+Any requested evolution of a component system can have many different possible resulting systems \citep{leBerre2010}.
+This is because the problem is generally under-constrained \citep{Berre2008}, allowing multiple systems to satisfy user request and component relationship constraints.
+The function $rank$, its range, order and properties have so far been left largely undefined. 
+In this section this function $rank$ is defined as a multi-criteria optimisation problem where each criteria is lexicographically composed.
 
-The lack of definition is due to the practical aspect that an evolution step is a multi-crititeria optimisation problem \cite{leBerre2010}. 
-
-%%%This can be seen from the examples described in the background
+%%%Why is it multicriteira
+The evolution of a component system is a mutli-criteria optimisation problem \citep{Berre2008}.
 The necessity of using multiple criteria can be seen in the examples of current CDR application criteria presented in \ref{background.models},
-where no examples consisted of only one only one measurement to select an optimal system.
-These different measures are expressed and combined through various means.
-Criteria like APT's upgrade constraint saying that ``under no circumstances are currently installed packages removed'' form a hard constraint,
-that is the upgrade will fail if a component is required to be removed.
-MPM's criteria are related lexicographically, where one criteria is infinitely more important than another.
+where no current examples of CDR implementation used only one criterion to select an optimal system.
+Eclipse P2 provides an example where more than four different criteria create the function that selects their optimal system.
+
+%%%Why is it lexicographically composed
+Using a lexicographical order to compose criteria, is an intuitive way of ordering solutions.
+A lexicographical order states that one criterion is infinitely more important than the next criterion.
+Such an ordering has been used in the Mancoosi International Solver competition to compare solvers, and in the prototype solver MPM presented in \cite{abate2011}.
 
 %%%Information from differnet loactions and meta data can be used to define the criteria.
+Many different criteria can be created to be used in such a problem.
+Criteria can be defined from current solvers like Eclipse P2's criteria to minimise the age of the installed components.
 Information from component meta-data, component contracts \cite{Watkins1999}, repositories \cite{Guo2000}, 
-composition testing \cite{XuejieZhang2008} and user preferences could be used to define such criteria.
+composition testing \cite{XuejieZhang2008} and user preferences could be used to define criteria.
 Additional criteria, such as size, reliability or licence, may change a systems' desirability, 
 therefore during evolution the optimisation of such criteria may return better solution.
 
-Through the formal definition and exploration of this multi-criteria optimisation problem,
-a solution can be defined formally.
-This formal definition should be able to compose multiple various criteria into a single optimisation function that can be used to evolve a component system.
+In this section the formal definition of the $rank$ function is given such that it allows multiple criteria composed with a lexicographic order.
 
 \subsection{Multi-Criteria Component System Evolution}
 %%%Combining criteira is a challenge because criteria have different domains and orders, some have partial orders, arbitrary rankings, criterion orderings.
@@ -380,10 +403,11 @@ Criteria may have arbitrary rankings,
 e.g., preferences for licences can differ significantly between users.
 A criterion could also be more important than another, 
 e.g., correct functionality of a system will always be more important than its size.
+All this must be considered when formally defining the $rank$ function.
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
-A naive solution for this problem is to create a function that for each criteria maps all components to a set of real numbers.
-Then by aggregating these numbers through addition or multiplication (possibly with weights) a single function to minimise can be created. 
+A naive way to create a $rank$ function is map all criteria to a function that returns a real number.
+Then by aggregating these numbers through addition or multiplication (possibly with weights) a single $rank$ function to be minimised or maximised is defined. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
 This method has some drawbacks; information is lost in the conversion to real numbers, for instance the reason why a specific system was selected over another.
@@ -400,12 +424,12 @@ i.e. have a least upper bound and a greatest lower bound.
 A complete lattices satisfies these requirements, therefore is used as the representation. 
 
 %%%these complete lattice criteria using the product and lexicographic orders.
-These complete lattices are able to be composed using a lexicographic order.
-This order is a convenient intuitive way to rank the importance of criteria without the need for arbitrary weights.
+These complete lattices are able to be composed using a lexicographic order with the result being a complete lattice.
+This order can then be used to compose multiple criteria together without the need for arbitrary weights.
 
 %%%This framework can then be used to describe and discuss the multicritera problem of CDR.
-This framework defines criteria as a ranking system over a complete lattice.
-The ranking system describes a mechanism in which to rank a solution to a complete lattice. 
+This framework defines criteria as a ranking system which includes the $rank$ function over a complete lattice.
+The $rank$ function measures a solutions as an element in a complete lattice. 
 The complete lattice gives an order to the solutions based on their ranking.
 By combining these criteria (ranking systems and complete lattices) multi-criteria problems can be composed.
 
@@ -1016,6 +1040,7 @@ That is, $R = \bigcup \limits_{c \in X} keep(c) \cup \bigcup \limits_{c\in \math
 This set defines all constraints defines all relationships between components and system that is necessary to find a satisfiable system.
 
 \subsubsection{Request}
+\label{formal.cudf.request}
 In section \ref{formal.step}, this request, denoted as $\Delta$, was simplified to only include the installation of one component, or removal of one components.
 However, in a CUDF document there are three possible requests, install, remove, or update, which can be defined using complex sets of package formulas.
 Here, the definition in section \ref{formal.step} of the request constraints are extended to include the semantics of the possible requests of a CUDF document.
