@@ -787,6 +787,7 @@ depends: spellCheckerService
 \end{figure}
 
 \subsubsection{Request}
+\label{formal.cudfdes.request}
 The request stanza starts with the \verb+request:+ key, no value is required for this key.
 This stanza contains three properties that define the request to change the system,
 each is a list of \textbf{package formulae} separated by the delimiter ``,'' such that:
@@ -821,7 +822,8 @@ That is, to get newer versions of component installed it is necessary to define 
 
 \subsection{CUDF Specification}
 In this section, the model presented in section \ref{formal.step} is mapped to this CUDF specification.
-The package stanzas are used to define to the component relationship constraints $R$ and the request stanza is used to define the user request constraints $\Delta$. 
+The package stanzas are used to define to the current component system $\alpha$ and the component relationship constraints $R$, 
+while the request stanza is used to define the user request constraints $\Delta$. 
 
 The first definition is that of the CUDF document, which is made up of three sections; the preamble stanza, a set of package description stanzas, and a request stanza:
 \begin{defs}
@@ -881,12 +883,12 @@ if a request property does not exist for the component, then the default value o
 A CUDF document not only describes the set of all components, but the set of components that defines the current system.
 The set of components in the current system (denoted as $\alpha$) is defined using the key \verb+installed+,
 such that, $c \in \alpha$ iff  $c.$\verb+installed+ equals \verb+true+.
-That is, only the components whose property \verb+installed+ is set to \verb+true+, are in the component system.
+That is, only the components whose property \verb+installed+ is set to \verb+true+, are in the current component system.
 
 \subsubsection{Features}
 %%%Features or services
 CUDF specifies an additional aspect to component relationships, that of a feature or service.
-This attributes a set of features to a component, where each feature is represented by a name, and a set of versions.
+Each component can provide a set of features, where each feature is represented by a name, and a set of versions.
 Unlike a component, which has exactly one version, a component can provide multiple versions of a feature.
 
 A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is the name of the feature, and $V$ is a subset of positive integers representing versions, i.e $V \subseteq \mathbb{N}$.
@@ -906,15 +908,15 @@ whose value follows \verb+<provides>+ from the BNF grammar presented in figure \
 
 Each feature represented by \verb+<feature>+ is in the form ``\verb+<fname>+'' or  ``\verb+<fname>+ = \verb+<ver>+'', 
 which is mapped to a feature $($\verb+<fname>+$,\mathbb{N})$ or $($\verb+<fname>+$,\{$\verb+<ver>+$\})$ respectivly.
-That is, a component provides all versions of a feature if no version is defined, where if a version is defined it provides a singleton set of that version. 
+That is, a component provides all versions of a feature if a specific version is not defined, and if a version is defined it provides a singleton set of that version.
+ 
 The list of features defined by \verb+<provides>+, in the form ``\verb+<feature>+$_1$,\ldots,\verb+<feature>+$_n$'', can then be mapped to a set of features.
 This property is wrapped with the function $providedFeatures$,
 such that given a component $c$, $providedFeatures(c)$ equals the set of features mapped from $c$.\verb+provides+.
 
 \subsubsection{Package formula}
 A package formula is a query to retrieve a set of components from a CUDF document.
-This formula is the mechanism to define all relationships and requests in the CUDF specification,
-and is then necessary to define outside of a particular property definition. 
+This formula is the mechanism to define all relationships and requests in the CUDF specification.
 
 Each package formula is syntactically defined as \verb+<pkgf>+ in the BNF grammar in figure \ref{formal.cudfpackageformulasyntax}.
 This also defines \verb+<pkgname>+ as the package name, \verb+<ver>+ as the package version, and \verb+<relop>+ as a relational operator expressing the constraint of the query.
@@ -931,30 +933,39 @@ This also defines \verb+<pkgname>+ as the package name, \verb+<ver>+ as the pack
 \end{figure}
 
 The syntax of \verb+<relop>+ is parsed to a mathematical relation with the function:  
-$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, \verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$.
+$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, 
+\verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$.
 The package formula is in the form ``\verb+<pkgname>+'' or  ``\verb+<pkgname>+ \verb+<relop>+ \verb+<ver>+'',
 given \verb+<relop>+ is mapped to $op$, each form is mapped to a triple $\langle $\verb+<pkgname>+$,0,>\rangle$ or $\langle$\verb+<pkgname>+$,op,$ \verb+<ver>+ $\rangle$ respectively.
-That is, each package formula is a triple of name, operation and version, 
-where if \verb+<relop>+ and \verb+<ver>+ are not defined, the operation defaults to greater than version 0.
+That is, each package formula is a triple of name, operation and version.
+If \verb+<relop>+ and \verb+<ver>+ are not defined, the operation defaults to greater than version 0.
 
 %%%Find all packages which satisfy the package formula
 Package formulae (whose set is denoted as $PF$) can be mapped to a set of components through the function $packages: PF \rightarrow 2^{\mathbb{C}}$,
 which takes a package formula and returns all packages that conform to its definition.
 This is defined as:
-given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
-$packages(\langle n,v,op\rangle) = [\langle n_c,v_c \rangle \mid \langle n_c,v_c \rangle \in \mathbb{C} \mbox{ and } n_c = n \wedge v_c op v]$.
+\begin{defs}
+Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
+$packages(\langle n,v,op\rangle) = [\langle n_c,v_c \rangle \mid \langle n_c,v_c \rangle \in \mathbb{C} \mbox{ and } n_c = n \mbox{ and } v_c \mbox{ op } v]$.
+\end{defs}
 That is, any component whose name is the same as that in the package formulae and whose version is related through the defined $op$ will be included in the set.
 
 %%%Find all packages who provides a feature which satisfies the package formula
-A package formula does not distinguish between components and features, so a package formulae is also used to search for components providing a feature.
-The function $features: PF \rightarrow 2^{\mathbb{C}}$ also takes a package formula and returns a set of components that provide the described feature.
+A package formula does not distinguish between components and features, so a package formula is also used to search for components providing a feature.
+The function $features: PF \rightarrow 2^{\mathbb{C}}$ takes a package formula and returns a set of components that provide the described feature.
+\begin{defs}
 Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
 $features(\langle n,v,op\rangle)$ equals 
-$[c \mid c\in \mathbb{C} \mbox{ and } (n,V) \in providedFeatures(c) \wedge \exists v_f \in V \mbox { such that } v_f op v ]$.
+$[c \mid c\in \mathbb{C} \mbox{ and } (n,V) \in providedFeatures(c) \wedge \exists v_f \in V \mbox { such that } v_f \mbox{ op } v ]$.
+\end{defs}
 That is, given a package formula, 
-$features$ returns a set of components that provide a feature where the name of the feature is in the package formula and the exists a version of that feature that satisfies the relation. 
+$features$ returns a set of components that provide a feature where the name of the feature is the name in the package formula 
+and there exists a version of that feature that satisfies the relation. 
 
-Give the functions $packages$ and $features$ the resolution of a package formula $pf$ can be described as the function $packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+Give the functions $packages$ and $features$ the resolution of a package formula $pf$ can be described as the function 
+\begin{defs}
+$packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+\end{defs}
 That is, $packagesThatSatisfy$ takes a package formula and returns a set of packages that either directly satisfy it, or that provide a feature that satisfy the it.
 
 \subsubsection{Relationships}
@@ -962,7 +973,7 @@ Given the function $packagesThatSatisfy$, the CUDF document can be mapped to the
 
 There are three constraints:
 \begin{itemize}
-  \item keep constraint: derived from the property \verb+keep+ of a package descriptions where property \verb+installed+ is true.
+  \item keep constraint: derived from the property \verb+keep+ of a package descriptions, only included if the property \verb+installed+ is true.
   \item dependency constraint: derived from the property \verb+depends+ from all package descriptions in a CUDF document.
   \item conflict constraints: derived from the property \verb+conflicts+ from all package descriptions in a CUDF document.
 \end{itemize}
@@ -985,7 +996,7 @@ This creates a constraint to ensure one of the resulting components to be includ
 
 To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
 Given a set of components $\mathbb{C}$ defined in a CUDF document, 
-the set of component $\alpha$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha} keep(c)$.
+the set of components $\alpha$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha} keep(c)$.
 
 \paragraph{Dependency Constraint}
 The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property key \verb+depends+,
@@ -1006,21 +1017,22 @@ This syntax shows that the depends property is a list of package formula (as def
 first separated by the delimiter ``,'' then by the delimiter ``|''.
 Each package formula list maps to a single dependency constraint, as described in section \ref{formal.step}.
 
-The syntax of \verb+<pkgflist>+ is in the form ``\verb+<pkgf>+$_1$ | \ldots | \verb+<pkgf>+$_n$''.
-Given \verb+<pkgf>+$_i$ maps to $pf_i$, \verb+<pkgflist>+ maps to a set of package formulae $pkgflist$ such that $pkgflist = \{pf_1,\ldots, pf_n\}$.
-The property \verb+<depends>+ is then of the form ``\verb+<pkgflist>+$_1$ ,\ldots, \verb+<pkgflist>+$_n$'',
-where \verb+<pkgflist>+$_i$ maps to a set of package formulae $pkgflist_i$, \verb+<depends>+ maps to a set of sets of package formulae $listpkgflist = \{pkgflist_1,\ldots,pkgflist_n\}$.
+The syntax of a \verb+<pkgflist>+ is in the form ``\verb+<pkgf>+$_1$ | \ldots | \verb+<pkgf>+$_n$'', where \verb+<pkgf>+$_i$ maps to $pf_i$.
+Each \verb+<pkgflist>+ then maps to a set of package formulae $pkgflist$ such that $pkgflist = \{pf_1,\ldots, pf_n\}$.
+
+The property \verb+<depends>+ is then of the form ``\verb+<pkgflist>+$_1$ ,\ldots, \verb+<pkgflist>+$_n$'', where \verb+<pkgflist>+$_i$ maps to a set of package formulae $pkgflist_i$. 
+The property \verb+<depends>+ is mapped to a set of sets of package formulae $listpkgflist = \{pkgflist_1,\ldots,pkgflist_n\}$.
 
 The function $dependsOn$ is then defined such that it takes a component and a package list to create a single dependency constraint of the form $a \rightarrow c_1 \vee \ldots \vee c_n$,
 as defined in section \ref{formal.step}.
 Given a component $a$ and a package list $pkgflist$, 
-$dependsOn(a,pkgflist)$ equals $a \rightarrow \bigvee  \bigcup \limits_{pkgf \in pkgflist} packagesThatSatisfy(pkgf)$.
-That is, $dependsOn(a,pkgflist)$ takes a the union of all components that satisfy a contained package formula to create the dependency constraint. 
+$dependsOn(a,pkgflist)$ equals the constraint $a \rightarrow \bigvee  \bigcup \limits_{pkgf \in pkgflist} packagesThatSatisfy(pkgf)$.
+That is, $dependsOn(a,pkgflist)$ is $a$ implying the disjunction of the union of all components that satisfy a contained package formula to create the dependency constraint. 
 
 The function $depends$ is then defined to return a set of all dependency constraints for a component.
 Given a component $a$, the set of sets of package formulae mapped from $a$.\verb+depends+ denoted as $listpkgflist$,
 $depends(a)$ is defined to equal $\bigcup \limits_{pkgflst \in listpkgflist} dependsOn(a,pkgflst)$.
-That is, the set of dependency constraints for a given component is the union of all constraints created from individual package formulae lists.
+That is, the set of dependency constraints for a given component is the union of all constraints created from individual \verb+depends+ properties.
 
 Finally, the set of all dependency constraints is defined given the set of all components $\mathbb{C}$ defined in a CUDF document,
 such that the set of dependency constraints equals $\bigcup \limits_{c\in \mathbb{C}} depends(a)$.
@@ -1043,27 +1055,27 @@ This syntax is the same as defined above in the depends property syntax for \ver
 The mapping is also the same, where the property value is in the form \verb+<pkgf>+$_1$ , \ldots , \verb+<pkgf>+$_n$ and maps to a set of package formulae $conflictPkgF$.
 
 Given a component $a$ and the set $conflictPkgF$ that is mapped from the $a$.\verb+conflicts+;
-the function $conflictsWith$ is defined to return a set of conflict constraints where each constraints is in the form $a \rightarrow \neg c$ as defined in section \ref{formal.step}.
-It is defined as $conflictsWith(a) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf) \mbox{ and } pf \in conflictPkgF \mbox { and } c \not = a]$.
+the function $conflictsWith$ is defined to return a set of conflict constraints where each constraints is in the form $a \rightarrow \neg c$, as defined in section \ref{formal.step}.
+This function is defined as, 
+$conflictsWith(a) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf) \mbox{ and } pf \in conflictPkgF \mbox { and } c \not = a]$.
 That is, a component conflicts with any component that satisfies a package formula defined in its \verb+conflicts+ property,
 with the exception that it cannot conflict with itself.
-This final caveat is directly taken from the Debian package specification \citep{Barth2005}, as it allows a package to declare a conflict with itself and this forces similar packages to be removed if it is installed.  
+This final caveat of a CUDF conflict is directly taken from the Debian package specification \citep{Barth2005}, 
+as it allows a package to declare a conflict with itself and this forces similar packages to be removed if it is installed.  
 
 Finally, given the $\mathbb{C}$ is the set of all components in a CUDF document,
 the set of all conflict constraints for a CUDF document is defined as $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 
 \paragraph{Union}
 Given a set of components $\mathbb{C}$, the set of currently installed components $\alpha$, 
-the set of all relationship constraints (denoted as $R$) is then the union of the keep, depends and conflicts constraints defined above.
-That is, $R = \bigcup \limits_{c \in \alpha} keep(c) \cup \bigcup \limits_{c\in \mathbb{C}} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
-This set defines all constraints defines all relationships between components and system that is necessary to find a satisfiable system.
+the set of all relationship constraints, $R$, is the union of the keep, depends and conflicts constraints defined above.
+That is, 
+\begin{defs}
+$R = \bigcup \limits_{c \in \alpha} keep(c) \cup \bigcup \limits_{c\in \mathbb{C}} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
+\end{defs}
 
 \subsubsection{Request}
 \label{formal.cudf.request}
-In section \ref{formal.step}, this request, denoted as $\Delta$, was simplified to only include the installation of one component, or removal of one components.
-However, in a CUDF document there are three possible requests, install, remove, or update, which can be defined using complex sets of package formulas.
-Here, the definition in section \ref{formal.step} of the request constraints are extended to include the semantics of the possible requests of a CUDF document.
-
 In a CUDF document there exist exactly one request stanza, which has three optional properties \verb+install+, \verb+remove+ and \verb+update+ respectively.
 Each value for these properties has the same syntax, shown in figure \ref{formal.requestssyntax}.
 
@@ -1101,33 +1113,41 @@ Then the set of remove constraints is the union of all constraints created from 
 
 \paragraph{Upgrade}
 %%%This is a difficult to express
-The upgrade semantics of CUDF are the most difficult to express, this is because it more closely resembles an optimisation criteria not a hard constraint on the system.
-i.e. to find if the upgrade request is successful it requires measuring the ``upgradeness'' of the system, not only satisfying some set of constraints.
-However, there are some constraints that are expressed in the CUDF semantics, in order to ensure the system is upgraded:
-For each package formula $pf$ in $updatepkgflist$, two types of constraints must be satisfied:
+The upgrade semantics of CUDF are the most difficult to express, this is because of the complicated relationships it causes as discussed in section \ref{formal.cudfdes.request}.
+The upgrade semantics of CUDF state that two constraints must be satisfied for each package formula $pf$ in $updatepkgflist$:
 \begin{enumerate}
   \item exactly one package that satisfies $pf$ is in the system
   \item no packages with a lesser version than the highest currently installed component with the name from $pf$ can be included.
 \end{enumerate} 
 
-Creating these constraints is a more complex challenge than the previous requests as they require the use of a cardinality constraint and comparison to the installed system. 
-
-The first type of constraint is of the form $a_1 + \ldots + a_i = 1$, 
-whose defined semantics are $\{a_1,\ldots,a_i\} \subseteq E_{R \cup \Delta}(\alpha)$ iff $|\{a_1,\ldots,a_i\}| = 1$.
-That is, a set of exactly one component that satisfies can be included in the resulting system.
+The first upgrade constraint is the cardinality constraint of the form $a_1 + \ldots + a_i = 1$, as described in section \ref{formal.step}.
 Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,
-such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf)$
+such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf) = 1$.
+That is, each package that satisfies the package formula is included in the cardinality constraint.
 
-The second type of constraint is of the form $\neg a$,
-this is defined semantically as $a \not \in E_{R \cup \Delta}(\alpha)$.
+The second type of constraint is of the form $\neg a$, defined as the removal constraint described in section \ref{formal.step}.
+To create the required constraints some utility functions $named$ and $maxversion$ are defined.
 
-Given the current system $\alpha$ and the package formula $\langle n,v,op \rangle$ the set of installed packages with the same name as the package formula are defined as 
-$named(\alpha,n) = \alpha \wedge packagesThatSatisfy(\langle n,0,> \rangle)$.
-The greatest version of packages in this set is defined 
-$maxversion(\alpha,n) = cv$  such that $\langle cn,cv \rangle \in named(\alpha,n)$ and $\nexists \langle cn',cv' \rangle \in named(\alpha,n)$ where $cv' > cv$.
-The set of components that are below this maximum version is then defined as
-$lowerC(\alpha,n) = [\langle cn,cv \rangle \mid \langle cn,cv \rangle \in \mathbb{C} \mbox{ and } cv < maxversion(\alpha,n)]$.
-This leads to the definition, $upgrade_2(\alpha,\langle n,v,op \rangle) = [\neg a \mid a \in lowerC(\alpha,n)]$.
+\begin{defs}
+Given the a set of components $\beta$ and the package name $n$ the set of packages in $\beta$ of the name $n$ is returned by the function $named$, such that
+$named(\beta,n) = \beta \cap packagesThatSatisfy(\langle n,0,> \rangle)$.
+\end{defs} 
+
+\begin{defs}
+Given a set of components and a name $n$ the function $maxversion(\beta,n)$ returns the integer $c$.\verb+version+ 
+such that $c \in named(\beta,n)$ and $\nexists c' \in named(\beta,n)$ where $c'$.\verb+version+ $> c$.\verb+version+.
+\end{defs}
+That is, $maxversion(\beta,n)$ returns the highest version of any component with a name $n$.
+
+Given the name $n$ and a set of component $\beta$, the set of components that are below this maximum version of $n$ in $\beta$ is defined as:
+$packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)$
+So to satisfy the second constraint of the upgrade request to have no package installed with the same name but lesser version that the highest currently installed version,
+the function  $upgrade_2$ is defined as:
+\begin{defs}
+Given the currently installed system $\alpha$ and a package formula $\langle n,v,op \rangle$,
+$upgrade_2(\alpha,\langle n,v,op \rangle) = [\neg a \mid a \in packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)]$
+\end{defs}
+That is, all components of name $n$ that have a lesser version than the highest version currently installed in $\alpha$ cannot be installed in the new system. 
 
 The set of all upgrade constraints is then the union of all constraints created for all package formulae in $updatepkgflist$,
 i.e. $\bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$.
@@ -1137,10 +1157,16 @@ Given a set of components $\mathbb{C}$, the set of currently installed component
 and the sets of package formulae mapped from the request stanza properties \verb+install+, \verb+remove+ and \verb+update+ 
 (respectively $installpkgflist$, $removepkgflist$ and $updatepkgflist$);
 the set of all change constraints represented as $\Delta$ is the union of the install, remove and update constraints above.
-That is, $\Delta = \bigcup \limits_{pf \in installpkgflist} install(pf) 
-\cup \bigcup \limits_{pf \in removepkgflist} remove(pf) 
-\cup \bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$.
-
+That is, 
+\begin{defs}
+Given 
+\begin{itemize}
+  \item $i = \bigcup \limits_{pf \in installpkgflist} install(pf)$
+  \item $r = \bigcup \limits_{pf \in removepkgflist} remove(pf)$
+  \item $u = \bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$
+\end{itemize}
+$\Delta =  i \cup r \cup u$
+\end{defs}
 
 \subsection{Full Example}
 \label{formal.example}
@@ -1183,88 +1209,85 @@ install:textEditor
 \end{center}
 \end{figure} 
 
-This example can be mapped to a set of components $C$, a system $\alpha$, a set of constraints $R$ and a change request $\Delta$ in order to find a solution for the function $E_{R \cup \Delta}(\alpha)$.
+This example can be mapped to a set of components $\mathbb{C}$, a system $\alpha$, a set of constraints $R$ and a change request $\Delta$ in order to define the evolution problem.
 These values must be first extracted from the document, as described below.
 
 \subsubsection{Preamble}
 %%%Describe the preamble
-As described in the CUDF specification the initial stanza of a CUDF document is the preamble.
-This describes extensions to the document to allow for some customization of the standard. 
-In the document in figure \ref{formal.CUDFEXAMPLE}, the preamble contains the addition of one property \verb+size+ of type \verb+int+ whose default value is \verb+0+.
-This extension allows each component to define their size represented by a natural number that, to possible be used when selecting a solution.
+The preamble from the CUDF document presented in figure \ref{formal.CUDFEXAMPLE}, 
+defines the addition of one property \verb+size+ of type \verb+int+ whose default value is \verb+0+.
+This extension allows the component \verb+tpspeller+ version 1, to define its \verb+size+ as $2$.
 
 \subsubsection{Constraints}
 
 %%%Describe the set of components and the initial system
 The set of components are defined in the package stanzas in the document,
-such that $C = \{sys1, \langle syslib,2\rangle, \langle textEditor,1\rangle, \langle spellChecker,1\rangle, \langle tpspeller,1\rangle\}$.
+such that $C = \{syslib^1, syslib^2,  textEditor^1,  spellChecker^1,  tpspeller^1\}$.
 This represents two system library versions (\verb+syslib+), a text editor component (\verb+textEditor+), a spell checker (\verb+spellChecker+) and a third party spell checker (\verb+tpspeller+).
-For brevity's sake, these components are denoted so that $sys1 = \langle syslib,1\rangle$, $sys2 = \langle syslib,2\rangle$, $te = \langle textEditor,1\rangle$, $sc = \langle spellChecker,1\rangle$,
-and $tps = \langle tpspeller,1\rangle$.
 
 The initial system that $\alpha$ includes all components whose package stanzas include the property \verb+installed+ set as \verb+true+.
 As described above, if \verb+installed+ is not defined the property defaults to the value \verb+false+,
-therefore $\alpha = \{ sys1 \}$.
+therefore $\alpha = \{ syslib^1 \}$.
 
 %%%Describe the depends constraints (including features and inequalities)
 The set of constraints $R$ for this CUDF document is extracted from the package description stanzas, where the relevant properties of \verb+depends+, \verb+conflicts+ and \verb+provides+ are
 mapped as described in the previous sections. 
-The only depends constraints in this document are from the $te$ component;
+The only depends constraints in this document are from the $textEditor^1$ component;
 where the depends property is broken into two \verb+<pkgflist>+s, \verb+spellChecker | spellCheckerService+ and \verb+syslib > 1+.
 The first \verb+<pkgflist>+ is broken into two package formulae, \verb+spellChecker+  and \verb+spellCheckerService+,
 which are mapped to $\langle $\verb+spellChecker+$,0,>\rangle$ and $\langle $\verb+spellCheckerService+$,0,>\rangle$ denoted as $pf_1$ and $pf_2$ respectively.
 The second has exactly one package formulae, mapped to $\langle $\verb+syslib+$,1,>\rangle$ denoted as $pf_3$.
 
-The $packagesThatSatisfy(pf_1)$ equals $\{sc\}$, and $packagesThatSatisfy(pf_2)$ equals $\{tps\}$.
-The function $dependsOn(te , \{pf_1,pf_2\} )$ 
-then equals the constraint $te \rightarrow sc \vee tps$,
+The $packagesThatSatisfy(pf_1)$ equals $\{spellChecker^1\}$, and $packagesThatSatisfy(pf_2)$ equals $\{tpspeller^1\}$.
+The function $dependsOn(textEditor^1 , \{pf_1,pf_2\} )$ 
+then equals the constraint $textEditor^1 \rightarrow spellChecker^1 \vee tpspeller^1$,
 expressing the text editor depends on either the spell checker component or the third party spell checker service.
 
-The $packagesThatSatisfy(pf_3)$ equals $\{sys2\}$,
-this means the function  $dependsOn(te , \{pf_3\} )$ returns the constraint  $te \rightarrow sys2$.
-This expresses that for the text editor to be installed the component $sys2$ must be installed.
+The $packagesThatSatisfy(pf_3)$ equals $\{syslib^2\}$,
+this means the function  $dependsOn(textEditor^1 , \{pf_3\} )$ returns the constraint  $textEditor^1 \rightarrow syslib^2$.
+This expresses that for the text editor to be installed the component $syslib^2$ must be installed.
 
 %%%Describe the conflicts constraints
-In this example there are two components that declare conflicts, $sys1$ and $sys2$.
+In this example there are two components that declare conflicts, $syslib^1$ and $syslib^2$.
 Both of these are the \verb+<pkgflist>+ with one package formulae mapped to  $\langle $\verb+syslib+$,0,>\rangle$, which is denoted as $pf_4$.
-The function $packagesThatSatisfy(pf_4)$ equals $\{ sys1,sys2 \}$,
+The function $packagesThatSatisfy(pf_4)$ equals $\{ syslib^1,syslib^2 \}$,
 however the $conflictsWith$ function returns different conflicts because of the caveat that a component cannot conflict with itself.
-Therefore, $conflictsWith(sys1)$ returns the set of constraints $\{sys1 \rightarrow \neg sys2\}$,
-and $conflictsWith(sys2)$ returns the set of constraints $\{sys2 \rightarrow \neg sys1\}$.
+Therefore, $conflictsWith(syslib^1)$ returns the set of constraints $\{syslib^1 \rightarrow \neg syslib^2\}$,
+and $conflictsWith(syslib^2)$ returns the set of constraints $\{syslib^2 \rightarrow \neg syslib^1\}$.
 Although these are semantically the same, this is ignore as to identify this would require a post processing step not described.
 
 %%%All request constraints are then\ldots
 Given this example the set of constraints $R$ is then 
-$\{ te \rightarrow sc \vee tps,$ 
-$te \rightarrow sys2,$ 
-$sys2 \rightarrow \neg sys1,$   
-$sys2 \rightarrow \neg sys1\}$.
+$\{ textEditor^1 \rightarrow spellChecker^1 \vee tpspeller^1,$ 
+$textEditor^1 \rightarrow syslib^2,$ 
+$syslib^2 \rightarrow \neg syslib^1,$   
+$syslib^2 \rightarrow \neg syslib^1\}$.
 
 \subsubsection{Request}
 %%%Describe the request constraint
 The change request constraints $\Delta$ are defined in the request stanza, which includes the request to \verb+install+ the component \verb+textEditor+. 
-This package formula maps to $\langle $\verb+textEditor+$,0,>\rangle$, where $packagesThatSatisfy(\langle textEditor,0,>\rangle)$ equals $\{te\}$.
-Through functions $install$ and $installpkgflist$ this returns the constraint $te$,
+This package formula maps to $\langle $\verb+textEditor+$,0,>\rangle$, where $packagesThatSatisfy(\langle textEditor,0,>\rangle)$ equals $\{textEditor^1\}$.
+Through functions $install$ and $installpkgflist$ this returns the constraint $textEditor^1$,
 which asserts that the text editor component will be included in the new system.
-This makes the set of request constraints $\Delta = \{te\}$.
+This makes the set of request constraints $\Delta = \{textEditor^1\}$.
 
 \subsubsection{Solution}
 %%%Describe the possible models that can satisfy all constraints 
 The different systems that can then be returned from the function $E_{R \cup \Delta}(\alpha)$, which must satisfy all constraints in $R$ and $\Delta$, can be found.
-Firstly, given the request ensures that the text editor component is included, the component $te$ will be installed.
-This then asserts that the system library component $sys2$ will be installed.
-As the system library components conflict, $sys1$ must not be installed.
+Firstly, given the request ensures that the text editor component is included, the component $textEditor^1$ will be installed.
+This then asserts that the system library component $syslib^2$ will be installed.
+As the system library components conflict, $syslib^1$ must not be installed.
 
-Of the two components that are left, $sc$ and $tps$, at least one must be installed due to the dependencies of the text editor.
+Of the two components that are left, $spellChecker^1$ and $tpspeller^1$, at least one must be installed due to the dependencies of the text editor.
 This gives three possible solutions to this problem;
-$s_1 = \{sys2, te, sc\}$,
-$s_2 = \{sys2, te, tps\}$,
-$s_3 = \{sys2, te, sc, tps\}$.
+$s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
+$s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
+$s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$.
 That is, $E_{R \cup \Delta}(\alpha) \in \{s_1,s_2,s_3\}$.
 
 Of course as only one system can be returned by the function $E_{R \cup \Delta}(\alpha)$, one of these three solutions must be selected given some optimisation criteria.
 If that criteria specified to select a solution with the minimal \verb+size+ value, 
-then looking at the component properties it can be seen that $sc$ has less size than $tps$ (and clearly less than $tps$ plus $sc$).
+then looking at the component properties it can be seen that $spellChecker^1$ has less size than $tpspeller^1$ (and clearly less than $tpspeller^1$ plus $spellChecker^1$).
 Therefore, given this criteria $E_{R \cup \Delta}(\alpha)$ will return  $s_1$.
 
 \subsection{Mancoosi Optimisation Format}
@@ -1297,10 +1320,10 @@ The composition of the criteria is then the lexicographic stacking of all the $c
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
-In this example, the initial system $\alpha$ was the component $sys1$, and there were three possible solutions to $E_{R \cup \Delta}(\alpha)$;
-$s_1 = \{sys2, te, sc\}$,
-$s_2 = \{sys2, te, tps\}$,
-$s_3 = \{sys2, te, sc, tps\}$.
+In this example, the initial system $\alpha$ was the component $syslib^1$, and there were three possible solutions to $E_{R \cup \Delta}(\alpha)$;
+$s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
+$s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
+$s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$.
 The criteria to select a solution could be defined by minimising the change to the solution, then minimising the total size of the components.
 For this, first two criteria must be defined, and mapped to a ranking system and function, then they must be composed to select a solution.
 
