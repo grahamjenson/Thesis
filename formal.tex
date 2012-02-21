@@ -714,7 +714,7 @@ This structure is presented in figure \ref{formal.cudfproperties}
 \begin{center}
 \begin{alltt}
 \textit{stanza}: \textit{value}
-\textit{key_1\)}: \textit{value_1}
+\textit{key_1}: \textit{value_1}
 \ldots
 \textit{key_n}: \textit{value_n}
 
@@ -1233,7 +1233,7 @@ therefore $\alpha = \{ syslib^1 \}$.
 The set of constraints $R$ for this CUDF document is extracted from the package description stanzas, where the relevant properties of \verb+depends+, \verb+conflicts+ and \verb+provides+ are
 mapped as described in the previous sections. 
 The only depends constraints in this document are from the $textEditor^1$ component;
-where the depends property is broken into two \verb+<pkgflist>+s, \verb+spellChecker | spellCheckerService+ and \verb+syslib > 1+.
+where the depends property is broken into two \verb+<pkgflist>+, \verb+spellChecker | spellCheckerService+ and \verb+syslib > 1+.
 The first \verb+<pkgflist>+ is broken into two package formulae, \verb+spellChecker+  and \verb+spellCheckerService+,
 which are mapped to $\langle $\verb+spellChecker+$,0,>\rangle$ and $\langle $\verb+spellCheckerService+$,0,>\rangle$ denoted as $pf_1$ and $pf_2$ respectively.
 The second has exactly one package formulae, mapped to $\langle $\verb+syslib+$,1,>\rangle$ denoted as $pf_3$.
@@ -1241,10 +1241,10 @@ The second has exactly one package formulae, mapped to $\langle $\verb+syslib+$,
 The $packagesThatSatisfy(pf_1)$ equals $\{spellChecker^1\}$, and $packagesThatSatisfy(pf_2)$ equals $\{tpspeller^1\}$.
 The function $dependsOn(textEditor^1 , \{pf_1,pf_2\} )$ 
 then equals the constraint $textEditor^1 \rightarrow spellChecker^1 \vee tpspeller^1$,
-expressing the text editor depends on either the spell checker component or the third party spell checker service.
+expressing the text editor depends on either the spell checker component or a component that provides a third party spell checker service.
 
 The $packagesThatSatisfy(pf_3)$ equals $\{syslib^2\}$,
-this means the function  $dependsOn(textEditor^1 , \{pf_3\} )$ returns the constraint  $textEditor^1 \rightarrow syslib^2$.
+and the function  $dependsOn(textEditor^1 , \{pf_3\} )$ returns the constraint  $textEditor^1 \rightarrow syslib^2$.
 This expresses that for the text editor to be installed the component $syslib^2$ must be installed.
 
 %%%Describe the conflicts constraints
@@ -1254,7 +1254,7 @@ The function $packagesThatSatisfy(pf_4)$ equals $\{ syslib^1,syslib^2 \}$,
 however the $conflictsWith$ function returns different conflicts because of the caveat that a component cannot conflict with itself.
 Therefore, $conflictsWith(syslib^1)$ returns the set of constraints $\{syslib^1 \rightarrow \neg syslib^2\}$,
 and $conflictsWith(syslib^2)$ returns the set of constraints $\{syslib^2 \rightarrow \neg syslib^1\}$.
-Although these are semantically the same, this is ignore as to identify this would require a post processing step not described.
+Note: these constraints are semantically the same.
 
 %%%All request constraints are then\ldots
 Given this example the set of constraints $R$ is then 
@@ -1265,38 +1265,39 @@ $syslib^2 \rightarrow \neg syslib^1\}$.
 
 \subsubsection{Request}
 %%%Describe the request constraint
-The change request constraints $\Delta$ are defined in the request stanza, which includes the request to \verb+install+ the component \verb+textEditor+. 
+The user's request constraints $\Delta$ are defined in the request stanza, which includes the request to \verb+install+ the component \verb+textEditor+. 
 This package formula maps to $\langle $\verb+textEditor+$,0,>\rangle$, where $packagesThatSatisfy(\langle textEditor,0,>\rangle)$ equals $\{textEditor^1\}$.
 Through functions $install$ and $installpkgflist$ this returns the constraint $textEditor^1$,
-which asserts that the text editor component will be included in the new system.
-This makes the set of request constraints $\Delta = \{textEditor^1\}$.
+which asserts that the text editor component will be included in the new system, i.e. $\Delta = \{textEditor^1\}$.
 
-\subsubsection{Solution}
+\subsubsection{Solutions}
 %%%Describe the possible models that can satisfy all constraints 
-The different systems that can then be returned from the function $E_{R \cup \Delta}(\alpha)$, which must satisfy all constraints in $R$ and $\Delta$, can be found.
-Firstly, given the request ensures that the text editor component is included, the component $textEditor^1$ will be installed.
-This then asserts that the system library component $syslib^2$ will be installed.
+The set systems returned from the function $solutions$, as defined in section \ref{formal.step}, must satisfy all constraints in $R \cup \Delta$.
+
+By going through the constraint the solutions can be found.
+Firstly, the request constraint ensures that the text editor component is included, the component $textEditor^1$ will be installed.
+If $textEditor^1$ is installed then the system library component $syslib^2$ must be installed.
 As the system library components conflict, $syslib^1$ must not be installed.
-
 Of the two components that are left, $spellChecker^1$ and $tpspeller^1$, at least one must be installed due to the dependencies of the text editor.
-This gives three possible solutions to this problem;
-$s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
-$s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
-$s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$.
-That is, $E_{R \cup \Delta}(\alpha) \in \{s_1,s_2,s_3\}$.
 
-Of course as only one system can be returned by the function $E_{R \cup \Delta}(\alpha)$, one of these three solutions must be selected given some optimisation criteria.
-If that criteria specified to select a solution with the minimal \verb+size+ value, 
-then looking at the component properties it can be seen that $spellChecker^1$ has less size than $tpspeller^1$ (and clearly less than $tpspeller^1$ plus $spellChecker^1$).
-Therefore, given this criteria $E_{R \cup \Delta}(\alpha)$ will return  $s_1$.
+This gives three possible solutions to this problem;
+\begin{itemize}
+  \item $s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
+  \item $s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
+  \item $s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$
+\end{itemize}
+That is, $solutions(R \cup \Delta) = \{s_1,s_2,s_3\}$.
+
+Given some criteria defined with the function $rank$ and complete lattice $\langle A , < \rangle$, 
+one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(\alpha, R \cup \Delta,rank)$. 
 
 \subsection{Mancoosi Optimisation Format}
 \label{formal.mancoosioptimisationformat}
 %%%Describe the format by which mancoosi has required optimisation criteria formatted
-The CUDF specification does not specify one important aspect of the component evolution problem, the criteria used to select a solution.
-However, for the purpose of the MISC competition, the Mancoosi organisation gave a specification to represent optimisation criteria to allow the differing solvers to be compared.
+The CUDF specification does not specify the criteria used to select a solution.
+For the purpose of the MISC competition however, the Mancoosi organisation gave a specification to represent optimisation criteria.
 This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
-This results in the relatively simple BNF grammar, as opposed to other possible specifications such as presented in \cite{treinen2009}. 
+This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \cite{treinen2009}. 
 This grammar is described in figure \ref{formal.optbnf}.
 
 \begin{figure}[h!]
@@ -1310,20 +1311,24 @@ This grammar is described in figure \ref{formal.optbnf}.
 \end{figure}
 
 This defines a list of \verb+criterion+ with the delimiter \verb+,+ in the form $\langle criterion_1, \ldots, criterion_n \rangle$.
-Each criterion is a string which expresses some goal to be achieved when finding a solution.
+Each criterion is a unique string which expresses a criteria.
 
 It is possible to map this specification to that defined above in section \ref{formal.opt}.
-Given that the domain $D = \{F,T\}$ and the variables $V = C$;
+Given that the domain $D = \{T,F\}$ and the variables $V = \mathbb{C}$;
 each criterion $criterion_i$ is mapped to a ranking system over a complete lattice $RS_i = \langle L_i,D,V \rangle$
 and ranking function $rank_i$.
-The composition of the criteria is then the lexicographic stacking of all the $criterion_1 \oplus \ldots \oplus criterion_n$ as described in section \ref{formal.opt}.
+The composition of the criteria is then the lexicographic composition of all the $criterion_1 \oplus \ldots \oplus criterion_n$, as described in section \ref{formal.opt}.
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
-In this example, the initial system $\alpha$ was the component $syslib^1$, and there were three possible solutions to $E_{R \cup \Delta}(\alpha)$;
-$s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
-$s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
-$s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$.
+In this example, the initial system $\alpha$ was  $\{syslib^1\}$, and there were three possible solutions
+\begin{itemize}
+  \item $s_1 = \{syslib^2, textEditor^1, spellChecker^1\}$,
+  \item $s_2 = \{syslib^2, textEditor^1, tpspeller^1\}$,
+  \item $s_3 = \{syslib^2, textEditor^1, spellChecker^1, tpspeller^1\}$
+\end{itemize}
+That is, $solutions(R \cup \Delta) = \{s_1,s_2,s_3\}$.
+
 The criteria to select a solution could be defined by minimising the change to the solution, then minimising the total size of the components.
 For this, first two criteria must be defined, and mapped to a ranking system and function, then they must be composed to select a solution.
 
@@ -1341,19 +1346,22 @@ $(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
 Also, the ranking functions are combined such that $rank(\alpha,\alpha') = \langle rank_{change}(\alpha,\alpha'), rank_{size}(\alpha,\alpha') \rangle$.
 
 This composed ranking function is used to calculate the rank of the solutions, where $rank(\alpha,s_1) = \langle 4, 1\rangle$, $rank(\alpha,s_2) = \langle 4, 2\rangle$, $rank(\alpha,s_3) = \langle 5, 3\rangle$.
-The order of these ranks over $\leq_L$ is such that $rank(\alpha,s_1) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_3)$,
-this means that the solution $s_1$ is the optimal solution for this problem and criteria.  
+The order of these ranks over $\leq_L$ is such that $rank(\alpha,s_1) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_3)$.
+Therefore, given the criteria \verb+-change,-size+, the solution $s_1$ is the optimal solution for the evolution problem derived from the CUDF document presented in figure \ref{formal.CUDFEXAMPLE}.
 
 
 \section{Summary}
-In this chapter the formal aspects of the evolution of components systems have been defined.
-This was accomplished by mapping the relationships of the components to constraints on the system which must be satisfied in order to create a functional component system.
-Satisfying these constraints was shown to be an NP-Complete problem, where finding any solution can be a difficult problem.
-However, this evolution problem tends to be under constrained creating many solutions to select from, and finding an optimal solution was shown to be NP-Hard.
+In this chapter the semantics and syntax of component system evolution were discussed.
+This evolution process was formally defined as the iterative application of an evolution step function.
+Each step taken is defined as the optimal solution to an evolution problem.
 
-The representation of such evolution problems in the CUDF format was then discussed and defined.
-The CUDF specification was then presented to defined the syntax and mapping to the constraints used to define the component system evolution problem.
-And using the Mancoosi optimisation definition from the MISC competition to express the optimisation criteria.
+The semantics of the evolution problem is defined as a set of constraints which represent the component relationships and the user's request to change the system.
+This problem is syntactically represented in a CUDF document, which was described and mapped to the evolution problem. 
+
+To define an optimal solution the $rank$ function was described as taking two solutions and measuring them.
+This function was defined to be created from the lexicographical composition of multiple criteria,
+where each criterion is defined as a ranking system over a complete lattice.
+The representation of such criteria is in the Mancoosi optimisation format, a format created for the MISC competition.
 
 In the following chapters, the implementation and strategies used to evolve a component system will be further discussed.
 This will bring the ideas and concepts presented in this chapter to a concrete level, and show the practical challenges and benefits of automated component dependency resolution. 
