@@ -73,9 +73,9 @@ i.e. $solutions(R \cup \Delta)$ equals all solutions of $R \cup \Delta$.
 
 %%%Selecting a solution
 Many component systems may satisfy the set of constraints $R \cup \Delta$ but only one system can be selected.
-The function $rank$ is defined to take the previous component system and proposed system and return a measure of optimality to be maximised or minimised. 
+The function $rank$ is defined to take the previous component system and proposed system and return a measure of optimality to be maximised with respect to some order $>$. 
 For example, given the current component system $\alpha$ and a proposed systems $\beta_1$ and $\beta_2$, 
-if $rank$ is to be maximised, and $rank(\alpha,\beta_1) > rank(\alpha,\beta_2)$\footnote{the range of $rank$ (e.g. $\mathbb{R}$ or $\mathbb{N}$) and the relationship $>$ are left undefined here},
+$rank(\alpha,\beta_1) > rank(\alpha,\beta_2)$\footnote{the range of $rank$ (e.g. $\mathbb{R}$ or $\mathbb{N}$) and the relationship $>$ are left undefined here},
 then system $\beta_1$ is said to be better, or more optimal than system $\beta_2$.
 The $rank$ function is then the mechanism the user's strategy selects the optimal system.
 
@@ -88,10 +88,14 @@ For example, a ranking function that measured the amount of removed components f
 The function that takes a component system and evolves it to another system is described as an evolutionary step function and denoted as $E$.
 This function then takes the evolution problem (the set of relationship and user request constraints), 
 the user's strategy (the rank function), and the previous component system and returns the evolved, optimal system.
-Given the previous system $\alpha$, the constraints $R \cup \Delta$ and the function $rank$ to be maximised the function $E$ is defined as
-$E(\alpha, R \cup \Delta,rank) = \max \limits_{\beta \in solutions(R \cup \Delta)} rank(\alpha,\beta)$.
+
+\begin{defs}
+Given the previous system $\alpha$, the constraints $R \cup \Delta$ and the function $rank$ to be maximised with order $<$, the function $E$ is defined as
+$E(\alpha, R \cup \Delta,rank) = \max \limits_{\beta \in solutions(R \cup \Delta)} rank(\alpha,\beta)$
+\end{defs}
+
 That is, $E$ evolves system $\alpha$ to another system that is a solution of $R \cup \Delta$ and that maximises the function $rank$.
-If $rank$ is to be minimised the function is defined with $\min$ instead of $\max$.
+Note: for rank to be minimise the order $<$ can be flipped to $>$.
 
 \subsection{Relationships and Requests}
 The relationship constraints and request constraints that form the sets $R$ and $\Delta$ can be further described. 
@@ -208,7 +212,7 @@ Finding a solution to an evolutionary problem is then is NP-Complete.
 \subsection{Component System Evolution is NP-Hard}
 As noted by \cite{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
 Also noted, is the fact that some of these solutions are not as ``good'' as others.
-Finding an optimal solution by maximising or minimising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
+Finding an optimal solution by maximising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
 This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
 This means, once a solution is found that satisfies all constraints, it is impossible to say that this solution is optimal without further steps. 
 
@@ -364,7 +368,7 @@ Although an extension of belief revision may be possible to accurately describe 
 the necessary changes will remove core attributes of belief revision, making it an unreasonable mapping.
 This area of belief revision has informed and inspired the research into component system evolution.
 
-\section{Multi-criteria Optimisation}
+\section{Multi-Criteria Component System Evolution}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
 Any requested evolution of a component system can have many different possible resulting systems \citep{leBerre2010}.
@@ -386,14 +390,14 @@ Such an ordering has been used in the Mancoosi International Solver competition 
 %%%Information from differnet loactions and meta data can be used to define the criteria.
 Many different criteria can be created to be used in such a problem.
 Criteria can be defined from current solvers like Eclipse P2's criteria to minimise the age of the installed components.
-Information from component meta-data, component contracts \cite{Watkins1999}, repositories \cite{Guo2000}, 
+Information from component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
 composition testing \cite{XuejieZhang2008} and user preferences could be used to define criteria.
 Additional criteria, such as size, reliability or licence, may change a systems' desirability, 
 therefore during evolution the optimisation of such criteria may return better solution.
 
 In this section the formal definition of the $rank$ function is given such that it allows multiple criteria composed with a lexicographic order.
 
-\subsection{Multi-Criteria Component System Evolution}
+\subsection{Multi-criteria Optimisation}
 %%%Combining criteira is a challenge because criteria have different domains and orders, some have partial orders, arbitrary rankings, criterion orderings.
 Optimising multiple criteria proposes some challenges; firstly criteria may have different domains and orders, 
 e.g., minimising the size in bytes while maximising percentages of reliability. 
@@ -410,7 +414,7 @@ A naive way to create a $rank$ function is map all criteria to a function that r
 Then by aggregating these numbers through addition or multiplication (possibly with weights) a single $rank$ function to be minimised or maximised is defined. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
-This method has some drawbacks; information is lost in the conversion to real numbers, for instance the reason why a specific system was selected over another.
+This method has some drawbacks; information is lost in the conversion to real numbers, like the reason why a specific system was selected over another.
 The relationships between criteria are also difficult to define, as getting an intuitive system order requires altering weights which makes the function complicated to maintain.
 This leads to the problem that assigning preferences to criteria with arbitrary weights is not intuitive,
 e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information about the weighting decision, or its impact.
@@ -437,10 +441,7 @@ By combining these criteria (ranking systems and complete lattices) multi-criter
 %%%Complete Lattices have been used in other optimisation frameworks.
 Complete lattices are an effective abstraction to represent rankings,
 and have been used before when describing such criteria \cite{Bistarelli1997,Fernandez}.
-They can represent problems that involve partial orders,
-be combined into new lattices,
-and be easily visualised and presented using Hasse diagrams \cite{davey1990introduction}.
-They also have strict bounding, which enables general methods, such as branch and bound \cite{Land1960}, to find solutions.
+They can represent problems that involve partial orders, and be combined into new lattices using various orders.
 
 %%%The formal definition for comlpete lattices is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound
 A complete lattice is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound.
@@ -462,10 +463,8 @@ and a unique greatest lower bound (meet or $\wedge$).
 Using these operators the greatest ($1$) and least ($0$) elements can be defined as
 the join of the entire domain ($\bigvee A = 1$) and the meet of the domain ($\bigwedge A = 0$).
 
-\subsection{Ranking and Solution}
 %%%We define a ranking system and function, which returns a value for the complete lattice domain.
 An optimal solution can now be defined through a ranking system with respect to complete lattices.
-
 %%%A ranking system is a lattice a finite domain of variables, and their assignment domain
 \begin{defs}
 Consider a complete lattice $L = \langle A, \leq \rangle$; 
@@ -478,41 +477,40 @@ These domains can be latter defined given the specific problem of component evol
 %%%A solution (system) is a mapping of variables to the domain
 \begin{defs}
 A solution is a variable binding $\gamma: V \rightarrow D$, a mapping of each variable to an element in the domain,
-and $\Gamma$ is the set of all solution functions.
+and $\Gamma$ is the set of all solutions.
 \end{defs}
 
-This definition of solution does not take order into account, e.g. a solution could be the worst possible solution.
-
+This definition of solution does not take into account a solutions rank or order, therefore a solution could be the worst possible solution.
 %%%The ranking function, takes two solutions, and returns the distance between them 
 \begin{defs}
 Consider a complete lattice $L = \langle A, \leq \rangle$ and a ranking system $RS = \langle L, D, V \rangle$.
-A ranking function ($Rank$) returns a metric of the current solution compared to a new solution to elements from $A$,
-$Rank: \Gamma \times \Gamma \rightarrow A$.
+A ranking function ($rank$) returns a metric of the current solution compared to a new solution to elements from $A$,
+$rank: \Gamma \times \Gamma \rightarrow A$.
 \end{defs}
 
 %%%The set of optimal solutions is then the set of solutions where there are no better solutions
 \begin{defs}
-Consider a complete lattice $L = \langle A, \leq \rangle$, a ranking system $RS = \langle L, D, V \rangle$, a previous solution $\gamma$ and a ranking function $Rank$.
+Consider a complete lattice $L = \langle A, \leq \rangle$, a ranking system $RS = \langle L, D, V \rangle$, a previous solution $\gamma$ and a ranking function $rank$.
 The set of optimal solutions ($OSol \subseteq \Gamma$) is the set of solutions where there is no other solution whose rank is better,
-such that $OSol = \{ s \in \Gamma : \nexists s' \mbox{ such that } Rank(\gamma,s) < Rank(\gamma,s')\}$
+such that $OSol = \{ s \in \Gamma : \nexists s' \mbox{ such that } rank(\gamma,s) < rank(\gamma,s')\}$
 \end{defs}
 
 %%%The set of optimial solutions may still be undesirable, as it is only solutions that are available
 The set of optimal solutions only includes the highest ranked solutions,
 as with the definition of solutions, these optimal solutions could be undesirable.
-For instance given a problem which is ranked with either $Correct$ or $Incorrect$, 
+For instance, given a problem which is ranked with either $Correct$ or $Incorrect$, 
 the optimal solution could be $Incorrect$ if there exists no solutions that are $Correct$. 
 
 \subsection{Composition of Complete Lattices}
 \label{sec:composition}
 As a complete lattice with a ranking system is the representation of a criterion,
 the composition of criteria is the way of expressing their relationships to one another. 
-The composition operator of complete lattices is defined as lexicographic order.
+The composition operator in this framework is defined as using the lexicographic order.
 
 It is shown here that the lexicographical composition of complete lattices will result in a complete lattice,
-this enables any combination to be used and remain within our framework.
+this enables any composition of criteria to remain within our framework.
 This is proven by deriving the join (unique least upper bound) and meet (unique greatest lower bound) operations,
-and showing there exists a least element ($0$) within the lattice \cite{davey1990introduction}. 
+and showing there exists a least element ($0$) within the lattice \citep{davey1990introduction}. 
 
 The ranking systems are defined to be composed with the lexicographic ordering:
 \begin{defs}
@@ -566,61 +564,82 @@ For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ a
 This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
 $\Box$\end{prof}
 
-The final part of this formalism is to show how the remadiner of the structures are composed with the lexicographic orders.
+The final part of this formalism is to show how the remainder of the structures are composed with the lexicographic orders.
 The lexicographic composition of the ranking systems is defined as:
 \begin{defs}
 Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2,\leq_2 \rangle$ and
 the ranking systems over them $RS_1 = \langle L_1,D,V \rangle $ and $RS_2 = \langle L_2,D,V \rangle$,
-with defined ranking functions as $Rank_1: \Gamma \times \Gamma \rightarrow A_1 $ and $Rank_2: \Gamma \times \Gamma \rightarrow A_2$.
+with defined ranking functions as $rank_1: \Gamma \times \Gamma \rightarrow A_1 $ and $rank_2: \Gamma \times \Gamma \rightarrow A_2$.
 The combination $RS_1 \odot RS_2$  results in the ranking system 
 $RS = \langle L_1 \odot L_2, D, V \rangle$, 
 and the combination of the ranking functions is 
-$Rank: \Gamma \times \Gamma \rightarrow A_1 \times A_2$ where $Rank(\gamma_1,\gamma_2) = \langle Rank_1(\gamma_1,\gamma_2), Rank_2(\gamma_1,\gamma_2) \rangle$.
+$rank: \Gamma \times \Gamma \rightarrow A_1 \times A_2$ where $rank(\gamma_1,\gamma_2) = \langle rank_1(\gamma_1,\gamma_2), rank_2(\gamma_1,\gamma_2) \rangle$.
 \end{defs}
+Note: in this definition, to combine ranking systems they must have the same set of variables and the same domain.
 
-The main point in this definition is that to combine ranking systems they must have the same set of variables and the same domain.
+\subsection{Discussion on Formalism}
+The point of this exercise is to explore the multi-criteria problem of component system evolution and the $rank$ function that defines optimal solutions.
+
+What is required to create a criterion is: 
+\begin{itemize}
+  \item a domain $A$ with an order $\leq$ that define a complete lattice $L = \langle A, \leq \rangle$
+  \item a set of variables $V$ and domain of those $D$
+  \item a $rank$ function that takes two solutions and returns a value from $A$
+\end{itemize}, 
+In component system evolution the variables are typically the components, i.e. $ V = \mathbb{C}$, and the domain of these is whether they are in the system or not, i.e. $D = \{T,F\}$.
+Therefore, the necessary elements to define a criteria in component system evolution are the lattice and the rank function.
+
+It has been shown that if the criteria defined use complete lattices, the lexicographic order can be used and the resulting criteria will remain within this framework. 
+This provides a proof that if a criteria is defined within this framework, then using a lexicographic order is ``safe'', and the problem will remain consistent.
+
+In section \ref{formal.mancoosioptimisationformat} the syntax to order criteria is defined, 
+in chapter \ref{implementation} the way in which these criteria are optimised is given,
+and in chapter \ref{strategies} various criteria are defined that fit in this framework.
 
 \subsection{Semi-ring constraint incompatibility}
 %%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
-A large part of this formalisation was inspired by research into the representation of constraints as a c-semiring \cite{Bistarelli1997}.
+A large part of this formalisation was influenced by research into the representation of constraints as a c-semiring \cite{Bistarelli1997}.
 This research shows that all instances of their framework are complete lattices, and their $+$ operator coincides with join
 and if their $\times$ operator is idempotent, it coincides with meet.
 Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
 In their framework $\times$ must distribute over $+$, this gives a distributive lattice.
-However, since lexicographic orders may create non-distributive lattices, our overall frameworks are incompatible.
+Since lexicographic orders may create non-distributive lattices, as shown above, our overall frameworks are incompatible.
+This means that the direct use of this research is impossible, though this area remains a source of inspiration.
 
 \section{Common Upgradeability Description Format}
 \label{formal.cudf}
 %%%The description of the represnation of CUDF is described.
-Described in this chapter is the formal model of evolution of a component system, its constraints and it's optimisation.
-The representation of such an evolution problem, how the problem is described has been, so far, left undefined.
+What has been described so far in this chapter is the formal model of component system evolution, with its constraints and it's optimisation.
+These semantics require a representation, a language in which to describe and convey such an evolution problem.
 In this section, the representation of such a problem is described through using the Common Upgradeability Description Format (CUDF) specification presented by \cite{treinen2009common}.
-This specification was previously described in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
+This specification was previously discussed in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
 
-CUDF was defined as an abstract representation of this evolution problem.
-This allows the comparison of various implementations designed to solve evolution problems, and the creation of generlisatiable solvers to be used across component models.
-In both aspects CUDF has succeeded;
-competitions, like the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc-2011/}, have been held to compare various state of the art, and legacy, solvers.
-the creation of the solver MPM \cite{abate2011}, that can solve problems represented in CUDF for different component models.
+CUDF was defined as an abstract representation the evolution problem of open source software, also described as an upgradeability problem.
+It was designed in order to allow the comparison of various implementations designed to solve CUDF problems, 
+and to create a generalised solver tof such problems.
+In both aspects CUDF has succeeded.
+The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/} has been held, both in 2010 and 2011 as well as intermittently, 
+to compare various state of the art, and legacy, solvers.
+The solver MPM, presented in \cite{abate2011}, was designed and created to solve real world problems represented in CUDF.
 
+%%%In this section\ldots
 In this section first the design principles of CUDF are described, this will show the motivations of this definition are aligned to this research.
-The syntax of CUDF is then described, this will not be as in-depth a description as given in the full specification \cite{treinen2009common},
-however it will be enough detail to give a broad understanding of the format.
-This CUDF syntax is then mapped to our model of the a component system evolutionary step.
+The syntax of CUDF is then described, this will not cover all aspects of the CUDF specification, for instance the extensive type system of CUDF is left out.
+This will however, be enough detail to give a broad understanding of the format.
+The defined CUDF syntax is then mapped to our model of the a component system evolution through the constraints that have been defined.
 This includes some minor extensions to the presented definition in section \ref{formal.step}.
-Finally, although the definition of optimisation is not directly in the CUDF specification, the Mancoosi format for specifying optimisation criteria is discussed.
+Finally, the Mancoosi format for specifying optimisation criteria, denoted as MOF, is discussed.
 
 \subsection{CUDF Design}
-%%%It was made to standardise the problem, for two reasons, to make building solvers generalisable, and to compete solvers in the MISC competetions to compare solutions.
 The Mancoosi organisation is a research project whose area is the improvement to the upgrading of Free and Open Source Software (FOSS) distributions.
 This upgrade problem is the same problem defined in this chapter, the evolution of a component system.
-This is a broad topic, with many smaller objectives defined as milestones.
+Mancoosi looks at a broad area within this domain, and has made many contributions in the area.
 
-One of these objectives was to organise a competition between competing solutions of the upgrade problems of FOSS systems.
-This was defined as it would hopefully encourage researchers and practitioners into researching the upgrade problem.
+One of these contributions was to organise a competition between competing solutions of the evolution problems of FOSS systems.
+This was beneficial as it would encourage researchers and practitioners into researching the evolution problem.
 
-An initial problem faced in organising a competition is a format in which the competition could represent the upgrade problem.
-The design of this format would have to follow some design princples to ensure the results would be useful.
+An initial problem faced in organising such a competition is a format in which the competition could represent the upgrade problem.
+The design of this format would have to follow some design principles to ensure the results would be useful.
 These principles are presented in \cite{treinen2009common}, summarised as:
 
 \begin{itemize}
@@ -650,28 +669,25 @@ These principles are presented in \cite{treinen2009common}, summarised as:
   \item \textbf{Plain Text Format}:
   The use of plain text, as opposed to a binary format, will allow it to be human readable, as well as make it easier to parse and write.
   Although plain text may not be the most efficient way to encode a problem, the overhead required to parse other formats may decrease the interest to enter a competition.
-  This also aligns with the morals of the community of FOSS developers, where plain text is the universal information interchange format \cite{ray2003}.
+  This also aligns with the morals of the community of FOSS developers, where plain text is the universal information interchange format \citep{ray2003}.
 \end{itemize}
 
-The result of these design goals is the CUDF specification, presented in \cite{treinen2009common}.
-This format is presented in the following sections.
+The result of these design goals is the CUDF specification, presented in \cite{treinen2009common}, and presented in the following sections.
 
 \subsection{CUDF Document}
 %%%Here the CUDF document is defined using text and trying to stay away from too many formalisms, just describing concepts to be used later
 In this section a brief description of the CUDF format is presented.
-Some aspects of CUDF are ignored as a complete redefinition of the original specification is not the goal of this section.
-For example, the CUDF specification describes a formal type system, which is left out here.
-Where details are removed, or glossed over a reference will be made as to ensure that mis-information is not conveyed. 
+Some aspects of CUDF are ignored (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
+Where details are removed, or glossed over a reference will be made as to ensure that misinformation is not conveyed. 
 
-CUDF is defined given the design goals presented in the previous section;
-a CUDF document is a single plain text file, that represents all information necessary to define an evolutionary step as defined in section \ref{formal.step}.
+A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary step as defined in section \ref{formal.step}.
 
-This document is separated into three stanzas, the preamble, the package descriptions, and the request.
+This document is separated into three sections, the preamble, the package descriptions, and the request.
 
 \begin{itemize}
-  \item \textbf{preamble}: Defines the additional types used in the CUDF document
-  \item \textbf{package descriptions}: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package)
-  \item \textbf{request}: this defines the requested evolutionary change that should be made to the components 
+  \item \textbf{preamble} stanza: Defines the additional types used in the CUDF document
+  \item \textbf{package descriptions} stanzas: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package)
+  \item \textbf{request} stanza: this defines the requested evolutionary change that should be made to the components 
 \end{itemize}
 
 This structure is presented in figure \ref{formal:cudfstruct}.
@@ -698,12 +714,14 @@ This structure is presented in figure \ref{formal.cudfproperties}
 \begin{center}
 \begin{alltt}
 \textit{stanza}: \textit{value}
-\textit{key1}: \textit{value1}
+\textit{key_1\)}: \textit{value_1}
 \ldots
-\textit{key2}: \textit{value2}
+\textit{key_n}: \textit{value_n}
+
+\ldots
 
 \textit{stanza}: \textit{value}
-\textit{key1}: \textit{value1}
+\textit{key_1}: \textit{value_1}
 \ldots
 \end{alltt}
   \caption[CUDF property structure]{Structure of CUDF properties}
@@ -715,9 +733,9 @@ This structure is presented in figure \ref{formal.cudfproperties}
 The package description stanza starts with the \verb+package+ key followed by the value of package name, a non-empty string.
 The only mandatory property of this stanza is defined with the key \verb+version:+ who's value is the version of the package, a positive integer.
 The pair $\langle name, version \rangle$ of a package is unique, there can exist at most one package description for a given name and version.
-This name and version pair is the basic unit for the CUDF document. 
+This name and version pair is the atomic unit for the CUDF document. 
 
-The most relevant properties for a package are defined by the keys:
+Some relevant properties for a package are defined by the keys:
 \begin{itemize}
   \item \verb+installed+: this Boolean property states whether the package is installed or not in the system. 
   As the CUDF document describes all packages, installed and not, the set of packages with the property \verb+installed: true+ defines the current component system.
@@ -728,13 +746,13 @@ The most relevant properties for a package are defined by the keys:
 	  		\item \verb+package+: keep at least one version of this package installed
 		\end{itemize}
   \item \verb+provides+: this is a list of names of features or services that this package provides separated by the delimiter ``,''.
-  e.g. \verb+provides: a, b, c+ means this package provides the feature \verb+a+, \verb+b+ and \verb+c+.
+  e.g. \verb+provides: a, b, c+ means this package provides the features \verb+a+, \verb+b+ and \verb+c+.
   Each feature name can be accompanied by a version, to state what particular version is provided, e.g. \verb+a=10+ means feature \verb+a+ version \verb+10+ is provided.
-  When no version is specified for a feature, it is defined as all possible versions are provided.
+  When no version is specified for a feature, it is defined as all versions are provided.
   \item \verb+depends+: this is a list of lists of \textbf{package formulae}, first separated by the delimiter ``,'' then delimiter ``|''.
   The list represents a conjunction of disjunctions (conjunctive normal form), with each formulae defining a set of packages.
-  A package is defined using a name of either a package or feature $n$ and optionally an operator and version of the form  $n = v$, $n != v$, $n > v$, $n < v$, $n >= v$, or $n <= v$.
-  For example, \verb+depends: a , b | c < 10+ means the package depends on a packages (or features) with the name \verb+a+ AND \verb+b+ or \verb+c+ less than version \verb+10+.  
+  A package is defined using a name of either a package or feature $n$ and optionally an operator and version of the form  $n = v$, $n$ != $v$, $n > v$, $n < v$, $n >= v$, or $n <= v$.
+  For example, \verb+depends: a , b | c < 10+ means the package depends on a packages (or features) ``\verb+a+ AND (\verb+b+ OR \verb+c+ less than version \verb+10+)''.  
   \item \verb+conflicts+: is a list of \textbf{package formulae} as defined above separated by the delimiter ``,''.
   For example, \verb+conflicts: a , c > 2+ means this package conflicts with all packages (or features) with the name \verb+a+ AND \verb+c+ greater than the version \verb+2+
 \end{itemize}
@@ -743,10 +761,10 @@ The most relevant properties for a package are defined by the keys:
 The preamble stanza starts with the key \verb+preamble:+, no value is necessary for this key.
 The main function of this stanza is to provide the description of addition properties and their types, that can be added to the package descriptions.
 This is described under the key \verb+property+ where the value is a list of properties defining their name, type and optionally a default value separated by the delimiter ``,''.
-Each addition property of name $n$ and type $t$ and optionally a default value is a pair or triple separated first by ``:`` then ``=`` where the default is wrapped in ``[`` and ``]''.
+Each additional property of name $n$ and type $t$ and optionally a default value is a pair or triple separated first by ``:'' then ``='' where the default is wrapped in ``['' and ``]''.
 
 For example, \verb+property: size: int, bugs: int = [0]+ defines the integer property of \verb+size+ and the integer property of \verb+bugs+ with the default value \verb+0+.
-Given this preamble, package descriptions can now use these properties as shown in figure \ref{formal.cudfextensionexample}
+Given this preamble, package descriptions can now use these properties as shown in figure \ref{formal.cudfextensionexample}.
 
 \begin{figure}[htp] 
 \begin{center}
@@ -778,35 +796,37 @@ each is a list of \textbf{package formulae} separated by the delimiter ``,'' suc
   \item \verb+remove+: is a request to remove a set of packages from the system 
   e.g. \verb+remove: a , b = 2+ means remove all components with name \verb+a+ and component \verb+b+ of version two.
   \item \verb+upgrade+: is a request to remove all versions of a package and install greater than or equal versions of the package,
-  e.g. \verb+upgrade: a+ means to remove all packages of name \verb+a+ and install one package of equal or greater versions to that of the maximum version of the 
+  e.g. \verb+upgrade: a+ means to remove all packages of name \verb+a+ and install one package of equal or greater versions to that of the maximum version of \verb+a+ currently installed. 
 \end{itemize}
 
 %%%Installation of multiple components
-CUDF as a specification is probably most derived from the Debian package format, described in section \ref{background.models}.
-A significant difference between these two specifications is that the CUDF specification does not explicitly state that only one version of a package can be installed.
+CUDF as a specification mostly resembles the Debian package format, described in section \ref{background.models}.
+A significant difference between these two specifications is that the CUDF model does not explicitly state that only one version of a package can be installed.
 This is a practical decision as other component models, like Red Hat Package manager and OSGi, allow the installation of multiple versions of the same component.
-However, although these models do allow this, a system that does have multiple versions of a package installed can be seen as less optimal to one that doesn't. 
+Although models exist that allow multiple versions of a package to be installed, having multiple versions installed is seen as less optimal as it replicates functionality. 
 This is then left up to the optimisation when finding a solution to try to identify solutions with only one version installed per component.
 
 %%%Upgrading with multiple packages
-The semantics of upgrading a package in CUDF are the most complicated request to define.
-This is due to the possibility of having multiple installed versions of a component installed.
-If a package is requested to be upgraded and there is only one version, then either the package is not altered or a package with the same name and a higher version replaces it.
-However, if there are multiple versions of a package that is requested to be upgraded, the most significant constraint is that only one version of the package can exist in the final system.
-The second constraint is that the version that remains in the system is of greater or equal value of the maximum installed version of the component.
-This means that all versions lower than the highest installed version will be removed, and the highest installed version can be replaced with only a higher version.
+A request to upgrade a component is significantly more complicated than the other requests.
+This is partially due to CUDF allowing having multiple versions of the same component installed.
+If a package is requested to be upgraded and there are multiple versions of that package installed,
+then all but the highest version must be removed, and only one version can remain in the system.
+For example, if a system has $a_1$ and $a_2$ installed and it is requested to upgrade $a$,
+then $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of $a$ can be installed.
 
-%%%Upgrading can do nothing to a system
-These constraints have an interesting side effect on a system where there exists at most one version per component,
-an upgrade request may not change the system.
-This makes the definition of criteria for optimisation of a solution an important aspect of upgrading the system.
-As any criteria that express that minimal change is the most important has the possibility of not changing the system with an upgrade request.
+Given these semantics, requesting to upgrade a component can actually do nothing to the system
+For example, is $a$ is requested to be upgraded and the only version of $a$ installed is $a_1$, then the system does not have to change to satisfy the request.
+This means that the intuitive request to upgrade a system is left to the optimisation function.
+That is, to get newer versions of component installed it is necessary to define an appropriate $rank$ function.
 
 \subsection{CUDF Specification}
-In this section, the model presented in section \ref{formal.step} is extended and mapped to this CUDF specification.
+In this section, the model presented in section \ref{formal.step} is mapped to this CUDF specification.
+The package stanzas are used to define to the component relationship constraints $R$ and the request stanza is used to define the user request constraints $\Delta$. 
 
-The first definition is that of the CUDF document, which is made up of three stanzas preamble, a set of package descriptions and a request, 
-i.e. $CUDF = \langle preamble, PD, request \rangle$ where $PD$ is the set of package description stanzas.
+The first definition is that of the CUDF document, which is made up of three sections; the preamble stanza, a set of package description stanzas, and a request stanza:
+\begin{defs}
+A CUDF document then is described as $CUDF = \langle preamble, PD, request \rangle$ where $PD$ is the set of package description stanzas.
+\end{defs} 
 Each stanza is made of a set of properties, where each property is a tuple of key/value, i.e. $stanza = \{\langle $\verb+key+, \verb+value+$\rangle\}$.
 This syntax is described in figures \ref{formal:cudfstruct} and \ref{formal.cudfproperties}.
 
@@ -815,17 +835,14 @@ i.e. $property: STANZA \times key \rightarrow value$ such that given a stanza $s
 $property(s,$\verb+key+$) = $ \verb+value+ where $\langle$\verb+key+, \verb+value+$ \rangle \in s$.
 
 If the key does not exist in the stanza, the default value of the property is returned.
-For instance, the default value in a package description stanza for the \verb+installed+ property is defined as \verb+true+;
-therefore, if the key \verb+installed+ is not defined in a package description stanza $pd$, then $property(pd,$\verb+installed+$)$ equals \verb+true+.
+For instance, the default value in a package description stanza for the \verb+installed+ property is defined as \verb+false+;
+therefore, if the key \verb+installed+ is not defined in a package description stanza $pd$, then $property(pd,$\verb+installed+$)$ equals \verb+false+.
 Further, if a property does not have a defined default value, then $\emptyset$ is returned.
 
 \subsubsection{Preamble}
 %%%Description of a basic preamble, as much of the specification is not used
-The very first aspect of all CUDF documents is the $preamble$.
+The first stanza of any CUDF document is the $preamble$.
 The core goal of this is to define additional properties (and their default values) that can be used to describe a component.
-There are two main purposes for the definition of these properties, first to type check a CUDF document to ensure that all properties are correctly defined.
-Secondly, it allows the definition of default values for defined properties, this allows the extension of a CUDF document without unnecessary bloat.  
-
 This property definition is accomplished through using an extensively defined type system in CUDF, and has a complete and complicated specification found in \cite{treinen2009common}.
 However, as much of this specification is not used in this research only a basic syntax and semantics will be described.
 The syntax of the preamble \verb+property+ value is defined in the BNF grammar as \verb+<properties>+ in figure \ref{formal.cudfpropertysyntax}.
@@ -845,23 +862,25 @@ The syntax of the preamble \verb+property+ value is defined in the BNF grammar a
 This syntax defines each property as a name, a type and a default value, i.e. $\langle name, type, default \rangle$, where $name = $ \verb+<pname>+, $type = $ \verb+<type>+,
 and the $default =$ \verb+<defaultvalue>+. 
 In the full CUDF specification there are more types other than \verb+int+, such as \verb+enum+ and \verb+string+,
-each having different syntax and semantics.
+some having a different syntax than described here.
 
 \subsubsection{Components}
 Each component is defined by a name and version, as described in section \ref{formal.step}.
 This information is extracted from the package descriptions in a CUDF document.
 The function $pd2c$ takes a package description stanza and returns a component, such that $pd2c(pd) = \langle property(pd, $ \verb+name+ $), property(pd, $ \verb+version+ $) \rangle$.
-Given the set of package descriptions in a CUDF document, $PD$, the set of components is defined where $\mathbb{C}$ equals $[ pd2c(pd) \mid pd \in PD]$.
+The set of components, $\mathbb{C}$, equals the set of converted package descriptions, i.e. $\mathbb{C} = [ pd2c(pd) \mid pd \in PD]$.
 
 To refer to a property assigned to a component $a$, of the key \verb+key+, it is written $a$.\verb+key+.
 That is, $a$.\verb+key+ $= property(pd, $\verb+key+$)$ where $a = pd2c(pd)$.
 For example, the name of a component $a$ can be written as $a$.\verb+name+, its version as $a$.\verb+version+.
+A component can still be denoted as $n^v$, where $n$ = $a$.\verb+name+ and $v$ = $a$.\verb+version+.
+
 As described above, 
 if a request property does not exist for the component, then the default value of that property is returned, and if no default is defined then $\emptyset$ is returned.
 
 A CUDF document not only describes the set of all components, but the set of components that defines the current system.
-The set of components in the system (denoted as $X$) is defined using the key \verb+installed+,
-such that, $c \in X$ iff  $c.$\verb+installed+ equals \verb+true+.
+The set of components in the current system (denoted as $\alpha$) is defined using the key \verb+installed+,
+such that, $c \in \alpha$ iff  $c.$\verb+installed+ equals \verb+true+.
 That is, only the components whose property \verb+installed+ is set to \verb+true+, are in the component system.
 
 \subsubsection{Features}
@@ -966,7 +985,7 @@ This creates a constraint to ensure one of the resulting components to be includ
 
 To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
 Given a set of components $\mathbb{C}$ defined in a CUDF document, 
-the set of component $X$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in X} keep(c)$.
+the set of component $\alpha$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha} keep(c)$.
 
 \paragraph{Dependency Constraint}
 The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property key \verb+depends+,
@@ -1034,9 +1053,9 @@ Finally, given the $\mathbb{C}$ is the set of all components in a CUDF document,
 the set of all conflict constraints for a CUDF document is defined as $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 
 \paragraph{Union}
-Given a set of components $\mathbb{C}$, the set of currently installed components $X$, 
+Given a set of components $\mathbb{C}$, the set of currently installed components $\alpha$, 
 the set of all relationship constraints (denoted as $R$) is then the union of the keep, depends and conflicts constraints defined above.
-That is, $R = \bigcup \limits_{c \in X} keep(c) \cup \bigcup \limits_{c\in \mathbb{C}} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
+That is, $R = \bigcup \limits_{c \in \alpha} keep(c) \cup \bigcup \limits_{c\in \mathbb{C}} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 This set defines all constraints defines all relationships between components and system that is necessary to find a satisfiable system.
 
 \subsubsection{Request}
@@ -1067,7 +1086,7 @@ the \verb+update+ property maps to the package formulae set  $updatepkgflist$.
 
 \paragraph{Install}
 An install constraint is of the form $a_1 \vee \ldots \vee a_n$,
-this is defined semantically as $a_1 \in E_{R \cup \Delta}(X)$ or \ldots or $a_n \in E_{R \cup \Delta}(X)$.
+this is defined semantically as $a_1 \in E_{R \cup \Delta}(\alpha)$ or \ldots or $a_n \in E_{R \cup \Delta}(\alpha)$.
 
 The function  $install(pf)$ is defined to take a package formula $pf$ and return one install constraint such that $\bigvee packagesThatSatisfy(pf)$.
 Each package formulae in the set $installpkgflist$ creates one install constraint,
@@ -1075,7 +1094,7 @@ therefore the set of all install constraints is defined as $\bigcup \limits_{pf 
 
 \paragraph{Remove}
 A remove constraint is of the form $\neg a$,
-this is defined semantically as $a \not \in E_{R \cup \Delta}(X)$.
+this is defined semantically as $a \not \in E_{R \cup \Delta}(\alpha)$.
 
 The function $remove(pf)$ is defined to take a package formula $pf$ and returns a set of remove constraints such that $[\neg a \mid  a \in packagesThatSatisfy(pf)]$.
 Then the set of remove constraints is the union of all constraints created from the $removepkgflist$ set, i.e. $\bigcup \limits_{pf \in removepkgflist} remove(pf)$.
@@ -1094,33 +1113,33 @@ For each package formula $pf$ in $updatepkgflist$, two types of constraints must
 Creating these constraints is a more complex challenge than the previous requests as they require the use of a cardinality constraint and comparison to the installed system. 
 
 The first type of constraint is of the form $a_1 + \ldots + a_i = 1$, 
-whose defined semantics are $\{a_1,\ldots,a_i\} \subseteq E_{R \cup \Delta}(X)$ iff $|\{a_1,\ldots,a_i\}| = 1$.
+whose defined semantics are $\{a_1,\ldots,a_i\} \subseteq E_{R \cup \Delta}(\alpha)$ iff $|\{a_1,\ldots,a_i\}| = 1$.
 That is, a set of exactly one component that satisfies can be included in the resulting system.
 Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,
 such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf)$
 
 The second type of constraint is of the form $\neg a$,
-this is defined semantically as $a \not \in E_{R \cup \Delta}(X)$.
+this is defined semantically as $a \not \in E_{R \cup \Delta}(\alpha)$.
 
-Given the current system $X$ and the package formula $\langle n,v,op \rangle$ the set of installed packages with the same name as the package formula are defined as 
-$named(X,n) = X \wedge packagesThatSatisfy(\langle n,0,> \rangle)$.
+Given the current system $\alpha$ and the package formula $\langle n,v,op \rangle$ the set of installed packages with the same name as the package formula are defined as 
+$named(\alpha,n) = \alpha \wedge packagesThatSatisfy(\langle n,0,> \rangle)$.
 The greatest version of packages in this set is defined 
-$maxversion(X,n) = cv$  such that $\langle cn,cv \rangle \in named(X,n)$ and $\nexists \langle cn',cv' \rangle \in named(X,n)$ where $cv' > cv$.
+$maxversion(\alpha,n) = cv$  such that $\langle cn,cv \rangle \in named(\alpha,n)$ and $\nexists \langle cn',cv' \rangle \in named(\alpha,n)$ where $cv' > cv$.
 The set of components that are below this maximum version is then defined as
-$lowerC(X,n) = [\langle cn,cv \rangle \mid \langle cn,cv \rangle \in \mathbb{C} \mbox{ and } cv < maxversion(X,n)]$.
-This leads to the definition, $upgrade_2(X,\langle n,v,op \rangle) = [\neg a \mid a \in lowerC(X,n)]$.
+$lowerC(\alpha,n) = [\langle cn,cv \rangle \mid \langle cn,cv \rangle \in \mathbb{C} \mbox{ and } cv < maxversion(\alpha,n)]$.
+This leads to the definition, $upgrade_2(\alpha,\langle n,v,op \rangle) = [\neg a \mid a \in lowerC(\alpha,n)]$.
 
 The set of all upgrade constraints is then the union of all constraints created for all package formulae in $updatepkgflist$,
-i.e. $\bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(X,pf))$.
+i.e. $\bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$.
 
 \paragraph{Union}
-Given a set of components $\mathbb{C}$, the set of currently installed components $X$,
+Given a set of components $\mathbb{C}$, the set of currently installed components $\alpha$,
 and the sets of package formulae mapped from the request stanza properties \verb+install+, \verb+remove+ and \verb+update+ 
 (respectively $installpkgflist$, $removepkgflist$ and $updatepkgflist$);
 the set of all change constraints represented as $\Delta$ is the union of the install, remove and update constraints above.
 That is, $\Delta = \bigcup \limits_{pf \in installpkgflist} install(pf) 
 \cup \bigcup \limits_{pf \in removepkgflist} remove(pf) 
-\cup \bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(X,pf))$.
+\cup \bigcup \limits_{pf \in updatepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$.
 
 
 \subsection{Full Example}
@@ -1164,7 +1183,7 @@ install:textEditor
 \end{center}
 \end{figure} 
 
-This example can be mapped to a set of components $C$, a system $X$, a set of constraints $R$ and a change request $\Delta$ in order to find a solution for the function $E_{R \cup \Delta}(X)$.
+This example can be mapped to a set of components $C$, a system $\alpha$, a set of constraints $R$ and a change request $\Delta$ in order to find a solution for the function $E_{R \cup \Delta}(\alpha)$.
 These values must be first extracted from the document, as described below.
 
 \subsubsection{Preamble}
@@ -1183,9 +1202,9 @@ This represents two system library versions (\verb+syslib+), a text editor compo
 For brevity's sake, these components are denoted so that $sys1 = \langle syslib,1\rangle$, $sys2 = \langle syslib,2\rangle$, $te = \langle textEditor,1\rangle$, $sc = \langle spellChecker,1\rangle$,
 and $tps = \langle tpspeller,1\rangle$.
 
-The initial system that $X$ includes all components whose package stanzas include the property \verb+installed+ set as \verb+true+.
+The initial system that $\alpha$ includes all components whose package stanzas include the property \verb+installed+ set as \verb+true+.
 As described above, if \verb+installed+ is not defined the property defaults to the value \verb+false+,
-therefore $X = \{ sys1 \}$.
+therefore $\alpha = \{ sys1 \}$.
 
 %%%Describe the depends constraints (including features and inequalities)
 The set of constraints $R$ for this CUDF document is extracted from the package description stanzas, where the relevant properties of \verb+depends+, \verb+conflicts+ and \verb+provides+ are
@@ -1231,7 +1250,7 @@ This makes the set of request constraints $\Delta = \{te\}$.
 
 \subsubsection{Solution}
 %%%Describe the possible models that can satisfy all constraints 
-The different systems that can then be returned from the function $E_{R \cup \Delta}(X)$, which must satisfy all constraints in $R$ and $\Delta$, can be found.
+The different systems that can then be returned from the function $E_{R \cup \Delta}(\alpha)$, which must satisfy all constraints in $R$ and $\Delta$, can be found.
 Firstly, given the request ensures that the text editor component is included, the component $te$ will be installed.
 This then asserts that the system library component $sys2$ will be installed.
 As the system library components conflict, $sys1$ must not be installed.
@@ -1241,12 +1260,12 @@ This gives three possible solutions to this problem;
 $s_1 = \{sys2, te, sc\}$,
 $s_2 = \{sys2, te, tps\}$,
 $s_3 = \{sys2, te, sc, tps\}$.
-That is, $E_{R \cup \Delta}(X) \in \{s_1,s_2,s_3\}$.
+That is, $E_{R \cup \Delta}(\alpha) \in \{s_1,s_2,s_3\}$.
 
-Of course as only one system can be returned by the function $E_{R \cup \Delta}(X)$, one of these three solutions must be selected given some optimisation criteria.
+Of course as only one system can be returned by the function $E_{R \cup \Delta}(\alpha)$, one of these three solutions must be selected given some optimisation criteria.
 If that criteria specified to select a solution with the minimal \verb+size+ value, 
 then looking at the component properties it can be seen that $sc$ has less size than $tps$ (and clearly less than $tps$ plus $sc$).
-Therefore, given this criteria $E_{R \cup \Delta}(X)$ will return  $s_1$.
+Therefore, given this criteria $E_{R \cup \Delta}(\alpha)$ will return  $s_1$.
 
 \subsection{Mancoosi Optimisation Format}
 \label{formal.mancoosioptimisationformat}
@@ -1273,12 +1292,12 @@ Each criterion is a string which expresses some goal to be achieved when finding
 It is possible to map this specification to that defined above in section \ref{formal.opt}.
 Given that the domain $D = \{F,T\}$ and the variables $V = C$;
 each criterion $criterion_i$ is mapped to a ranking system over a complete lattice $RS_i = \langle L_i,D,V \rangle$
-and ranking function $Rank_i$.
+and ranking function $rank_i$.
 The composition of the criteria is then the lexicographic stacking of all the $criterion_1 \oplus \ldots \oplus criterion_n$ as described in section \ref{formal.opt}.
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
-In this example, the initial system $X$ was the component $sys1$, and there were three possible solutions to $E_{R \cup \Delta}(X)$;
+In this example, the initial system $\alpha$ was the component $sys1$, and there were three possible solutions to $E_{R \cup \Delta}(\alpha)$;
 $s_1 = \{sys2, te, sc\}$,
 $s_2 = \{sys2, te, tps\}$,
 $s_3 = \{sys2, te, sc, tps\}$.
@@ -1287,19 +1306,19 @@ For this, first two criteria must be defined, and mapped to a ranking system and
 
 The criterion \verb+-change+ is firstly defined to minimise the change in components when evolving the system.
 This criterion is then mapped to the ranking system $RS_{change} = \langle L_{change},D,V \rangle$ where  $L_{change}$ is the lattice $\langle \mathbb{N}, \leq \rangle$,
-and the ranking function that measures the symmetric difference between the initial and the evolved systems, i.e. $Rank_{change}(X,X') = X \Delta X'$.
+and the ranking function that measures the symmetric difference between the initial and the evolved systems, i.e. $rank_{change}(\alpha,\alpha') = \alpha \Delta \alpha'$.
 
 The criterion \verb+-size+ is then defined to minimise the total size of the system.
 This is mapped to the tanking system $RS_{size} = \langle L_{size},D,V \rangle$ where  $L_{size}$ is the lattice  $\langle \mathbb{N}, \leq \rangle$,
-and the ranking function which returns the size of the evolved system, i.e.  $Rank_{size}(X,X') = \sum_{c \in X'} c$.\verb+size+.
+and the ranking function which returns the size of the evolved system, i.e.  $rank_{size}(\alpha,\alpha') = \sum_{c \in \alpha'} c$.\verb+size+.
 
 If the optimisation criteria are defined as \verb+-change,-size+, then the two ranking systems are composed using the operator $\odot$,
 such that $RS = \langle \langle \mathbb{N} \times \mathbb{N}, \leq_L \rangle, D, V \rangle$ where $\leq_L$ is a lexicographic order;
 $(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
-Also, the ranking functions are combined such that $Rank(X,X') = \langle Rank_{change}(X,X'), Rank_{size}(X,X') \rangle$.
+Also, the ranking functions are combined such that $rank(\alpha,\alpha') = \langle rank_{change}(\alpha,\alpha'), rank_{size}(\alpha,\alpha') \rangle$.
 
-This composed ranking function is used to calculate the rank of the solutions, where $Rank(X,s_1) = \langle 4, 1\rangle$, $Rank(X,s_2) = \langle 4, 2\rangle$, $Rank(X,s_3) = \langle 5, 3\rangle$.
-The order of these ranks over $\leq_L$ is such that $Rank(X,s_1) \leq_L Rank(X,s_2) \leq_L Rank(X,s_3)$,
+This composed ranking function is used to calculate the rank of the solutions, where $rank(\alpha,s_1) = \langle 4, 1\rangle$, $rank(\alpha,s_2) = \langle 4, 2\rangle$, $rank(\alpha,s_3) = \langle 5, 3\rangle$.
+The order of these ranks over $\leq_L$ is such that $rank(\alpha,s_1) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_3)$,
 this means that the solution $s_1$ is the optimal solution for this problem and criteria.  
 
 
