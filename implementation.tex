@@ -4,99 +4,96 @@
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-The problem of finding a solution to an evolution problem is NP-Complete, and the problem of finding an optimal solution is NP-Hard.
-In addition, a component system is repeatedly evolved by a user who may wait for a solution to be found.
-Therefore, automating component system evolution will require an efficient algorithm and implementation. 
+Finding any solution to an evolution problem is NP-Complete, and finding an optimal solution is NP-Hard.
+Therefore, automating component system evolution will require an efficient algorithm and implementation.
+The function that finds and returns a optimal solution to an evolution problem in this research is called a Component Dependency Resolver (CDR). 
 
 %%%The efficiency of the implementation is important as the problem can combinatorially grow into a hard problem 
-The efficiency of the implementations is necessary for many instances of CDR problems.
-The goal of many component models is to have large amounts of components with support creating multiple versions of each component.
-This directly makes the complexity of evolution grow in a combinatorial manner, making any ad-hoc or overly simple CDR implementation quickly overwhelmed.
-The CDR algorithm should then be implemented to be robust and fast.
+The efficiency of CDR is a significant requirement.
+Many components may exist in evolution problems, each with multiple versions, and each version with multiple relationship constraints.
+This problems complexity grows  in combinatorial manner with the addition of components, making any ad-hoc, or overly simple, CDR implementation easily overwhelmed.
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-The formal representation of this problem was presented as a set of constraints that must all be satisfied in order for a component relationships and the user request to be fulfilled.
-This structure closely resembles the Boolean Satisfiability Problem (SAT), which has fast, robust solver implementations that can be used.
+To find a solution to an evolution problem the set of relationship and user request constraints must be satisfied.
+These constraints create a problem that closely resembles the Boolean Satisfiability Problem (SAT), which has fast, robust solver implementations that can be used.
 This has been noticed by other researchers \citep{Berre2008,Mancinelli2006} 
 and the use of SAT solvers to implement CDR in both academia \citep{abate2011} and industry \citep{leBerre2010} has become common.
 
 %%%Finding the optimial solutions requires extensions to SAT solvers
-The finding of an optimal solution though is difficult when using a ``pure'' SAT solver, as it cannot easily represent constraints relating to criteria. 
-However, through extending the SAT solver implementations to also handle other types of constraints, such as pseudo Boolean constraints, optimisation becomes significantly easier.
+The finding of an optimal solution to an evolution problem is impractical when representing the problem in only SAT constraints. 
+Through extending a SAT solver implementation to also handle other types of constraints, specifically pseudo-Boolean constraints, optimisation becomes practical.
+Such extensions have been used to solve other problems \citep{dixon2004automating}, as well as within other CDR implementations \citep{le_berre_dependency_2009}.
 
 %%%In this chapter\ldots
-In this chapter the algorithms and implementation of CDR using SAT solvers extended with pseudo Boolean constraints, are discussed.
-First the Davis-Putnam-Logemann-Loveland algorithm \citep{Davis1960, davis1962machine} and its extensions, which are the basis for many current SAT solvers, are described.
-This will give a basic understanding of the internal workings of current SAT solvers.
-this is given as a comparison of a current technology used by CDR implementations.
-Then the description of this research's CDR implementation, GJSolver, is given.
-The specific reason for the necessary changes, the differences from other solutions, and the advantages to using it.
-This also describes the process in which it was validated and compared against other solvers in the MISC 2011 competition.
+In this chapter the algorithms that CDR uses to find optimal solutions are defined and discussed.  
+The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is described as it is the basis for many current SAT solvers.
+Along with DPLL, more recent advancements in SAT solver technology are discussed, including its extension to handle pseudo-Boolean constraints.
+This description is intended to give a basic understanding of the internal workings of the SAT solver used at the core of the presented CDR implementation.
+The description of this research's CDR implementation, GJSolver, is then given.
+The specific requirements that GJSolver was developed towards, and the implementation decisions and compromises that were made are also described.
+This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver competition.  
+This competition involved the comparison of GJSolver against other current solvers where solutions and time where measured and points were assigned.
 
 \section{Boolean Satisfiability Solvers}
 \label{impl.SAT}
 Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
 This problem was the first identified NP-Complete problem, meaning that no known algorithm exists that efficiently solves all instances of SAT problems.
-It has been used previously in this thesis as a means in chapter \ref{formal} as a means of showing component evolution as being NP-Complete.
-This also means that many proofs of NP-Completeness is through the reduction to SAT, and therefore many difficult problems have been expressed in the terms of a Boolean equation.
-The benefit of this is that algorithms and implementations of programs that solve SAT problems have received significant attention and research to provide solutions to these various problems.
-Taking advantage of these algorithms will help with the creation of a CDR implementation that can robustly evolve a component system.
+Many difficult problems have been expressed through reduction to SAT to show their NP-Completeness, this includes the evolution problem from chapter \ref{formal}.
+As many difficult problems can be expressed in SAT, 
+algorithms and implementations that solve SAT problems (SAT solvers) have received significant attention.
+Taking advantage of this research will enable a robust CDR implementation to be created.
 
 %%%SAT solvers are used to solve many problems, creating a community dedicated to creating fast implenmenations
 SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
 model verification \citep{dennis2006}, and, of course, component system evolution \citep{leBerre2010}.
-These uses have caused a great need to create efficient solvers, and this has spawned a community dedicated to creating efficient implementation.
-This community, creates and improves their solvers, 
-and as a means of validating their creations, regularly compare them against one another in a series of competitions \footnote{http://www.satcompetition.org/}.
-Using a competition for progress not only encourages the improvement of solvers for a particular problem set, but also general improvements to the algorithms and heuristics used. 
+The need for efficient solvers has spawned a community dedicated to creating and testing various SAT solver implementations.
+As a means of validating SAT solvers, this community regularly compare them against one another in a series of competitions\footnote{http://www.satcompetition.org/}.
+Using competitions encourages progress of SAT solvers for both specific and general instances of SAT problems.
 
 %%%In this section a common implementation of SAT solvers is discussed, the DPLL algorithm
-In this section, first a brief definition of the SAT problem is described, this defines much of the terminology in this domain used in the description of algorithms and implementations. 
-Then a short description of the DPLL algorithm is given, this algorithm is the basis of most current SAT solvers and therefore is required knowledge to discuss current implementations.
-A common variant of the DPLL algorithm in current SAT algorithms is the alteration to become conflict driven,
-this alteration is presented and discussed.
-The extension of this algorithm with Pseudo-Boolean constraints is then described,
-as this extension allows for more complicated optimisation problems to be represented.
-Finally, other methods of solving SAT problems are briefly discussed to give a broader description of the domain. 
+In this section, a SAT problem is defined, giving the terminology used in this domain. 
+Then a description of the DPLL algorithm is given, and current improvements are described..
+The extension of this algorithm with pseudo-Boolean constraints is discussed, as it allows for more complicated optimisation problems to be represented.
+Finally, the specific implementations of SAT solvers MiniSAT \citep{een2003} and SAT4J\citep{le2010sat4j}, are briefly described.
 
 \subsection{The SAT Problem}
 As described above, the goal of a SAT algorithm is to find whether a set of variables in a Boolean equation can be assigned values in such a way as to make the equation equal true.
 A common representation of such a formula is in Conjunctive Normal Form (CNF), this is defined as a conjunction of clauses, 
-where each clause is a conjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
+where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
 This CNF representation of a SAT problem can be defined as such:
 \begin{defs}
 An instance of a SAT problem is a set of Boolean variables $V$ and a formula which is a set of clauses $F$.
 Each clause in $F$ is a set of literals, where a literal is a variable $v$ or its negation $\neg v$.
 A set of literals is said to be consistent if for any variable $v$, the set does not contain both $v$ and its negation $\neg v$.
-A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause in $c$ in $F$ there exists a literal in $c$ that is also in $P$.
+A clause $c$ is said to be satisfied by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
+A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
+A partial solution is any subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
 If there exists a $P$ that is a solution of a SAT formula $F$ the problem is said to be satisfiable, otherwise it is unsatisfiable. 
 \end{defs}
 
-That is, a SAT problem can have the variable $\{a,b,c\}$ and the formula $\{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
+That is, a SAT problem can have the variable set $\{a,b,c\}$ and the formula $\{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in c_1$ and $\neg b \in c_2$.
-However $\{a, \neg b, b\}$ is not because it is not consistent, and $\{a, b, \neg c\}$ is not because it does not contain a literal in $c_2$.  
+However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $c_2$.  
 
-This definition also follows some classical logic rules, such as literals and their negation can be defined as $\neg \neg v = v$.
-This rule can be extended to sets of literals where given a set of literals $P$, $\neg P = [\neg v \mid v \in P]$.
+This definition also follows some classical logic rules, such as literals and their negation can be defined as $\neg \neg v = v$,
+and the negation of sets of literals $P$ is the negation of each literal in $P$, i.e. $\neg P = [\neg v \mid v \in P]$.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} for solving SAT problems is a complete (meaning it will find a solution if one exists), 
 backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
 
-It runs by assuming a variable from the Boolean formula is true by adding it to the set of literals $P$ then calling itself to find if this new assignment is a solution.
-It first takes this new set of literals and calculates literals that are inferred, in a process called unit-propagation. 
-If this new set of literals contains a contradiction then the assumption was incorrect and it returns false, and negates the assumption to continue searching.
-However, if this assumption leads to a solution it then returns that it is satisfiable, as it has found a solution that satisfies the formula.
-
+It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
+otherwise returning \verb+UNSATISIFABLE+.
+By adding literals to $P$ and recursively  calling itself, the DPLL function searches for whether the formula is satisfiable.
 The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \cite{dixon2004automating}:
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
 function DPLL(\(F, P\))
    P = unit-propagate(\(F, P\))
-   if \(P\) contains a contradiction:
+   if \(P\) is not consistent:
        then return UNSATISIFABLE;
    if \(P\) is a solution to \(F\):
        then return SATISFIABLE;
@@ -111,24 +108,26 @@ function DPLL(\(F, P\))
 \end{center}
 \end{figure}
 
-The first \verb+if+ branch of the DPLL algorithm finds if partial assignment $P$ is consistent, if it is not it returns \verb+UNSATISIFABLE+.
-The second \verb+if+ branch determines if the assignment $P$ is a solution to $F$, this would end the search by returning \verb+SATISFIABLE+.
-The \verb+unit-propagation+ function and the \verb+decide+ function are both described in the following sections. 
+The first \verb+if+ branch returns \verb+UNSATISIFABLE+ if the partial assignment $P$ is inconsistent.
+The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning \verb+SATISFIABLE+.
+The \verb+unit-propagation+ function adds literals that to $P$ and the \verb+decide+ function returns a literal to be added to $P$, both described in the following sections. 
 
 \subsubsection{Unit Propagation}
-The first part of this function is the call to infer new literals given the current assignment, this is known as unit-propagation.
-Given a possible assignment, a clause is called unit if the assignment does not contain one literal, and contains all of its other literals negation.
-That is, given an assignment $P$ and a clause $c$ if $|c \backslash \neg P| = 1$, then $c$ is unit.
-A unit literal is then defined given a unit clause as the literal $l$ where $ c \backslash \neg P = \{l\}$.
+The first part of the DPLL algorithm calls the \verb+unit-propagation+ function.
+This function uses the clauses in the formula and the partial assignment and adds literals to $P$ that must be included if it is to be a partial solution.
 
-This notion of ``unit'' allows a literal to be inferred to be in the solution given a current assignment.
-For instance, given a formula $\{c_1,c_2\}$, where $c_1 = {a,b}$ and $c_2 = {\neg b, c}$, and the assignment $\{\neg a\}$;
-clause $c_1$ is unit and literal $b$ is unit as $c_1 \backslash \neg \{\neg a\} = c_1 \backslash\{ a\} = \{b\}$.
-Through unit propagation, $b$ can be inferred to be in the solution, as it must be to make $c_1$ true.
-Therefore the assignment is extended to $\{\neg a, b\}$.
-This new assignment then makes $c_2$ unit, which through unit propagation infers the assignment be $\{\neg a, b, c\}$, and so on.
+A clause $c$ is called unit, given a partial assignment $P$, if $c$ is not satisfied by $P$ and $P$ contains all but one of its literals negations.
+For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but not $a$ or $\neg a$.
+A unit literal is then defined as the literal in a unit clause whose negation is not in the partial assignment.
+In the above example, the literal $a$ is described as the unit literal.
 
-The process of unit propagation is further defined in figure \ref{impl.propagation}
+For a formula to be satisfiable for a given partial assignment, each unit literal must be included in the partial assignment.
+For example, given a formula $\{c\}$, where $c = {a,b}$;
+given the assignment $\{\neg a\}$ the clause $c$ is unit and literal $b$ is unit.
+If $\neg b$ where in the partial assignment, $c$ would not be satisfied by the partial assignment,
+therefore $b$ must be in the partial assignment.
+
+The process of unit propagation is further defined in figure \ref{impl.propagation}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
@@ -143,24 +142,28 @@ unit-propagate(\(F, P\)):
 \end{figure}
 
 \subsubsection{Literal Order}
-The function \verb+decide+ returns a literal that is not unit, nor whose negation is unit, i.e. given $l =$ \verb+decide+$(F)$, $\{l\} \not \in F$ and $\{\neg l\} \not \in F$.
-This literal is then added to the formula and checked for satisfiability.
-If the formula is not satisfiable, then the negation is added to the formula and checked for satisfiability.  
-The order in which the variables from the formula are selected will have a great impact on the speed at which the algorithm finds the formula to be satisfiable or not.
+The function \verb+decide+ returns a literal who is not in the partial assignment, nor whose negation is in the partial assignment.
+That is, if $l =$ \verb+decide+$(P)$, then $\{l\} \not \in P$ and $\{\neg l\} \not \in P$.
+This literal is then added to the partial assignment as an assumption that it might be in the final solution.
+This assumption is checked to be correct or not by recursively calling the DPLL function again with the new partial assignment.
+
+If the \verb+decide+ function selects literals that are in the final solution then the search for whether the formula is satisfiable is quickly resolved.
+However, if it returns literals that are not in the final solution, the search can be extensive and costly.
+Therefore, the efficacy of this selection has a great impact on the overall efficiency of the DPLL algorithm.
 
 \subsection{Advancements in SAT Solvers}
-Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been altered to increase efficiency.
-Some changes are briefly described here, these include the use of conflict learning, backjumping, and watched literals.
+Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been significantly altered to increase efficiency.
+Some changes, including the use of conflict learning, backjumping, and watched literals, are briefly described here.
 This section should give a broad overview of the techniques used in current SAT solvers, 
 in order to show that their application to problems like component evolution is justified. 
 
 \subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished through remembering the clauses which inferred literals through unit propagation, these clauses are also known as reasons.
-These reasons are then used to derive a clause which prunes exactly the branches which created the conflict.
-This process basically works by identifying the inconsistent variable (a variable both inferred to be true and false) 
-then creating a new clause from the clauses that is the reason for them being inferred.
-This new clause is derived by disjoining the two reason clauses and removing both the references to the inconsistent variable.
+This is accomplished through remembering what clauses where unit to add literals to the partial assignment, 
+these clauses are also known as the reasons for a literal to be in the partial assignment.
+This process works by identifying a variable both inferred to be true and false,
+then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
+This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
 This process is defined in figure \ref{impl.clauselearning}. 
 
 \begin{figure}[htp]
@@ -177,20 +180,15 @@ $\begin{array}{c}
 \end{figure}
 
 For example, if the reason for the infered literal $a$ is clause $\{a, b\}$, and the reason for $\neg a$ is clause $\{\neg a, c\}$,
-then a new clause derived is $\{b,c\}$.
-This new clause is then added to the formula, which then stops the process from stepping through the branches which caused this exact conflict to occur again.
+then the learnt clause derived is $\{b,c\}$, and added to the formula.
 
 Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack when a conflict is found.
-The higher up the tree that the technique ``jumps'' up the greater reduction of the search space.
-This algorithm typically depends on the clause created through conflict learning in modern solvers.
-This uses the derived learnt clause to determine the point in the search at which can be jumped to.
-The search is backtracked to the level where the learnt clause becomes unit, this can significantly improve the performance when solving problems.
+The higher up the tree the technique ``jumps'' to, the greater reduction of the search space.
+This algorithm typically depends on the learnt clause, where the place that is jumped to is when the clause becomes unit. 
 
-More advanced methods of conflict learning occur by minimising the size of the learn clauses, as presented in \cite{sorensson2009}.
-This research describes search methods that use other reason clauses to find smaller more succinct conflict clauses.
-The smaller the clause the more of the search tree is pruned and the more levels are backjumped through the search.
-Therefore, significant improvements to the efficiency of modern SAT solvers is gained through the use of such methods.
-
+More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \cite{sorensson2009}.
+This research describes search methods that use other reason clauses to find smaller more succinct leanrt clauses.
+The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
 
 \subsubsection{Watched Literals}
 As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation occurs.
@@ -198,27 +196,26 @@ Attempts to increase the efficiency of this task was initially to find better he
 These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
 
 It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
-The naive approach to this solution was to examine every clause, and then every literal in the clause to find if it is unit or not.
-The idea of watched literals \citep{Madigan2001} was added so that instead of having the clauses examined, 
-the clauses maintain an index of the necessary literals that when added to the partial solution the clause becomes unit.
-This ``don't call us, we will call you'' function makes the function of finding unit clauses less dependent on the amount of clauses in the formula.
+The naive approach to unit propagation was to examine every clause, and then every literal in the clause to find if it is unit or not.
+A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of having the clauses examined, 
+the clauses maintain an index of the necessary literals and notify the algorithm when they become unit.
+This ``don't call us, we will call you'' concept makes the efficiency of the unit propagation function less dependent on the amount of clauses in the formula.
 
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \cite{Moskewicz2001}.
-Such algorithms enable larger formulae to be solved without necessary increasing the time to solve them.
+Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
 
 \subsection{Pseudo-Boolean Extension of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-This DPLL algorithm can be adapted to solve problems with constraints that are not represented as CNF clauses.
-Through extending DPLL to be able to handle such constraints, some problems can be more easily expressed and solved.
-A typical extension is through using pseudo-Boolean (PB) constraints \citep{dixon2004automating}, these constraints consist of a linear inequality over Boolean variables.
+A typical extension of the DPLL algorithm is through adding the ability to handle pseudo-Boolean (PB) constraints \citep{dixon2004automating}.
+These constraints consist of a linear inequality over Boolean variables.
 Through this extension the method of pseudo-Boolean optimisation can be used to define criteria and optimise the evolution of component systems.
 
 \subsubsection{Pseudo-Boolean Representation}
 A pseudo-Boolean function takes a set of Boolean literals and returns a real number, i.e. $f:B^n \rightarrow \mathbb{R}$ where $B = \{0,1\}$.
-A pseudo-Boolean constraint is then an inequality relating the function to a number, e.g. $f(x) \leq k$.
+A pseudo-Boolean constraint is then an inequality relating the function to a number, e.g. $f(x) \leq 3$.
 
-This is a broad definition of these concepts, 
-to be efficiently included into the DPLL algorithm the pseudo-Boolean representation has been restricted to natural numbers and a linear equation.
+This is a broad definition of these constraints.
+To be efficiently implemented the pseudo-Boolean representation has been restricted to integers and a linear equation.
 That is,
 \begin{defs}
 A pseudo-Boolean function is a linear function over Boolean literals $x$ of the form
