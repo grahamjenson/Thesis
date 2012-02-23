@@ -5,6 +5,7 @@ In order to agree to talk, we just have to agree we are talking about roughly th
 }
 {\textit{The Feynman Lectures on Physics, Motion, Richard Feynman, 1961.}}
 
+%TODO Software evolution is caused by users developers requirements to adapt
 %%%What is Software Evolution
 Software evolution is the necessary process of changing a system to adapt the environment it exists in.
 This environment is changed by the system itself, such that a feedback loop \citep{lehman1980} is created, requiring a cycle of continual evolution.
@@ -17,16 +18,16 @@ The component model is the specification of how software components are describe
 
 %%%Broken into two parts
 The evolution of a component based software can be broken into two different cycles: the evolution of the component, and the evolution of a component system. 
-A component is evolved like a typical software system, where a unit is developed, versioned then released.
+A component evolves like a typical software system, where a unit is developed, versioned then released.
 However, component system evolution involves changing the system at a higher granularity, by adding and removing components.
-In addition a component is evolved by a developer, while a component system can be evolved by a user or stakeholder of the system.
-This makes the the evolution of a component system significantly different from the evolution of an individual component.
+In addition a component is usually evolved by a developer, while a component system can be evolved by a user or stakeholder of the system.
+This makes the evolution of a component system significantly different from the evolution of an individual component.
 
 %%%What is CDR
 The act of evolving a component system can be difficult given the complex relationships between components.
 These relationships create constraints that must be satisfied in order for the systems components to be functional.
 If these relationships are explicitly defined, the satisfaction of these constraints can be automated through a function called component dependency resolution (CDR).
-This function is a powerful tool to evolve a component system.
+CDR is a powerful tool to evolve a component system.
 
 %%%Using CDR within an evolution strategy
 Another difficulty in evolving a component system arises because of the different objectives that can be aimed for.
@@ -35,7 +36,7 @@ These objectives are taken into account and enacted in an evolution strategy, th
 
 %%%Defining components
 How ``software component'' is defined will impact the meaning of component system evolution.
-The definition of ``software component'' has not yet been specified due community disagreements over even fundamental aspects of software component.
+The definition of ``software component'' has not yet been specified due to community disagreements over even fundamental aspects of software components \citep{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000}.
 This makes it impossible to find a definition to satisfy everyone.
 By defining a software component only with respect to component system evolution, this process can be studied without the paralysis of finding a precise and complete definition.
 This method may produce a definition that conflicts with others, 
@@ -56,7 +57,7 @@ This includes an introduction to the Debian model, and CUDF model that are descr
 \section{Software Evolution}
 \label{background.evolution}
 %%%Software Evolution is
-Software evolution is the process of change made to software system to maintain, or to extend its functionality over the systems lifetime.
+Software evolution is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
 This evolution is required in order to adapt to the changing environment, which is made up of stakeholders, systems, and other internal and external constraints that impact the system. 
 As the system will inevitably change the environment it is in, continual evolution is necessary in order to satisfy the users. 
 
@@ -67,9 +68,9 @@ Some of the discovered laws of this evolution are outlined by \cite{lehman1980} 
 
 \begin{enumerate}
   \item \textit{Continuing Change:} Systems\footnote{E-type systems: software implemented in a real-world computing context} must be continually adapted 
-  otherwise they become progressively less satisfactory
+  otherwise, they become progressively less satisfactory
   \item \textit{Increasing Complexity:} As the system evolves its complexity increases unless work is done to reduce it
-  \item \textit{Self Regulation:} the system evolves with statistically determinable trends and invariences
+  \item \textit{Self Regulation:} The system evolves with statistically determinable trends and invariences
   \item \textit{Conservation of Organisational Stability:} The average effective activity rate to evolve a system is invariant over its lifetime
   \item \textit{Conservation of Familiarity:} As the system evolves, its incremental growth remains invariant to ensure users maintain mastery over the system.
   \item \textit{Continuing Growth:} The system must continually grow to maintain user satisfaction
@@ -78,8 +79,8 @@ Some of the discovered laws of this evolution are outlined by \cite{lehman1980} 
 \end{enumerate}
 
 %%%These laws describe the fact that it is impossible to create a single satisfactory system, and an iterative approach is best to strive for continual satisfaction
-These laws make the software engineers objective of a creating a satisfactory system impossible, as they are chasing a moving target.
-A software engineers goal is then to continually change a system to make it more satisfactory, with minimal cost and delay \citep{Lehman2006}.
+These laws make the software engineer's objective of creating a satisfactory system impossible, as they are chasing a moving target.
+A software engineer's goal is then to continually change a system to make it more satisfactory, with minimal cost and delay \citep{Lehman2006}.
 This change must be accomplished while the engineer maintains intellectual control over the complexity of the system \citep{Brooks1975}, 
 as the more complex a system, the greater the difficulty to change it.
 
@@ -102,7 +103,7 @@ This is a common model used to develop a software system, and shows the necessit
 A software engineer must create a system that can be quickly altered to adapt to a changing environment, 
 while working to reduce the inevitable complexity caused by this change.
 
-\subsection{Component Based Software Evolution}
+\subsection{Component-Based Software Evolution}
 %%%How CBSE helps with these goals of a software developer
 As stated above, the goals of a software engineer are to create a system that can be continually changed with minimal cost and delay,
 while maintaining intellectual control over the systems complexity.
@@ -131,23 +132,22 @@ as the number of elements and their relationships are decreased.
 
 %%%Maximising reuse
 Reuse is often cited as the main driving force of component technology as it has been empirically shown to increase the quality and productivity within software development \citep{hallsteinsen_experiences_1997}.
-The amount of reuse in a system will also decrease the amount of necessary change during system evolution as there is less replicated functionality to maintain.
-The greatest obstacle to reuse is the difficultly to locate and access required functionality quickly and easily \cite{Ye2001}.
+The amount of reuse in a system will also decrease the amount of necessary change during system evolution, as there is less replicated functionality to maintain.
+The greatest obstacle to reuse is the difficultly to locate and access required functionality quickly and easily \citep{Ye2001}.
 As a component expresses the functionality it provides in the interfaces it exposes, the ability to find and reuse functionality is increased.
 
 %%%Conclusion
-The use of component based systems can lower the complexity which in turn helps its evolution.
-Although, an important distinction must now be made between the evolution of a single component, and the evolution of a component system.
+An important distinction must now be made between the evolution of a single component, and the evolution of a component system.
 This discussion is continued in the following section.
 
 \subsection{Component Evolution vs. Component System Evolution}
 %%%Evolution of a component system is made up of two cycles, the component evolution and system evolution.
-Evolution is the repeated change to a software system to adapt to its environment.
-There are two environments that exist when considering the evolution of a component based system:
-the environment the component exists in, and the environment that the component system exists in.
-These two environments may be distinct and cause two different cycles of evolution, the evolution of individual components, and the evolution of component systems.
-
-These separate processes, although related, have different features and aspects that must be discussed.
+Evolution is the repeated change of a software system to adapt to its context.
+There are two contexts that exist when considering the evolution of a component based system:
+the context the component exists in, and the context that the component system exists in.
+These two contexts may be distinct and cause two different cycles of evolution, the evolution of individual components, and the evolution of component systems.
+For each of these contexts there exists a separate process of evolution.
+These processes, although related, have different features and aspects that must be discussed.
 
 \subsubsection{Component Evolution}
 %%%Two main differences with component evolution and typical software evolution, is the definition and testing of relationships,
@@ -160,14 +160,14 @@ As a developer of a component may not have control over the development of relat
 As the evolution cycle of a component will determine releases and changes to the component, this will effect other components.
 Therefore the evolution of component must also consider evolution of other components that it relates to.
 For example, if a component $a$ is changed, and component $b$ uses $a$'s functionality, this change may effect $b$.
-As the developers of $a$ do not have control over the development of $b$ the changes must be discussed, and co-ordinated to ensure that they are not detrimental to either component.
+As the developers of $a$ do not have control over the development of $b$, the changes must be discussed, and co-ordinated to ensure that they are not detrimental to either component.
 
-The composition of components means that a combinatorial amount of systems could be created.
-Therefore, testing all components in every possible component system they could be in is an impractical challenge.
-This means a component system relies far more on specification through the relationships between components.
+Given a set of components, a combinatorial amount of systems could be created.
+Therefore, ensuring the correctness of every possible composition could be impractical.
+This means a component system relies far more on the specification of the relationships between components.
 Compared to a typical piece of software, which is bundled together before deployment, only one system must be tested.
 
-Without such encapsulation of components the testing of component systems would be impractical.
+Without such encapsulation of components the testing of component systems would not be feasible.
 For example, given a text editor component depends on three versions of a spell checker, 
 and four versions of a font component.
 There are twelve different systems that include one text editor, one spell checker and one font component.
@@ -176,10 +176,10 @@ Or if the font component effected the spell checker, the text editor component w
 By ensuring that each component follows a specification and only effect components that they relate to the combinatorial testing of systems is not necessary.
 This therefore constrains the evolution of components, to ensure that they will work in different systems.
 
-This nature of this component evolution is explored in studies such as \cite{vasa2007patterns}, 
-where the evolution of five components is empirically studied and patterns of evolution are extracted.
-Other studies look at aspects like the evolution of specifications \cite{Mencl2001}, the models used to version components \cite{Stuckenholz2005},
-and the general concepts related to this evolution \cite{Rhode2000}.
+This nature of component evolution is explored in studies such as \citep{vasa2007patterns}, 
+where the evolution of five components is empirically studied for patterns of evolution.
+Other studies look at aspects like the evolution of specifications \citep{Mencl2001}, the models used to version components \citep{Stuckenholz2005},
+and the general concepts related to this evolution \citep{Rhode2000}.
 This area is closely related to the well studied and active research area of software evolution.
 
 \subsubsection{Component System Evolution}
@@ -204,15 +204,15 @@ This gives the power to evolve a system to a user.
 
 %%%There is no version, or single metric, to describe the system state
 The state a component or piece of software as it is evolved can be represented by a single measurement, a version.
-The state of a component system cannot be measured with a single metric as it is represented by a configuration of components with various versions.
-A component system then forms something like a partially ordered set, where a system can be neither more or less evolved than another.
+The state of a component system cannot be measured with a single metric, as it is represented by a configuration of components with various versions.
+A component system then forms something like a partially ordered set, where it may be impossible to determine if a system is more or less evolved than another.
 For instance, a system that has version 1 of component $a$ and version 2 of component $b$, is neither more or less evolved than a system with version 2 of $a$ and version 1 of $b$.
 This complexity makes it difficult to compare systems, and make decisions about actions to be taken.
 
-This process of component system evolution is empirically studied in \cite{fortuna2011} by looking at the first ten releases of the Debian Linux/GNU distribution,
+This process of component system evolution is empirically studied in \citep{fortuna2011} by looking at the first ten releases of the Debian Linux/GNU distribution,
 and using graph metrics to analyse the evolution of the complexity of the software releases, the process can be compared to its biological counter part.
-Methods to evolve component systems are discussed \cite{Ryan2005} and \cite{Luo2004},
-and the mitigation of the negative effects caused by such evolution is discussed in the paper \cite{Stuckenholz2007}.
+Methods to evolve component systems are discussed in \citep{Ryan2005} and \citep{Luo2004},
+and the mitigation of the negative effects caused by such evolution is discussed in the paper \citep{Stuckenholz2007}.
 This area of research is quite new, the evolution of component systems that are occurring today are having unknown and unpredictable emergent effects that remain to be studied.
 
 A formal definition of the component system evolution problem is given in chapter \ref{formal}.
@@ -226,42 +226,39 @@ This means a spell checker component must be installed for the text editor to be
 As the spell checker can have its own relationships such as dependencies, the process of satisfying all constraints is a recursive problem. 
 Therefore, creating a valid system that satisfies all constraints can be a tedious, time consuming and error prone task.
 
-The task of satisfying the component relationships can be automated into a function called Component Dependency Resolution (CDR) \cite{Jenson2010}.
-This function takes a users requested change and alters the system while satisfying component constraints.
-CDR can also evolve a system with respect to a user's strategy by examining multiple solutions selecting the optimal one.
+The task of satisfying the component relationships can be automated into a function.
+In this research this function is called \textbf{Component Dependency Resolution} (CDR).
+CDR takes a users requested change and alters the system while satisfying component constraints.
+It can also evolve a system with respect to a user's strategy by examining multiple solutions selecting the optimal one.
 To find and examine many systems manually then select the optimal solution found is costly, however through the automated CDR algorithm the cost of evolving a system is lowered.
+In other areas CDR, or applications that contain CDR, can be referred to by various names; provisioning system or dependency management in Eclipse domain \citep{leBerre2010},
+or package manager in the GNU/Linux \citep{Barth2005} domain.
 
 %%%CDR can be used at design-time and run-time on component models.
 For CDR to be usable with a component system, the relationships between component must be explicit and computer readable.
 The overhead of explicitly stating component relationships and the lack of fine grained control when altering the system
 can be weighed against the benefit of automating the evolution of a system through CDR.
 Some component models reject the use of CDR, 
-for example the Slackware GNU/Linux distribution community states in \cite{Lumens2000}:
+for example the Slackware GNU/Linux distribution community states in \citep{Lumens2000}:
 \begin{quote}
 ``Dependency management is left up to the sysadmin, and that's the way we like it.''
 \end{quote}
 Many other component models use various CDR functions all with the general goal of automatically altering a component system.
-CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \cite{casey_better_2008}),
-at run time to evolve or extend a component-based system (as in Eclipse P2 \cite{leBerre2010}),
-or it can be used to build and restructure software product lines \cite{savolainen_analyzing_2007}.
-CDR is also used in package management systems, like apt-get \cite{Barth2005},
+CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \citep{casey_better_2008}),
+at run time to evolve or extend a component-based system (as in Eclipse P2 \citep{leBerre2010}),
+or it can be used to build and restructure software product lines \citep{savolainen_analyzing_2007}.
+CDR is also used in package management systems, like apt-get \citep{Barth2005},
 for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com}. 
 
 An implementation of CDR is described in chapter \ref{implementation}.
 
 \subsection{Evolution Strategies}
-Given any point throughout the life of a system, there are choices to be made about the systems evolution.
-Should a component be removed, should one be added, should the system be upgraded and what is the way in which a system should be selected if multiple possibilities exist.
-The evolution strategy is a combination of behaviours that the user employs to evolve their system to maintain satisfaction.
-The two opposing forces that are considered in the user's strategy are that change to the system will increase complexity and decrease quality, 
-and that without change the user's satisfaction on the system will decrease.
-
 %%%The decisions that lead to an evolution strategy
 Lehman's laws of software evolution \citep{lehman1980,lehman1997} describe two opposing forces,
 the need to change and the resistance to change.
 When change occurs it is inevitable that it will introduce more complexity and the quality of the system will be reduced.
 It is also inevitable that without change the user will become dissatisfied with their system.
-A user's strategy must take into account both these forces when employing behaviour to evolve their system.
+A user's strategy to evolve their system must take into account both these forces.
 As each user and each system have different requirements and objectives, each strategy can be different for any given user.
 
 Further discussion on strategies and how they are defined is presented in chapter \ref{strategies}.
@@ -275,17 +272,17 @@ They can be physical, as in electrical or mechanical components, where their pro
 Typically, components can be used in many different contexts, e.g. a resistor component, they can be used in electrical systems from space stations to cellphones.   
 
 %%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
-Software components are units of encapsulated code that interact together to create a software system.
-Software components ideals can be traced to \cite{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
+%TODO add more history the development from pure reuse, to the realization that components helps with evolution
+Software component ideals can be traced to \cite{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
 However, there is still much debate over how to define what a software component is, and what features it should have.
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
-A discussion between two leading researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining exactly what a software component is. 
-They describe across multiple articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000} the definitions of what a software component is and the importance of their features.
+A discussion between two researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining exactly what a software component is. 
+They describe across multiple articles \citep{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000} the definitions of what a software component is and the importance of their features.
 
 %%%Szyperski's definition
-Szyperski defines components in \cite{Szyperski2002} as having three characteristic properties:
+Szyperski defines components in \citep{Szyperski2002} as having three characteristic properties:
 \begin{enumerate}
   \item a unit of independent deployment
   \item a unit of third party composition
@@ -342,7 +339,7 @@ By only looking at aspects that are necessary for this research, the arguments o
 \subsection{Software Component}
 The definition of a software component is given with respect to the evolution of a component system using component dependency resolution.
 Both these areas have already been discussed in this chapter and will be used to define the concept of ``software component''.
-This definition specifies requirements on the component model that ensure it is applicable in this research.
+This definition specifies the type of component model that this research can be applied to.
 
 For CDR to be used with a component system, there are two core requirements, the component model must:
 \begin{enumerate}
@@ -377,9 +374,8 @@ This can be seen though the classification from \cite{Crnkovic2011}, of what a c
 	  		\item Composability
 		\end{itemize}	
 \end{itemize}  
-These categories show the lacking complexity that the definition of component model from this research.
-The only two aspects that this research is concerned with are the life-cycle deployment for the evolution of a component system, 
-and construction interface specification for the explicitly defined dependencies.
+These categories show the lacking complexity of the component model definition in this research.
+The only two categories within the scope of this research are ``deployment'' and ``construction'', which both focus on the evolution of a system.
 All the other aspects are ignored as their definition is superfluous to the core topic of this research.
 This may make the definition in this research broad, though it also makes it focused.
 
@@ -411,14 +407,14 @@ It is hoped this simple situation will highlight the similarities and difference
 \subsection{OSGi}
 %%%What OSGi is? Bundle Service
 OSGi is a mature component model from the OSGi Alliance.
-It has a significant presence in industry \citep{Kriens2008} from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
+It has implementation from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
 and the Apache foundation with their framework Felix\footnote{http://felix.apache.org/}.
 
 OSGi components are refereed to as bundles, each contains a meta-data file describing the bundles relationships, and a set of Java packages and classes as implementation.
 A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit the service.
 These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
-This service layer can also have explicit relationship through frameworks like Spring Dynamic Modules.
-Under the definition of component in this research, this makes both the bundle layer and the service layer software components.
+This service layer can also have explicit relationship through frameworks like Spring Dynamic Modules\footnote{http://www.springsource.org/osgi}.
+Under the definition of component in this research, this makes both the bundle layer and the service layer software component models.
 
 \subsubsection{Bundle Layer}
 The bundle layer of OSGi is implemented to allow dynamic addition and removal of bundles.
@@ -445,14 +441,15 @@ Import-Package: nz.geek.maori.spellchecker;version>"0.0.1"
 
 %%%OSGI Meta data description
 This meta-data shows the name, version and vendor of the component, as well as the exported packages (referring to Java packages) which are able to be used by other components.
-The \verb+Require-Bundle+ key expressed the direct dependence on another bundle.
+The \verb+Require-Bundle+ key expresses the direct dependence on another bundle.
 The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
 
 \subsubsection{Service Layer}
 This bundle meta-data only contains information necessary for the execution of a component.
 However, for the component to be functional the service layer relationships must be considered.
 
-This service layer is left undefined in the core OSGi specification \citep{osgicore2007}, therefore a number of frameworks have emerged that define its relationships, e.g
+This service layer is defined in the core OSGi specification \citep{osgicore2007}, however it does not describe declarative support with meta-data.
+Therefore, a number of frameworks have emerged that define service relationships, e.g
 Spring Dynamic Modules\footnote{http://www.springsource.org/osgi}.
 OSGi's compendium specification \citep{osgicompendium2007} also defines service layer meta-data format called Declarative Services(DS).
 An example of DS meta-data is in figure \ref{dsmetadata}.
@@ -493,13 +490,13 @@ The programmatic evolution of an OSGi system is defined in the interfaces create
 The installation and removal of both the bundles and services from the OSGi system are defined as such:
  
 \begin{itemize}
-  \item To install a bundle: \verb+org.osgi.framework.BundleContext.install+
-  \item To uninstall a bundle: \verb+org.osgi.framework.Bundle.uninstall+
-  \item To register a service: \verb+org.osgi.framework.BundleContext.registerService+
-  \item To unregister a service: \verb+org.osgi.framework.ServiceRegistration.unregister+
+  \item To install a bundle: \verb+org.osgi.framework.BundleContext#install+
+  \item To uninstall a bundle: \verb+org.osgi.framework.Bundle#uninstall+
+  \item To register a service: \verb+org.osgi.framework.BundleContext#registerService+
+  \item To unregister a service: \verb+org.osgi.framework.ServiceRegistration#unregister+
 \end{itemize}
 
-These methods can sometimes be wrapped in a console that allows direct user interaction in adding and removing bundles.
+These methods can sometimes be implemented in a console, this allows a user to directly execute them to add or remove bundles.
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
@@ -537,10 +534,10 @@ An example of this document is shown in figure \ref{obrmetadata}.
 This meta-data was designed so that it can merge the bundle and service meta-data as described in figures \ref{osgibundle} and \ref{dsmetadata}.
 This then would be a complete model at both these OSGi layers, which can be used by CDR to evolve a system. 
 
-OBR has been seen as a solution to to simplify deployment of OSGi applications \cite{Jung2007}, 
-distribution and deployment to embedded ubiquitous systems \cite{Jung2006}, 
-smart home applications \cite{Gouin-Vallerand2007} and 
-dynamic distribution of drivers \cite{Kriens2008}. 
+OBR has been seen as a solution to to simplify deployment of OSGi applications \citep{Jung2007}, 
+distribution and deployment to embedded ubiquitous systems \citep{Jung2006}, 
+smart home applications \citep{Gouin-Vallerand2007} and 
+dynamic distribution of drivers \citep{Kriens2008}. 
 
 The most mature implementation of OBR client is offered by the Apache foundation, which is bundled with their core OSGi framework Apache Felix. 
 This can be used with any of the large public or private OBR collections of bundles.
@@ -661,10 +658,10 @@ Some of the criteria used by Eclipse P2 to evolve the system are described in \c
 These criteria represent the strategy that it employed to choose a solution when multiple are available. 
 
 \subsection{Fractal}
-Fractal is a component model developed by France Telecom R\&D and INRA.
+Fractal \citep{Quma2006} is a component model developed by France Telecom R\&D and INRA.
 It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse that both depend on Java specific elements.
 The most notable aspect, and the reason for its name, is that a components can be composed together to make a new component.
-This recursive nature of composition, actually means the the system of components can itself be a component.
+This recursive nature of composition, actually means the system of components can itself be a component.
 
 An example of meta-data to define a Fractal component is given in figure \ref{fractalmetadata}.
 

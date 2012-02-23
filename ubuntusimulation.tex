@@ -24,7 +24,7 @@ Finally, we define specific question about component system evolution which are 
 
 \section{Simulation Implementation}
 In order to implement the simulation, the assignment of the variables used to configure the simulation, must be defined.
-These variables are are broken into two groups; the context variables, which do not change over simulation executions; 
+These variables are broken into two groups; the context variables, which do not change over simulation executions; 
 and variables which are changed to answer specific questions.
 The implementation of the simulation processes are then described, with the necessary practical alterations made. 
 
@@ -252,7 +252,7 @@ In this log file a set of packages where installed and a few upgraded on the dat
 
 These logs mainly describe the changes made to the system by APT, not necessarily what the user requested.
 This is because APT may be used through another application, like semantic, to install or update the system.
-As the the criteria of APT is known, some information about the action the user requested can be inferred.
+As the criteria of APT is known, some information about the action the user requested can be inferred.
 
 Given APT will never install or remove a component if the system is updated; 
 if a package is upgraded but none are removed or installed then the user probably selected to update.
@@ -364,7 +364,7 @@ The first line then means that a user has a 75.5\% chance of installing 0 packag
 
 In figure \ref{packageprob} the file is laid out as a list of lines, each line is package name, then an integer separated by a comma.
 The integer is the weight which represents the likelihood the package will be selected to be installed.
-To convert this weight into the necessary probability, the individual package weight is divided by the the sum of all package weights. 
+To convert this weight into the necessary probability, the individual package weight is divided by the sum of all package weights. 
 
 \begin{figure}[htp]
 \begin{center}
