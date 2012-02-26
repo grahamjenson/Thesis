@@ -64,7 +64,7 @@ As the system will inevitably change the environment it is in, continual evoluti
 %%%The nature of this evolution has been explored and laws found
 The nature and fundamental laws of software evolution have be explored through empirical study of the software being evolved.
 By observing the evolutionary development of many software systems and analysing the results, laws, similar to the laws of nature like gravity, can be identified.
-Some of the discovered laws of this evolution are outlined by \cite{lehman1980} and \cite{lehman1997}, and presented here:
+Some of the discovered laws of this evolution are outlined by \citep{lehman1980} and \citep{lehman1997}, and presented here:
 
 \begin{enumerate}
   \item \textit{Continuing Change:} Systems\footnote{E-type systems: software implemented in a real-world computing context} must be continually adapted 
@@ -84,7 +84,7 @@ A software engineer's goal is then to continually change a system to make it mor
 This change must be accomplished while the engineer maintains intellectual control over the complexity of the system \citep{Brooks1975}, 
 as the more complex a system, the greater the difficulty to change it.
 
-This iterative process can be seen in the spiral model shown in figure \ref{spiral}, first presented by \cite{Boehm1988}.
+This iterative process can be seen in the spiral model shown in figure \ref{spiral}, first presented by \citep{Boehm1988}.
 This shows the tasks of communication, planning, modeling, construction, and deployment iteratively completed in order to create a software system.
 \begin{figure}[h!]
 \begin{center}
@@ -267,13 +267,13 @@ Further discussion on strategies and how they are defined is presented in chapte
 \label{background.components}
 %%%What is a component in a larger context
 A component is a natural concept that describes a part or element of a larger system or process.
-A broad definition of a component is ``components can be composed together''.
+A broad characterisation of a component is ``components can be composed together''.
 They can be physical, as in electrical or mechanical components, where their properties and how they are composed are documented to be used in construction.
 Typically, components can be used in many different contexts, e.g. a resistor component, they can be used in electrical systems from space stations to cellphones.   
 
-%%%Some history to software components mentioning McIlroy's 1969 paper \cite{McIlroy1969}
+%%%Some history to software components mentioning McIlroy's 1969 paper \citep{McIlroy1969}
 %TODO add more history the development from pure reuse, to the realization that components helps with evolution
-Software component ideals can be traced to \cite{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
+Software component ideals can be traced to \citep{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
 However, there is still much debate over how to define what a software component is, and what features it should have.
 
@@ -302,7 +302,7 @@ Meyer's definition of software components is enumerated as:
 \end{enumerate}
 
 %%%Using a component model
-Others, like Heineman and Councill \cite{heineman2001component} have stated that components must conform to a component model, 
+Others, like \citep{heineman2001component} have stated that components must conform to a component model: 
 \begin{quotation}
 A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.
 \end{quotation}
@@ -314,21 +314,21 @@ A component model defines a set of standards for component implementation, namin
 
 %%%Other differences, architectural/implementation
 Exactly what is, and what is not a software component is in dispute amongst the community,
-and a definitive description of a software component is elusive \cite{vasa2007patterns}.
+and a definitive description of a software component is elusive \citep{vasa2007patterns}.
 As such, many different components models have been developed, each targeting various domains with different functionality and technical aspects.
-This diversity has inspired a classification approach from \cite{Crnkovic2011}, where components and component models are classified into a scheme.
+This diversity has inspired a classification approach from \citep{Crnkovic2011}, where components and component models are classified into a scheme.
 This effort highlights the difficulty in creating an exact definition of a software component. 
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
 These problems with exactly defining a software component may stem from the fact that ``component'' is a natural concept.
-The problem, as observed from the area of formal concept analysis \cite{Ganter1999} by \cite{Szyperski2002}, is that it is impossible to
+The problem, as observed from the area of formal concept analysis \citep{Ganter1999} by \citep{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
 ``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
 \end{quotation}
 
 %%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
-However, a definition can be found, not by feature enumeration but through stating the intention for the concept and exploring the technically inevitable consequences \cite{Szyperski2002}. 
+However, a definition can be found, not by feature enumeration but through stating the intention for the concept and exploring the technically inevitable consequences \citep{Szyperski2002}. 
 As the intention of this study is to investigate component system evolution, CDR, and evolution strategies
 the definition of software component will be with respect to these concepts.
 
@@ -352,7 +352,7 @@ This means that CDR should have the ability to add, remove and replace component
 As CDR would evolve a system automatically, these actions must be able to be enacted either through a function call, or well defined command interface.
 
 This definition leaves undefined many aspects of component model undefined. 
-This can be seen though the classification from \cite{Crnkovic2011}, of what a component model should define, partially enumerated:
+This can be seen though the classification from \citep{Crnkovic2011}, of what a component model should define, partially enumerated:
 \begin{itemize}
   \item Lifecycle 
   		\begin{itemize}
@@ -640,14 +640,14 @@ as it contains explicit relationships, and the programmatic evolution requiremen
 
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
-Eclipse P2 \cite{le_berre_dependency_2009}, \cite{leBerre2010} is the provisioning system for the Eclipse IDE platform.
+Eclipse P2 \citep{le_berre_dependency_2009}, \citep{leBerre2010} is the provisioning system for the Eclipse IDE platform.
 It provides the interaction to alter an Eclipse based component system. 
-It is implemented using a Boolean Satisfiability solver, called SAT4J \cite{le2010sat4j}.
-This method of implementation has become a common way of implementing CDR, explored in \cite{Berre2008}, and further discussed in chapter \ref{implementation}.
+It is implemented using a Boolean Satisfiability solver, called SAT4J \citep{le2010sat4j}.
+This method of implementation has become a common way of implementing CDR, explored in \citep{Berre2008}, and further discussed in chapter \ref{implementation}.
 
 Eclipse P2 is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
-Some of the criteria used by Eclipse P2 to evolve the system are described in \cite{le_berre_dependency_2009} and \cite{leBerre2010}:
+Some of the criteria used by Eclipse P2 to evolve the system are described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}:
 \begin{enumerate}
   \item minimise the amount of components installed that have no dependency to them 
   \item minimise the removal of already installed components
@@ -742,7 +742,7 @@ Therefore, not only would a CDR algorithm require to select a set of components 
 The simplest solution to this problem is to ignore the recursive nature of this component model,
 and use a CDR algorithm to create exactly one composite with all components in it.
 More difficult solutions could be created by reusing user composites,
-or analyzing the graph structure to extract relationship by using algorithms like the one presented in \cite{dietrich2008cluster}.
+or analyzing the graph structure to extract relationship by using algorithms like the one presented in \citep{dietrich2008cluster}.
 
 Another aspect of Fractal that will make the automatic evolution of systems difficult will be the lack of versioning information.
 Like DS, this component model doesn't not explicitly require the version of the component and the interfaces they provide.
@@ -882,7 +882,7 @@ The strategy used to update the system and install components into the system is
  \end{alltt}
 \end{quotation}
 
-Another application that extends APT further is Aptitude \cite{Burrows2005}.
+Another application that extends APT further is Aptitude \citep{Burrows2005}.
 This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
 
 \subsection{SOFA 2.0}
@@ -927,7 +927,7 @@ Three evolution patterns are predefined: factory pattern, removal pattern, and s
 As its name suggests, in factory pattern a designated component serves as a component factory. 
 The removal pattern serves for destroying of a component previously dynamically created.
 The service access pattern allows for the access to external services.
-These patterns are further discussed in \cite{Hnetynka2006}.
+These patterns are further discussed in \citep{Hnetynka2006}.
 
 
 \subsection{Common Upgradeability Description Format}
@@ -984,7 +984,7 @@ Some of these will be discussed in the latter chapter \ref{implementation}.
 However, here only the default implementation , Modular Package Manager \citep{abate2011} (MPM), is discussed.
 This implementation was created by the Mancoosi organisation to explore the possibility of using CUDF to evolve real systems.
 
-In the study from \cite{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
+In the study from \citep{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
 This CDR implementation is the first to allow the user to completely specifiy the criteria by which the solver selects a system.
 In the study the solver first minimised the amount of packages removed from the system, and then minimised the amount of packages changed in the system.
 Further discussion of these criteria and how they are combined is discussed in chapter \ref{strategies}. 

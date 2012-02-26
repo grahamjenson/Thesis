@@ -87,7 +87,7 @@ where \verb+epoch+ is an unsigned integer and \verb+upstream_version+ and \verb+
 A Debian version is greater than another if its \verb+epoch+ is greater; 
 if their \verb+epoch+'s are equal then its \verb+upstream_version+ is lexically greater; 
 if their \verb+epoch+'s and \verb+upstream_version+'s are equal then its \verb+debian_revision+ is lexically greater.
-This lexical comparison (further explained in \cite{Barth2005}) differs greatly and is far more complicated than the CUDF integer based version model.
+This lexical comparison (further explained in \citep{Barth2005}) differs greatly and is far more complicated than the CUDF integer based version model.
 
 To map a dpkg version to an integer then cannot be done without knowledge of all component versions refereed to in the repository.
 Therefore, the most straight forward solution is to extract all refereed versions (not only package versions but those in package formulae as well),
@@ -846,7 +846,7 @@ Given the significant randomness that is involved with the installation property
 \subsection{Results}
 The effects of using these install criteria, focus on the 
 
-How much change does a typical install cause (also investigated in \cite{Jenson2010})
+How much change does a typical install cause (also investigated in \citep{Jenson2010})
 
 \subsection{Conclusion}
 This criteria is difficult to 

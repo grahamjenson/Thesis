@@ -147,10 +147,10 @@ That is, if the set $R \cup \Delta$ is unsatisfiable, $E(\alpha, R \cup \Delta,r
 \subsection{Component System Evolution is NP-Complete}
 Finding a solution that satisfies all relationship and request constraints is shown to be NP-Complete through reduction to a Boolean Satisfiability (SAT) problem,
 and not belonging to a class of simple SAT problems given in Schaefer's dichotomy theorem \citep{Schaefer1978}.
-This is not the first proof that this problem is NP-Complete, as presented in \cite{edos2005report} it is shown to be reducible to 3-SAT. 
+This is not the first proof that this problem is NP-Complete, as presented in \citep{edos2005report} it is shown to be reducible to 3-SAT. 
 Though it may be the first through using Schaefer's dichotomy theorem, which may be found to be more intuitive than reduction to 3-SAT.
 
-SAT problems where the initial problem given the class NP-Complete in \cite{cook1971}.
+SAT problems where the initial problem given the class NP-Complete in \citep{cook1971}.
 This class of problem is described as being able to verify a solution quickly, but have no efficient way to find a solution initially.
 To show that this problem is NP-Complete, the first step is to reduce the problem into SAT problem represented by a Boolean equation in Conjunctive Normal Form (CNF).
 CNF is a conjunction of clauses, where each clause is a disjunction of literals.
@@ -173,7 +173,7 @@ The amount of CNF clauses grows quadratically with the size of the upgrade const
 All clauses are combined through $\wedge$ to form a complete CNF formula which represents the SAT problem.
 
 There are trivial SAT problems that can be solved easily.
-To show that the evolution problem is not a trivial Schaefer's dichotomy theorem \cite{Schaefer1978} is used.
+To show that the evolution problem is not a trivial Schaefer's dichotomy theorem \citep{Schaefer1978} is used.
 According to this theorem, a SAT problem represented in CNF is not NP-Complete iff it is in one of six classes.
 These classes are:
 \begin{enumerate}
@@ -189,7 +189,7 @@ An evolution problem is not in the first or second classes as a problem could co
 where both clauses would not be satisfied if both variables assigned true, or false. 
 
 The third and fourth classes state that the problem can either be represented by a set of Horn or a set of dual-Horn clauses.
-Such problems are known to be solvable in linear time \cite{dowling1984linear}.
+Such problems are known to be solvable in linear time \citep{dowling1984linear}.
 An evolution problem can be defined with the conflict and dependency clauses $\neg a \vee \neg c$ and $\neg a \vee c_1 \vee \ldots \vee c_n$. 
 As one is a dual-Horn clause and the other a Horn clause, an evolution problem does not fit into either the third or fourth class.
 
@@ -200,17 +200,17 @@ The sixth class states that for this problem to be NP-Complete it must not be re
 That is, the CNF formula can be represented as a conjunction of clauses using the XOR ($\oplus$) operator.
  
 The evolutionary step problem can be shown to be in neither the fifth or sixth classes 
-through mapping to an equivalent problem called ``exactly one in three'' presented in \cite{Schaefer1978} as problem ``NP1''.
+through mapping to an equivalent problem called ``exactly one in three'' presented in \citep{Schaefer1978} as problem ``NP1''.
 This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
 This problem can is defined as an upgrade constraint $a_1 + a_2 + a_3 = 1$,  
 with the translated CNF clauses $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
-This problem is shown to not belong to any of the above classes in lemmas 3.1A, 3.1B and 3.1W in \cite{Schaefer1978}.
+This problem is shown to not belong to any of the above classes in lemmas 3.1A, 3.1B and 3.1W in \citep{Schaefer1978}.
 
 %%%This problem may be in fact P if it can exist to one of these classes
 Finding a solution to an evolutionary problem is then is NP-Complete. 
 
 \subsection{Component System Evolution is NP-Hard}
-As noted by \cite{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
+As noted by \citep{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
 Also noted, is the fact that some of these solutions are not as ``good'' as others.
 Finding an optimal solution by maximising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
 This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
@@ -269,16 +269,16 @@ This counter-intuitive and complex behaviour of component system evolution requi
 This is one of the reasons for this being the focus of this research. 
 
 \subsubsection{Belief Revision}
-This formalism of generational evolution is similar to the formal logic of belief revision \cite{alchourron1985logic}.
+This formalism of generational evolution is similar to the formal logic of belief revision \citep{alchourron1985logic}.
 This logic deals with the process in which a set of beliefs can be revised when confronted with new information.
 The complexity of belief revision comes from the many ways in which a set of beliefs can be revised when necessary.
 For instance, you see a flying black object, you know that birds fly so you infer that it is a bird.
 An expert in flying things then tells you that it is a bat; given this new information your previous beliefs require some revision.
 How this revision occurs can be a complex task, as previously held beliefs must be questioned; for instance, is the object still black?
 
-The Alchourrón, G\"ardenfors, and Makinson (AGM) \cite{alchourron1985logic} postulates for belief revision give a set of eight properties 
+The Alchourrón, G\"ardenfors, and Makinson (AGM) \citep{alchourron1985logic} postulates for belief revision give a set of eight properties 
 that a such a revision operator needs to satisfy in order to be considered \textit{rational}.
-These postulates (not enumerated here) were rephrased for propositional languages by \cite{katsuno1991propositional}. 
+These postulates (not enumerated here) were rephrased for propositional languages by \citep{katsuno1991propositional}. 
 Given a set of propositional formula $Y$ representing the belief set, and a single formula $A$ representing new information, the revision of $Y$ by $A$, denoted by $Y \circ A$.
 This should have these properties:
 
@@ -297,14 +297,14 @@ if the new information is satisfiable then the revised beliefs should be satisfi
 
 The last two KM postulates are equivalent to the last two AGM postulates, which describe the intended minimal change of revision.
 That is, revision should only change a minimal set of beliefs given new information is conflicting.
-Through weakening (KM6) to two more postulates (KM7) and (KM8), \cite{katsuno1991propositional} further define the revisions minimal change.
+Through weakening (KM6) to two more postulates (KM7) and (KM8), \citep{katsuno1991propositional} further define the revisions minimal change.
 
 \begin{itemize}
   \item (KM7) \textit{ $Y \circ A_1$  implies $A_2$ and $Y \circ A_2$ implies $A_1$ then $Y \circ A_1$ is equivalent to $Y \circ A_2$}
   \item (KM8) \textit{ $(Y \circ A_1) \wedge (Y \circ A_2)$ implies $A$}
 \end{itemize}
 
-\cite{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
+\citep{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
 given the set of all models $M$, a function is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
 where the strict order is defined as $m <_Y m'$ if and only if $m \leq_Y m'$ and $m' \not \leq_Y m$. 
 This assignment is described as \textit{faithful} if three conditions hold:
@@ -339,7 +339,7 @@ Then set $Y$ is the set of formulae that is ``believed" to create a component sy
 The formula $A$ defines a change to the beliefs of what is best for the user, which may require the component system to be revised.
 
 %%%Discuss the mapping of the function to the revision operator
-The component relationships are facts in this logic, and not beliefs; they are axioms that are defined as integrity constraints by \cite{katsuno1991propositional}.
+The component relationships are facts in this logic, and not beliefs; they are axioms that are defined as integrity constraints by \citep{katsuno1991propositional}.
 The revision operator is then denoted with respect to the component relationships $R$ as $\circ_R$.
 This revision operator $\circ_R$ is mapped to the evolutionary step function $E$;
 given the evolutionary function $E(\alpha,R \cup \Delta,rank) = X_1$, $Mod(Y) = \{\alpha\}$ and $Mod(Y \circ_{R} \Delta) = \{X_1\}$.
@@ -385,13 +385,13 @@ Eclipse P2 provides an example where more than four different criteria create th
 %%%Why is it lexicographically composed
 Using a lexicographical order to compose criteria, is an intuitive way of ordering solutions.
 A lexicographical order states that one criterion is infinitely more important than the next criterion.
-Such an ordering has been used in the Mancoosi International Solver competition to compare solvers, and in the prototype solver MPM presented in \cite{abate2011}.
+Such an ordering has been used in the Mancoosi International Solver competition to compare solvers, and in the prototype solver MPM presented in \citep{abate2011}.
 
 %%%Information from differnet loactions and meta data can be used to define the criteria.
 Many different criteria can be created to be used in such a problem.
 Criteria can be defined from current solvers like Eclipse P2's criteria to minimise the age of the installed components.
 Information from component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
-composition testing \cite{XuejieZhang2008} and user preferences could be used to define criteria.
+composition testing \citep{XuejieZhang2008} and user preferences could be used to define criteria.
 Additional criteria, such as size, reliability or licence, may change a systems' desirability, 
 therefore during evolution the optimisation of such criteria may return better solution.
 
@@ -440,7 +440,7 @@ By combining these criteria (ranking systems and complete lattices) multi-criter
 \subsection{Complete Lattice}
 %%%Complete Lattices have been used in other optimisation frameworks.
 Complete lattices are an effective abstraction to represent rankings,
-and have been used before when describing such criteria \cite{Bistarelli1997,Fernandez}.
+and have been used before when describing such criteria \citep{Bistarelli1997,Fernandez}.
 They can represent problems that involve partial orders, and be combined into new lattices using various orders.
 
 %%%The formal definition for comlpete lattices is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound
@@ -598,7 +598,7 @@ and in chapter \ref{strategies} various criteria are defined that fit in this fr
 
 \subsection{Semi-ring constraint incompatibility}
 %%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
-A large part of this formalisation was influenced by research into the representation of constraints as a c-semiring \cite{Bistarelli1997}.
+A large part of this formalisation was influenced by research into the representation of constraints as a c-semiring \citep{Bistarelli1997}.
 This research shows that all instances of their framework are complete lattices, and their $+$ operator coincides with join
 and if their $\times$ operator is idempotent, it coincides with meet.
 Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
@@ -611,7 +611,7 @@ This means that the direct use of this research is impossible, though this area 
 %%%The description of the represnation of CUDF is described.
 What has been described so far in this chapter is the formal model of component system evolution, with its constraints and it's optimisation.
 These semantics require a representation, a language in which to describe and convey such an evolution problem.
-In this section, the representation of such a problem is described through using the Common Upgradeability Description Format (CUDF) specification presented by \cite{treinen2009common}.
+In this section, the representation of such a problem is described through using the Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common}.
 This specification was previously discussed in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
 
 CUDF was defined as an abstract representation the evolution problem of open source software, also described as an upgradeability problem.
@@ -620,7 +620,7 @@ and to create a generalised solver tof such problems.
 In both aspects CUDF has succeeded.
 The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/} has been held, both in 2010 and 2011 as well as intermittently, 
 to compare various state of the art, and legacy, solvers.
-The solver MPM, presented in \cite{abate2011}, was designed and created to solve real world problems represented in CUDF.
+The solver MPM, presented in \citep{abate2011}, was designed and created to solve real world problems represented in CUDF.
 
 %%%In this section\ldots
 In this section first the design principles of CUDF are described, this will show the motivations of this definition are aligned to this research.
@@ -640,7 +640,7 @@ This was beneficial as it would encourage researchers and practitioners into res
 
 An initial problem faced in organising such a competition is a format in which the competition could represent the upgrade problem.
 The design of this format would have to follow some design principles to ensure the results would be useful.
-These principles are presented in \cite{treinen2009common}, summarised as:
+These principles are presented in \citep{treinen2009common}, summarised as:
 
 \begin{itemize}
   \item \textbf{Agnostic towards component model details}: 
@@ -672,7 +672,7 @@ These principles are presented in \cite{treinen2009common}, summarised as:
   This also aligns with the morals of the community of FOSS developers, where plain text is the universal information interchange format \citep{ray2003}.
 \end{itemize}
 
-The result of these design goals is the CUDF specification, presented in \cite{treinen2009common}, and presented in the following sections.
+The result of these design goals is the CUDF specification, presented in \citep{treinen2009common}, and presented in the following sections.
 
 \subsection{CUDF Document}
 %%%Here the CUDF document is defined using text and trying to stay away from too many formalisms, just describing concepts to be used later
@@ -845,7 +845,7 @@ Further, if a property does not have a defined default value, then $\emptyset$ i
 %%%Description of a basic preamble, as much of the specification is not used
 The first stanza of any CUDF document is the $preamble$.
 The core goal of this is to define additional properties (and their default values) that can be used to describe a component.
-This property definition is accomplished through using an extensively defined type system in CUDF, and has a complete and complicated specification found in \cite{treinen2009common}.
+This property definition is accomplished through using an extensively defined type system in CUDF, and has a complete and complicated specification found in \citep{treinen2009common}.
 However, as much of this specification is not used in this research only a basic syntax and semantics will be described.
 The syntax of the preamble \verb+property+ value is defined in the BNF grammar as \verb+<properties>+ in figure \ref{formal.cudfpropertysyntax}.
 
@@ -1297,7 +1297,7 @@ one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(\alpha, R
 The CUDF specification does not specify the criteria used to select a solution.
 For the purpose of the MISC competition however, the Mancoosi organisation gave a specification to represent optimisation criteria.
 This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
-This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \cite{treinen2009}. 
+This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \citep{treinen2009}. 
 This grammar is described in figure \ref{formal.optbnf}.
 
 \begin{figure}[h!]

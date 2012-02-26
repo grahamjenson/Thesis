@@ -450,7 +450,7 @@ These criteria, like the sum criteria, can be used in a versatile manner to opti
 
 \subsection{P2}
 %%%Looking at the criteria from the P2 solver
-Eclipse \textbf{P2} \cite{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
+Eclipse \textbf{P2} \citep{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
 Its optimisation, as described in chapter \ref{background}, are focused on minimising the amount of components with no dependencies, the removal of components,
 the age of the installed components, and changing components unnecessarily.
 These are mapped to pseudo-Boolean functions that are then added together to create a single function \citep{leBerre2010}.
@@ -501,7 +501,7 @@ This is solved by scaling the values of these metrics by multiplying with a larg
 The selection of this large integer, is made per metric, and is selected to provide the required resolution to make the metric useful.
 
 \subsubsection{Martin Metrics}
-The first metric that is defined is based on the ``instability'' metric presented in \cite{martin2003}.
+The first metric that is defined is based on the ``instability'' metric presented in \citep{martin2003}.
 This metric was created to measure the a components resistance to change using the incoming and outgoing edges of a package.
 
 \begin{defs}
@@ -525,7 +525,7 @@ the removed instability can be maximised with the criteria \verb!+removed(instab
 The measurement of the instability of a component only takes into consideration other components that are directly connected to it.
 Such a metric, does not take into consideration the entire structure of a graph, therefore can give only local information about a component.
 
-PageRank, presented in \cite{page1998}, is a link analysis algorithm designed to measure the importance of a node in a directed graph.
+PageRank, presented in \citep{page1998}, is a link analysis algorithm designed to measure the importance of a node in a directed graph.
 This algorithm, originally designed to rank the popularity of web pages in returned results from a search engine.
 It can also be used over a dependency graph to measure a components relative importance.
 It propagates values though the graph, meaning that the importance of a component will depend on importance of components that do not directly upon it. 

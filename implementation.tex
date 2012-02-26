@@ -87,7 +87,7 @@ backtracking-based search algorithm for SAT problems represented in conjunctive 
 It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
 By adding literals to $P$ and recursively  calling itself, the DPLL function searches for whether the formula is satisfiable.
-The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \cite{dixon2004automating}:
+The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \citep{dixon2004automating}:
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
@@ -186,13 +186,13 @@ Backjumping \citep{Gaschnig1979} is the technique which determines how far to up
 The higher up the tree the technique ``jumps'' to, the greater reduction of the search space.
 This algorithm typically depends on the learnt clause, where the place that is jumped to is when the clause becomes unit. 
 
-More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \cite{sorensson2009}.
+More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \citep{sorensson2009}.
 This research describes search methods that use other reason clauses to find smaller more succinct leanrt clauses.
 The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
 
 \subsubsection{Watched Literals}
 As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation occurs.
-Attempts to increase the efficiency of this task was initially to find better heuristics \cite{JamesMCrawford1996} for the literal order, to encourage cascades of unit propagation.
+Attempts to increase the efficiency of this task was initially to find better heuristics \citep{JamesMCrawford1996} for the literal order, to encourage cascades of unit propagation.
 These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
 
 It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
@@ -201,7 +201,7 @@ A more efficient approach was proposed using watched literals \citep{Madigan2001
 the clauses maintain an index of the necessary literals and notify the algorithm when they become unit.
 This ``don't call us, we will call you'' concept makes the efficiency of the unit propagation function less dependent on the amount of clauses in the formula.
 
-Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \cite{Moskewicz2001}.
+Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
 Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
 
 %TODO up to here
@@ -243,12 +243,12 @@ This constraint will be satisfied by the literals $\langle x_1, \neg x_2 \rangle
 A pseudo-Boolean constraint can be therefore be represented by a pseudo-Boolean function $f$, an inequality and an integer.
 
 Such constraints, can be translated into the standard CNF, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
-Also given the proper amendments to unit propagation and other algorithms (some of which is described in \cite{Sheini2006}), 
+Also given the proper amendments to unit propagation and other algorithms (some of which is described in \citep{Sheini2006}), 
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
 Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
 
 \subsection{MiniSat and SAT4J}
-MiniSAT presented in \cite{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
+MiniSAT presented in \citep{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
 It uses the DPLL based conflict driven algorithm as discussed above.
 This solver has become popular and is the basis of many other SAT solvers due to its open source distribution.
 This has also lead to a track in the 2011 SAT competitions\footnote{http://www.satcompetition.org/2011/} that deals with only altering MiniSAT to increase performance.
@@ -372,7 +372,7 @@ The request constraints, which were extended in the CUDF mapping, can be mapped 
 \end{itemize}
 
 The update constraints of the form $a_1 + \ldots + a_i = 1$ accomplish the requirement of updated request to have exactly one version of a set of versions installed in the system.
-This constraint could be mapped to SAT constraints in CNF efficiently as described in \cite{silva2007}.
+This constraint could be mapped to SAT constraints in CNF efficiently as described in \citep{silva2007}.
 However, as the requirement to use a pseudo-Boolean solver has already been defined, the most direct method is to map it to a PB constraint.
 
 \subsubsection{Pseudo-Boolean Optimisation}
@@ -407,7 +407,7 @@ The way in which such pseudo-Boolean equations are minimised through the use of 
 
 
 \subsection{Iterative Strengthening}
-The algorithm known as iterative strengthening presented in \cite{calistri1994iterative} and \cite{le2010sat4j}, 
+The algorithm known as iterative strengthening presented in \citep{calistri1994iterative} and \citep{le2010sat4j}, 
 describes an anytime algorithm that iteratively finds better solutions.
 This is done by first finding a solution, then iteratively adding constraints to the formula that ensure the next solution found will be better than the previous.
 This continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
@@ -559,7 +559,7 @@ Given this algorithm and these requirements, there are a few drawbacks to this a
 These include, the optimisation criteria must be linear and real numbers cannot be represented with integer pseudo-Boolean constraints.
 
 %%%The optimisation must be represented linearly
-As noted in \cite{le_berre_dependency_2009} and \cite{leBerre2010} there is no easy solution to extending a SAT solver to handle non-linear constraints.
+As noted in \citep{le_berre_dependency_2009} and \citep{leBerre2010} there is no easy solution to extending a SAT solver to handle non-linear constraints.
 Given the requirement that GJSolver uses a SAT solver as its core, there is no practical way using non-linear constraints for optimisation.
 This stops the definition of some criteria, however this also keeps the criteria practical and efficiently solvable.   
 
@@ -652,7 +652,7 @@ It may be said that the reason for GJSolvers win of the 'user' track could be pu
 
 
 %\section{Other Methods}
-%This \cite{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \cite{Jenson2010a}.
+%This \citep{Stuckenholz2007} study looks at using boolean optimisation with branch and bound as a solution, as does \citep{Jenson2010a}.
 %\subsection{Integer Programming}
 %Discussion of this method as the best MISC solver uses this, it has a very complex implementation
 %\subsection{SMT Solvers}

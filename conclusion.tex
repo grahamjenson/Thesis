@@ -73,16 +73,16 @@ Software evolution is continual management of change to software.
 Software maintenance is often used to describe this,
 however is considered an invalid description of evolution, as it conveys a
 restoration of a system to a previous state, where evolution is a progression
-of changes to a system \cite{lehman_software_2006}. Versioning software is the atomic mechanism of evolution, 
+of changes to a system \citep{lehman_software_2006}. Versioning software is the atomic mechanism of evolution, 
 incrementing systems along the time axis.\\ 
 Evolution is an intrinsic value of real world software
-design and implementation \cite{lehman_programs_1980}. Laws of software
+design and implementation \citep{lehman_programs_1980}. Laws of software
 evolution identified by Lehman include continuing change, increasing complexity and
-continuing growth \cite{lehman_rules_2001} to name a few. These empirically proven laws
+continuing growth \citep{lehman_rules_2001} to name a few. These empirically proven laws
 display the importance of software evolution as a process within software
 engineering.
 
-This paper has many similarities to the empirical work into software evolution by Lehman \cite{lehman1980},
+This paper has many similarities to the empirical work into software evolution by Lehman \citep{lehman1980},
 which looks for laws and relationships between software and its evolutionary process.
 In this paper we aimed to look into the evolution of component systems through CDR,
 and identify the consequences of different definitions of minimal change. 
@@ -96,7 +96,7 @@ However, this research looks at the architectural level into the properties of t
 The mechanisms of exactly 
 
 Research into how the finer-grained evolution of individual components integrates with the larger architectural view of component systems, which
-usually focuses on component versioning \cite{Bauml2009,Stuckenholz2005}.
+usually focuses on component versioning \citep{Bauml2009,Stuckenholz2005}.
 This work aims to add well-defined semantics to component versions, 
 allowing them to describe if a component has changed its external requirements or if it has only changed internally.
 Adding this to component models would allow CDR to make more informed decisions during evolution, 
@@ -109,20 +109,20 @@ their semantics could be tested to find if their effect is positive to system ev
 %%%Mancoosi is by far the most related work, though its focus is slightly different than ours
 As mentioned many times throughout this paper, 
 the Mancoosi organisation is producing significant research in the area of Component Dependency Resolution.
-They have defined the format CUDF \cite{treinen2009common}, to express and solve the CDR problems.
+They have defined the format CUDF \citep{treinen2009common}, to express and solve the CDR problems.
 They also run constant comparisons against different CDR implementations through the Mancoosi International Solver Competition (MISC),
 which we based our experiment on.
-They also contribute significantly in the areas of modelling the problem \cite{Cosmo2010} 
-and defining and researching solutions for it \cite{Trezentos2010}.
+They also contribute significantly in the areas of modelling the problem \citep{Cosmo2010} 
+and defining and researching solutions for it \citep{Trezentos2010}.
 %TODO write more here
 
-Le Berre and Parrain \cite{Berre2008} describe methods for solving dependency resolution with minimal optimisation.
+Le Berre and Parrain \citep{Berre2008} describe methods for solving dependency resolution with minimal optimisation.
 Dependency resolution is used in such areas as software product lines,
-for instance Savolainen et al. \cite{savolainen_analyzing_2007} uses dependency analysis to identify and remove unnecessary features.
+for instance Savolainen et al. \citep{savolainen_analyzing_2007} uses dependency analysis to identify and remove unnecessary features.
 The optimisation of such algorithms is usually hard coded maximising version while minimising components, 
 as discussed in Section \ref{sec:motivation}.
 The algorithms that do optimise for other properties, 
-such as one proposed by Aleti et al. \cite{Aleti2009} that uses ant colony optimisation for quality optimisation,
+such as one proposed by Aleti et al. \citep{Aleti2009} that uses ant colony optimisation for quality optimisation,
 usually are not based on a formal framework for multi-criteria optimisation but defines a specific model for each problem.
 
 \section{Future Work}
