@@ -5,14 +5,16 @@ In order to agree to talk, we just have to agree we are talking about roughly th
 }
 {\textit{The Feynman Lectures on Physics, Motion, Richard Feynman, 1961.}}
 
-%TODO Software evolution is caused by users developers requirements to adapt
 %%%What is Software Evolution
-Software evolution is the necessary process of changing a system to adapt the environment it exists in.
-This environment is changed by the system itself, such that a feedback loop \citep{lehman1980} is created, requiring a cycle of continual evolution.
-This cycle has been empirically studied and laws, like decreasing quality and increasing complexity, have been found that describe the nature and consequences of this process.  
+Software evolution is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
+This evolution is required in order to adapt the system to the software environment, accommodate new user requirements, fix errors, or prevent errors from occurring.
+Evolving software can be difficult as there is a chance of introducing new errors, and the more the system evolves the more complex it can become.
+Software evolution is also costly, as can be seen with the example of the Y2K bug, where it has been estimated that over \$300 billion was spent fixing software in anticipation for the year 2000.
+%TODO cite
 
 %%%Component Evolution
-To help reduce the negative effects and mitigate the risks of this evolution, software is created from encapsulated units called software components. 
+Creating software from encapsulated units, called software components, can help mitigate negative effects of the software evolution process.
+Originially software components where defined in order to maximise reuse to help lower costs of producing software. 
 Software is then created from composing together many software components in a manner specified by a \textbf{component model}.
 The component model is the specification of how software components are described and how they relate to each other to form the system.
 
@@ -54,12 +56,27 @@ The definition of software components and component models with respect to compo
 To conclude this chapter  examples of various component models and CDR implementation are then given in section \ref{background.models}.
 This includes an introduction to the Debian model, and CUDF model that are described in more detail in the following chapters.
 
-\section{Software Evolution}
+\section{Software Evolution and Component-Based Software Engineering}
 \label{background.evolution}
+Software evolution
+\footnote{Sometimes also called software maintenance in this research. 
+However, ``evolution'' is preferred because it implies change, where maintenance implies the restoration to a previous condition.} 
+is the necessary process of changing a system to adapt the environment it exists in.
+This process was first identified by \cite{Lehman1969}\footnote{though it was not refereed to as evolution at that time} 
+That year \cite{McIlroy1969} also described the ideals of software components, which where an industrialised industry creating interchangeable, modular software.
+This was an extension of an idea that McIlroy expressed in a memo \citep{mcilroy1964pipes} where software should be like a garden hose assemble, and components should be screwed together.
+
+Both these domains of software engineering, software evolution and component-based software engineering, have seen massive advancement since 1969.
+In this section these advancements are briefly described, leading up to the 
+
+\subsection{Software Evolution}
+\cite{Brooks1975} stated that over 90\% of the cost of a system occurs after deployment, in the software maintenance phase.
+He also stated that any successful piece of software will inevitably be maintained.
+This realisation lead researches to study this process of changing software after it has been released.
+Arguably the core studies of software evolutions main advancement came 
+
 %%%Software Evolution is
-Software evolution is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
-This evolution is required in order to adapt to the changing environment, which is made up of stakeholders, systems, and other internal and external constraints that impact the system. 
-As the system will inevitably change the environment it is in, continual evolution is necessary in order to satisfy the users. 
+
 
 %%%The nature of this evolution has been explored and laws found
 The nature and fundamental laws of software evolution have be explored through empirical study of the software being evolved.
@@ -273,7 +290,7 @@ Typically, components can be used in many different contexts, e.g. a resistor co
 
 %%%Some history to software components mentioning McIlroy's 1969 paper \citep{McIlroy1969}
 %TODO add more history the development from pure reuse, to the realization that components helps with evolution
-Software component ideals can be traced to \citep{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry. 
+Software component ideals can be traced to \citep{McIlroy1969}, where the author describes industrializing software engineering through a software component sub-industry.
 These components are made through the decomposition of software into discreet units with explicitly stated interfaces and behaviours.
 However, there is still much debate over how to define what a software component is, and what features it should have.
 
@@ -333,7 +350,7 @@ As the intention of this study is to investigate component system evolution, CDR
 the definition of software component will be with respect to these concepts.
 
 %%%This will not fit all views of what a component is (no definition will), but it eliminates unnecessary arguments so we can focus on CDR
-This view of a software components definition will not agree with every persons view of what a software component is, but (as described above) no precise view can.
+This view of a software component's definition will not agree with every persons view of what a software component is, but (as described above) no precise view can.
 By only looking at aspects that are necessary for this research, the arguments over unnecessary semantics can be eliminated. 
 
 \subsection{Software Component}
@@ -351,8 +368,8 @@ This automation also requires an interface for CDR to evolve the system.
 This means that CDR should have the ability to add, remove and replace components in a system.
 As CDR would evolve a system automatically, these actions must be able to be enacted either through a function call, or well defined command interface.
 
-This definition leaves undefined many aspects of component model undefined. 
-This can be seen though the classification from \citep{Crnkovic2011}, of what a component model should define, partially enumerated:
+This definition leaves undefined many aspects of a component model. 
+This can be seen though some of the aspects of a component model from the classification in \citep{Crnkovic2011}:
 \begin{itemize}
   \item Lifecycle 
   		\begin{itemize}
@@ -410,8 +427,8 @@ OSGi is a mature component model from the OSGi Alliance.
 It has implementation from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
 and the Apache foundation with their framework Felix\footnote{http://felix.apache.org/}.
 
-OSGi components are refereed to as bundles, each contains a meta-data file describing the bundles relationships, and a set of Java packages and classes as implementation.
-A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit the service.
+OSGi components are refereed to as bundles, each contains a meta-data file describing the bundle's relationships, and a set of Java packages and classes as implementation.
+A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit, the service.
 These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
 This service layer can also have explicit relationship through frameworks like Spring Dynamic Modules\footnote{http://www.springsource.org/osgi}.
 Under the definition of component in this research, this makes both the bundle layer and the service layer software component models.
@@ -442,7 +459,7 @@ Import-Package: nz.geek.maori.spellchecker;version>"0.0.1"
 %%%OSGI Meta data description
 This meta-data shows the name, version and vendor of the component, as well as the exported packages (referring to Java packages) which are able to be used by other components.
 The \verb+Require-Bundle+ key expresses the direct dependence on another bundle.
-The \verb+Import-Package:+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
+The \verb+Import-Package+ key expresses the dependence on a package provided by a bundle and not on the bundle itself.
 
 \subsubsection{Service Layer}
 This bundle meta-data only contains information necessary for the execution of a component.
@@ -486,7 +503,7 @@ The version of the bundle that is providing the service and the version of the p
 However, for the evolution of a component model, some type of versioning is typically defined.
 
 \subsubsection{Evolution of OSGi}
-The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance \footnote{http://www.osgi.org/javadoc/r4v43/}.
+The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance.\footnote{http://www.osgi.org/javadoc/r4v43/}
 The installation and removal of both the bundles and services from the OSGi system are defined as such:
  
 \begin{itemize}
@@ -545,7 +562,7 @@ An example of one such public repository is the Paremus repository\footnote{http
 
 The specification of OBR does not define a specific strategy, or a mechanism to define strategies to be used during evolution.
 The implementation specific strategy that is used by the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} 
-is described on its help page as,
+is described on its help page as:
 
 \begin{quotation}
 OBR might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
@@ -557,7 +574,7 @@ This shows that when updating a system of bundles, newer bundles may be installe
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
 Eclipse is a widely used IDE and an extensible plugin platform for creating Java applications.
-It is built on top of the OSGi framework, but ignore OSGi's service layer and re-implements it with its own Eclipse plugin runtime.
+It is built on top of the OSGi framework, but ignores OSGi's service layer and re-implements it with its own Eclipse plugin runtime.
 Therefore, the distrusted components are OSGi bundles and the run time elements are plugin services.
 
 These plugins are defined using extensions and extension points, where extensions provide a service for an extension point.
@@ -630,9 +647,9 @@ This registry contains all references to the extensions and extension points in 
 The methods used to add and remove these are:
 
 \begin{itemize}
-  \item add extensions and extension points described in an XML file : \verb+org.eclipse.core.runtime.IExtensionRegistry.addContribution+
-  \item remove extension: \verb+org.eclipse.core.runtime.IExtensionRegistry.removeExtension+
-  \item remove extension point: \verb+org.eclipse.core.runtime.IExtensionRegistry.removeExtensionPoint+
+  \item add extensions and extension points described in an XML file: \\ \verb+org.eclipse.core.runtime.IExtensionRegistry#addContribution+
+  \item remove extension: \\ \verb+org.eclipse.core.runtime.IExtensionRegistry#removeExtension+
+  \item remove extension point:\\ \verb+org.eclipse.core.runtime.IExtensionRegistry#removeExtensionPoint+
 \end{itemize}
 
 The Eclipse plugin system is a component system in this study, 
@@ -728,9 +745,9 @@ The programmatic evolution of a Fractal component system can differ between impl
 To simplify this, only the Java implementation is described. 
 In this implementation the methods to edit the configuration are\footnote{http://fractal.ow2.org/current/doc/javadoc/fractal/}:
 \begin{itemize}
-  \item to create a component: \verb+org.objectweb.fractal.api.factory.GenericFactory.newFcInstance+
-  \item to add a component to a composite: \verb+org.objectweb.fractal.api.control.ContentController.addFcSubComponent+
-  \item to remove a component from a composite: \verb+org.objectweb.fractal.api.control.ContentController.removeFcSubComponent+
+  \item to create a component: \\ \verb+org.objectweb.fractal.api.factory.GenericFactory#newFcInstance+
+  \item to add a component to a composite: \\ \verb+org.objectweb.fractal.api.control.ContentController#addFcSubComponent+
+  \item to remove a component from a composite: \\ \verb+org.objectweb.fractal.api.control.ContentController#removeFcSubComponent+
 \end{itemize}
 
 There are two points that may make the evolution of Fractal component model particularly difficult,
@@ -745,7 +762,7 @@ More difficult solutions could be created by reusing user composites,
 or analyzing the graph structure to extract relationship by using algorithms like the one presented in \citep{dietrich2008cluster}.
 
 Another aspect of Fractal that will make the automatic evolution of systems difficult will be the lack of versioning information.
-Like DS, this component model doesn't not explicitly require the version of the component and the interfaces they provide.
+Like DS, this component model does not explicitly require the version of the component and the interfaces they provide.
 As versions are typically the atomic unit of evolution, the process of selecting a newer version will be made more difficult if not impossible. 
 
 \subsection{Maven}
@@ -855,32 +872,13 @@ They can be executed from other applications through the command line, this make
 
 \subsubsection{Apt-get}
 The application dpkg can only remove and add a single component at a time, it does not resolve the dependencies of the component.
-There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the ``apt'' application.
-This package is built on top of dpkg, to provide an interface to simplify and extend its functionality.
+There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the ``apt-get'' application.
+This tool is built on top of dpkg, to provide an interface to simplify and extend its functionality.
+The apt-get application is a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
 
-From the Apt manual:
-\begin{quotation}
-\begin{alltt}
-apt-get is the command-line tool for handling packages, and may be
-       considered the user's "back-end" to other tools using the APT library.
-       Several "front-end" interfaces exist, such as dselect(1), aptitude(8),
-       synaptic(8) and wajig(1).
- \end{alltt}
-\end{quotation}
-
-Apt is purely a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
-
-The strategy used to update the system and install components into the system is explained in the apt-get manual:
-
-\begin{quotation}
-\begin{alltt}
-       under no circumstances are currently installed packages removed, or packages
-       not already installed retrieved and installed. New versions of
-       currently installed packages that cannot be upgraded without
-       changing the install status of another package will be left at
-       their current version.
- \end{alltt}
-\end{quotation}
+Apt-get follows some basic criteria when altering the system.
+For example, when upgrading the system under no circumstances will apt-get remove an already installed package, or retrieve a package that is not installed. 
+Such criteria exist for each different function, such as install, and remove.
 
 Another application that extends APT further is Aptitude \citep{Burrows2005}.
 This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
@@ -981,10 +979,10 @@ Further definition of the syntax and semantics of CUDF is in chapter \ref{formal
 %%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
 The CUDF component model is defined especially to compare CDR implementations, therefore many various implementations exist.
 Some of these will be discussed in the latter chapter \ref{implementation}.
-However, here only the default implementation , Modular Package Manager \citep{abate2011} (MPM), is discussed.
+However, here only the default implementation, Modular Package Manager \citep{abate2011} (MPM), is discussed.
 This implementation was created by the Mancoosi organisation to explore the possibility of using CUDF to evolve real systems.
 
-In the study from \citep{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
+In the study by \cite{abate2011}, this package manager was compared against other component solvers, such as apt and aptitude, and shown to be an improvement.
 This CDR implementation is the first to allow the user to completely specifiy the criteria by which the solver selects a system.
 In the study the solver first minimised the amount of packages removed from the system, and then minimised the amount of packages changed in the system.
 Further discussion of these criteria and how they are combined is discussed in chapter \ref{strategies}. 
