@@ -11,7 +11,7 @@ However, ``evolution'' is preferred because it implies change, where maintenance
 Further discussion about semantic differences are discussed by \cite{Godfrey2008}} 
  \citep{lehman1980} is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
 This evolution is a necessary process as the system must adapt to the software environment, accommodate new user requirements, 
-fix errors, or prevent errors from occurring in the future\citep{IsoIec2006}.
+fix errors, or prevent errors from occurring in the future \citep{IsoIec2006}.
 The concept of software evolution has been around since the 1960's \citep{Lehman1969}, 
 however some still see it at a young field \citep{Godfrey2008} as many open questions left to be answered.
 
@@ -19,46 +19,45 @@ however some still see it at a young field \citep{Godfrey2008} as many open ques
 One such open question is: \textit{how can software engineers lower the cost of software evolution?}
 The cost of evolving a system was estimated by \cite{Brooks1975} to be as high as 90\% the total cost of the system.
 More recent efforts to explore the cost of software evolution still report evolution costs as extremely high \citep{Grubb2003}.
-To mitigate these costs various methods, like the agile software development \citep{beck2001manifesto},
-and tools, like refactoring \cite{fowler1999refactoring}, have been developed. 
+To mitigate these costs various methods like the agile software development \citep{beck2001manifesto},
+and tools like refactoring \citep{fowler1999refactoring}, have been developed. 
 Another way to lower costs of the software evolution process is through creating systems from encapsulated units, called software components \citep{Szyperski2002}.
 
 %%%Composition
 A component system is created out of a set of components that are combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
-This composer is also the ``evolver'' of the component system, as they have the power to alter the composition of components that make the system.
-Originally it was implied that the developer was the composer \citep{Parnas1972}, where they would compose and verify a system then release it.
-However, recently the user has started to fill the composer role, where they obtain components and compose their own systems.
+This composer is also the ``evolver'', as they have the power to alter the composition of components that make the system.
+Originally it was assumed that the developer was the composer \citep{Parnas1972,PrietoDiaz1987}, where they would compose, verify then release a system.
+However, recently the user has started to fill the composer role, where they compose their own systems to satisfy their requirements.
 
-The situation where the composer of the system is the user has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
-It has been noted that the potential, and fragility, of component systems increases with this user composition \citep{Szyperski2002}.
-The potential is increased as the user can craft solutions without requiring expert assistance,
-and the fragility is increased as the quality of a system cannot be verified by a developer before use.
+The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
+It has been noted that the potential, and fragility, of component systems is increased with this user composition \citep{Szyperski2002}.
+A system has more potential as the user can craft solutions without requiring expert assistance,
+and the system is more fragile as the quality of a system cannot be verified by a developer before use.
 
 The decoupling of the developer and composer roles also breaks the developer's control over the evolution of the component system.
-As the developer is no longer the composer, they can no longer change or test the system that their component is deployed in.
-This means that the component may evolve asynchronously from the systems it is in.
-That is, a component can be developed, versioned and released without consideration of the systems that use it.
-The evolution of a component, and the evolution of a component system are then two separate, but intertwined processes,
-where the components are evolved by the developers, and the component systems are evolved by the users.
+The developer can no longer change or test the system that their component is deployed in.
+This means, a component can be developed, versioned and released without consideration of the systems that use it.
+The evolution of a component, and the evolution of a component system are then two separate, but related processes.
+The components are evolved by the developers, and the component systems are evolved by the users/composers.
 
-If the user is to be the composer, and they are not a technical expert, then the composition and evolution of a component system must have some guidance \citep{Szyperski2002}.
-The core technical aspect when altering a component system comes complex relationships between components.
+If the user is to be the composer, and they are not a technical expert, then there must be guidance when composing or evolving a component system \citep{Szyperski2002}.
+The core technical knowledge required to compose a component system comes from the complex relationships between components.
 These relationships create constraints that must be satisfied in order for the systems components to be functional.
 The guidance to satisfy these constraints comes in the form of a function called in this research Component Dependency Resolution (CDR).
-For CDR to be used the relationships between components must be explicit, as then they can be used to extract the constraints.
-CDR is then a tool that takes a user's request to change the composition of their system, and attempts to create a functioning system 
+CDR is  a tool that takes a user's request to change the composition of their system, and attempts to create a functioning system 
 that satisfies all component relationship constraints and the users request.
 
 %%%Defining components
 How ``software component'' is defined will impact component system evolution and CDR.
-The definition of ``software component'' has not yet been specified due to community disagreements over even fundamental aspects of software components \citep{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000}.
-This makes it impossible to find a definition to satisfy everyone.
-However, by defining a software component only with respect to component system evolution and CDR, this process can be studied without the paralysis of finding a precise and complete definition.
-In this research a software component is defined to have explicitly declared relationships and mechanisms to automatically alter the component composisiton.
-These two properties allow CDR to evolve a component system, though they may lead to conflicts with other definitions. 
+It is difficult to find a precise definition of what a software component is, as the intuitive concept may be quite different from any model or implementation \citep{Crnkovic2011}.
+Finding a definition that satisfies every party may be an impossible task.
+However, by defining a software component only with respect to component system evolution and CDR, 
+this process can be studied without the paralysis of finding a complete definition.
+In this research a software component is defined to have explicitly declared relationships and with mechanisms to automatically alter the components composition.
+These two attributes allow CDR to evolve a component system and component system evolution to be studied. 
 
 %%%Examples of component models
-With respect to component system evolution, various component models can be described.
+With respect to this definition various component models can be described.
 These component models can differ by functionality, platform, or their objectives for being created.
 They may also have their own CDR implementations, created to assist in their component systems evolution. 
 
@@ -71,23 +70,23 @@ This includes an introduction to the Debian model, and CUDF model that are descr
 
 \section{Software Evolution and Component-Based Software Engineering}
 \label{background.evolution}
-Software evolution
-is the necessary process of changing a system to adapt the environment it exists in.
-This process was first identified by \cite{Lehman1969}, though it was not refereed to as evolution at that time.
-That year \cite{McIlroy1969} also described the ideals of software components, which where an industrialised industry creating interchangeable, modular software.
-This was an extension of an idea that McIlroy expressed in a memo \citep{mcilroy1964pipes} where software should be like a garden hose assemble, and components should be screwed together.
+The foundations for software evolution, software components, and component systems can all be traced to the year 1969.
+Software evolution, the process of changing a system to adapt the environment it exists in, 
+was first identified by \cite{Lehman1969}.\footnote{though it was not refereed to as evolution at that time}
+\cite{McIlroy1969} also first described his concept of software components that were created by a subindustry.
+Furthermore, that year the the operating system Unix \citep{raymond2003art} was developed, which at its core philosophy is a modular system.
 
-Both these domains of software engineering, software evolution and component-based software engineering, have seen massive advancement since their inceptions in 1969.
-In this section these advancements are briefly described, leading up to the descriptions of component, and component system evolution.
+The domains of software engineering, software evolution and component-based software engineering, have seen massive advancement since their inceptions in 1969.
+In this section these advancements are briefly described, leading up to the descriptions of component evolution, and component system evolution.
 
 \subsection{Software Evolution}
 \cite{Brooks1975} stated that over 90\% of the cost of a system occurs after deployment in the maintenance phase,
 and that any successful piece of software will inevitably be maintained.
-This realisation, that software requires significant expense to change after deployment, lead researches to study software after it has been released.
-In this research software maintenance and software evolution are synonyms, though there are varying semantics of both \citep{Lehman2006,Godfrey2008}.
+This realisation, that software requires significant expense to maintain, lead researches to study how software behaved after deployment.
+In this research software maintenance and software evolution are synonyms, though some consider them different processes \citep{Lehman2006,Godfrey2008}.
 
-In 1980 two of the fundamental studies on the emerging domain of software evolution where published.
-\cite{Lientz1980} explored the activities that occur during software maintenance;
+In 1980 two of the fundamental empirical studies on the emerging domain of software evolution where published.
+The first study by \cite{Lientz1980} explored the activities that occur during software maintenance (later formalised in \citep{IsoIec2006});
 \begin{enumerate}
 	\item \textit{Adaptive Maintenance}: adapting to new system or technical requirements
 	\item \textit{Perfective Maintenance}: adapting to new user requirements
@@ -97,8 +96,8 @@ In 1980 two of the fundamental studies on the emerging domain of software evolut
 
 In this study, it was shown that around 75\% of the maintenance effort was on the first two types, and corrective maintenance took about 21\% of the effort.
 
-\cite{lehman1980} explored the effect these activities have on the software, and discovered a set of laws, similar to the laws of nature like gravity;
-
+the second study by \cite{lehman1980} explored how the evolution effected the software.
+He discovered a set of laws, similar to the laws of nature like gravity, that characterise software evolution:
 \begin{enumerate}
   \item \textit{Continuing Change:} Systems\footnote{E-type systems: software implemented in a real-world computing context} must be continually adapted 
   otherwise, they become progressively less satisfactory
@@ -112,17 +111,16 @@ In this study, it was shown that around 75\% of the maintenance effort was on th
 \end{enumerate}
 
 %%%These laws describe the fact that it is impossible to create a single satisfactory system, and an iterative approach is best to strive for continual satisfaction
-Both the activities from \cite{Lientz1980} and the laws from \citep{lehman1980} describe the view that
+Both the activities from \cite{Lientz1980} and the laws from \citep{lehman1980} show the view that
 the software engineer's objective of creating a satisfactory system is impossible.
-The continual evolution of the system is necessary, it reduces the systems quality, and it is costly.
+Therefore, the continual evolution of a software system is necessary, and this evolution will reduces quality, increase complexity, and be costly.
 
 From the perspective of software evolution, the software engineer's goal is then to create a system that can be quickly altered to adapt to a changing environment, 
 while working to reduce the inevitable complexity caused by this change.
-Towards such goals the iterative, spiral software development process what presented by \citep{Boehm1988}.
-This process, as shown in figure \ref{background.spiral},
-shows the tasks of communication, planning, modeling, construction, and deployment. 
+Towards such goals iterative development processes have been created, such as the spiral development method presented in \citep{Boehm1988}.
+This process, as presented in figure \ref{background.spiral},
+shows the stages of development as communication, planning, modeling, construction, and deployment. 
 These stages are continually iterated until the software project reaches the end of its life. 
-This is a common model used to develop a software system, and shows the concept to consider evolution during the software development. 
 \begin{figure}[h!]
 \begin{center}
   \includegraphics[width=0.6\textwidth]{backgroundpics/spiral}
@@ -131,83 +129,94 @@ This is a common model used to develop a software system, and shows the concept 
 \end{center}
 \end{figure}
 
+The practical problems that research into software evolution have predicted can be seen in the struggle with legacy software \citep{Bennett1995}.
+Legacy software is functional software that is old and outdated, but due to its critical status, it not being well understood, or the cost to redesign it, 
+it has not been replaced.
+A piece of software is described as ``legacy'' if it cannot be evolved  (due to its complexity or size) within an acceptable cost \citep{Bisbal1999}.
+As a legacy system cannot be evolved, new user and technical requirements cannot be fulfilled, and the satisfaction with the system will decrease over time.
+This inevitable consequence of software evolution has lead the problem of legacy software to be described as enduring \citep{Bennett2000}. 
+
 Current explorations of the past and state-of-the-art in software evolution are presented in \citep{Bennett2000}, \citep{Lehman2003}, and \citep{Godfrey2008}.
 In all these papers, the importance of software evolution is stressed, and the need for more knowledge about the evolution process and its properties is discussed.
 
-\subsection{Component-Based Software}
-\cite{McIlroy1969} first outlined the concept of software components, and using them to industrialize the creation of software.
-This report is an expansion on an earlier idea presented in \citep{mcilroy1964pipes} 
-where he described having software components fit together like screwing a hose to a tap.
+\subsection{Component-Based Software Engineering}
+The concept of Component-Based Software Engineering (CBSE) was first outlined by \cite{McIlroy1969}, 
+by describing the idea of a software components subindustry, which created components to be used to in software.
+This report is an expansion on an earlier idea for \textit{pipes}, presented in \citep{mcilroy1964pipes}, 
+where he described having software fit together, like screwing a hose to a tap.
 
-Originally, the concept of using software components had one core benefit, the reuse of code in order to decrease development time.
-However, as described above, the majority of the cost of a software system is in the software evolution stage.
-With that, further benefits of using components where identified by \cite{Parnas1972}:
+Originally, using software components had one perceived benefit, the reuse of code in order to decrease development time.
+Other benefits of constructing systems from modular components where identified by \cite{Parnas1972}:
 \begin{itemize}
-  \item \textif{Managerial}: develop components in seperate groups with little communication
-  \item \textit{}
+  \item \textit{Managerial}: develop components in separate groups with little communication
+  \item \textit{Product Flexibility}: make drastic changes to one component, without changing others
+  \item \textit{Comprehensibility}: be able to study the system one module at a time
 \end{itemize}
 
-This, where a component  defined in order to maximise reuse to help lower costs of producing software .
-However, there focus quickly moved towards the evolvability of a system, such that now the main driving force of software components is the evolvability of a component system \citep{Szyperski2000}.
+The software component concept was soon picked up by other researchers such as \cite{Yourdon1976}, where he described his ideas on structured design as:
+\begin{itemize}
+  \item the art of designing the components of a system and the interrelationship between those components in the best possible way.
+  \item the process of deciding which components are interconnected in which way to solve some well-specified problem.
+\end{itemize}
+\cite{Yourdon1976} lists the goals of such a design as efficiency, maintainability, modifiability, generality, flexibility, and utility.
+These goals are aimed to be achieved by dividing the system into functional units that can be treated independently.
+Each unit corresponds to exactly one small, well-defined piece of the system, and the units relationship corresponds to a relationship between pieces of the system.
 
+A problem soon emerged when using software components, that of which composition of components to use.
+\cite{PrietoDiaz1987} describe this as the \textbf{selection problem}, where a composer can have many alternative compositions of components to select from.
+This increases the effort required to use software components, as each possible combination must be examined and ranked based on how well they match the composers specifications.
+How to describe a component and its attributes \citep{treinen2009common,Xinjuan2007},
+how to search for a compositions fits a set of requirements \citep{abate2011,Kwong2010,treinen2009,DeAlmeida2004}, 
+and how to rank a particular composition \citep{Chen2011,Aleti2009} are still themes of current research.
 
+A current perspective on component-based software engineering (CBSE) is that software components main driving force is increasing the evolvability of a system \citep{Szyperski2000}.
+However, the concept of a software component subindustry as originally described by \cite{McIlroy1969}, is seen as never truly come to fruition \cite{Szyperski2002}.
+A possibility for this is the unsure definitions of what a software components are \citep{Crnkovic2011}.
+The current state of CBSE is fractured, where there are many different component frameworks (some presented in section \ref{background.models}),
+each with different goals and attributes.
+The hope for CBSE, as described by \cite{Crnkovic2011}, is that the technology and research will converge, and terms and concepts in the software component domain will become standardised.
+This problem is later described in section \ref{background.components}, where the software component definition in this research is discussed.
 
-%%%How CBSE helps with these goals of a software developer
-As stated above, the goals of a software engineer are to create a system that can be continually changed with minimal cost and delay,
-while maintaining intellectual control over the systems complexity.
-Towards these goals component based software engineering (CBSE) was created.
+\subsubsection{Unix and GNU/Linux Modular Operating Systems}
+The research into software components by \cite{McIlroy1969} coincided with his help in the development of the operating system Unix \citep{raymond2003art}. 
+McIlroy had significant impact not only on the implementation of Unix, where many of his ideas like pipes where included,
+but also on Unix's philosophy. 
+The Unix philosophy is summarised by McIlroy as \citep{Salus1994}:
+\begin{quote}
+Write programs that do one thing and do it well. Write programs to work together. 
+Write programs to handle text streams, because that is a universal interface.
+\end{quote}
 
-%%%What is component based software engineering
-CBSE is considered by some to be the future for development of software systems \citep{Szyperski2002}.
-It creates software systems by composing encapsulated units, software components, together.
-The encapsulation of software components limits the relationships to one another, decreasing complexity and increasing intellectual control over the system.
-Using software components also has the benefit of encouraging reuse, where a component developed for one system can be used in others easily.
+This philosophy lead to the first two rules of Unix, as listed in \citep{raymond2003art}:
+\begin{itemize}
+  \item \textit{Rule of Modularity}: Write simple parts connected by clean interfaces.
+  \item \textit{Rule of Composition}: Design programs to be connected to other programs.
+\end{itemize} 
 
-%%%Complexity in a monolithic system vs change to component system
-In a non-component based system any part of the system can depend on any other part.
-This can create unnecessary complexity which makes evolving the system a difficult task.
-This problem has lead to metrics \citep{martin2003} to measure the complexity of dependencies to try to mitigate their effect on the system.
-Software components should be encapsulated except for purposely exposed interfaces that can be used by other components.
-Limiting relationships to either between components or interfaces is intended to reduce the complexity of the system.
-This reduced complexity can lower the difficulty of change to the system, making evolution less costly.
-Metrics \citep{Chen2011} developed that use the relationships of component system can be employed to help further reduce complexity.
+To eliminate the perceived problems of the proprietary Unix system, Richard Stallman, in 1983, created the GNU project \citep{stallman1985gnu} in order to create a free Unix-like operating system.
+With a kernel developed by Linus Torvalds based on the MINIX \citep{tanenbaum1989minix} operating system, the GNU/Linux \citep{torvalds2002just} operating system was created.
+GNU/Linux is seen as a return to the original philosophy of Unix by \cite{Gancarz2003}, where the creation of small modular programs that interact is central.
+Aligned with this philosophy, a distribution of GNU/Linux called Debian \citep{Barth2005} was announced in 1993.
+This release came with the Debian Manifesto \citep{murdock1994brief} 
+that stated that Debian would be constructed from high quality components (or packages) which can be maintained by experts.
 
-%%%Intellectual control over the complexity of the system is increased
-The reduction of the complexity in component based system has the additional benefit of increasing the intellectual control over a system.
-That is, a developer can grasp concepts and relationships between components easier than between finer grained units like objects.
-This lower complexity should allow the developer to make more effective changes to the system 
-as the number of elements and their relationships are decreased.
+Initially, a significant amount of technical expertise was required for a user to be a composer of packages to create or change a Debian system.
+This was because the selection problem (as discussed above) was left to be resolved by the user.
+If a user wanted to build or change a Debian system, they would have to find, select, then install all the packages they wanted in the system.
+The user would also have to make sure that all the constraints caused by the relationships between components were satisfied.
 
-%%%Maximising reuse
-Reuse is often cited as the main driving force of component technology as it has been empirically shown to increase the quality and productivity within software development \citep{hallsteinsen_experiences_1997}.
-The amount of reuse in a system will also decrease the amount of necessary change during system evolution, as there is less replicated functionality to maintain.
-The greatest obstacle to reuse is the difficultly to locate and access required functionality quickly and easily \citep{Ye2001}.
-As a component expresses the functionality it provides in the interfaces it exposes, the ability to find and reuse functionality is increased.
+With the release of the application apt-get, the necessary technical knowledge for the user to compose a Debian system was significantly reduced.
+With this application, the wanted change to the system could be stated, and finding, selecting and installing a solution was automated.
+This is one of the first CDR implementations to enable the the user to become the composer of a component system.
 
-%%%Conclusion
-An important distinction must now be made between the evolution of a single component, and the evolution of a component system.
-This discussion is continued in the following section.
-
-\subsubsection{Component Versions}
-The atomic unit of the evolution of a piece software is the \textbf{version}.
-A software version is assigned to a piece of software that allows a comparison to other pieces of software.
-This comparison total order over the different software changes to be defined.
-In large software systems the version 
-
-\subsection{Component Evolution vs. Component System Evolution}
+\section{Component Evolution vs. Component System Evolution}
+\label{background.componentsystemevolution}
 %%%Evolution of a component system is made up of two cycles, the component evolution and system evolution.
-Evolution is the repeated change of a software system to adapt to its context.
-There are two contexts that exist when considering the evolution of a component based system:
-the context the component exists in, and the context that the component system exists in.
-These two contexts may be distinct and cause two different cycles of evolution, the evolution of individual components, and the evolution of component systems.
-For each of these contexts there exists a separate process of evolution.
-These processes, although related, have different features and aspects that must be discussed.
+If the developer of a component is not also the composer of the system it is deployed in, the evolution of the component, and the evolution of a component system are separate processes.
+These difference and relationship between these processes is discussed in this chapter.
 
-\subsubsection{Component Evolution}
-%%%Two main differences with component evolution and typical software evolution, is the definition and testing of relationships,
-%%%And the declaration and distribution of a version, not a system
-The evolution of a component is similar to the evolution of a typical piece of software, using process like the one presented in figure \ref{spiral}.
-The differences between component evolution and typical software evolution are caused by the encapsulation from other components and their composition into a single system.
+\subsection{Component Evolution}
+When evolving an individual component, the encapsulation from other components and their composition into a system must be considered.
 
 Component encapsulation allows the simultaneous and separate development of components.
 As a developer of a component may not have control over the development of related components, each component may have a different evolution cycle.
@@ -236,7 +245,22 @@ Other studies look at aspects like the evolution of specifications \citep{Mencl2
 and the general concepts related to this evolution \citep{Rhode2000}.
 This area is closely related to the well studied and active research area of software evolution.
 
-\subsubsection{Component System Evolution}
+\subsubsection{Component Versions}
+A software version is assigned to a piece of software that allows a comparison to other pieces of software.
+This comparison creates a total order over the different software changes to be defined.
+
+In a component system a version has semantics, it can be used to reason about the component.
+This is not the case for all software, e.g. Windows 2000 is a lesser version than Windows 7.
+Component versions are typically only comparable 
+
+These semantics are typically defined in the component model.
+For example, the OSGi component model specification \citep{osgicore2007} describes a lexicographical version model 
+where there are three integers (major,minor,micro) and one string (qualifier) separated by the delimiter ``.''.
+A component in the OSGi component model could have a version \verb+2.4.6.beta+.
+TODO
+
+
+\subsection{Component System Evolution}
 The evolution of a component system is accomplished through altering the set of components contained within the component system.
 This is opposed to the evolution of individual component which alters the internal structure of a component.
 This architectural level view of evolution is different as it does not concern itself with the internals of the constituent components only the relationships between the components.
