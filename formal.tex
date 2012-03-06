@@ -17,20 +17,20 @@ Where one solution installs the newest text-editor it also requires reinstalling
 while the alternate solution only requires changing the text-editor.
 Both solutions will resolve the user's request, therefore the selection of an optimal solution is required.  
 
-The first step in solving such component evolution problems is to represent them formally, i.e. the semantics.
+To solve such component evolution problems they must be represented formally, i.e. their semantics must be defined.
 These problems have constraints from component relationships, e.g. ``depends'' and ``conflicts''.
 What exactly these relationships mean must be defined, before the concept of a ``solution'' can be explored.
 These problems also require a framework in which to choose between various possible solutions.
 The user's strategy will define which solution to select, but how to define which solution to pick is a difficult task.
 
-The second step in solving component evolution problems is to be able to describe and convey them efficiently, i.e. the syntax.
+To solve component evolution problems, their representation must be efficiently expressed in a language, i.e. their syntax must be defined.
 A well formed language which maps to the semantics will enable a concise description of an evolution problem.
 This description which will fully contain an evolution problem can then be used to find a solution.
 
-In this chapter the semantics and syntax of the evolution of a component system is formally defined.
-The core atomic problem in component system evolution is an evolution problem, the change made to the system at the user's requests.
+In this chapter the semantics and syntax of the evolution of a component system are formally defined.
+The core atomic operation when evolving a component system is described as an evolution problem, the change made to the system at the user's requests.
 The formal definition and the properties of the evolution problem and system evolution are presented in section \ref{formal.step}.
-Through iteratively solving evolution problems, generations of the system is created over a period of time,
+Through iteratively solving evolution problems, generations of the system is created over a period of time.
 A discussion on this generational evolution of a component system is given in section \ref{formal.evo}
 
 The way in which the user's strategy selects and optimal solution is represented in this research through the use of a criteria composed lexicographically.
@@ -39,7 +39,7 @@ It is shown that when such criteria are composed they remain a ranking system ov
 
 The syntactic representation of the evolution problem and the user strategy's criteria 
 are through the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/} (MOF).
+and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF).
 These allow an evolution problem to be described and how an optimal system is defined in order to find solution.
 Both CUDF and MOF are defined and mapped to their semantic counterparts in section \ref{formal.cudf}. 
 
@@ -618,7 +618,7 @@ CUDF was defined as an abstract representation the evolution problem of open sou
 It was designed in order to allow the comparison of various implementations designed to solve CUDF problems, 
 and to create a generalised solver tof such problems.
 In both aspects CUDF has succeeded.
-The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/} has been held, both in 2010 and 2011 as well as intermittently, 
+The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012} has been held, both in 2010 and 2011 as well as intermittently, 
 to compare various state of the art, and legacy, solvers.
 The solver MPM, presented in \citep{abate2011}, was designed and created to solve real world problems represented in CUDF.
 
@@ -1297,7 +1297,7 @@ one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(\alpha, R
 The CUDF specification does not specify the criteria used to select a solution.
 For the purpose of the MISC competition however, the Mancoosi organisation gave a specification to represent optimisation criteria.
 This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
-This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \citep{treinen2009}. 
+This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \citep{Treinen2009}. 
 This grammar is described in figure \ref{formal.optbnf}.
 
 \begin{figure}[h!]

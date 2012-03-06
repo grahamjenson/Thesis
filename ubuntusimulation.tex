@@ -99,7 +99,7 @@ Debian has a package type called a virtual package, this is an abstracted packag
 These packages provide an interface to some common functionality that can be provided by multiple packages.
 For example any package providing the virtual package \verb+dhcp-client+ must include dhcp client functionality. 
 Unlike other component models where this interface is defined in a verifiable manner like code or an ADL,
-Debian defines virtual packages in documentation, a list of which is provided on the Debian site\footnote{http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt/}.
+Debian defines virtual packages in documentation, a list of which is provided on the Debian site\footnote{http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt/ accessed 6/3/2012}.
 
 The main aspect that requires consideration when mapping from dpkg to CUDF is that only dependencies where no version is specified can be fulfilled by a virtual package.
 For example, a dependency on \verb+foo+ can be satisfied by a package providing a \verb+foo+ virtual package, 
@@ -187,7 +187,7 @@ After filtering such packages out, the list has 2087 packages that the user can 
 
 %%%PopCon
 The probability a package from app-install-data may be selected by the user for installation, must still be weighted.
-For this task the data set available from the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/} is used.
+For this task the data set available from the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012} is used.
 The Ubuntu popularity contest is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
 Each week this automated survey is submitted by nearly two million users, that contains information on what packages a user has installed and uses.
 The packages that are most popular are not the ones users most install, but packages that are most depended upon.
@@ -728,7 +728,7 @@ This usually has many formal aspects to it, in Ubuntu there is an official sched
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{ubuntusimulationpics/ubunturelease}
-  \caption[labelInTOC]{The Ubuntu release schedule from https://wiki.ubuntu.com/LucidReleaseSchedule}
+  \caption[labelInTOC]{The Ubuntu release schedule from https://wiki.ubuntu.com/LucidReleaseSchedule accessed 6/3/2012}
   \label{ubuntuSchedule}
 \end{center}
 \end{figure}

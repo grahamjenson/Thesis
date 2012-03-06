@@ -51,7 +51,7 @@ This chapter is finished with a brief discussion on how criteria can be composed
 \label{strat.usersurvey}
 %%%The survey used to validate and refine the model
 To describe and define the strategies that different users employ to evolve their component systems an online survey was conducted.
-This survey targeted users of GNU/Linux distributions, specifically Ubuntu, and also server administrators through the online forum reddit\footnote{http://reddit.com}.
+This survey targeted users of GNU/Linux distributions, specifically Ubuntu, and also server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
 In this context the way in which component systems are evolved is through package managers, as described in chapter \ref{background}.
 It was completed by 59 users, who answered questions about them selves, the system they are evolving, and the way in which they evolve it.
 It also involved the submission of package manager log files, which enable the processing for real update and install probabilities.
@@ -95,7 +95,8 @@ It also provided a small verification of the survey, as to see if anything was m
 %%%The results are summarised as:
 The type of user that submitted the survey is important to be able to put in context their replies.
 Most users (29/59) used dpkg component model either in Debian or Ubuntu systems, and the majority of those uses used apt-get as their package manager.
-The next largest component model used was ArchLinux\footnote{http://www.archlinux.org/} (13/59) each one using the package manager pacman\footnote{http://www.archlinux.org/pacman/}.
+The next largest component model used was ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012} (13/59),
+each one using the package manager pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012}.
 Other represented component models and package mangers include, Fedora with the rpm component model and yum package manger,
 Slackware with pkgtools, and Gentoo with portage.
 
@@ -538,7 +539,7 @@ The PageRank of a node $a$ is then $PR(a) = 1-d + d\sum\limits_{v \in I(a)} \fra
 where $d$ is the damping factor (typically set to $.85$).
 Also to note, a node that has no outbound edges, i.e. $L(a) = 0$, is assumed to link to all nodes (including itself) in the graph.
 This function is iteratively applied and normalised so the sum of all PageRanks equals $1$, until it stabilises.
-The specific implementation used to calculate PageRank is from the library networkx\footnote{http://networkx.lanl.gov/}.
+The specific implementation used to calculate PageRank is from the library networkx\footnote{http://networkx.lanl.gov/ accessed 6/3/2012}.
 
 Like the instability metric, the PageRank of a component represents the risk of changing a component.
 The higher the PageRank, the more depended upon it could be in a given system.
@@ -556,7 +557,7 @@ given the function $auth(a)$ returns the authority metric of node $a$, $hub(a)$ 
 $I(a)$ returns the set of nodes with edges incoming to $a$, and $O(a)$ returns the set of nodes with edges outgoing from $a$;
 $auth(a) = \sum \limits_{i \in I(a)} hub(i)$ and  $hub(a) = \sum \limits_{i \in O(a)} auth(i)$.
 To calculate these values, they are itertivly applied till they stabalise.
-The specific implementation used to calculate HITs values is from the library networkx\footnote{http://networkx.lanl.gov/}.
+The specific implementation used to calculate HITs values is from the library networkx\footnote{http://networkx.lanl.gov/ accessed 6/3/2012}.
 
 The authority metric this is similar to the PageRank and instability metrics, in that it can be used as a measure of risk in changing a component.
 Removing a component that has a high authority may increase the risk of change in the system.
@@ -574,7 +575,7 @@ Users may have preferences on any range of contained information that could be e
 or other more specific information like date of release or certification.
 This information may effect the desirability of a system, therefore could be considered. 
 For example, there are many users of systems that have a preference for open source software, 
-which can be released under licences like the GNU General Public Licence\footnote{http://www.gnu.org/copyleft/gpl.html} (GPL).
+which can be released under licences like the GNU General Public Licence\footnote{http://www.gnu.org/copyleft/gpl.html accessed 6/3/2012} (GPL).
 This preference could come from the moral decision that freed software is better or from some business rule stating that GPL licences conform to a business model.
 Therefore, a component that has such a licence is preferred over one that does not.
 Allowing the specification of such criteria may allow more users to evolve systems to be more suited to their needs.
@@ -591,7 +592,7 @@ Then a criteria could be developed in order to select the spell checker that pas
 %%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
 Community efforts to rank and review different components could also be used in order to optimise evolution.
 Many such communities already exist that discuss and rate components, they provide a unique source of information that the user may use to evolve their system.
-For example, the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/} is an automated survey that collects information from the community to find popular components.
+For example, the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012} is an automated survey that collects information from the community to find popular components.
 If such information was used, more popular components could be installed with the assumption they are more developed and maintained.
 
 %%%Why have we not defined such criteria

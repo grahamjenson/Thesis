@@ -4,6 +4,8 @@ the words "we" "I" "our" "us" must be chaged
 However --> However, 
 package ---> component when not reffering specifically to an ubuntu or CUDF package
 
+search for http, make sure for accessed date
+
 up to date ---> up-to-date
 upgrade -- is to replace an existing component with a newer version.
 
