@@ -1,83 +1,73 @@
-\chapter{Component Dependency Resolver}
+\chapter{Component Dependency Resolution}
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
 Finding any solution to an evolution problem is NP-Complete, and finding an optimal solution is NP-Hard.
-Therefore, automating component system evolution will require an efficient algorithm and implementation.
-The function that finds and returns a optimal solution to an evolution problem in this research is called a Component Dependency Resolver (CDR). 
-
-%%%The efficiency of the implementation is important as the problem can combinatorially grow into a hard problem 
-The efficiency of CDR is a significant requirement.
-Many components may exist in evolution problems, each with multiple versions, and each version with multiple relationship constraints.
-This problems complexity grows  in combinatorial manner with the addition of components, making any ad-hoc, or overly simple, CDR implementation easily overwhelmed.
+Given the difficulty of finding an optimal solution, any CDR implementation which attempts to automate the process must be efficient.
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-To find a solution to an evolution problem the set of relationship and user request constraints must be satisfied.
-These constraints create a problem that closely resembles the Boolean Satisfiability Problem (SAT), which has fast, robust solver implementations that can be used.
-This has been noticed by other researchers \citep{Berre2008,Mancinelli2006} 
-and the use of SAT solvers to implement CDR in both academia \citep{abate2011} and industry \citep{leBerre2010} has become common.
-
-%%%Finding the optimial solutions requires extensions to SAT solvers
-The finding of an optimal solution to an evolution problem is impractical when representing the problem in only SAT constraints. 
-Through extending a SAT solver implementation to also handle other types of constraints, specifically pseudo-Boolean constraints, optimisation becomes practical.
-Such extensions have been used to solve other problems \citep{dixon2004automating}, as well as within other CDR implementations \citep{le_berre_dependency_2009}.
+To create an efficient CDR implementation a common solution, in both academia \citep{abate2011} and industry \citep{leBerre2010}, 
+is to map the evolution problem to a Boolean Satisfiability Problem (SAT),
+and represent the criteria as a set of  pseudo-Boolean (PB) constraints \citep{dixon2004automating}.
+Many fast and robust solvers exist that solve SAT and PB constraints.
+Through using such solvers to create CDR implementations, validated and tested solutions can be reused.  
 
 %%%In this chapter\ldots
 In this chapter the algorithms that CDR uses to find optimal solutions are defined and discussed.  
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is described as it is the basis for many current SAT solvers.
-Along with DPLL, more recent advancements in SAT solver technology are discussed, including its extension to handle pseudo-Boolean constraints.
-This description is intended to give a basic understanding of the internal workings of the SAT solver used at the core of the presented CDR implementation.
-The description of this research's CDR implementation, GJSolver, is then given.
+More recent advancements in SAT solver technology are discussed, including its extension to handle pseudo-Boolean constraints.
+These discussions are intended to give a basic understanding of the internal workings of the SAT solver used at the core of many CDR implementations.
+
+The CDR implementation, called GJSolver, created through this research is presented in section \ref{impl.gjsolver}.
 The specific requirements that GJSolver was developed towards, and the implementation decisions and compromises that were made are also described.
-This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver competition.  
-This competition involved the comparison of GJSolver against other current solvers where solutions and time where measured and points were assigned.
+
+This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver Competition (MISC).  
+This competition involved the comparison of GJSolver against other current solvers over a series of evolution problems.
 
 \section{Boolean Satisfiability Solvers}
 \label{impl.SAT}
 Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
-This problem was the first identified NP-Complete problem, meaning that no known algorithm exists that efficiently solves all instances of SAT problems.
-Many difficult problems have been expressed through reduction to SAT to show their NP-Completeness, this includes the evolution problem from chapter \ref{formal}.
-As many difficult problems can be expressed in SAT, 
-algorithms and implementations that solve SAT problems (SAT solvers) have received significant attention.
-Taking advantage of this research will enable a robust CDR implementation to be created.
-
-%%%SAT solvers are used to solve many problems, creating a community dedicated to creating fast implenmenations
-SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
+SAT was the first identified NP-Complete problem, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
+The fundamental difficulty of the SAT problems, 
+combined with the ability to map many problems to SAT has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
+dedicated to creating and testing various SAT solver implementations. 
+Such SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
 model verification \citep{dennis2006}, and, of course, component system evolution \citep{leBerre2010}.
-The need for efficient solvers has spawned a community dedicated to creating and testing various SAT solver implementations.
-As a means of validating SAT solvers, this community regularly compare them against one another in a series of competitions\footnote{http://www.satcompetition.org/ accessed 6/3/2012}.
-Using competitions encourages progress of SAT solvers for both specific and general instances of SAT problems.
 
 %%%In this section a common implementation of SAT solvers is discussed, the DPLL algorithm
-In this section, a SAT problem is defined, giving the terminology used in this domain. 
-Then a description of the DPLL algorithm is given, and current improvements are described..
-The extension of this algorithm with pseudo-Boolean constraints is discussed, as it allows for more complicated optimisation problems to be represented.
+In this section, a SAT problem is defined and the terminology used in this domain is described. 
+A description of the DPLL algorithm, which are the core of many current SAT solvers, is given.
+The extension of DPLL with pseudo-Boolean constraints is discussed, as it allows for more complicated optimisation problems to be represented.
 Finally, the specific implementations of SAT solvers MiniSAT \citep{een2003} and SAT4J\citep{le2010sat4j}, are briefly described.
 
 \subsection{The SAT Problem}
 As described above, the goal of a SAT algorithm is to find whether a set of variables in a Boolean equation can be assigned values in such a way as to make the equation equal true.
-A common representation of such a formula is in Conjunctive Normal Form (CNF), this is defined as a conjunction of clauses, 
+A common representation of such an equation is in Conjunctive Normal Form (CNF).
+CNF is defined as a conjunction of clauses, 
 where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
 This CNF representation of a SAT problem can be defined as such:
 \begin{defs}
-An instance of a SAT problem is a set of Boolean variables $V$ and a formula which is a set of clauses $F$.
-Each clause in $F$ is a set of literals, where a literal is a variable $v$ or its negation $\neg v$.
-A set of literals is said to be consistent if for any variable $v$, the set does not contain both $v$ and its negation $\neg v$.
-A clause $c$ is said to be satisfied by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
-A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
-A partial solution is any subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
-If there exists a $P$ that is a solution of a SAT formula $F$ the problem is said to be satisfiable, otherwise it is unsatisfiable. 
+.
+\begin{itemize}
+\item An instance of a SAT problem is a set of Boolean variables $V$ and a formula $F$, where $F$ is is a set of clauses.
+\item Each clause in $F$ is a set of literals, where a literal is a variable $v$ or its negation $\neg v$.
+\item A set of literals is said to be consistent if for any variable $v$, the set does not contain both $v$ and its negation $\neg v$.
+\item A clause $c$ is said to be satisfied by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
+\item A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
+\item A partial solution is a subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
+\item If there exists a $P$ that is a solution of a SAT formula $F$ the problem is said to be satisfiable, otherwise it is unsatisfiable. 
+\end{itemize}
 \end{defs}
 
 That is, a SAT problem can have the variable set $\{a,b,c\}$ and the formula $\{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in c_1$ and $\neg b \in c_2$.
 However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $c_2$.  
 
-This definition also follows some classical logic rules, such as literals and their negation can be defined as $\neg \neg v = v$,
-and the negation of sets of literals $P$ is the negation of each literal in $P$, i.e. $\neg P = [\neg v \mid v \in P]$.
+This definition also follows some classical logic rules, such as $\neg \neg v = v$.
+This can be extended to sets of literals such that for a set of literals $P$, $\neg P = [\neg v \mid v \in P]$.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
@@ -86,7 +76,8 @@ backtracking-based search algorithm for SAT problems represented in conjunctive 
 
 It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
-By adding literals to $P$ and recursively  calling itself, the DPLL function searches for whether the formula is satisfiable.
+By first calling DPLL with $P$ being the empty set, by adding literals to $P$ and recursively  calling itself, the DPLL function searches for whether a solution to the formula exists, 
+i.e the formula is satisfiable.
 The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \citep{dixon2004automating}:
 \begin{figure}[h]
 \begin{center}
@@ -110,31 +101,34 @@ function DPLL(\(F, P\))
 
 The first \verb+if+ branch returns \verb+UNSATISIFABLE+ if the partial assignment $P$ is inconsistent.
 The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning \verb+SATISFIABLE+.
-The \verb+unit-propagation+ function adds literals that to $P$ and the \verb+decide+ function returns a literal to be added to $P$, both described in the following sections. 
+The \verb+unit-propagation+ function finds literals that must be in $P$ for $P$ to be a partial solution,
+and the \verb+decide+ function returns a literal to be added to $P$.
+These functions are described in the following sections. 
 
 \subsubsection{Unit Propagation}
-The first part of the DPLL algorithm calls the \verb+unit-propagation+ function.
-This function uses the clauses in the formula and the partial assignment and adds literals to $P$ that must be included if it is to be a partial solution.
+The first line in the  DPLL algorithm calls the \verb+unit-propagation+ function.
+This function uses the clauses in the formula and the partial assignment and adds literals to $P$ that must be included if $P$ is to be a partial solution.
 
-A clause $c$ is called unit, given a partial assignment $P$, if $c$ is not satisfied by $P$ and $P$ contains all but one of its literals negations.
-For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but not $a$ or $\neg a$.
+A clause $c$ is called unit given a partial assignment $P$, if $c$ is not satisfied by $P$, and $P$ contains all but one of its literals negations.
+For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but neither $a$ or $\neg a$.
 A unit literal is then defined as the literal in a unit clause whose negation is not in the partial assignment.
-In the above example, the literal $a$ is described as the unit literal.
+In the above example, the literal $a$ is the unit literal.
 
-For a formula to be satisfiable for a given partial assignment, each unit literal must be included in the partial assignment.
-For example, given a formula $\{c\}$, where $c = {a,b}$;
-given the assignment $\{\neg a\}$ the clause $c$ is unit and literal $b$ is unit.
+For a formula to be satisfiable given partial assignment, each unit literal must be included in the partial assignment,
+because if their negation is included the clause is not satisfied by the partial assignment.
+For example, given a formula $\{c\}$, where $c = \{a,b\}$;
+given the assignment $\{\neg a\}$ the clause $c$ is unit and unit literal is $b$.
 If $\neg b$ where in the partial assignment, $c$ would not be satisfied by the partial assignment,
-therefore $b$ must be in the partial assignment.
+therefore $b$ must be in the partial assignment for it to be a partial solution.
 
-The process of unit propagation is further defined in figure \ref{impl.propagation}.
+The process of unit propagation is defined in figure \ref{impl.propagation}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
 unit-propagate(\(F, P\)):
-    while P is consistent and there exists a \(c \in F\) that given \(P\) is unit:
-        \(l\) = unit literal in \(c\)
-        \(P\) = \(P \cup \{l\}\)
+  while P is consistent and there exists a \(c \in F\) that given \(P\) is unit:
+    \(l\) = unit literal in \(c\)
+    \(P\) = \(P \cup \{l\}\)
 \end{alltt}
   \caption{Pseudo code of Unit Propagation}
   \label{impl.propagation}
@@ -159,35 +153,35 @@ in order to show that their application to problems like component evolution is 
 
 \subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished through remembering what clauses where unit to add literals to the partial assignment, 
-these clauses are also known as the reasons for a literal to be in the partial assignment.
+This is accomplished by remembering what unit clauses, also known as reasons, caused literals to be added to the partial assignment. 
 This process works by identifying a variable both inferred to be true and false,
 then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
 This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
-This process is defined in figure \ref{impl.clauselearning}. 
+This process is shown in figure \ref{impl.clauselearning}. 
 
 \begin{figure}[htp]
 \begin{center}
 $\begin{array}{c}
 \{a_1,\ldots,a_k, l\} \\
-\{b_1,\ldots,b_m,\neg l\}\\
+ \{b_1,\ldots,b_m,\neg l\}\\
 \hline
 \{a_1,\ldots,a_k, b_1,\ldots,b_m \}
 \end{array}$
-  \caption{Clause Learning Definition}
+  \caption{Clause Learning. Where $\{a_1,\ldots,a_k, l\}$ is the reason for $l$, and $\{b_1,\ldots,b_m,\neg l\}$ is the reason for $\neg l$
+   are used to create the learnt clause $\{a_1,\ldots,a_k, b_1,\ldots,b_m \}$.}
   \label{impl.clauselearning}
 \end{center}
 \end{figure}
 
-For example, if the reason for the infered literal $a$ is clause $\{a, b\}$, and the reason for $\neg a$ is clause $\{\neg a, c\}$,
+For example, if the reason for the inferred literal $a$ is clause $\{a, b\}$, and the reason for $\neg a$ is clause $\{\neg a, c\}$,
 then the learnt clause derived is $\{b,c\}$, and added to the formula.
 
 Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack when a conflict is found.
 The higher up the tree the technique ``jumps'' to, the greater reduction of the search space.
-This algorithm typically depends on the learnt clause, where the place that is jumped to is when the clause becomes unit. 
+The level at which the algorithm backjumps is typically the point at which the learnt clause becomes unit. 
 
 More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \citep{sorensson2009}.
-This research describes search methods that use other reason clauses to find smaller more succinct leanrt clauses.
+This research describes search methods that use other reason clauses to find smaller more succinct learnt clauses.
 The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
 
 \subsubsection{Watched Literals}
@@ -204,12 +198,11 @@ This ``don't call us, we will call you'' concept makes the efficiency of the uni
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
 Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
 
-%TODO up to here
 \subsection{Pseudo-Boolean Extension of SAT Solvers}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
 A typical extension of the DPLL algorithm is through adding the ability to handle pseudo-Boolean (PB) constraints \citep{dixon2004automating}.
-These constraints consist of a linear inequality over Boolean variables.
-Through this extension the method of pseudo-Boolean optimisation can be used to define criteria and optimise the evolution of component systems.
+PB constraints consist of a linear inequality over Boolean variables.
+Through this extension, the method of pseudo-Boolean optimisation can be used to define criteria and optimise the evolution of component systems.
 
 \subsubsection{Pseudo-Boolean Representation}
 A pseudo-Boolean function takes a set of Boolean literals and returns a real number, i.e. $f:B^n \rightarrow \mathbb{R}$ where $B = \{0,1\}$.
@@ -226,8 +219,7 @@ $f(x) = a_1x_1 + b_1\neg x_1 + a_2x_2 + b_2\neg x_2 \ldots +  a_nx_n + b_n\neg x
 where $x_i \in \{0,1\}$ and fixed integers $a_i$ and $b_i$.
 \end{defs}
 For example, the pseudo-Boolean function $f(x) = 1x_1 + 0\neg x_1 + 0x_2 + 3\neg x_2$, when taking the input $\langle x_1, \neg x_2 \rangle$ will return $4$.
-This function can be simplified by removing all members whose coefficient is $0$, e.g. $f(x) = 1x_1 + 3\neg x_2$.
-It can also be represented by a set of pairs where each pair a literal and a coefficient, e.g. $f(x) = \{ (1,x_1), (3,\neg x_2) \}$.
+This function can be more concisely described by removing all members whose coefficient is $0$, e.g. $f(x) = 1x_1 + 3\neg x_2$.
 
 This function can become a constraint such that:
 \begin{defs}
@@ -257,9 +249,10 @@ This means that MiniSAT has been repeatedly validated for performance by third p
 SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
 The extensions SAT4J makes to MniSAT include the ability to find resolve pseudo-Boolean constraints.
 SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
-This goal has created an easily modifiable and transparent implementation, able to be used in various circumstances.
+This goal has created an easily modifiable and transparent implementation, able to be adapted to be used in various domains.
 
 \section{GJSolver}
+\label{impl.gjsolver}
 %%%My Implementation, cut the fat, straight forward
 Through the course of this research an implementation grew out of the need to have a modifiable base to experiment with component dependency resolution.
 Other implementations of CDR where often component model specific, or involved difficult (or impossible) to modify code.
@@ -268,11 +261,11 @@ and is designed to solve CDR problems represented in CUDF with optimisation desc
 
 \subsection{Requirements of GJSolver}
 
-Given the context under which GJSolver was developed, the set of requirements that it was designed according to are briefly listed here:
+Given the context under which GJSolver was developed, the set of requirements that it was designed according to are listed here:
 \begin{enumerate}
   \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
   A goal of the GJSolver is to be entered in the MISC in order to be compared against other solvers, and be validated to show the implementation is correct.
-  Following these standards ensures that the solver can be entered, and then competing can show the relative speed of the GJSolver implementation.
+  Following these standards ensures that the solver can be entered, and then competing can show the relative speed and correctness of the GJSolver implementation.
   This will ensure that GJSolver is a valid and efficient implementation. 
   \item \textbf{Anytime Algorithm}: Return a solution, even if it is not the optimal solution, within a predefined amount of time. 
   CDR problems can be large and complex, finding the ``best'' solution can be difficult. 
@@ -280,24 +273,22 @@ Given the context under which GJSolver was developed, the set of requirements th
   \item \textbf{Easily Creatable Criteria}: The ability to quickly implement and test criteria in a manner that enables experimentation, will increase the speed of research.
 \end{enumerate}
 
-The implementation details in the GJSolver that relate to these requirements will be discussed in the 
-
 \subsubsection{Mancoosi International Solver Competition}
 Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
 How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects to the development of GJSolver.
 
 %%%They are executed on the command line
-The way in which the entered solvers are executed must be a standard allowing for the automation of the majority of the competition.
-The entered solvers should be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
+The way in which the entered solvers are executed is standardised to allow the automation of the competition.
+This standard requires the entered solvers should be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
 These arguments are defined as:
 \begin{itemize}
   \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
-  \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution
-  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) that describes the 
+  \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution.
+  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) that describes the criteria to select a solution. 
 \end{itemize}
-The format of the output to the file whose relative path is given in the \verb+cudfout+ argument is a sub set of CUDF.
-This output is only the package name, version and installed properties of the package description stanzas of only the packages that are installed in the new system are required.
-This removes the preamble and request stanza, also all superfluous package information to simplify and limit the size of the output.
+The format of the output file, whose path is the \verb+cudfout+ argument, is a sub set of CUDF.
+This output only requires package stanzas with the package name, version and installed properties.
+This lowers the size of the output file required to be written by the solver.
 
 %%%The environment POSIX, with 5minutes 1GB of memory
 The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of memory (RAM).
@@ -307,10 +298,10 @@ This time limit either ensures that your algorithm returns a result quickly or i
 The latter is the option that has been selected for GJSolver, and will be discussed in the next section.
 
 \subsubsection{Anytime Algorithm}
-As component system evolution is NP-Hard, the time required to find an optimal solution can be impractical.
+The time required to find an optimal solution to a component evolution problem can be impractical.
 For this reason, GJSolver will be implemented with an anytime algorithm at its core.
 An anytime algorithm can return a valid solution to a problem if it is interrupted before it ends.
-This interruption could be a user or some other stimuli from another source.
+This interruption could be from a user or some other stimuli.
 In the case of GJSolver, the interruption will be caused by an internal timer dedicated to ensure that the algorithm does not run in time exceeding the 5 minute deadline.
 
 Such anytime algorithms therefore create a trade-off between time and optimality, where the more time that is set aside for the algorithm to run the more optimal the solution. 
@@ -321,39 +312,36 @@ it is difficult, or impossible, to judge beforehand if a problem will require th
 
 \subsubsection{Expendable Criteria}
 The ability to test and experiment with a wide range of possible criteria to use in CDR is a goal of this research.
-This requirement is one which must be defined
-To enable this, GJSolver was developed in a modular manner, in which the criteria can be extended, modified, and tested when solving problems quickly.
+To satisfy this requirement, GJSolver was developed in a modular manner, in which the criteria can be extended, modified, and tested when solving problems quickly.
 
 \subsection{Implementation Decisions}
 %%%First decision we base our solver on Eclipse P2
-The first decision that was made in the development of the GJSolver, was to model GJSolver on another successful CDR solver, Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010}.
+The first decision that was made during development, was to model GJSolver on another successful CDR implementation, Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010}.
 
 %%%The advantages to this decision
 There are many advantages to basing GJSolver on P2; firstly P2 had already been modified to enter MISC, so had various tools (like a CUDF parser) that reduced the work significantly.
-The developers of Eclipse P2, are also the developers of the internal SAT solver SAT4J,
-This may of lead to difficulties in making changes as the dependencies between the two may have become intertwined.
-However, due to the requirement that P2 is deployed inside of the Eclipse framework, P2 and SAT4J are separated into OSGi bundles for easy reuse.
-Most importantly of all, both SAT4J and P2 are open source making internal investigation of issues, and modification possible reducing risk and increasing reuse.
+The internal SAT solver used by P2, SAT4J, is separated into an OSGi bundle making the reuse of this solver trivial.
+Most importantly of all, both SAT4J and P2 are open source making internal investigation of issues, and modification possible reducing risk.
 
-GJSolver however is not just a modification of Eclipse P2, there where some core problems that would make such an effort impractical.
-Firstly, Eclipse P2 is a solver for the OSGi/Eclipse component models, and has much superfluous code and platform specific details.
+GJSolver, however, is not just a modification of Eclipse P2, as core problems would make such an effort impractical.
+Firstly, Eclipse P2 is a solver for the OSGi/Eclipse component models, and has much platform specific details.
 The way in which P2 solves CUDF problems, is to first change them into OSGi problems through an internal data structure that does not resemble CUDF.
-This additional layer of abstraction makes error checking, and solution checking a difficult process as the problem no longer directly resembles the original description.
-The implementation of criteria in Eclipse P2 is also difficult to alter as again the system is built for optimising OSGi specific CDR problems.
+This additional layer of abstraction makes error checking, and solution checking a difficult process as the internal representation no longer directly resembles the original problem.
+The implementation of criteria in Eclipse P2 is also difficult to alter, as again the system is built for optimising OSGi specific CDR problems.
 
-Once this decision was made, this constrained the implementation of GJSolver to being Java based, 
-using SAT4J as a core and implementing a pseudo-Boolean optimisation algorithm.
-The conversion from CUDF into SAT and PB constraints for use by SAT4J is firstly discussed.
-Lastly the method of pseudo-Boolean optimisation is discussed as the chosen method to find optimal solutions to component evolution.
+Therefore, GJSolver is modeled after Eclipse P2, but not a modification of it.
+This decision constrained GJSolver to be Java based, 
+using SAT4J as a core, and implementing a pseudo-Boolean optimisation algorithm.
 
 \subsubsection{CUDF Mapping}
-In chapter \ref{formal} the abstract definition of the problem was described using four types of constraints, keep, dependency, conflict and request.
-The mapping of a CUDF document to a set containing such instances was also described, where the request constraints where also extended.
+In chapter \ref{formal},
+the mapping of the component relationships described in a CUDF document to the set of four different types of constraints (keep, dependency, conflict and request) was described.
+Here, the mapping from these four constraints to the SAT and pseudo-Boolean constraints is described.
+This gives a complete path, from CUDF document, through the abstract constraints to SAT and PB constraints ready for a solver to satisfy.
 
-The mapping from these four constraints to the SAT and pseudo-Boolean constraints is described here.
-
-Given the definitions above, where a formula $F$ is a set of clauses, a clause is a set of literals, and a literal is either a variable or its negation;
-The set of variables are then defined as the set of component $C$, therefore the literals are components or their negation.
+Given a formula $F$ is a set of clauses, a clause is a set of literals, and a literal is either a variable or its negation;
+The set of component is defined as a subset of the variables, i.e. $C \subseteq V$.
+Literals, which make up the clauses, can therefore be a component or its negation.
 
 The mapping to this formalism from the keep, dependency, conflict constraints are: 
 \begin{itemize}
@@ -362,19 +350,19 @@ The mapping to this formalism from the keep, dependency, conflict constraints ar
   \item conflict constraints of the form $a \rightarrow \neg c$ can be represented as a clause $\{\neg a, \neg c\}$
 \end{itemize}
 
-The request constraints, which were extended in the CUDF mapping, can be mapped as:
+The request constraints can be mapped as:
 \begin{itemize}
       \item install constraints of the form $a_1 \vee \ldots \vee a_n$  can be represented as a clause $\{a_1,\ldots,a_n\}$
       \item remove constraints of the form $\neg a$ can be represented as a clause $\{\neg a\}$
       \item update constraints have two clause types; one $\neg a$ can be represented as a clause $\{\neg a\}$;
-      the second $a_1 + \ldots + a_i = 1$ can be represented by the pseudo-Boolean clause with literals $\langle a_1,\ldots,a_i\rangle$, coefficients $\langle 1_1,\ldots,1_i \rangle$
-      and integer $1$, and the clause $\{a_1,\ldots,a_i\}$.
+      the second $a_1 + \ldots + a_i = 1$ can be represented by the clause $\{a_1,\ldots,a_i\}$ 
+      and the pseudo-Boolean constraint $f(x) <= 1$, where $f(x) = 1.a_1 + \ldots + 1.a_i$.
 \end{itemize}
 
-The update constraints of the form $a_1 + \ldots + a_i = 1$ accomplish the requirement of updated request to have exactly one version of a set of versions installed in the system.
-This constraint could be mapped to SAT constraints in CNF efficiently as described in \citep{silva2007}.
-However, as the requirement to use a pseudo-Boolean solver has already been defined, the most direct method is to map it to a PB constraint.
+The update constraints of the form $a_1 + \ldots + a_i = 1$ accomplish only having one component installed by stating with the clause $\{a_1,\ldots,a_i\}$, at least one must be installed,
+and with the constraint $f(x) <=1$ stating that at most one is installed.
 
+%%%TODO up to here
 \subsubsection{Pseudo-Boolean Optimisation}
 %%%Map psuedo boolean optimisation to formal optimisation definition
 The method that Eclipse P2 uses to optimise the component evolution problem is through a method called pseudo-Boolean optimisation (PBO).
@@ -393,9 +381,8 @@ That is, $l = [v \mid v \in V \wedge \gamma(v) = T] \cup [\neg v \mid v \in V \w
 The ranking function ($Rank$) for either of these ranking systems must be defined to be a pseudo-Boolean function.
 However, a different pseudo-Boolean function exists for each previous solution, as during search for a new system the previous system does not change.
 This means that $Rank(l_1,l_2)$ will equal a pseudo-Boolean function given a previous solution, i.e. $f_{l_1}(l_2)$.
-This function can be represented by a set of pairs of coefficients to literals as described in previous sections.
 
-For example, the criteria to minimise the amount of components added to the system can be defined in such a manner.
+For example, the criteria to minimise the amount of components added to the system can be defined.
 The function $Rank^{added}(l_1,l_2)$ can be defined to return the size of the set of components that are a negative literal in $l_1$ and a positive literal in $l_2$,
 i.e. $Rank^{added}(l_1,l_2) = |[x \mid x \in \mathbb{C} \wedge \neg x \in l_1 \wedge x \in l_2]|$.
 Given the restrictions on PBO, this function must be able to be able to be defined as pseudo-Boolean function, otherwise it is unable to be used.
