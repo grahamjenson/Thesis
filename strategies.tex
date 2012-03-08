@@ -222,13 +222,12 @@ Finally in this section the discussion of the use of these criteria, how they re
 \subsection{Simple Criteria}
 There are simple definitions of criteria to minimise change and maximise versions.
 These basic definitions are intuitively correct, thought they can create complications.
-Such criteria are defined in this section.
 
 \subsubsection{Added, Removed and Changed Components}
 The three most direct measurements of change of a system is through the summing the added, removed, or total changed components in the system.
 These three measurements can be used to define criteria such that:
 \begin{defs}
-	  The added components criterion is defined to minimise the function
+	The added components criterion is defined to minimise the function
 	represented by the set of pairs $[(1,x) \mid x \in \mathbb{C} \neg x \in l_1]$.
 	That is, it sums the components that are not in the previous system, that are in the proposed solution.
 	This criterion is defined in the Mancoosi optimisation format as \verb+-addedcomp+.
