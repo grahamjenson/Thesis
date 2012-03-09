@@ -1,7 +1,23 @@
-\chapter{Formal Component System Evolution}
+\chapter{Formal Model of Component System Evolution}
 \label{formal}
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
+To begin to study the component evolution process, first it must be modeled.
+In section \ref{formal.step} component system evolution is modeled.
+An evolution problem is defined as a set of constraints created by component relationships and a user request.
+The process of component system evolution is caused by iteratively solving evolution problems, which is discussed in section  \ref{formal.evo}.
+
+The way in which an optimal solution is selected to an evolution problem is described in this research through the use of a criteria composed lexicographically.
+Each criterion is represented as a ranking system over a complete lattices, as described in section \ref{formal.opt}.
+It is shown that when such criteria are composed they remain a ranking system over a complete lattice allowing the stacking of criteria.
+
+The Common Upgradeability Description Format (CUDF) \citep{treinen2009common}
+and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF)
+are used to describe the evolution problem and criteria by which to select an optimal solution.
+Both CUDF and MOF are defined and mapped to their semantic counterparts in section \ref{formal.cudf}. 
+
+\section{Evolution Problem}
+\label{formal.step}
 Suppose a user wants to install a new text editor component into their system.
 The selected text editor has a dependency on a spell checker;
 meaning a spell checker component must be installed for the text editor to be functional.
@@ -17,50 +33,55 @@ Where one solution installs the newest text-editor it also requires reinstalling
 while the alternate solution only requires changing the text-editor.
 Both solutions will resolve the user's request, therefore the selection of an optimal solution is required.  
 
-To solve such component evolution problems they must be represented formally, i.e. their semantics must be defined.
-These problems have constraints from component relationships, e.g. ``depends'' and ``conflicts''.
-What exactly these relationships mean must be defined, before the concept of a ``solution'' can be explored.
-These problems also require a framework in which to choose between various possible solutions.
-The user's strategy will define which solution to select, but how to define which solution to pick is a difficult task.
-
-To solve component evolution problems, their representation must be efficiently expressed in a language, i.e. their syntax must be defined.
-A well formed language which maps to the semantics will enable a concise description of an evolution problem.
-This description which will fully contain an evolution problem can then be used to find a solution.
-
-In this chapter the semantics and syntax of the evolution of a component system are formally defined.
-The core atomic operation when evolving a component system is described as an evolution problem, the change made to the system at the user's requests.
-The formal definition and the properties of the evolution problem and system evolution are presented in section \ref{formal.step}.
-Through iteratively solving evolution problems, generations of the system is created over a period of time.
-A discussion on this generational evolution of a component system is given in section \ref{formal.evo}
-
-The way in which the user's strategy selects and optimal solution is represented in this research through the use of a criteria composed lexicographically.
-Each criterion is represented as a ranking system over a complete lattices, described in section \ref{formal.opt}.
-It is shown that when such criteria are composed they remain a ranking system over a complete lattice allowing the stacking of criteria.
-
-The syntactic representation of the evolution problem and the user strategy's criteria 
-are through the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF).
-These allow an evolution problem to be described and how an optimal system is defined in order to find solution.
-Both CUDF and MOF are defined and mapped to their semantic counterparts in section \ref{formal.cudf}. 
-
-\section{Evolution Problem}
-\label{formal.step}
-In this section, a formal definition for an evolutionary problem is given.
-This definition includes a simple optimisation framework to represent a user's strategy in selecting a solution.
-This problem of finding a solution to an evolution problem is then shown to be NP-Complete,
-and the problem of selecting and optimal solution is shown to be NP-Hard.
+How to formally model such evolution problems is the focus of this section.
 
 \subsection{Formal Definition}
 %%%What a component is
-First the space of components is denoted as $\mathbb{C}$.
-Each component is described by a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
-A component can be denoted as $n^v$, where the version is superscript of the name e.g. $c^2$ is a component $\langle c, 2\rangle$.
-If version and name are inconsequential, then components can be denoted as $a$,$b$,$c$\ldots
+The first step in formally defining component system evolution, is to define what is meant by component.
+In definition \ref{formal.componentdef} components are defined as: 
+\begin{defs}
+\label{formal.componentdef}
+$\mathbb{C}$ is the space of components, where each component is described by a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
+\end{defs}
+A component can be abbreviated to $n^v$, where the version is superscript of the name e.g. $c^2$ is a component $\langle c, 2\rangle$.
 
 %%%What a component system is and the relationships
-A component system is represented by a set of components, e.g. $\{a_1,c_2\}$ is a system with components $a_1$ and $c_2$ in it.
-A component system is typically denoted as $\alpha$ or $\beta$, and a set of component systems is typically denotes as $A$ or $B$.
-The relationships between all components are described by a set of constraints denoted as $R$.
+A component system is defined in definition \ref{formal.componentsystemdef}:
+\begin{defs}
+\label{formal.componentsystemdef}
+A component system is a finite subset of components, $\alpha \subseteq \mathbb{C}$. 
+\end{defs}
+For example, $\{a,c\}$ is a system with components $a$ and $c$ in it.
+
+To define the relationships between components, and the user request, constraints are used.
+Definition \ref{formal.constraintdefs} describes a constraint:
+\begin{defs}
+\label{formal.constraintdefs}
+A constraint is a subset of component systems, $con \subseteq 2^{\mathbb{C}}$.
+\end{defs}
+A constraint describes a set of acceptable systems, e.g. a constraint $\{\{a,b\},\{a,c\}\}$ describes two acceptable systems, $\{a,b\}$ and $\{a,c\}$.
+
+\begin{defs}
+An evolution problem is defined as a subset of constraints, $EP \subset 2^{2^{\mathbb{C}}}$.
+\end{defs}
+
+\begin{defs}
+A solution to an evolution problem is in the intersection of all its constraints, $s \in con_1 \cap \ldots \cap con_n$ where $EP = \{con_1,\ldots,con_n\}$
+\end{defs}
+
+As there may be many solutions to an evolution problem, and some solutions are more optimal than others.
+An evolution can be seen as moving from one system to another, and in order to select an optimial evolution a binary relationships is defined as:
+\begin{defs}
+A binary relationship over pairs of component systems is defined such that $<: (2^{\mathbb{C}},2^{\mathbb{C}}) \times (2^{\mathbb{C}},2^{\mathbb{C}})$
+\end{defs}
+TODO
+This function is defined as:
+\begin{defs}
+The evolutionary step function $E$ is defined such that is takes an evolution problem $EP$,
+a previous system $\alpha$, and an order over pairs of component systems  
+\end{defs}
+
+
 
 %%%What the change is
 The user's requested change to be made to their component system is defined as a set of constraints denoted as $\Delta$.
@@ -209,15 +230,15 @@ This problem is shown to not belong to any of the above classes in lemmas 3.1A, 
 %%%This problem may be in fact P if it can exist to one of these classes
 Finding a solution to an evolutionary problem is then is NP-Complete. 
 
-\subsection{Component System Evolution is NP-Hard}
-As noted by \citep{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
-Also noted, is the fact that some of these solutions are not as ``good'' as others.
-Finding an optimal solution by maximising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
-This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
-This means, once a solution is found that satisfies all constraints, it is impossible to say that this solution is optimal without further steps. 
+%\subsection{Component System Evolution is NP-Hard}
+%As noted by \citep{Berre2008}, this problem is often under constrained, creating many possible component systems that satisfy all constraints.
+%Also noted, is the fact that some of these solutions are not as ``good'' as others.
+%Finding an optimal solution by maximising the $rank$ function over the set of possible solutions of an evolution problem is NP-Hard.
+%This can be seen as the problem to find a solution is NP-Complete, and when the system is found it is difficult to determine whether it is the optimal solution.
+%This means, once a solution is found that satisfies all constraints, it is impossible to say that this solution is optimal without further steps. 
 
-This NP-Hard class of problem is notably intractable to solve, and will impact any algorithm designed to find an optimal system.
-The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
+%This NP-Hard class of problem is notably intractable to solve, and will impact any algorithm designed to find an optimal system.
+%The attempts to mitigate this complexity are discussed in chapter \ref{implementation}.
 
 \subsection{Generational Component System Evolution}
 \label{formal.evo}
