@@ -368,7 +368,7 @@ e.g., stating ``size is $.25$ more important than vendor'' does not convey meani
 
 %%%Using composed orders
 A possibly more intuitive way to approach this problem is to define an order for each criterion.
-Then, an overall order ,$<_{\alpha}$, can be defined by composing the different criteria orders together.
+Then, an overall order ,$<_{\alpha}$, can be created by composing the different orders together.
 
 %%%The lexicographic order
 This method is used in the MPM \citep{abate2011} CDR implementation, where the orders are composed using the lexicographic order.
@@ -377,84 +377,40 @@ Therefore, this composition lets the user assign a preference to each criteria, 
 
 
 \subsection{Lexicographic Composition}
-
-
-%%%The formal definition for comlpete lattices is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound
-A complete lattice is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound.
-Formally this is defined:
+In this section a criterion and the lexicographic composition of criteria are formally defined.
+%%%TODO So much
+Firstly, a ranking function is defined such that:
 \begin{defs}
-A complete lattice is a pair $L = \langle A, \leq \rangle$ where $A$ is a non empty set 
-and $\leq \subseteq A \times A$ is a relation such that:
-\begin{itemize}
-  \item $\leq$ is a partial order
-  \item for all subsets of $A$ there exists a unique least upper bound (join or $\vee$) and a unique greatest lower bound (meet or $\wedge$)
-\end{itemize}
+$rank$ is defined to take two component systems and return a value in domain $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
+$<_{rank}$ is defined as a partial order over $A$, such that given a current system $\alpha$ and two systems $\beta_1$ and $\beta_2$
+iff $rank(\alpha,\beta_1) <_{rank} rank(\alpha,\beta_2)$ then $\beta_1 <_{\alpha} \beta_2$. 
 \end{defs}
 
-%%%The domiain of the complete lattice represents the value domain of the criteria.
-The domain of the complete lattice ($A$) defines the value space (e.g., probability, cost, \ldots) 
-that is used to rank solutions. 
-The core attribute of a complete lattice is that all subsets of the lattice have both a unique least upper bound (join or $\vee$) 
-and a unique greatest lower bound (meet or $\wedge$).
-Using these operators the greatest ($1$) and least ($0$) elements can be defined as
-the join of the entire domain ($\bigvee A = 1$) and the meet of the domain ($\bigwedge A = 0$).
-
-%%%We define a ranking system and function, which returns a value for the complete lattice domain.
-An optimal solution can now be defined through a ranking system with respect to complete lattices.
-%%%A ranking system is a lattice a finite domain of variables, and their assignment domain
 \begin{defs}
-Consider a complete lattice $L = \langle A, \leq \rangle$; 
-a ranking system is defined over this lattice as a triple $RS = \langle L, D, V \rangle$, 
-where $V$ is a finite set of variables and $D$ is their finite domain.
+A criteria is defined as a preorder $\leq_{\alpha}$ (whose strict order is $<_{\alpha}$) over the set of component systems $2^{\mathbb{C}}$.
 \end{defs}
+A preorder is defined as being reflexive ($a \leq a$),  and transitive (if $a \leq b$ and $b \leq c$ then $a \leq c$).
 
-These domains can be latter defined given the specific problem of component evolution that is being focused on.
-
-%%%A solution (system) is a mapping of variables to the domain
+%%%No antisymettric
+It may can be noted that the the antisymmetric (if $a \leq b$ and $b \leq a$ then $a = b$) is not included, which would make it a partial order.
+This is because two systems may be equal given a criteria, but are not the same system.
+For example, if the criteria $\leq^{size}_{\alpha}$ was defined to minimise the number of components in a system, 
+and two systems ($a$ and $b$) have different compositions, but the same amount of components;
+then they $a \leq^{size}_{\alpha} b$ and $b \leq^{size}_{\alpha} a$, but $b \neq a$.
+In this situation:
 \begin{defs}
-A solution is a variable binding $\gamma: V \rightarrow D$, a mapping of each variable to an element in the domain,
-and $\Gamma$ is the set of all solutions.
-\end{defs}
+Given two systems $a$ and $b$, iff $a \leq_{\alpha} b$ and $b \leq_{\alpha} a$ the $a \approx b$ 
+\end{defs} 
 
-This definition of solution does not take into account a solutions rank or order, therefore a solution could be the worst possible solution.
-%%%The ranking function, takes two solutions, and returns the distance between them 
-\begin{defs}
-Consider a complete lattice $L = \langle A, \leq \rangle$ and a ranking system $RS = \langle L, D, V \rangle$.
-A ranking function ($rank$) returns a metric of the current solution compared to a new solution to elements from $A$,
-$rank: \Gamma \times \Gamma \rightarrow A$.
-\end{defs}
-
-%%%The set of optimal solutions is then the set of solutions where there are no better solutions
-\begin{defs}
-Consider a complete lattice $L = \langle A, \leq \rangle$, a ranking system $RS = \langle L, D, V \rangle$, a previous solution $\gamma$ and a ranking function $rank$.
-The set of optimal solutions ($OSol \subseteq \Gamma$) is the set of solutions where there is no other solution whose rank is better,
-such that $OSol = \{ s \in \Gamma : \nexists s' \mbox{ such that } rank(\gamma,s) < rank(\gamma,s')\}$
-\end{defs}
-
-%%%The set of optimial solutions may still be undesirable, as it is only solutions that are available
-The set of optimal solutions only includes the highest ranked solutions,
-as with the definition of solutions, these optimal solutions could be undesirable.
-For instance, given a problem which is ranked with either $Correct$ or $Incorrect$, 
-the optimal solution could be $Incorrect$ if there exists no solutions that are $Correct$. 
-
-\subsection{Composition of Complete Lattices}
-\label{sec:composition}
-As a complete lattice with a ranking system is the representation of a criterion,
-the composition of criteria is the way of expressing their relationships to one another. 
+The composition of criteria is the way of expressing their relationships to one another. 
 The composition operator in this framework is defined as using the lexicographic order.
+The lexicographic composition of partial orders, is a partial order, this means the composition of criteria results in a criterion.
 
-It is shown here that the lexicographical composition of complete lattices will result in a complete lattice,
-this enables any composition of criteria to remain within our framework.
-This is proven by deriving the join (unique least upper bound) and meet (unique greatest lower bound) operations,
-and showing there exists a least element ($0$) within the lattice \citep{davey1990introduction}. 
-
-The ranking systems are defined to be composed with the lexicographic ordering:
 \begin{defs}
-\label{def:lex_order}
-Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2, \leq_2 \rangle$;
-$L_1 \odot L_2$ creates a lexicographical composition  $L_L = \langle A_1 \times A_2, \leq_L \rangle$
-where $\leq_L$ is a lexicographic order;
-$(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
+Consider two criteria  $crit1 = \leq^1_{\alpha}$ and $crit2 = \leq^2_{\alpha}$;
+$crit1 \odot crit2$ creates a lexicographical composition  $crit_L = \leq^L_{\alpha}$
+where $\leq^L_{\alpha}$ is a lexicographic order;
+$a \leq^L_{\alpha} b$ iff $a <^1_{\alpha} b$ or $(a \approx b$ and $a \leq^2_{\alpha} b)$.
 \end{defs}
 
 The lexicographical order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
