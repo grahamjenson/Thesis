@@ -890,12 +890,20 @@ There are many applications that can resolve these dependencies on a Debian syst
 This tool is built on top of dpkg, to provide an interface to simplify and extend its functionality.
 The apt-get application is a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
 
-Apt-get follows some basic criteria when altering the system.
-For example, when upgrading the system under no circumstances will apt-get remove an already installed package, or retrieve a package that is not installed. 
-Such criteria exist for each different function, such as install, and remove.
+Apt-get follows some basic criteria when altering the system, for example when upgrading:
+\begin{itemize}
+  \item under no circumstances will apt-get remove an already installed package
+  \item under no circumstances will apt-get retrieve a package that is not installed
+\end{itemize}
 
 Another application that extends APT further is Aptitude \citep{Burrows2005}.
-This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages. 
+This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages.
+Aptitude allows some of its criteria to be user defined, for example when the flag \verb+--safe-resolver+ is used:
+\begin{itemize}
+  \item it attempts to preserve as many of your choices as possible.
+  \item it will never remove a package
+  \item it will never install a version of a package other than the package's default candidate version.
+\end{itemize}
 
 \subsection{SOFA 2.0}
 Software Appliance (SOFA) is a component model developed at Charles University in Prague.

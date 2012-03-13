@@ -101,7 +101,7 @@ An evolution problem $EP_t$ is then defined as $EP_t = R_t \cup \Delta_t$.
 The relationship constraints and request constraints that form the sets $R_t$ and $\Delta_t$ are restricted to certain types.
 As with $EP_t$, they depend on the components that exist at $t$, $\mathbb{C}_t$.
 \begin{defs}
-Given a component repository $\mathbb{C}_t$, the types of constraints allowed in this formalism are:
+Given a set of components that exist $\mathbb{C}_t$, the types of constraints allowed in this formalism are:
 \begin{enumerate}
   \item $\neg a := \{\alpha \in 2^{\mathbb{C}_t} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}
   \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}_t} \mid a \in \alpha \rightarrow c \not \in \alpha\}$ \label{formal.conflictconstraint}
@@ -343,34 +343,22 @@ Although belief revision is not directly used in this research, its domain has i
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
 Any requested evolution of a component system can have many different possible resulting systems \citep{leBerre2010}.
 This is because the problem is generally under-constrained \citep{Berre2008}, allowing multiple systems to satisfy user request and component relationship constraints.
-The order $<_{\alpha}$, which is used to select an optimal solution to an evolution problem, has so far been left undefined.
- 
-One way in which to define it is through a ranking function such that:
-\begin{defs}
-Given an order $<_{rank}$, a current component system $\alpha$, and two components systems $\beta_1$ and $\beta_2$,
-a ranking function $rank$ is defined such that iff $rank(\alpha,\beta_1) <_{rank} rank(\alpha,\beta_2)$ then $\beta_1 <_{\alpha} \beta_2$.
-\end{defs}
-In this section the function $rank$, the order $<_{rank}$, and the problems of selecting an optimal solution are explored.
+The order $<_{\alpha}$ is used to define a ranking of systems to select an optimal solution to an evolution problem.
+This order will be explored in this section.
 
 \subsection{Multi-criteria Optimisation}
-It is a difficult task to selection of an optimal system to an evolution problem.
-Many different aspects of the evolution can be considered, and these must be  
-One way to do this is to express each aspect as a criterion and then combing them into a single problem. 
-
-%%%Combining criteira is a challenge because criteria have different domains and orders, some have partial orders, arbitrary rankings, criterion orderings.
-Optimising multiple criteria proposes some challenges; firstly criteria may have different domains and orders, 
-e.g., minimising the size in bytes while maximising percentages of reliability. 
-Some criteria may have partial orders where two solutions can be incomparable,
-e.g., one licence may not be better or worse than another.
-Criteria may have arbitrary rankings, 
-e.g., preferences for licences can differ significantly between users.
-A criterion could also be more important than another, 
-e.g., correct functionality of a system will always be more important than its size.
-All this must be considered when formally defining the $rank$ function.
+%%%This is a multi criteria problem
+By looking at the previously presented CDR implementations in chapter \ref{background} (such as Eclipse P2, apt-get, aptitude, and MPM) requirements for system selection can be extracted.
+These solvers select a component system using:
+\begin{itemize}
+  \item Multiple criteria that define what a good system is
+  \item Different domains to be optimised for (e.g. versions, choices, components, age)
+\end{itemize} 
+The selection of a solution to an evolution problem is then a multi-criteria optimisation problem.
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
-A naive way to create a $rank$ function is map all criteria to a function that returns a real number.
-Then by aggregating these numbers through addition or multiplication (possibly with weights) a single $rank$ function to be minimised or maximised is defined. 
+A naive way to create select an optimal solution is to map all criteria to a function that returns a real number.
+Then by aggregating these numbers, through addition or multiplication (possibly with weights), a single function is created that can be used to define the order $<_{\alpha}$. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
 This method has some drawbacks; information is lost in the conversion to real numbers, e.g. the reason why a specific system was selected over another.
@@ -378,25 +366,18 @@ The relationships between criteria are also difficult to define, as getting an i
 This leads to the problem that assigning preferences to criteria with arbitrary weights is not intuitive,
 e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information about the weighting decision, or its impact.
 
-A possibly more intuitive way to approach this problem is to define each criterion as an ordered set,
-where a $rank$ function is defined for each criterion that measures an evolutionary change as an element in that set.
-Each criterion is then a partially ordered set (the order must be reflexive, antisymmetric and transitive).
-Furthermore, it is requires that any set of elements in a criterion must be bounded, 
-i.e. have a least upper bound and a greatest lower bound.
-A complete lattices satisfies these requirements, therefore is used as the representation. 
+%%%Using composed orders
+A possibly more intuitive way to approach this problem is to define an order for each criterion.
+Then, an overall order ,$<_{\alpha}$, can be defined by composing the different criteria orders together.
 
-%%%these complete lattice criteria using the product and lexicographic orders.
-These complete lattices are able to be composed using a lexicographic order, that has been used as a composition operator in other CDR implementation \citep{abate2011}.
-Using this order has the benefit where two complete lattices composed together lexicographically, results in a complete lattice.
-This order can then be used to compose multiple criteria together without the need for arbitrary weights.
+%%%The lexicographic order
+This method is used in the MPM \citep{abate2011} CDR implementation, where the orders are composed using the lexicographic order.
+By composing criteria with the lexicographic order, the user would select a criteria to be more important than another. 
+Therefore, this composition lets the user assign a preference to each criteria, without having to assign arbitrary weights.
 
-The complete definition of this framework is given in the following section.
 
-\subsection{Complete Lattice}
-%%%Complete Lattices have been used in other optimisation frameworks.
-Complete lattices are an effective abstraction to represent rankings,
-and have been used before when describing such criteria \citep{Bistarelli1997,Fernandez}.
-They can represent problems that involve partial orders, and be combined into new lattices using various orders.
+\subsection{Lexicographic Composition}
+
 
 %%%The formal definition for comlpete lattices is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound
 A complete lattice is a partially ordered set where all subsets have a unique least upper bound and unique greatest lower bound.
@@ -1227,7 +1208,7 @@ which asserts that the text editor component will be included in the new system,
 
 \subsubsection{Solutions}
 %%%Describe the possible models that can satisfy all constraints 
-The set solutions to the evolution problem $EP_t = R_t \cup \Delat_t$ is the intersection of all constraints in $R_t \cup \Delta_t$.
+The set solutions to the evolution problem $EP_t = R_t \cup \Delta_t$ is the intersection of all constraints in $R_t \cup \Delta_t$.
 
 By going through the constraints the solutions can be found.
 Firstly, the request constraint ensures that the text editor component is included, the component $textEditor_1$ will be installed.

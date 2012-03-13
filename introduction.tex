@@ -120,7 +120,7 @@ The selected method to explore these themes is through the simulation of the env
 Various user strategies can be compared through altering the variables of the simulation and comparing their output.
 The main research goal is then to:
 \begin{quote}
-Model component system evolution strategies and assess them using a simulation that has been developed.
+Model component system evolution strategies that use component dependency resolution and assess them using a simulation that has been developed.
 \end{quote}
 
 This goals leads to various lines of inquiry including component system evolution, component dependency resolution, user strategies, and the simulation of component system evolution.
@@ -166,7 +166,7 @@ finding a solution to an evolution problem, and finding an optimal solution to a
 These two related problems are modeled in this research and this models syntax, semantics and implementation are each described.
 
 In chapter \ref{formal} the modeled formal semantics of component evolution problem is defined using a set of constraints that ensure the resulting system satisfies the user's requested action.
-The optimisation of this evolution problem is defined as a multi-criteria framework of lexicographically composed ranking systems over complete lattices.
+The selection of an optimal system to an evolution problem is accomplished using a multi-criteria framework where criteria are lexicographically composed.
 The complexities of both these problems are discussed as they will impact the implementation of any algorithm required.
 
 To syntactically represent the evolution problem and its optimisation the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF) are used.

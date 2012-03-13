@@ -4,8 +4,8 @@
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-Finding any solution to an evolution problem is NP-Complete, and finding an optimal solution is NP-Hard.
-Given the difficulty of finding an optimal solution, any CDR implementation which attempts to automate the process must be efficient.
+Finding any solution to an evolution problem is NP-Complete.
+Given this difficulty of finding an optimal solution, any CDR implementation which attempts to automate the process must be efficient.
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
 To create an efficient CDR implementation a common solution, in both academia \citep{abate2011} and industry \citep{leBerre2010}, 
@@ -388,7 +388,7 @@ The function $rank^{added}(l_1,l_2)$ is defined to return the amount of componen
 i.e. $rank^{added}(l_1,l_2) = |[x \mid x \in \mathbb{C} \wedge \neg x \in l_1 \wedge x \in l_2]|$.
 Given pseudo-Boolean functions only measure the proposed system,
 the function $f_{l_1}(l_2)$ is defined by summing all literals that are negative in the current system and positive in the proposed system;
-i.e. given the set of variables $\{x_1,\ldots,x_n\} = [x \mid x \in \mathbb{C} \wedge \neg x \in l_1]$, the pseudo-Boolean function is defined $f_{l_1}(l_2) =  1.x_1 + 1.x_n$.
+i.e. given the set of variables $\{x_1,\ldots,x_n\} = [x \mid x \in \mathbb{C} \wedge \neg x \in l_1]$, the pseudo-Boolean function is defined $f_{l_1}(l_2) =  1.x_1 + \ldots +  1.x_n$.
 
 \subsection{Iterative Strengthening}
 The algorithm known as iterative strengthening, presented in \citep{calistri1994iterative} and \citep{le2010sat4j}, 
