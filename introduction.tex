@@ -69,9 +69,9 @@ This is evolution not directed by the developer, but by the user.
 %%%Terms
 This user initiated evolution of component systems is the specific focus of this thesis, and is described with the term \textbf{component system evolution}.
 This is opposed to the evolution of an individual component, described as \textbf{component evolution} whose properties are explored in \citep{vasa2007patterns} and \citep{Stuckenholz2005}.
-The situation where a user requests an action to evolve their system is described as an \textbf{evolution problem} whose solution is the resulting system when that action is completed.
+The situation where a user requests an action to evolve their system is described as an \textbf{evolution problem} whose solutions are systems that satisfy the user's request.
 This evolution problem has been explored in research such as \citep{Ryan2005}, \citep{argelich2010solving} and \citep{di2010supporting}.
-The emergent effects of evolving a component system by solving multiple evolution problems has not been explored as thoroughly.
+The emergent effects of evolving a component system over time, as the system continually changes to satisfy the user's requests, has not yet been thoroughly explored.
 Therefore, this research aims to investigate the process of component system evolution by searching for the rules or laws that govern it.
 
 \subsection{Strategies}
@@ -102,17 +102,16 @@ However, a strategy where the user attempts to remove unnecessary components and
 %%%The problem is difficult
 In practise, a user rarely directly selects the components to add or remove from when evolving their system.
 This is because any evolution action may involve many components, where each component can have multiple relationships to other components.
-This makes many evolution problems complex to solve and satisfactory solutions difficult to find.
+This makes many evolution problems complex and finding satisfactory solutions difficult.
 
-Often, an algorithm can be defined in order to find solutions to evolution problems.
-This algorithm requires that components in the system explicitly state the relationships between one another, and there is a way to automatically manipulate the component system.
+Typically, a user employs a process called \textbf{component dependency resolution} (\textbf{CDR}), to automatically find satisfactory solutions to evolution problems.
+This process requires that components in the system explicitly state the relationships between one another, and there is a way to automatically manipulate the component system.
 As many solutions may exist for an evolution problem, to find the best solution the user's strategy must be taken into account.
 It must also consider practical concerns like time to find a solution, as the problem can be quite complex.
-In this research such an algorithm is called \textbf{component dependency resolution} or \textbf{CDR}.
 
 CDR takes a single evolutionary problem and attempts to return an evolved system given the user's strategy.
 Over time, as the user requests many actions to evolve the system, the component system will resemble less and less the original system.
-The way in which such a system evolves over time given the strategies the user employs has yet to be explored. 
+This is the way in which a component system evolves, and how the strategy employed by the user effects this evolution is yet to be explored. 
 
 \section{Research Goals}
 The core themes of this thesis are component system evolution, user strategies and CDR.

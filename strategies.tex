@@ -201,22 +201,22 @@ There are simple definitions of criteria to minimise change and maximise version
 The three most direct measurements of change of a system is through the summing the added, removed, or total changed components in the system.
 These three measurements can be used to define criteria such that:
 \begin{defs}
-	The added components criterion is defined to minimise the function $f_{l_1}(l_2) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{x \mid x \in \mathbb{C} \wedge \neg x \in l_1\}$.
+	The added components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
+	where $\{a_1,\ldots,a_n\} = \{x \mid x \in \mathbb{C} \wedge \neg x \in \alpha\}$.
 	That is, it sums the components that are not in the previous system, that are in the proposed solution.
 	This criterion is defined in the Mancoosi optimisation format as \verb+-addedcomp+.
 \end{defs}
 
 \begin{defs}
-	 The removed components criterion is defined to minimise the function $f_{l_1}(l_2) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in l_1\}$.
+	 The removed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
+	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha\}$.
 	That is, it sums the components that are in the previous system, that are not in the proposed solution.
 	This criterion is defined in the MOF as \verb+-removedcomp+.
 \end{defs}
 
 \begin{defs}
-	 The changed components criterion is defined to minimise the function $f_{l_1}(l_2) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in l_1 \} \cup \{x \mid x \in \mathbb{C} \wedge \neg x \in l_1 \}$.
+	 The changed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
+	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha \} \cup \{x \mid x \in \mathbb{C} \wedge \neg x \in \alpha \}$.
 	That is, it sum both added and removed components as described above.
 	This criterion is defined in the MOF as \verb+-changedcomp+.
 \end{defs}
@@ -235,7 +235,7 @@ The simplest criterion that can be defined to keep the system up to date, would 
 This criteria is defined:
 
 \begin{defs}
-	The version criterion is defined to maximise the pseudo-Boolean function $f_{l_1}(l_2) = a_1$.\verb+version+$.a_1 + \ldots + a_n$.\verb+version+$.a_n$
+	The version criterion is defined to maximise the pseudo-Boolean function $f_{\alpha}(\beta) = a_1$.\verb+version+$.a_1 + \ldots + a_n$.\verb+version+$.a_n$
 	where $\{a_1,\ldots,a_n\} = \{x \mid x \in \mathbb{C}\}$.
 	That is, it maximises the sum of versions of components in the system.
 	This criterion is defined in the MOF as \verb!+version!.
@@ -289,13 +289,13 @@ Given the set of all names $N$ and the function $Name$ which takes a set of lite
 two criteria for minimising the newly added and removed names are defined.
 \begin{defs}
 The Mancoosi removed criterion is then defined using the pseudo-Boolean function
-represented by the set of pairs $[(1,\neg d_n) \mid n \in N(l_1)]$.
+represented by the set of pairs $[(1,\neg d_n) \mid n \in N(\alpha)]$.
 This criterion is defined in the MOF as \verb+-removed+.
 \end{defs}
 
 \begin{defs}
 The Mancoosi changed criterion is then defined using the pseudo-Boolean function
- represented by the set of pairs $[(1,d_n) \mid n \in N \wedge n \not \in N(l_1)]$.
+ represented by the set of pairs $[(1,d_n) \mid n \in N \wedge n \not \in N(\alpha)]$.
 This criterion is defined in the MOF as \verb+-new+.
 \end{defs}
 
@@ -305,8 +305,8 @@ For example, if a component of name $c$ is removed, and replaced with two compon
 
 To measure this change some constraints from the function \verb+initial-constraints+ must be defined.
 What is required is a literal for each component name that is true if no literal of that component name is altered between solutions.
-That is, given the name $n$, the previous solution $l_1$, and the literals $a^n_1, \ldots , a^n_k$ that are all literals with name $n$ (this includes negative literals);
-the literal $h_n$ for a given name $n$ is defined to be true if no component of name $n$ changes from the initial system $l_1$.
+That is, given the name $n$, the previous solution $\alpha$, and the literals $a^n_1, \ldots , a^n_k$ that are all literals with name $n$ (this includes negative literals);
+the literal $h_n$ for a given name $n$ is defined to be true if no component of name $n$ changes from the initial system $\alpha$.
 
 That is $h_n \Leftrightarrow a^n_1 \wedge \ldots \wedge a^n_k$, 
 which equals $h_n \rightarrow a^n_1 \wedge \ldots \wedge a^n_k \bigwedge a^n_1 \wedge \ldots \wedge a^n_k \rightarrow h_n$.
@@ -385,37 +385,37 @@ Each of these is used to define two criteria, to either maximise or to minimise 
 
 \begin{defs}
 The criterion to maximise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in l_1]$.
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in \alpha]$.
 This criterion is defined in the MOF as \verb!+added(!$X$\verb+)+.
 \end{defs}
 
 \begin{defs}
 The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in l_1]$.
+represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in \alpha]$.
 This criterion is defined in the MOF as \verb!-added(!$X$\verb+)+.
 \end{defs}
 
 \begin{defs}
 The criterion to maximise the removed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge  c \in l_1]$.
+represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge  c \in \alpha]$.
 This criterion is defined in the MOF as \verb!+removed(!$X$\verb+)+.
 \end{defs}
 
 \begin{defs}
 The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge c \in l_1]$.
+represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge c \in \alpha]$.
 This criterion is defined in the MOF as \verb!-removed(!$X$\verb+)+.
 \end{defs}
 
 \begin{defs}
 The criterion to maximise the changed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in l_1] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in l_1]$.
+represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in \alpha] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in \alpha]$.
 This criterion is defined in the MOF as \verb!+changed(!$X$\verb+)+.
 \end{defs}
 
 \begin{defs}
 The criterion to minimise the changed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in l_1] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in l_1]$.
+represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in \alpha] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in \alpha]$.
 This criterion is defined in the MOF as \verb!-changed(!$X$\verb+)+.
 \end{defs}
 

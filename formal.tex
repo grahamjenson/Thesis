@@ -378,125 +378,43 @@ Therefore, this composition lets the user assign a preference to each criteria, 
 
 \subsection{Lexicographic Composition}
 In this section a criterion and the lexicographic composition of criteria are formally defined.
-%%%TODO So much
+
 Firstly, a ranking function is defined such that:
 \begin{defs}
-$rank$ is defined to take two component systems and return a value in domain $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
-$<_{rank}$ is defined as a partial order over $A$, such that given a current system $\alpha$ and two systems $\beta_1$ and $\beta_2$
-iff $rank(\alpha,\beta_1) <_{rank} rank(\alpha,\beta_2)$ then $\beta_1 <_{\alpha} \beta_2$. 
+\label{formal.defcriteria}
+A criterion is defined as a tuple $\langle rank, \leq \rangle$.
+$rank$ is a function that takes two component systems and return a value in the set $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
+$\leq$ is a partial order over $A$ (whose strict order is $<$).
 \end{defs}
+$rank$ measures a change from a previous system to the set $A$, and the order $\leq$ determines which value in $A$ is optimal.
+$\leq$ must be a partial order, which is defined to be reflexive ($a \leq a$), antisymmetry ($if a \leq b and b \leq a then a = b$), and transitive ($if a \leq b and b \leq c then a \leq c$).
 
 \begin{defs}
-A criteria is defined as a preorder $\leq_{\alpha}$ (whose strict order is $<_{\alpha}$) over the set of component systems $2^{\mathbb{C}}$.
+\label{formal.defcrittooptimal}
+Given a criterion $\langle rank, \leq \rangle$, 
+a current system $\alpha$,
+and two systems $\beta_1$ and $\beta_2$,
+iff $rank(\alpha,\beta_1) < rank(\alpha,\beta_2)$ then $\beta_1 <_{\alpha} \beta_2$.
 \end{defs}
-A preorder is defined as being reflexive ($a \leq a$),  and transitive (if $a \leq b$ and $b \leq c$ then $a \leq c$).
+This describes a criterion in terms of the optimal order that can be used in the evolutionary function $E(EP,<_{\alpha})$.
 
-%%%No antisymettric
-It may can be noted that the the antisymmetric (if $a \leq b$ and $b \leq a$ then $a = b$) is not included, which would make it a partial order.
-This is because two systems may be equal given a criteria, but are not the same system.
-For example, if the criteria $\leq^{size}_{\alpha}$ was defined to minimise the number of components in a system, 
-and two systems ($a$ and $b$) have different compositions, but the same amount of components;
-then they $a \leq^{size}_{\alpha} b$ and $b \leq^{size}_{\alpha} a$, but $b \neq a$.
-In this situation:
+The lexicographic composition of multiple criteria is defined with the operator $\oplus$: 
 \begin{defs}
-Given two systems $a$ and $b$, iff $a \leq_{\alpha} b$ and $b \leq_{\alpha} a$ the $a \approx b$ 
-\end{defs} 
-
-The composition of criteria is the way of expressing their relationships to one another. 
-The composition operator in this framework is defined as using the lexicographic order.
-The lexicographic composition of partial orders, is a partial order, this means the composition of criteria results in a criterion.
-
-\begin{defs}
-Consider two criteria  $crit1 = \leq^1_{\alpha}$ and $crit2 = \leq^2_{\alpha}$;
-$crit1 \odot crit2$ creates a lexicographical composition  $crit_L = \leq^L_{\alpha}$
-where $\leq^L_{\alpha}$ is a lexicographic order;
-$a \leq^L_{\alpha} b$ iff $a <^1_{\alpha} b$ or $(a \approx b$ and $a \leq^2_{\alpha} b)$.
+\label{formal.defcritlex}
+Given two criteria $crit_1 = \langle rank_1, \leq_{1} \rangle$, and $crit_2 = \langle rank_2, \leq_{2} \rangle$,
+where the range of $rank_1$ is $A_1$, and the range of $rank_2$ is $A_2$.
+$crit_1 \oplus crit_2 = \langle rank_L,\leq_L \rangle$, where the range of $rank_L$ is $A_1 \times A_2$, such that $rank_L(\alpha,\beta) = (rank_1(\alpha,\beta),rank_2(\alpha,\beta))$.
+The order $\leq_L$ is then a binary relation over $A_1 \times A_2$ where $(a,b) \leq_L (a',b')$ iff $a <_1 a'$ or $(a = a'$ and $b \leq_2 b')$,
+whose strict order is $<_L$.
 \end{defs}
-
-The lexicographical order is trivially reflexive, anti-symmetric and transitive, therefore it is a partial order.
-\begin{prop}
-The lexicographical composition of two complete lattices is a complete lattice.
-\end{prop}
-\begin{prof}
-Consider two points $(a,b)$ and $(a',b')$; 
-the join of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a <_1 a'$,
-$(a,b)$ if $a' <_1 a$,
-$(a, b \vee b')$ if $a = a'$,
-or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \vee a', 0_2)$
-as this is an upper bound, and any other upper bound must be bigger than this.
-The meet is defined dually where the meet of $(a,b)$ and $(a',b')$ is $(a',b')$ if $a' <_1 a$,
-$(a,b)$ if $a <_1 a'$,
-$(a, b \wedge b')$ if $a = a'$,
-or if $a$ and $a'$ are incomparable ($a||a'$) it is $(a \wedge a',1_2)$
-as this is a lower bound, and any other lower bound must be smaller than this.
-
-This lattice is also complete as its least bound is the least bound of each set $(0_1,0_2)$.
-$\Box$\end{prof}
-
-There are two things to note about the lexicographical composition; 
-first it does not create a distributive lattice i.e. $\wedge_L$ does not distribute over $\vee_L$.
-\begin{prop}
-The lexicographic composition does not result in a distributive lattice.
-\end{prop}
-\begin{prof}
-Consider two pairs $(a,b)$ and $(a', b') \in L_1 \odot L_2$ where $a || a'$ and $a = a''$ and $a' || a''$,
-then $(a,b) \wedge_{L} ((a', b') \vee_{L} (a'', b'')) = (a,b)$,
-where under the same conditions $((a,b) \wedge_{L} (a', b')) \vee_{L} ((a,b) \wedge_{L} (a'', b'')) = (a,b \wedge_2 b'')$.
-$\Box$\end{prof}
-
-Secondly, two lattices (not complete lattices) lexicographically combined together may not be a lattice. 
-If a lattice was the base representation, this would make it impossible to use a lexicographic composition and be certain that the resulting structure be usable.
-This is an important reason for the choice of complete lattices as the structure of representation.
-\begin{prop}
-The lexicographic composition of two lattices may not result in a lattice.
-\end{prop}
-\begin{prof}
-Suppose a lattice $K$ has a non linear order, and a lattice $L$ has no least bound ($0_L$). 
-For two pairs $(a,b)$ and $(a',b)$ in $K \odot L$ have no join if $a$ and $a'$ are incomparable.
-This would be defined as $(a,b) \vee (a',b) = (a \vee a',0_L)$, as $0_L$ does not exist this join does not exist.
-$\Box$\end{prof}
-
-The final part of this formalism is to show how the remainder of the structures are composed with the lexicographic orders.
-The lexicographic composition of the ranking systems is defined as:
-\begin{defs}
-Consider two complete lattices $L_1 = \langle A_1, \leq_1 \rangle$ and $L_2 = \langle A_2,\leq_2 \rangle$ and
-the ranking systems over them $RS_1 = \langle L_1,D,V \rangle $ and $RS_2 = \langle L_2,D,V \rangle$,
-with defined ranking functions as $rank_1: \Gamma \times \Gamma \rightarrow A_1 $ and $rank_2: \Gamma \times \Gamma \rightarrow A_2$.
-The combination $RS_1 \odot RS_2$  results in the ranking system 
-$RS = \langle L_1 \odot L_2, D, V \rangle$, 
-and the combination of the ranking functions is 
-$rank: \Gamma \times \Gamma \rightarrow A_1 \times A_2$ where $rank(\gamma_1,\gamma_2) = \langle rank_1(\gamma_1,\gamma_2), rank_2(\gamma_1,\gamma_2) \rangle$.
-\end{defs}
-Note: in this definition, to combine ranking systems they must have the same set of variables and the same domain.
-
-\subsection{Discussion on Formalism}
-The point of this exercise is to explore the multi-criteria problem of component system evolution and the $rank$ function that defines optimal solutions.
-
-What is required to create a criterion is: 
-\begin{itemize}
-  \item a domain $A$ with an order $\leq$ that defines a complete lattice $L = \langle A, \leq \rangle$
-  \item a set of variables $V$ and domain of those $D$
-  \item a $rank$ function that takes two solutions and returns a value from $A$
-\end{itemize}, 
-In component system evolution the variables are typically the components, i.e. $ V = \mathbb{C}$, and the domain of these is whether they are in the system or not, i.e. $D = \{T,F\}$.
-Therefore, the necessary elements to define a criteria in component system evolution are the lattice and the rank function.
-
-It has been shown that if the criteria defined use complete lattices, the lexicographic order can be used and the resulting criteria will remain within this framework. 
-This provides a proof that if a criteria is defined within this framework, then using a lexicographic order is ``safe'', and the problem will remain consistent.
+As the $rank_L$ function takes two component systems and returns a value in the set $A_1 \times A_2$,
+and the order $\leq_L$ is a partial order \citep{Schroder2003},
+$\langle rank_L,\leq_L \rangle$ is a criterion as well.
+This means that multiple criteria can be composed together, to create a single measure of optimality $<_{\alpha}$.
 
 In section \ref{formal.mancoosioptimisationformat} the syntax to order criteria is defined, 
 in chapter \ref{implementation} the way in which these criteria are optimised is given,
 and in chapter \ref{strategies} various criteria are defined that fit in this framework.
-
-\subsection{Semi-ring constraint incompatibility}
-%%%Discussion of the related yet incompatible work C-semirings; how they inspired this work but due to lexicographic order we are unable to use it.
-A large part of this formalisation was influenced by research into the representation of constraints as a c-semiring \citep{Bistarelli1997}.
-This research shows that all instances of their framework are complete lattices, and their $+$ operator coincides with join
-and if their $\times$ operator is idempotent, it coincides with meet.
-Their examples include fuzzy, weighted, probabilistic and valued constraint problems which can be used in our framework.
-In their framework $\times$ must distribute over $+$, this gives a distributive lattice.
-Since lexicographic orders may create non-distributive lattices, as shown above, our overall frameworks are incompatible.
-This means that the direct use of this framework is impossible, though it remains a source of inspiration.
 
 \section{Common Upgradeability Description Format}
 \label{formal.cudf}
@@ -1185,7 +1103,8 @@ Given some criteria defined with the order $<_{\alpha}$, one of the solutions $s
 \label{formal.mancoosioptimisationformat}
 %%%Describe the format by which mancoosi has required optimisation criteria formatted
 The CUDF specification does not specify the criteria used to select a solution.
-For the purpose of the MISC competition however, the Mancoosi organisation gave a specification to represent optimisation criteria.
+For the purpose of the MISC competition, the Mancoosi organisation gave a specification to represent optimisation criteria.
+This representation here is called the Mancoosi Optimisation Format (MOF), which can be mapped to the model described in section \ref{formal.opt}
 This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
 This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \citep{Treinen2009}. 
 This grammar is described in figure \ref{formal.optbnf}.
@@ -1199,15 +1118,11 @@ This grammar is described in figure \ref{formal.optbnf}.
   \label{formal.optbnf}
 \end{center}
 \end{figure}
-
 This defines a list of \verb+criterion+ with the delimiter \verb+,+ in the form $\langle criterion_1, \ldots, criterion_n \rangle$.
-Each criterion is a unique string which expresses a criteria.
-
-It is possible to map this specification to that defined above in section \ref{formal.opt}.
-Given that the domain $D = \{T,F\}$ and the variables $V = \mathbb{C}$;
-each criterion $criterion_i$ is mapped to a ranking system over a complete lattice $RS_i = \langle L_i,D,V \rangle$
-and ranking function $rank_i$.
-The composition of the criteria is then the lexicographic composition of all the $criterion_1 \oplus \ldots \oplus criterion_n$, as described in section \ref{formal.opt}.
+Each criterion is a unique string which expresses a criteria, e.g. $criterion_1 = \langle rank_1, \leq_1 \rangle$.
+The criteria are then composed lexicographically into a single criterion $\langle rank_L, \leq_L \rangle$, 
+where $criterion_1 \oplus \ldots \oplus criterion_n = \langle rank_L, \leq_L \rangle$. 
+This can then be used to create the optimality order $<_{\alpha}$ as described in definition \ref{formal.defcrittooptimal}.
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
@@ -1219,25 +1134,26 @@ In this example, the initial system $\alpha$ was  $\{syslib_1\}$, and there were
 \end{itemize}
 
 The criteria to select a solution could be defined by minimising the change to the solution, then minimising the total size of the components.
-For this, first two criteria must be defined, and mapped to a ranking system and function, then they must be composed to select a solution.
+For this, first two criteria are defined as $crit_{change} = \langle rank_{change}, \leq_{change} \rangle$ and $crit_{size} = \langle rank_{size}, \leq_{size} \rangle$.
 
-The criterion \verb+-change+ is firstly defined to minimise the change in components when evolving the system.
-This criterion is then mapped to the ranking system $RS_{change} = \langle L_{change},D,V \rangle$ where  $L_{change}$ is the lattice $\langle \mathbb{N}, \leq \rangle$,
-and the ranking function that measures the symmetric difference between the initial and the evolved systems, i.e. $rank_{change}(\alpha,\beta) = \alpha \Delta_t \beta$.
+The criterion $crit_{change}$ is represented by the string \verb+-change+ in MOF.
+$rank_{change}$ is defined as the cardinality of the symmetric difference between systems, i.e. $rank_{change}(\alpha,\beta) = |\alpha \Delta_t \beta|$.
+The order $\leq_{change}$ is defined as $>$ over natural numbers, as less change is better. 
 
-The criterion \verb+-size+ is then defined to minimise the total size of the system.
-This is mapped to the tanking system $RS_{size} = \langle L_{size},D,V \rangle$ where  $L_{size}$ is the lattice  $\langle \mathbb{N}, \leq \rangle$,
-and the ranking function which returns the size of the evolved system, i.e.  $rank_{size}(\alpha,\beta) = \sum_{c \in \beta} c$.\verb+size+.
+The criterion $crit_{size}$ is represented by the string \verb+-size+ in MOF.
+$rank_{size}$ is defined as the sum of the property \verb+size+ of all components in the  proposed system, i.e. $rank_{size}(\alpha,\beta) = \sum_{c \in \beta} c$.\verb+size+.
+The order $\leq_{size}$ is defined as $>$ over natural numbers, as a smaller system is better. 
 
-If the optimisation criteria are defined as \verb+-change,-size+, then the two ranking systems are composed using the operator $\odot$,
-such that $RS = \langle \langle \mathbb{N} \times \mathbb{N}, \leq_L \rangle, D, V \rangle$ where $\leq_L$ is a lexicographic order;
-$(a,b) \leq_{L} (a',b')$ iff $a <_{1} a'$ or $(a = a'$ and $b \leq_{2} b')$.
-Also, the ranking functions are combined such that $rank(\alpha,\beta) = \langle rank_{change}(\alpha,\beta), rank_{size}(\alpha,\beta) \rangle$.
-
-This composed ranking function is used to calculate the rank of the solutions, where $rank(\alpha,s_1) = \langle 4, 1\rangle$, $rank(\alpha,s_2) = \langle 4, 2\rangle$, $rank(\alpha,s_3) = \langle 5, 3\rangle$.
-The order of these ranks over $\leq_L$ is such that $rank(\alpha,s_1) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_3)$.
-Therefore, given the criteria \verb+-change,-size+, the solution $s_1$ is the optimal solution for the evolution problem derived from the CUDF document presented in figure \ref{formal.CUDFEXAMPLE}.
-
+For the MOF string \verb+-change,-size+, the resulting criteria would be $crit_{change} \oplus crit_{size} = \langle rank_L, \leq_L \rangle$, as shown in definition \ref{formal.defcritlex}.
+This rank function applied to the possible solutions return in:
+\begin{itemize}
+  \item $rank_L(\alpha,s_1) = (4, 1)$
+  \item $rank(\alpha,s_2) = (4, 2)$
+  \item $rank(\alpha,s_3) = (5, 3)$
+\end{itemize}
+The order of these ranks over $\leq_L$ then $rank(\alpha,s_3) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_1)$.
+Therefore, the order of optimality ($<_{\alpha}$) over the possible solutions is $s_3 <_{\alpha} s_2$, $s_3 <_{\alpha} s_1$, and $s_2<_{\alpha} s_1$,
+which makes $s_1$ the optimal solution, as no other solution is greater. 
 
 \section{Summary}
 In this chapter the formal model of component system evolution was presented.
