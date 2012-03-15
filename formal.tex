@@ -368,15 +368,14 @@ e.g., stating ``size is $.25$ more important than vendor'' does not convey meani
 
 %%%Using composed orders
 A possibly more intuitive way to approach this problem is to define an order for each criterion.
-Then, an overall order ,$<_{\alpha}$, can be created by composing the different orders together.
+Then, an overall optimal order ($<_{\alpha}$) can be created by composing the different orders together.
 
 %%%The lexicographic order
 This method is used in the MPM \citep{abate2011} CDR implementation, where the orders are composed using the lexicographic order.
 By composing criteria with the lexicographic order, the user would select a criteria to be more important than another. 
 Therefore, this composition lets the user assign a preference to each criteria, without having to assign arbitrary weights.
 
-
-\subsection{Lexicographic Composition}
+\subsection{Criteria and Lexicographic Composition}
 In this section a criterion and the lexicographic composition of criteria are formally defined.
 
 Firstly, a ranking function is defined such that:
@@ -1151,7 +1150,7 @@ This rank function applied to the possible solutions return in:
   \item $rank(\alpha,s_2) = (4, 2)$
   \item $rank(\alpha,s_3) = (5, 3)$
 \end{itemize}
-The order of these ranks over $\leq_L$ then $rank(\alpha,s_3) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_1)$.
+The order of these ranks over $\leq_L$ is then $rank(\alpha,s_3) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_1)$.
 Therefore, the order of optimality ($<_{\alpha}$) over the possible solutions is $s_3 <_{\alpha} s_2$, $s_3 <_{\alpha} s_1$, and $s_2<_{\alpha} s_1$,
 which makes $s_1$ the optimal solution, as no other solution is greater. 
 

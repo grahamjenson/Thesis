@@ -174,8 +174,8 @@ which was created to compare alternate CDR implementations.
 Their syntax and their relation to the semantic definitions of the problem are also described.
 
 The CDR implementation that takes an evolution problem (defined with CUDF) and a user strategy's criteria (defined in MOF) and finds a solution, is described in chapter \ref{implementation}.
-This CDR implementation is based on a Boolean satisfiability (SAT) solver, 
-whose optimisation is represented as a pseudo-Boolean optimisation problem which uses an algorithm called iterative strengthening to find solution.
+This CDR implementation converts the evolution problem into a SAT formula, 
+and using a modified version of the algorithm called iterative strengthening an optimal solution is found.
 The presented CDR implementation is validated by entering it into MISC where it was competed and compared against other solvers.
 
 The various strategies and criteria that a user can employ are described in chapter \ref{strategies}.
