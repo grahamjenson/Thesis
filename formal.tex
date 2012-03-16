@@ -2,15 +2,14 @@
 \label{formal}
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
-To study the component system evolution process, it can be formally modeled.
-Having such a model allows the deep examination of the process, its behaviours and its implications.
-It also allows the exact meanings of aspects to be defined. 
+In order to facilitate the study of the component system evolution process, a formal model has been developed.
+Having such a model where concepts are defined will also enable discussion.
 
-The component evolution process is modeled such that it is the repetitive selection of optimal solutions to evolution problems.
-The two distinct parts of this model, the evolution problem, and the optimal selection,
-presented in sections \ref{formal.step} and \ref{formal.opt} respectively.
+The component evolution process is modeled as a repetitive selection of solutions to evolution problems.
+The two distinct parts of this model are the evolution problem, and the solution selection.
+These are presented in sections \ref{formal.step} and \ref{formal.opt} respectively.
 
-To represent an evolution problem and the criteria through which an optimal solution is selected,
+To represent an evolution problem and the criteria through which a solution is selected,
 the Common Upgradeability Description Format (CUDF) \citep{treinen2009common}
 and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF) are used.
 Both CUDF and MOF are presented and mapped to their formal models in section \ref{formal.cudf}. 
@@ -19,18 +18,10 @@ Both CUDF and MOF are presented and mapped to their formal models in section \re
 \label{formal.step}
 Suppose a user wants to install a new text editor component into their system.
 The selected text editor has a dependency on a spell checker;
-meaning a spell checker component must be installed for the text editor to be functional.
-There are three spell checker components available that satisfy this dependency,
-this means that at least one of these spell checkers must be selected for installation as well.
+meaning that a spell checker component must be installed for the text editor to be functional.
+There are three spell checker components available that satisfy this dependency.
+This means that at least one of these spell checkers must be selected for installation as well.
 How can the user select which spell-checker to install? 
-
-In another example the user already has the text editor installed, and wants to upgrade it to a newer version to increase its stability and functionality.
-There are two newer versions available, however the newest version of the text editor requires the system to install a new spell checker,
-where the lesser up to date text editor can use the currently installed spell checker.
-The different versions of the spell-checker component conflict with each other, they cannot coexist in the same component system.
-Where one solution installs the newest text-editor it also requires reinstalling the spell-checker, 
-while the alternate solution only requires changing the text-editor.
-Both solutions will resolve the user's request, therefore the selection of an optimal solution is required.  
 
 How to formally model such evolution problems is the focus of this section.
 
@@ -38,56 +29,106 @@ How to formally model such evolution problems is the focus of this section.
 In this section a series of definitions are presented that make up the model of component system evolution.
 
 %%%What a component is
+First what a component is must be defined.
 \begin{defs}
 \label{formal.componentdef}
-$\mathbb{C}$ is the space of components, where each component is a name and version ($\langle n, v\rangle$), such that no two components can have the same name and version.
+Let $\mathcal{N}$ be the set of names, and $\mathcal{V}$ be the set of versions, where names and versions are finite alphanumeric sequences; 
+a \textbf{component} is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
 \end{defs}
-A component can be abbreviated to $n_v$, where the version is subscript of the name e.g. $c_2$ is a component $\langle c, 2\rangle$.
+The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
+A component $a$ is then a pair $\langle n,v \rangle$, where $n$ is its name and $v$ is its version.
+
+At any given time, not all components exist.
+\begin{defs}
+$\mathbb{C}_t$ is the set of components that exist at time $t$ i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
+\end{defs}
 
 \begin{defs}
 \label{formal.componentsystemdef}
-A component system is a finite subset of components, $\alpha \subseteq \mathbb{C}$. 
+A \textbf{component system} is a finite subset of components at a given time, $\alpha \subseteq_{finite} \mathbb{C}_t$. 
 \end{defs}
-For example, $\{a,c\}$ is a system with components $a$ and $c$ in it.
+The characters $\alpha,\beta,\gamma$ are used to denote component systems.
+
+Constraints are used to express systems that are ``allowed''.
+\begin{defs}
+\label{formal.constraintdefs}
+A \textbf{constraint} is a finite set of component systems, $con \subseteq_{finite} 2^{\mathbb{C}_t}$.
+\end{defs}
+
+Only certain types of constraints are allowed in this model.
+\begin{defs}
+The \textbf{types of constraints} are:
+\begin{enumerate}
+  \item $\neg a := \{\alpha \in 2^{\mathbb{C}_t} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}
+  \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}
+  \item $a_1 \vee \ldots \vee a_n := \{\alpha \in 2^{\mathbb{C}_t} \mid a_1 \in \alpha \mbox{ or }\ldots \mbox{ or } a_n \in \alpha\}$ \label{formal.keepconstraint}
+  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a_1 \in \alpha \mbox{ then }  c_1 \in \alpha \mbox{ or } \ldots \mbox{ or } c_n \in \alpha\}$ \label{formal.dependencyconstraint}
+  \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}_t} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}
+\end{enumerate}
+\end{defs} 
 
 \begin{defs}
 \label{formal.constraintdefs}
-A constraint is a subset of component systems, $con \subseteq 2^{\mathbb{C}}$.
+A component system \textbf{satisfies} a constraint, if the system is in the constraint, $\alpha \in 2^{\mathbb{C}}$.
 \end{defs}
-A constraint describes a set of acceptable systems, e.g. a constraint $\{\{a,b\},\{a,c\}\}$ describes two acceptable systems, $\{a,b\}$ and $\{a,c\}$.
 
 \begin{defs}
-An evolution problem is defined as a subset of constraints, $EP \subset 2^{2^{\mathbb{C}}}$.
-A solution to an evolution problem is the the intersection of all its constraints, i.e. given an evolution problem $EP = \{con_1,\ldots,con_n\}$,
-a solution $\beta$ is in $con_1 \cap \ldots \cap con_n$. 
+An \textbf{evolution problem} $EP_t$ is a finite set of constraints, where $con \in EP_t \Rightarrow con \subseteq 2^{\mathbb{C}_t} $.
 \end{defs}
-Therefore, an evolution problem then is a set of constraints each which describe a set of acceptable solutions, where a solution is acceptable to all constraints.
 
-There may be many solutions to an evolution problem, and some solutions are more optimal than others.
-This aspect of evolution, where some solutions are better than others, can be expressed as an order over component systems.
-This order must take into consideration the component system being evolved from, also described as the current component system, as the change to the system may be important.
 \begin{defs}
-Given a current component system $\alpha$, an order $<_{\alpha}$ is defined where
-given two systems $\beta_1$ and $\beta_2$, iff $\beta_1 <_{\alpha} \beta_2$, $\beta_2$ is a more optimal solution with respect to $\alpha$.
+A \textbf{solution} to an evolution problem is a component system that is satisfies all constraints in the evolution problem.  
 \end{defs}
 
-At any given time, not all components can exist, therefore not all constraints can be defined.
+There may be many solutions to any given evolution problem.
+There may be a preference as to which solutions are better than others.
+This preference can take into account the current system that is installed, to describe preferences such as minimal change.
 \begin{defs}
-$\mathbb{C}_t$ is defined as the set of components that exist at time $t$ i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
-An evolution problem $EP_t$ must only contain constraints that contain components that exist at time $t$, i.e. $EP_t \subset 2^{2^{\mathbb{C}_t}}$ 
+Let $\alpha$ be the currently installed component system, 
+the \textbf{evolution preference order} is defined as $<_{\alpha}: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
 \end{defs}
 
-A function is described as an evolutionary step function if it provides an optimal solution to an evolution problem.
 \begin{defs}
-Given a current system $\alpha$, the time $t$,
-the evolutionary step function $E$ is defined such that it takes an an evolution problem $EP_t$, an order $<_{\alpha}$, 
-and returns an optimal solution to $EP_t$.
-That is, $E(EP_t,<_{\alpha}) = \beta$, 
-where $\beta$ is a solution to $EP_t$, and there exists no other solution to $EP_t$, $\beta'$, 
-such that $\beta <_{\alpha} \beta'$.
+Given an evolution problem and an evolution preference order, 
+the \textbf{optimal} system is the maximum solution to the evolution problem, with respect to the evolution preference order.
 \end{defs}
 
-This function is atomic process in component system evolution, where it is a single step from one system to the next.
+\begin{defs}
+An \textbf{evolutionary step function}, $E:2^{2^{\mathbb{C}_t}}$, returns an optimal solution to an evolution problem, given an evolutionary preference order.
+\end{defs}
+
+\subsubsection{Component System Evolution is NP-Complete}
+Finding a solution that satisfies all constraints in an evolution problem can be shown to be NP-Complete \citep{cook1971}.
+This is accomplished by mapping the finding of a solution to an evolution problem to an NP-Complete problem,
+called ``exactly one in three'', that is presented in \citep{Schaefer1978} as problem ``NP1''.
+This problem is defined as:
+\begin{defs}
+Given sets  $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$
+\end{defs}
+
+$S_1, \ldots, S_n$, equals a set of constraints where each can at most be satisfied by three component systems,
+$T$ is the constraint that only one component can be installed in the system, $a_1 + \ldots a_n = 1$ where $\{a_1,\ldots,a_n\} = \mathbb{C}_t$,
+
+Given a set of components $\mathbb{C}_t = \{a,b,c\}$, the constraint $a + b + c = 1$.
+
+
+Such a constraint $a_1 + \ldots + a_n = 1$ states exactly one component of $a_1$,\ldots,$a_n$ must be installed.
+This can be mapped to a set of CNF clauses $a_1 \vee \ldots \vee a_n$ with a set of clauses $\neg a_i \vee \neg a_j$ where where $i$ and $j$ are from $1$ to $n$, $i \neq j$ and $i < j$.
+For example, the upgrade constraint $a_1 + a_2 + a_3 = 1$ is translated into the four CNF constraints $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, 
+and $\neg a_2 \vee \neg a_3$.
+The amount of CNF clauses grows quadratically with the number of components in the constraint. 
+
+All CNF clauses are combined through $\wedge$ to form a complete CNF formula which represents the SAT problem.
+
+
+This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
+This problem can is defined as the constraint $a_1 + a_2 + a_3 = 1$,  
+with the translated CNF clauses $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
+
+
+
+
+Finding a solution to an evolutionary problem is then is NP-Complete.
 
 \subsection{Constraints, Relationships, and Requests}
 \label{formal.constraints}
@@ -100,16 +141,6 @@ An evolution problem $EP_t$ is then defined as $EP_t = R_t \cup \Delta_t$.
 
 The relationship constraints and request constraints that form the sets $R_t$ and $\Delta_t$ are restricted to certain types.
 As with $EP_t$, they depend on the components that exist at $t$, $\mathbb{C}_t$.
-\begin{defs}
-Given a set of components that exist $\mathbb{C}_t$, the types of constraints allowed in this formalism are:
-\begin{enumerate}
-  \item $\neg a := \{\alpha \in 2^{\mathbb{C}_t} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}
-  \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}_t} \mid a \in \alpha \rightarrow c \not \in \alpha\}$ \label{formal.conflictconstraint}
-  \item $a_1 \vee \ldots \vee a_n := \{\alpha \in 2^{\mathbb{C}_t} \mid a_1 \in \alpha \vee \ldots \vee a_n \in \alpha\}$ \label{formal.keepconstraint}
-  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}_t} \mid a_1 \in \alpha \rightarrow  c_1 \in \alpha \vee \ldots \vee c_n \in \alpha\}$ \label{formal.dependencyconstraint}
-  \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}_t} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}
-\end{enumerate}
-\end{defs} 
 
 %%%Component realtionships constraints
 The constraints in $R_t$ can be either: 
@@ -138,70 +169,7 @@ For instance, if there exists a constraint $a$ and a constraint $\neg a$, there 
 A practical solution to resolve this issue is to check to see if the constraints a conflicting, and if they are make no change.
 That is, if the evolutionary problem $EP_t$ has no solutions, then $E(EP_t,<_{\alpha}) = \alpha$.
 
-\subsubsection{Component System Evolution is NP-Complete}
-Finding a solution that satisfies all constraints in an evolution problem is shown in this section to be NP-Complete \citep{cook1971}.
-This class of problem is described as being able to verify a solution quickly, but have no efficient way to find a solution initially.
 
-The way in which NP-Completeness is shown is through reduction to a Boolean satisfiability problem (SAT),
-then the problem is shown not to belong to any class of simple SAT problems define by Schaefer's dichotomy theorem \citep{Schaefer1978}.
-This is not the first proof that an evolution problem is NP-Complete, as one has been presented in \citep{edos2005report} through reduction to 3-SAT. 
-Though it may be the first attempt to show NP-Completeness of this problem through using Schaefer's dichotomy theorem.
-
-To reduce this problem to SAT, the first step is to map the atoms in the formal model presented above to Boolean literals:
-\begin{defs}
-A component in a system maps to a positive literal $a \in \alpha$ maps to $a = T$, and $a \not \in \alpha$ maps to $a = F$.
-\end{defs}
-
-The constraints presented in section \ref{formal.constraints} are then represented as a SAT formula in Conjunctive Normal Form (CNF).
-CNF is a conjunction of clauses, where each clause is a disjunction of literals.
-All, but constraint type \ref{formal.upgradeconstraint} can be represented as a single CNF clause:
-
-Constraints \ref{formal.removeconstraint} to \ref{formal.dependencyconstraint} are mapped to a single CNF clause
-\begin{enumerate}
-  \item $\neg a := \neg a$
-  \item $a \rightarrow \neg c := \neg a \vee \neg c$ 
-  \item $a_1 \vee \ldots \vee a_n := a_1 \vee \ldots \vee a_n$ 
-  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \neg a \vee c_1 \vee \ldots \vee c_n$ 
-\end{enumerate}
-
-Constraint type \ref{formal.upgradeconstraint} requires multiple CNF clauses to be mapped.
-Such a constraint $a_1 + \ldots + a_n = 1$ states exactly one component of $a_1$,\ldots,$a_n$ must be installed.
-This can be mapped to a set of CNF clauses $a_1 \vee \ldots \vee a_n$ with a set of clauses $\neg a_i \vee \neg a_j$ where where $i$ and $j$ are from $1$ to $n$, $i \neq j$ and $i < j$.
-For example, the upgrade constraint $a_1 + a_2 + a_3 = 1$ is translated into the four CNF constraints $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, 
-and $\neg a_2 \vee \neg a_3$.
-The amount of CNF clauses grows quadratically with the number of components in the constraint. 
-
-All CNF clauses are combined through $\wedge$ to form a complete CNF formula which represents the SAT problem.
-
-There are a set of trivial SAT problems that are not NP-Complete.
-Schaefer's dichotomy theorem \citep{Schaefer1978} lists a set of six classes of SAT problem, where iff a SAT represented in CNF is not in any of these classes it is NP-Complete.
-These classes are:
-\begin{enumerate}
-  \item the problem is solvable by assigning each variable false \label{formal.c1}
-  \item the problem is solvable by assigning each variable true \label{formal.c2}
-  \item every clause has at most one negated variable (Horn clause) \label{formal.c3}
-  \item every clause has at most one unnegated variable (dual-Horn clause) \label{formal.c4}
-  \item every clause has two literals (2-SAT problem) \label{formal.c5}
-  \item all relations are equivalent to a conjunction of affine formulae (i.e. $x_1 \oplus \ldots \oplus x_n = true$ or $x_1 \oplus \ldots \oplus x_n = false$) \label{formal.c6}
-\end{enumerate} 
-
-An evolution problem is not classes \ref{formal.c1} or \ref{formal.c2} as a problem could contain the clauses $\neg a$ and $b$. 
-
-The classes \ref{formal.c3} and \ref{formal.c4} describe problems known to be solvable in linear time \citep{dowling1984linear}.
-An evolution problem can contain clauses $\neg a \vee \neg c$ and $\neg a \vee c_1 \vee \ldots \vee c_n$, that do not fit into either class.
-
-Class \ref{formal.c5} states that the CNF problem cannot be represented as a series of clauses with only two literals,
-such a problem has been shown to be solvable in linear time \citep{aspvall1979linear}.
-Class \ref{formal.c6} states that for this problem to be NP-Complete it must not be representable as a linear equation over a two element field $\{0,1\}$.
-That is, the CNF formula can be represented as a conjunction of clauses using the XOR ($\oplus$) operator.
- 
-The evolution problem can be shown to be in neither of these classes though mapping it to a problem called ``exactly one in three'' presented in \citep{Schaefer1978} as problem ``NP1''.
-This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
-This problem can is defined as the constraint $a_1 + a_2 + a_3 = 1$,  
-with the translated CNF clauses $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
-This problem is shown to not belong to classes \ref{formal.c5} or \ref{formal.c6} in lemmas 3.1A, 3.1B and 3.1W in \citep{Schaefer1978}.
-
-Finding a solution to an evolutionary problem is then is NP-Complete.
 
 \subsection{Generational Component System Evolution}
 \label{formal.evo}
