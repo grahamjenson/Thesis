@@ -3,7 +3,7 @@
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
 In order to facilitate the study of the component system evolution process, a formal model has been developed.
-Having such a model where concepts are defined will also enable discussion.
+Having such a model defines concepts and enables the discussion and investigation of component system evolution.
 
 The component evolution process is modeled as a repetitive selection of solutions to evolution problems.
 The two distinct parts of this model are the evolution problem, and the solution selection.
@@ -12,24 +12,24 @@ These are presented in sections \ref{formal.step} and \ref{formal.opt} respectiv
 To represent an evolution problem and the criteria through which a solution is selected,
 the Common Upgradeability Description Format (CUDF) \citep{treinen2009common}
 and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF) are used.
-Both CUDF and MOF are presented and mapped to their formal models in section \ref{formal.cudf}. 
+Both CUDF and MOF are presented and mapped to the formal model in section \ref{formal.cudf}. 
 
 \section{Evolution Problem}
 \label{formal.step}
-Suppose a user wants to install a new text editor component into their system.
+Consider the problem where a user wants to install a text editor component into their system.
 The selected text editor has a dependency on a spell checker;
 meaning that a spell checker component must be installed for the text editor to be functional.
 There are three spell checker components available that satisfy this dependency.
 This means that at least one of these spell checkers must be selected for installation as well.
 How can the user select which spell-checker to install? 
 
-How to formally model such evolution problems is the focus of this section.
+A formal model that can describe such evolution problems is presented in this section.
 
 \subsection{Formal Model}
 In this section a series of definitions are presented that make up the model of component system evolution.
 
 %%%What a component is
-First what a component is must be defined.
+First a component is must be defined.
 \begin{defs}
 \label{formal.componentdef}
 Let $\mathcal{N}$ be the set of names, and $\mathcal{V}$ be the set of versions, where names and versions are finite alphanumeric sequences; 
@@ -38,26 +38,28 @@ a \textbf{component} is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times 
 The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
 A component $a$ is then a pair $\langle n,v \rangle$, where $n$ is its name and $v$ is its version.
 
+In recursive component models, such as Fractal \citep{Quma2006}, two types of components are defined, atomic components, and composite components.
+An atomic component is equivalent to a component defined above.
+A composite component is recursively defined as a set of atomic and composite components.
+
 At any given time, not all components exist.
 \begin{defs}
-$\mathbb{C}_t$ is the set of components that exist at time $t$ i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
+$\mathbb{C}_t$ is the set of components that exist at time $t$, i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
 \end{defs}
 
 \begin{defs}
 \label{formal.componentsystemdef}
-A \textbf{component system} is a finite subset of components at a given time, $\alpha \subseteq_{finite} \mathbb{C}_t$. 
+A \textbf{component system} is a finite subset of components at a given time, e.g. $\alpha$ is a component system and $\alpha \subseteq_{finite} \mathbb{C}_t$. 
 \end{defs}
 The characters $\alpha,\beta,\gamma$ are used to denote component systems.
 
-Constraints are used to express systems that are ``allowed''.
+Constraints are used to restrict possible system.
 \begin{defs}
 \label{formal.constraintdefs}
-A \textbf{constraint} is a finite set of component systems, $con \subseteq_{finite} 2^{\mathbb{C}_t}$.
+A \textbf{constraint} is a finite set of component systems, e.g. $con$ is a constraint and $con \subseteq_{finite} 2^{\mathbb{C}_t}$.
 \end{defs}
 
-Only certain types of constraints are allowed in this model.
-\begin{defs}
-The \textbf{types of constraints} are:
+Only certain types of constraints are allowed in this model, these types are:
 \begin{enumerate}
   \item $\neg a := \{\alpha \in 2^{\mathbb{C}_t} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}
   \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}
@@ -65,15 +67,15 @@ The \textbf{types of constraints} are:
   \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a_1 \in \alpha \mbox{ then }  c_1 \in \alpha \mbox{ or } \ldots \mbox{ or } c_n \in \alpha\}$ \label{formal.dependencyconstraint}
   \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}_t} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}
 \end{enumerate}
-\end{defs} 
+The intent of these constraints is to represent the relationships, and users requests when evolving a component system.
 
 \begin{defs}
 \label{formal.constraintdefs}
-A component system \textbf{satisfies} a constraint, if the system is in the constraint, $\alpha \in 2^{\mathbb{C}}$.
+A component system \textbf{satisfies} a constraint, if the system is in the constraint, e.g. component system $\alpha$ satisfies constraint $con$ iff $\alpha \in con$.
 \end{defs}
 
 \begin{defs}
-An \textbf{evolution problem} $EP_t$ is a finite set of constraints, where $con \in EP_t \Rightarrow con \subseteq 2^{\mathbb{C}_t} $.
+An \textbf{evolution problem} $EP_t$ is a finite set of constraints, where $con \in EP_t \Rightarrow con \subseteq 2^{\mathbb{C}_t}$.
 \end{defs}
 
 \begin{defs}
@@ -90,88 +92,78 @@ the \textbf{evolution preference order} is defined as $<_{\alpha}: 2^{\mathbb{C}
 
 \begin{defs}
 Given an evolution problem and an evolution preference order, 
-the \textbf{optimal} system is the maximum solution to the evolution problem, with respect to the evolution preference order.
+the \textbf{optimal solution} is the maximum solution to the evolution problem, with respect to the evolution preference order.
 \end{defs}
 
 \begin{defs}
-An \textbf{evolutionary step function}, $E:2^{2^{\mathbb{C}_t}}$, returns an optimal solution to an evolution problem, given an evolutionary preference order.
+An \textbf{evolutionary step function}, $E(EP_t)$, takes an evolution problem $EP_t$ and returns an optimal solution, given an evolutionary preference order.
 \end{defs}
+
+A caveat to the evolutionary step function occurs if no solution exists.
+This occurs when there is no component system in the intersection between all constraints.
+A practical solution to resolve this situation is:
+Given an evolutionary problem $EP_t$, and a current system $\alpha$, if no solution exists for $EP_t$, then $E(EP_t) = \alpha$.
+
+\subsubsection{Example}
+The set of components at time $t$ is $\mathbb{C}_t = \{a,b,c\}$.
+
+There are two constraints in an evolution problem $EP_t = \{con_1,con_2\}$.
+$con_1$ is $b$ (type \ref{formal.keepconstraint}), which is defined as $con_1 = \{\{b\},\{a,b\},\{b,c\},\{a,b,c\}\}$.
+$con_2$ is $b \rightarrow c$ (type \ref{formal.dependencyconstraint}), which is defined as $con_2 = \{\{b,c\},\{a,b,c\},\{a,c\},\{a\},\{c\},\{\}\}$.
+
+The possible solutions to the evolution problem $EP_t$ are in the intersection of the constrains, $con_1 \cap con_2 = \{\{b,c\},\{a,b,c\}\}$.
+The current component system is $\alpha = \{a\}$, the evolution preference order is defined to prefer to keep $a$,  $\{b,c\} <_{\alpha} \{a,b,c\}$
+The optimal solution to $EP_t$ is then $\{a,b,c\}$, therefore $E(EP_t) = \{a,b,c\}$ given $<_{\alpha}$.
 
 \subsubsection{Component System Evolution is NP-Complete}
 Finding a solution that satisfies all constraints in an evolution problem can be shown to be NP-Complete \citep{cook1971}.
-This is accomplished by mapping the finding of a solution to an evolution problem to an NP-Complete problem,
-called ``exactly one in three'', that is presented in \citep{Schaefer1978} as problem ``NP1''.
-This problem is defined as:
-\begin{defs}
-Given sets  $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$
-\end{defs}
+This is accomplished by mapping the finding of a solution to an evolution problem to a known NP-Complete problem called one-in-three satisfiability.
+This problem is defined by \cite{Schaefer1978} as:
+\begin{quote}
+Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$
+\end{quote}
 
-$S_1, \ldots, S_n$, equals a set of constraints where each can at most be satisfied by three component systems,
-$T$ is the constraint that only one component can be installed in the system, $a_1 + \ldots a_n = 1$ where $\{a_1,\ldots,a_n\} = \mathbb{C}_t$,
-
-Given a set of components $\mathbb{C}_t = \{a,b,c\}$, the constraint $a + b + c = 1$.
-
-
-Such a constraint $a_1 + \ldots + a_n = 1$ states exactly one component of $a_1$,\ldots,$a_n$ must be installed.
-This can be mapped to a set of CNF clauses $a_1 \vee \ldots \vee a_n$ with a set of clauses $\neg a_i \vee \neg a_j$ where where $i$ and $j$ are from $1$ to $n$, $i \neq j$ and $i < j$.
-For example, the upgrade constraint $a_1 + a_2 + a_3 = 1$ is translated into the four CNF constraints $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, 
-and $\neg a_2 \vee \neg a_3$.
-The amount of CNF clauses grows quadratically with the number of components in the constraint. 
-
-All CNF clauses are combined through $\wedge$ to form a complete CNF formula which represents the SAT problem.
-
-
-This problem describes a series of clauses that result in solutions where only one of three components can be selected. 
-This problem can is defined as the constraint $a_1 + a_2 + a_3 = 1$,  
-with the translated CNF clauses $a_1 \vee a_2 \vee a_3$, $\neg a_1 \vee \neg a_2$, $\neg a_1 \vee \neg a_3$, and $\neg a_2 \vee \neg a_3$.
-
-
-
-
-Finding a solution to an evolutionary problem is then is NP-Complete.
+This can be mapped to an evolution problem where:
+\begin{quote}
+Given constraints $con_1,\ldots,con_m$, each of the type  $a_1 + \ldots + a_n = 1$ where $n = 3$, is there a solution $\alpha$ where for each $i$, $|\alpha \cap con_i|  =  1$
+\end{quote}
+This describes a problem formed by constraints of type \label{formal.upgradeconstraint}, where each constraint contains three components.
+This mapping shows that an evolution problem can be NP-Complete.
 
 \subsection{Constraints, Relationships, and Requests}
 \label{formal.constraints}
-There are two main sets of constraints; constraints created from relationships between components, 
-and constraints created by the user by the request they made to change the system (referred to as \textit{the user request}).
+An evolution problem is made of two sets of constraints; constraints created from relationships between components, 
+and constraints created by the request the user has made to change the system.
+
 \begin{defs}
-Given a time $t$, $R_t$ is the set of constraints derived from component relationships, and $\Delta_t$ is the set of constraints from the user request.
-An evolution problem $EP_t$ is then defined as $EP_t = R_t \cup \Delta_t$.
+\textit{Component relationship} constraints are denoted by the set $R_t$
 \end{defs}
 
-The relationship constraints and request constraints that form the sets $R_t$ and $\Delta_t$ are restricted to certain types.
-As with $EP_t$, they depend on the components that exist at $t$, $\mathbb{C}_t$.
+\begin{defs}
+\textit{User request} constraints are denoted by the set $\Delta_t$
+\end{defs}
+An evolution problem can then be described as $EP_t = R_t \cup \Delta_t$.
 
 %%%Component realtionships constraints
 The constraints in $R_t$ can be either: 
 \begin{itemize}
-  \item keep constraint of type \ref{formal.keepconstraint}, where $a \vee b$ mean keep component $a$ or $b$ in the system
-  \item dependency constraint of type \ref{formal.dependencyconstraint}, where $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
-  \item conflict constraints of type \ref{formal.conflictconstraint},  where $a \rightarrow \neg b$ means $a$ conflicts with component $b$.
+  \item \textbf{keep} constraint of type \ref{formal.keepconstraint}, where $a \vee b$ mean keep component $a$ or $b$ in the system
+  \item \textbf{dependency} constraint of type \ref{formal.dependencyconstraint}, where $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
+  \item \textbf{conflict} constraints of type \ref{formal.conflictconstraint},  where $a \rightarrow \neg b$ means $a$ conflicts with component $b$.
 \end{itemize}
 These constraints are expressive enough to describe many of the relationships from the component models described in section \ref{background.models}.
-The main relationships that are not described here is that of composite relationships that exist in such component models like Fractal.
 
 %%%Change constraints
 The constraints in $\Delta_t$ can be either:
 \begin{itemize}
-  \item an installation constraint of type \ref{formal.keepconstraint}, where $a \vee b$ means install component $a$ or $b$ into the system
-  \item a remove constraint of type \ref{formal.removeconstraint}, where $\neg a$ means remove component $a$ from the system
-  \item an upgrade constraint of type \ref{formal.upgradeconstraint}, where $a + b = 1$ means the system should upgrade to either $a$ or $b$, but only one can be selected.
+  \item an \textbf{installation} request constraint of type \ref{formal.keepconstraint}, where $a \vee b$ is a request by the user to install component $a$ or $b$ into the system
+  \item a \textbf{remove} request constraint of type \ref{formal.removeconstraint}, where $\neg a$ is a request by the user to remove component $a$ from the system
+  \item an \textbf{upgrade} request constraint of type \ref{formal.upgradeconstraint}, where $a + b = 1$ is a request by the user to upgrade a component to either $a$ or $b$
 \end{itemize} 
-The most complex constraint in this set is the upgrade constraint, this is used to state that exactly one component from a set must be installed.
-This constraint is used to state that only one version of a component (typically of a higher version) must be installed.
-How this constraint is used is further described in section \ref{formal.cudf.request}. 
-
-%%%What is the change conflicts with R
-A possibility that can occur where the set of constraints $EP_t$ has no solutions.
-For instance, if there exists a constraint $a$ and a constraint $\neg a$, there is no solution that will satisfy both.   
-A practical solution to resolve this issue is to check to see if the constraints a conflicting, and if they are make no change.
-That is, if the evolutionary problem $EP_t$ has no solutions, then $E(EP_t,<_{\alpha}) = \alpha$.
-
-
+The upgrade constraint is used to state that exactly one component from a set of more ``up-to-date'' components, should be installed.
 
 \subsection{Generational Component System Evolution}
+%%TODO UP TO HERE
 \label{formal.evo}
 Component system evolution is the iterative application of the evolution step function, where each application creates a generation of the system.
 Each step is instigated by the user request to change the system, therefore the times that these occur are when the function is executed.
@@ -206,105 +198,6 @@ This would change only a total or $4$ components as opposed to $6$.
 Therefore, although the individual evolution returns the optimal solutions, the overall result is not optimal.
 This demonstrated the counter-intuitive and complex behaviour of component system evolution over generations as opposed to a single step.
 
-\subsection{Belief Revision}
-This formalism of generational evolution is similar to the formal logic of belief revision \citep{alchourron1985logic}.
-This logic deals with the process in which a set of beliefs can be revised when confronted with new information.
-The complexity of belief revision comes from the many ways in which a set of beliefs can be revised when necessary.
-For instance, you see a flying black object, you know that birds fly so you infer that it is a bird.
-An expert in flying things then tells you that it is a bat; given this new information your previous beliefs require some revision.
-How this revision occurs can be a complex task, as previously held beliefs must be questioned; for instance, is the object still black?
-
-The Alchourrón, G\"ardenfors, and Makinson (AGM) \citep{alchourron1985logic} postulates for belief revision give a set of eight properties 
-that a such a revision operator needs to satisfy in order to be considered \textit{rational}.
-These postulates (not enumerated here) were rephrased for propositional languages by \citep{katsuno1991propositional}. 
-Given a set of propositional formula $Y$ representing the belief set, and a single formula $A$ representing new information, the revision of $Y$ by $A$, denoted by $Y \circ A$.
-This should have these properties:
-
-\begin{itemize}
-  \item (KM1) \textit{ $Y \circ A$  implies $A$}
-  \item (KM2) \textit{ If $Y \wedge A$  is satisfiable, then $Y \circ A \equiv Y \wedge A$}
-  \item (KM3) \textit{ If $A$ is satisfiable, then $Y \circ A$  is also satisfiable}
-  \item (KM4) \textit{ If $Y_1 \equiv Y_2$ and $A_1 \equiv A_2$, then $Y_1 \circ A_1 \equiv Y_2 \circ A_2$}
-  \item (KM5) \textit{ $(Y \circ A) \wedge B$  implies $Y \circ (A \wedge B)$}
-  \item (KM6) \textit{ If $(Y \circ A) \wedge B$ is satisfiable, then $Y \circ (A \wedge B)$ implies $(Y \circ A) \wedge B$}
-\end{itemize} 
-
-The first four KM postulates are equivalent to the first six AGM postulates, describing the basic nature of revision;
-new information is always included in the new beliefs (KM1); if the new information does not conflict with old information the revision is equivalent to conjunction (KM2);
-if the new information is satisfiable then the revised beliefs should be satisfiable (KM3); given equal scenarios the results are equal (KM4).
-
-The last two KM postulates are equivalent to the last two AGM postulates, which describe the intended minimal change of revision.
-That is, revision should only change a minimal set of beliefs given new information is conflicting.
-Through weakening (KM6) to two more postulates (KM7) and (KM8), \citep{katsuno1991propositional} further define the revisions minimal change.
-
-\begin{itemize}
-  \item (KM7) \textit{ $Y \circ A_1$  implies $A_2$ and $Y \circ A_2$ implies $A_1$ then $Y \circ A_1$ is equivalent to $Y \circ A_2$}
-  \item (KM8) \textit{ $(Y \circ A_1) \wedge (Y \circ A_2)$ implies $A$}
-\end{itemize}
-
-\citep{katsuno1991propositional} go on to describe a model theoretic characterisation of minimal change; 
-given the set of all models $M$, a function is defined that assigns to a set of formula $Y$ a pre-order $\leq_{Y}$ over $M$,
-where the strict order is defined as $m <_Y m'$ if and only if $m \leq_Y m'$ and $m' \not \leq_Y m$. 
-This assignment is described as \textit{faithful} if three conditions hold:
-\begin{enumerate}
-  \item If $m,m' \in Mod(Y)$, then $m <_Y m'$ does not hold
-  \item If $m \in Mod(Y)$ and $m' \not\in Mod(Y)$, then $m <_Y m'$ holds
-  \item If $Y \equiv Z$, then $\leq_Y = \leq_Z$  
-\end{enumerate}
-
-That is, a model of $Y$ cannot be strictly less than any other model of $Y$ and must be strictly less than all non-models of $Y$.
-
-Katsuno and Mendelzon then use this assignment to define minimality and a revision operator; 
-let $J$ be a subset of $M$, 
-a model $m$ is minimal in $J$ with respect to $\leq_{Y}$ if $m \in J$ and there is no $m' \in J$ such that $m' <_Y m$. 
-The function $Min(J,\leq_{Y}) = \{ m \mid m$ is minimal in $J$ with respect to $\leq_{Y} \}$.
-A revision operator $\circ$ will satisfy the postulates (KM1)-(KM5) if and only if
-their exists a faithful assignment that maps each set of propositional formula $Y$ to a pre-order $\leq_{Y}$
-such that $Mod(Y \circ A) = Min(Mod(A),\leq_{Y})$.
-Katsuno and Mendelzon show that (KM6) will also be satisfied iff $\leq_{Y}$ is a total order,
-and (KM7) and (KM8) will also be satisfied iff $\leq_{Y}$ is a partial order.
-
-\subsubsection{Component System Evolution Mapping}
-This propositional belief revision can be used to describe component system evolution, it proposes a formal basis to give component system evolution ``rational'' properties.
-However, there are incompatibilities with this mapping, significantly this logic's dependence on minimal change.
-
-%%%Define the mapping
-The set of beliefs, $Y$, defines the propositional formulae whose model is the component system,
-and the new information, $A$, is the propositional formulae that are requested change to the system.
-The variables in these formula represent the components, and a model is represented by a set, where if a variable is in a set iff it is assigned $true$, 
-and a variable is not in the set iff it is assigned $false$. 
-Then set $Y$ is the set of formulae that is ``believed" to create a component system best suited for the user.
-The formula $A$ defines a change to the beliefs of what is best for the user, which may require the component system to be revised.
-
-%%%Discuss the mapping of the function to the revision operator
-The component relationships are facts in this logic, and not beliefs; they are axioms that are described as integrity constraints by \citep{katsuno1991propositional}.
-The revision operator is then denoted with respect to the component relationships $R$ as $\circ_R$.
-This revision operator $\circ_R$ is mapped to the evolutionary step function $E$;
-given the evolutionary function $E(R \cup \Delta,<_{\alpha}) = \beta$, $Mod(Y) = \{\alpha\}$ and $Mod(Y \circ_{R} \Delta) = \{\beta\}$.
-This restricts the possible models of $Y$ and the revised models to a singleton sets of $\{\alpha\}$ and $\{\beta\}$,
-as there can only exist a single component system at a time.
-
-%%%What does this mapping give us, a foundation
-An order $\leq_{Y}$ that holds to the properties stated previously must be defined in order to consider this revision operator ``rational''.
-This property, that is the basis of belief revision operators gives component system evolution a foundation.
-It states that the changes that are made to a component system are reasonable with respect to the beliefs that it is satisfiable for the user.
-The benefit of this mapping would provide evolution with a set of revision operators already defined, and another area of research to contribute to.
-
-%%%However, this mapping is incompatible with our definition.
-Although this mapping may provide some benefits to component system evolution, their are fundamental differences which make it incompatible.
-The order $<_{\alpha}$ is analogous to the order $\leq_{Y}$.
-They both describe the measures of optimality, however $<_{\alpha}$ allows a wide range of optimal measurements,
-where $\leq_Y$ has the only intention of measuring change between beliefs.
-This difference creates a incompatibility, given the constraints on $\leq_Y$ which requires no change if necessary.
-Where even if unnecessary, a change may be seen as optimal with the order $<_{\alpha}$.
-For example, if a system is requested to install a component that is already installed, a belief revision operator will never change the system.
-However, the evolution step function may identify there exists a newer version and attempt to upgrade the component.
-
-%%%Therefore it is not used
-This fundamental difference excludes the use of belief revision as the basis of component system evolution formalisation.
-An extension of belief revision may be possible to accurately describe component system evolution. 
-However, the necessary changes will remove core attributes of belief revision, making it an unreasonable mapping.
-Although belief revision is not directly used in this research, its domain has informed and inspired the research into component system evolution.
 
 \section{Optimal Component System Selection}
 \label{formal.opt}
