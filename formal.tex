@@ -80,17 +80,6 @@ A \textbf{solution} $\alpha$ to an evolution problem $EP$ is a component system 
 An evolution problem is \textbf{unsatisfiable} if there exists no solution to it.  
 \end{defs}
 
-As there may be many solutions to a given evolution problem, a preference over which solution to select can be defined.
-This order may be over which changes are preferred, therefore the order must be with respect to the current component system. 
-\begin{defs}
-The \textbf{evolution preference order} is defined as $\prec: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
-\end{defs}
-
-\begin{defs}
-Given an evolution problem $EP$ and an evolution preference order $\prec$, 
-an \textbf{optimal solution} is a solution $\beta_1$ to $EP$, where there is not other solution $\beta_2$ to $EP$ such that $\beta_1 \prec \beta_2$.
-\end{defs}
-That is, a solution is optimal if there does not exist another, more preferred solution.
 
 \subsubsection{Example}
 Consider the evolution problem $EP = \{con_1,con_2\}$
@@ -151,11 +140,13 @@ The upgrade constraint is used to state that exactly one component from a set of
 
 \subsection{Component System Evolution}
 \label{formal.evo}
-A component system is evolved in response to a user requesting it to be changed. 
+A component system is evolved from one system to another in response to a user requesting it to be changed.
+The resulting system must satisfy the comopnent relationship constraints, and the user request.
 \begin{defs}
-Component system evolution is the changing of a component system $\alpha$, to a component system $\beta$.
-A component system is evolved with the evolutionary step function that is defined $\alpha \leadsto \beta$
+\textbf{Component system evolution} is the changing of a component system $\alpha$, to a component system $\beta$.
+given a users request $\Delta$, $\alpha \frac{\leadsto}{\Delta} \beta$, where $beta$ satisfies $R \cup \Delta$.
 \end{defs}
+
 
 The concept of time must be introduced into this model, where:
 \begin{itemize}
@@ -164,6 +155,18 @@ The concept of time must be introduced into this model, where:
   \item The \textbf{user request} constraints $\Delta_t$ is a set of constraints at time $t$, where $con \in \Delta_t \Rightarrow con \subseteq 2^{\mathbb{C_t}}$.
   \item An \textit{evolution problem} $EP$ at time $t$, is defined as $EP_t = R_t \cup \Delta_t$.
 \end{itemize}
+
+As there may be many solutions to a given evolution problem, a preference over which solution to select can be defined.
+This order may be over which changes are preferred, therefore the order must be with respect to the current component system. 
+\begin{defs}
+The \textbf{evolution preference order} is defined as $\prec: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
+\end{defs}
+
+\begin{defs}
+Given an evolution problem $EP$ and an evolution preference order $\prec$, 
+an \textbf{optimal solution} is a solution $\beta_1$ to $EP$, where there is not other solution $\beta_2$ to $EP$ such that $\beta_1 \prec \beta_2$.
+\end{defs}
+That is, a solution is optimal if there does not exist another, more preferred solution.
 
 \begin{defs}
 The \textbf{installed system} $\alpha_t$ is the component system installed at time $t$.
