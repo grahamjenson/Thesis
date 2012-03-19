@@ -14,7 +14,7 @@ the Common Upgradeability Description Format (CUDF) \citep{treinen2009common}
 and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF) are used.
 Both CUDF and MOF are presented and mapped to the formal model in section \ref{formal.cudf}. 
 
-\section{Evolution Problem}
+\section{Formal Model of Component System Evolution}
 \label{formal.step}
 Consider the problem where a user wants to install a text editor component into their system.
 The selected text editor has a dependency on a spell checker;
@@ -25,102 +25,88 @@ How can the user select which spell-checker to install?
 
 A formal model that can describe such evolution problems is presented in this section.
 
-\subsection{Formal Model}
+\subsection{Evolution Problem}
 In this section a series of definitions are presented that make up the model of component system evolution.
 
 %%%What a component is
 First a component is must be defined.
 \begin{defs}
 \label{formal.componentdef}
-Let $\mathcal{N}$ be the set of names, and $\mathcal{V}$ be the set of versions, where names and versions are finite alphanumeric sequences; 
-a \textbf{component} is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
+Let $\mathcal{N}$ be the set of names, and $\mathcal{V}$ be the set of versions \footnote{Names and versions are finite alphanumeric sequences which can contain special some characters like ``.'' and ``-''}; 
+a \textbf{component}\footnote{In recursive component models, such as Fractal \citep{Quma2006}, the definition ``component'' would include the concept of a composite component.
+A composite component $c$ is defined as a set of components, i.e. $c \subseteq \mathbb{C}$.
+This definition is not included in this model, though it may be possible to be modified to include it if required.} 
+is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
 \end{defs}
 The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
 A component $a$ is then a pair $\langle n,v \rangle$, where $n$ is its name and $v$ is its version.
 
-In recursive component models, such as Fractal \citep{Quma2006}, two types of components are defined, atomic components, and composite components.
-An atomic component is equivalent to a component defined above.
-A composite component is recursively defined as a set of atomic and composite components.
-
-At any given time, not all components exist.
-\begin{defs}
-$\mathbb{C}_t$ is the set of components that exist at time $t$, i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
-\end{defs}
-
 \begin{defs}
 \label{formal.componentsystemdef}
-A \textbf{component system} is a finite subset of components at a given time, e.g. $\alpha$ is a component system and $\alpha \subseteq_{finite} \mathbb{C}_t$. 
+A \textbf{component system} is a finite subset of components, e.g. $\alpha$ is a component system and $\alpha \subseteq_{finite} \mathbb{C}$. 
 \end{defs}
 The characters $\alpha,\beta,\gamma$ are used to denote component systems.
 
 Constraints are used to restrict possible system.
 \begin{defs}
 \label{formal.constraintdefs}
-A \textbf{constraint} is a finite set of component systems, e.g. $con$ is a constraint and $con \subseteq_{finite} 2^{\mathbb{C}_t}$.
+A \textbf{constraint} is a finite set of component systems, e.g. $con$ is a constraint and $con \subseteq_{finite} 2^{\mathbb{C}}$.
 \end{defs}
 
 Only certain types of constraints are allowed in this model, these types are:
 \begin{enumerate}
-  \item $\neg a := \{\alpha \in 2^{\mathbb{C}_t} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}
-  \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}
-  \item $a_1 \vee \ldots \vee a_n := \{\alpha \in 2^{\mathbb{C}_t} \mid a_1 \in \alpha \mbox{ or }\ldots \mbox{ or } a_n \in \alpha\}$ \label{formal.keepconstraint}
-  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}_t} \mid \mbox{if } a_1 \in \alpha \mbox{ then }  c_1 \in \alpha \mbox{ or } \ldots \mbox{ or } c_n \in \alpha\}$ \label{formal.dependencyconstraint}
-  \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}_t} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}
+  \item $\neg a := \{\alpha \in 2^{\mathbb{C}} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}.
+  \item $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}.
+  \item $a_1 \vee \ldots \vee a_n := \{\alpha \in 2^{\mathbb{C}} \mid a_1 \in \alpha \mbox{ or }\ldots \mbox{ or } a_n \in \alpha\}$ \label{formal.keepconstraint}.
+  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}} \mid \mbox{if } a_1 \in \alpha \mbox{ then }  c_1 \in \alpha \mbox{ or } \ldots \mbox{ or } c_n \in \alpha\}$ \label{formal.dependencyconstraint}.
+  \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}.
 \end{enumerate}
-The intent of these constraints is to represent the relationships, and users requests when evolving a component system.
+The set of constraints is restricted to these types as only these are necessary to represent component relationships, and user requests. 
 
 \begin{defs}
 \label{formal.constraintdefs}
-A component system \textbf{satisfies} a constraint, if the system is in the constraint, e.g. component system $\alpha$ satisfies constraint $con$ iff $\alpha \in con$.
+A component system $\alpha$ \textbf{satisfies} a constraint $con$, iff $\alpha \in con$.
 \end{defs}
 
 \begin{defs}
-An \textbf{evolution problem} $EP_t$ is a finite set of constraints, where $con \in EP_t \Rightarrow con \subseteq 2^{\mathbb{C}_t}$.
+An \textbf{evolution problem} $EP$ is a finite set of constraints.
 \end{defs}
 
 \begin{defs}
-A \textbf{solution} to an evolution problem is a component system that is satisfies all constraints in the evolution problem.  
-\end{defs}
-
-There may be many solutions to any given evolution problem.
-There may be a preference as to which solutions are better than others.
-This preference can take into account the current system that is installed, to describe preferences such as minimal change.
-\begin{defs}
-Let $\alpha$ be the currently installed component system, 
-the \textbf{evolution preference order} is defined as $<_{\alpha}: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
+A \textbf{solution} $\alpha$ to an evolution problem $EP$ is a component system that is satisfies all constraints in the evolution problem, i.e. $\alpha \in con_i$ for all $con_i \in EP$.  
 \end{defs}
 
 \begin{defs}
-Given an evolution problem and an evolution preference order, 
-the \textbf{optimal solution} is the maximum solution to the evolution problem, with respect to the evolution preference order.
+An evolution problem is \textbf{unsatisfiable} if there exists no solution to it.  
+\end{defs}
+
+As there may be many solutions to a given evolution problem, a preference over which solution to select can be defined.
+This order may be over which changes are preferred, therefore the order must be with respect to the current component system. 
+\begin{defs}
+The \textbf{evolution preference order} is defined as $\prec: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
 \end{defs}
 
 \begin{defs}
-An \textbf{evolutionary step function}, $E(EP_t)$, takes an evolution problem $EP_t$ and returns an optimal solution, given an evolutionary preference order.
+Given an evolution problem $EP$ and an evolution preference order $\prec$, 
+an \textbf{optimal solution} is a solution $\beta_1$ to $EP$, where there is not other solution $\beta_2$ to $EP$ such that $\beta_1 \prec \beta_2$.
 \end{defs}
-
-A caveat to the evolutionary step function occurs if no solution exists.
-This occurs when there is no component system in the intersection between all constraints.
-A practical solution to resolve this situation is:
-Given an evolutionary problem $EP_t$, and a current system $\alpha$, if no solution exists for $EP_t$, then $E(EP_t) = \alpha$.
+That is, a solution is optimal if there does not exist another, more preferred solution.
 
 \subsubsection{Example}
-The set of components at time $t$ is $\mathbb{C}_t = \{a,b,c\}$.
+Consider the evolution problem $EP = \{con_1,con_2\}$
+$con_1$ is $b$ (type \ref{formal.keepconstraint}), which is the set of all component system with $b$ in them.
+$con_2$ is $a \rightarrow c$ (type \ref{formal.dependencyconstraint}), which is the set of all component systems where if $a$ is included, then $c$ is included.
+The intersection of these two constraints includes the solutions $\{a,b,c\}$ and $\{a,b,c,d\}$.
 
-There are two constraints in an evolution problem $EP_t = \{con_1,con_2\}$.
-$con_1$ is $b$ (type \ref{formal.keepconstraint}), which is defined as $con_1 = \{\{b\},\{a,b\},\{b,c\},\{a,b,c\}\}$.
-$con_2$ is $b \rightarrow c$ (type \ref{formal.dependencyconstraint}), which is defined as $con_2 = \{\{b,c\},\{a,b,c\},\{a,c\},\{a\},\{c\},\{\}\}$.
-
-The possible solutions to the evolution problem $EP_t$ are in the intersection of the constrains, $con_1 \cap con_2 = \{\{b,c\},\{a,b,c\}\}$.
-The current component system is $\alpha = \{a\}$, the evolution preference order is defined to prefer to keep $a$,  $\{b,c\} <_{\alpha} \{a,b,c\}$
-The optimal solution to $EP_t$ is then $\{a,b,c\}$, therefore $E(EP_t) = \{a,b,c\}$ given $<_{\alpha}$.
+Given an evolution preference order, $\prec$, that is defined to prefer less components in the system, $\{a,b,c,d\} \prec \{a,b,c\}$.
+As there are no solutions to $EP$ with less components than the solution $\{a,b,c\}$, $\{a,b,c\}$ is the optimal solution.
 
 \subsubsection{Component System Evolution is NP-Complete}
 Finding a solution that satisfies all constraints in an evolution problem can be shown to be NP-Complete \citep{cook1971}.
 This is accomplished by mapping the finding of a solution to an evolution problem to a known NP-Complete problem called one-in-three satisfiability.
 This problem is defined by \cite{Schaefer1978} as:
 \begin{quote}
-Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$
+Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$.
 \end{quote}
 
 This can be mapped to an evolution problem where:
@@ -136,166 +122,200 @@ An evolution problem is made of two sets of constraints; constraints created fro
 and constraints created by the request the user has made to change the system.
 
 \begin{defs}
-\textit{Component relationship} constraints are denoted by the set $R_t$
+The \textbf{component relationship} constraints $R$ is a set of constraints.
 \end{defs}
 
 \begin{defs}
-\textit{User request} constraints are denoted by the set $\Delta_t$
+The \textbf{user request} constraints $\Delta$ is a set of constraints.
 \end{defs}
-An evolution problem can then be described as $EP_t = R_t \cup \Delta_t$.
+An evolution problem is then defined as $EP = R \cup \Delta$.
 
 %%%Component realtionships constraints
-The constraints in $R_t$ can be either: 
+The constraints in $R$ can be either: 
 \begin{itemize}
-  \item \textbf{keep} constraint of type \ref{formal.keepconstraint}, where $a \vee b$ mean keep component $a$ or $b$ in the system
+  \item \textbf{keep} constraint of type \ref{formal.keepconstraint}, where $a \vee b$ mean keep component $a$ or $b$ in the system.
   \item \textbf{dependency} constraint of type \ref{formal.dependencyconstraint}, where $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
   \item \textbf{conflict} constraints of type \ref{formal.conflictconstraint},  where $a \rightarrow \neg b$ means $a$ conflicts with component $b$.
 \end{itemize}
 These constraints are expressive enough to describe many of the relationships from the component models described in section \ref{background.models}.
 
 %%%Change constraints
-The constraints in $\Delta_t$ can be either:
+The constraints in $\Delta$ can be either:
 \begin{itemize}
-  \item an \textbf{installation} request constraint of type \ref{formal.keepconstraint}, where $a \vee b$ is a request by the user to install component $a$ or $b$ into the system
-  \item a \textbf{remove} request constraint of type \ref{formal.removeconstraint}, where $\neg a$ is a request by the user to remove component $a$ from the system
-  \item an \textbf{upgrade} request constraint of type \ref{formal.upgradeconstraint}, where $a + b = 1$ is a request by the user to upgrade a component to either $a$ or $b$
+  \item an \textbf{installation} request constraint of type \ref{formal.keepconstraint}, where $a \vee b$ is a request by the user to install component $a$ or $b$ into the system.
+  \item a \textbf{remove} request constraint of type \ref{formal.removeconstraint}, where $\neg a$ is a request by the user to remove component $a$ from the system.
+  \item an \textbf{upgrade} request constraint of type \ref{formal.upgradeconstraint}, where $a + b = 1$ is a request by the user to upgrade a component to either $a$ or $b$.
 \end{itemize} 
 The upgrade constraint is used to state that exactly one component from a set of more ``up-to-date'' components, should be installed.
 
-\subsection{Generational Component System Evolution}
-%%TODO UP TO HERE
+
+
+
+\subsection{Component System Evolution}
 \label{formal.evo}
-Component system evolution is the iterative application of the evolution step function, where each application creates a generation of the system.
-Each step is instigated by the user request to change the system, therefore the times that these occur are when the function is executed.
-This can be recursively defined as:
+A component system is evolved in response to a user requesting it to be changed. 
 \begin{defs}
-Given a series of user requests $\langle \Delta_{t_1},\ldots \Delta_{t_n} \rangle$ that occur at times $\langle t_1,\ldots t_n \rangle$, and an order $<$ to select optimal solutions, 
-a generation is defined as $G_i = E(R_{t_i} \cup \Delta_{t_i},<_{G_{i-1}})$ where $i$ is an integer between $1$ and $n$.
+Component system evolution is the changing of a component system $\alpha$, to a component system $\beta$.
+A component system is evolved with the evolutionary step function that is defined $\alpha \leadsto \beta$
 \end{defs}
-The initial generation of this process, $G_0$, is the starting point that could either be an system with no components, or a system that is a pre-defined configuration of components.
 
-A caveat exists in the definition of a user change request as a user will typically want to make sure that previous user requests are not undone with new generations.
-To ensure that all previous user requests are satisfied, the evolution problem could be defined as 
-$EP_{t_k} = R_{t_k} \cup \Delta_{t_k} \cup \Delta_{t_{k-1}} \cup \ldots \cup \Delta_{t_{0}}$.
-However, this will often create a conflicting set of constraints, where there exist no solution.
-For example, if a user wanted to experiment with component but later wanted to remove it, this would create two conflicting constraints.
-Another way to solve this problem would be to give the order $<$ the responsibility to minimise the amount of unsatisfied previous requests.
-This possible solution is not explored in this model, though practically it is advantageous as it allows the optimisation of selection.
+The concept of time must be introduced into this model, where:
+\begin{itemize}
+  \item $\mathbb{C}_t$ is the set of components that exist at time $t$, i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
+  \item The \textit{component relationship} constraints $R_t$ is a set of constraints at time $t$, where $con \in R_t \Rightarrow con \subseteq 2^{\mathbb{C_t}}$.
+  \item The \textbf{user request} constraints $\Delta_t$ is a set of constraints at time $t$, where $con \in \Delta_t \Rightarrow con \subseteq 2^{\mathbb{C_t}}$.
+  \item An \textit{evolution problem} $EP$ at time $t$, is defined as $EP_t = R_t \cup \Delta_t$.
+\end{itemize}
 
+\begin{defs}
+The \textbf{installed system} $\alpha_t$ is the component system installed at time $t$.
+\end{defs}
+
+When evolving a system, the change of the system may effect the preference of the resulting system.
+Therefore, the evolution preference order may be defined with respect to the installed system.
+\begin{defs}
+Given the installed system $\alpha_t$, the \textbf{evolution preference order} $\prec$, is defined with respect to the installed system, i.e. $\prec_{\alpha_t}$
+\end{defs}
+
+This iterative application of the evolutionary step function results in a series of installed systems.
+The evolutionary step function is instigated by the user requesting to change their system.
+\begin{defs}
+Given a series of user requests $\Delta_{t_1},\ldots \Delta_{t_n}$ that occur at times $t_1,\ldots t_n$, 
+the \textbf{evolution step} function $E$, changes an installed component system to satisfy a users request to change,
+i.e. $E(\alpha_{t_{i-1}}, R_{t_i} \cup \Delta_{t_i}) = \alpha_{t_i}$ given the preference order $\prec_{\alpha_{t_{i-1}}}$.
+\end{defs}
+
+\begin{defs}
+The \textbf{initial system}, $\alpha_{t_0}$, could either be a system with no components, or a system that is a pre-defined configuration of components.
+\end{defs}
+
+A caveat to the evolutionary step function occurs if it is unsatisfiable.
+A practical solution to resolve this situation is:
+Given an evolutionary problem $EP_t$, and the installed system $\alpha_{t_{i-1}}$, if $EP_{t_i}$ is unsatisfiable, then $E(\alpha_{t_{i-1}},EP_{t_i}) = \alpha_{t_{i-1}}$.
+
+Another caveat to this process is that a users change request should not be undone with subsequent generations.
+For example, if at time $t_1$ the user requests to install component $a$, then future generations should not remove $a$.
+This could be represented as a hard constraint, where an evolution problem contains all previous user requests.
+That is, $EP_{t_i} = R_{t_i} \cup \Delta_{t_i} \cup \Delta_{t_{i-1}} \cup \ldots \cup \Delta_{t_{0}}$.
+This, however, can create an unsatisfiable evolution problems, as a users requests will often conflict.
+Another way to ensure the maximum amount of previous requests are resolved would be to give the evolutionary preference order this responsibility.
+
+\subsubsection{Example}
 %%%This makes a sometimes counter intuitive complexity
-The process of component system evolution can be counter-intuitive and complex, as the optimal solution for an evolutionary step may not be optimal over generations.
-For instance, given the order $<$ where a more optimal solution is one with a smaller number of components altered (the symmetric difference between the solutions), 
-i.e. $\beta <_{\alpha} \beta'$ iff $|\alpha \Delta \beta| > |\alpha \Delta \beta'|$,
-an initial system $G_0 = \{\}$, a series of user request constraints $\langle \{a\}, \{d\}\rangle$, 
-and a set of constraints (time invariant) $R = \{a \rightarrow b_1 \vee b_2, b_1 \rightarrow \neg b_2, b_2 \rightarrow c, d \rightarrow b_2\}$;
-$G_1 = \{a,b_1\}$ because $|G_0 \Delta G_1| = 2$, and $G_2 = \{a,b_2,c,d\}$ because $|G_1 \Delta G_2| = 4$.
-The total change between generations by minimising change using is then $6$, where in the first evolution $a$ and $b_1$ are added, 
-and in the second evolution $b_1$ is removed and $b_2$, $c$ and $d$ are added.
+The selection of an optimal solution to an evolutionary step, may not be optimal when considering generational evolution.
 
-This is not an optimal solution when looking at the problem from a generational perspective.
-A better evolution of this system would have been $G_1 = \{a,b_2,c\}$ then $G_2 = \{a,b_2,c,d\}$.
-This would change only a total or $4$ components as opposed to $6$.
-Therefore, although the individual evolution returns the optimal solutions, the overall result is not optimal.
-This demonstrated the counter-intuitive and complex behaviour of component system evolution over generations as opposed to a single step.
+This can be demonstrated with an example:
+Let the evolutionary preference order select solutions with the minimum number of components altered (the symmetric difference between the solutions), 
+i.e. $\beta \prec_{\alpha} \beta'$ iff $|\alpha \Delta \beta| > |\alpha \Delta \beta'|$.
+Let the initial system $\alpha_0 = \{\}$.
+Let a series of user requests be $\Delta_1 = \{a\}$ and $ \Delta_2 = \{d\}$. 
+Let the set of constraints $R_1 = R_2 = \{a \rightarrow b_1 \vee b_2, b_1 \rightarrow \neg b_2, b_2 \rightarrow c, d \rightarrow b_2\}$.
 
+Consider component evolution from generation $\alpha_0$ to $\alpha_2$;
+\begin{itemize}
+  \item $\alpha_0 = \{\}$
+  \item $\alpha_1 = E(\alpha_0,EP_1)$, given the preference order $<_{\alpha_0}$. $|\alpha_0 \Delta \{a,b_1\}| = 2$ is optimal, therefore $\alpha_1 = \{a,b_1\}$.
+  \item $\alpha_2 = E(\alpha_1,EP_2)$, given the preference order $<_{\alpha_1}$. $|\alpha_1 \Delta \{a,b_2,c,d\}| = 4$ is optimal, therefore $\alpha_2 = \{a,b_2,c,d\}$.
+\end{itemize}
+
+From $\alpha_0$ to $\alpha_1$ components $a$ and $b_1$ are added, 
+and from $\alpha_1$ to $\alpha_2$ components $b_1$ is removed, and $b_2$, $c$ and $d$ are added.
+The total change across the generations is therefore $6$.
+This is not the global minimal change.
+If $\alpha_1 = \{a,b_2,c\}$, and $\alpha_2 = \{a,b_2,c,d\}$, the total change would be $4$.
+This shows that although the evolution step function returned locally optimal solutions,
+the global perspective across generations of systems was not optimal.
 
 \section{Optimal Component System Selection}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
 Any requested evolution of a component system can have many different possible resulting systems \citep{leBerre2010}.
-This is because the problem is generally under-constrained \citep{Berre2008}, allowing multiple systems to satisfy user request and component relationship constraints.
-The order $<_{\alpha}$ is used to define a ranking of systems to select an optimal solution to an evolution problem.
-This order will be explored in this section.
+This is because the problem is generally under-constrained \citep{Berre2008}, allowing multiple systems to satisfy evolution problems.
+The order $\prec_{\alpha}$ is used to define a preference over the possible systems to select from.
 
-\subsection{Multi-criteria Optimisation}
 %%%This is a multi criteria problem
-By looking at the previously presented CDR implementations in chapter \ref{background} (such as Eclipse P2, apt-get, aptitude, and MPM) requirements for system selection can be extracted.
-These solvers select a component system using:
+By looking at the previously presented CDR implementations in chapter \ref{background} (such as Eclipse P2, apt-get, aptitude, and MPM), some requirements for the preference order have be extracted:
 \begin{itemize}
-  \item Multiple criteria that define what a good system is
-  \item Different domains to be optimised for (e.g. versions, choices, components, age)
+  \item Multiple criteria to select an optimal solution.
+  \item Different criteria may have different domains to be optimised for (e.g. versions, choices, components, age).
 \end{itemize} 
-The selection of a solution to an evolution problem is then a multi-criteria optimisation problem.
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
-A naive way to create select an optimal solution is to map all criteria to a function that returns a real number.
-Then by aggregating these numbers, through addition or multiplication (possibly with weights), a single function is created that can be used to define the order $<_{\alpha}$. 
+A naive way to create a preference order with these requirements is to create a function for each criteria that takes a component system and returns a real number.
+Then for each possible solution the function is applied to return a value, which is then aggregated through addition or multiplication (possibly with weights).
+The optimal system is then the system that returns the maximum (or minimum) real value. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
 This method has some drawbacks; information is lost in the conversion to real numbers, e.g. the reason why a specific system was selected over another.
-The relationships between criteria are also difficult to define, as getting an intuitive system order requires altering weights which makes the function complicated to maintain.
-This leads to the problem that assigning preferences to criteria with arbitrary weights is not intuitive,
-e.g., stating ``size is $.25$ more important than vendor'' does not convey meaningful information about the weighting decision, or its impact.
+The relationships between criteria are also difficult to intuitively define.
+Altering weights to express preference does not convey meaningful information about decisions or their impact.
+For example, stating ``size is $.25$ more important than version'' is difficult to understand as versions and size are in two separate domains, 
+and greater versions but smaller size is considered better.
 
 %%%Using composed orders
-A possibly more intuitive way to approach this problem is to define an order for each criterion.
-Then, an overall optimal order ($<_{\alpha}$) can be created by composing the different orders together.
-
-%%%The lexicographic order
-This method is used in the MPM \citep{abate2011} CDR implementation, where the orders are composed using the lexicographic order.
-By composing criteria with the lexicographic order, the user would select a criteria to be more important than another. 
-Therefore, this composition lets the user assign a preference to each criteria, without having to assign arbitrary weights.
+A possibly more intuitive approach to this problem is to define an order for each criterion.
+Then, an overall optimal order ($\prec_{\alpha}$) can be define by composing the different orders together using the lexicographic order.
+This order is used to express that optimising one criteria is more important than another. 
+This composition lets the user assign a preference to each criteria, without having to assign arbitrary weights.
+This method is used in the MPM \citep{abate2011} CDR implementation, and will be presented in this section.
 
 \subsection{Criteria and Lexicographic Composition}
 In this section a criterion and the lexicographic composition of criteria are formally defined.
 
-Firstly, a ranking function is defined such that:
+\begin{defs}
+A \textbf{ranking function}, $rank$, is a function that takes two component systems and return a value in the set $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
+\end{defs}
+A ranking function measures the change from a previous system to the range $A$.
+
 \begin{defs}
 \label{formal.defcriteria}
-A criterion is defined as a tuple $\langle rank, \leq \rangle$.
-$rank$ is a function that takes two component systems and return a value in the set $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
-$\leq$ is a partial order over $A$ (whose strict order is $<$).
+A \textbf{criterion} is a tuple $\langle rank, \leq \rangle$, where $rank$ is a ranking function, and $\leq$ (whose strict order is $<$) is a partial order over $A$.
 \end{defs}
-$rank$ measures a change from a previous system to the set $A$, and the order $\leq$ determines which value in $A$ is optimal.
-$\leq$ must be a partial order, which is defined to be reflexive ($a \leq a$), antisymmetry ($if a \leq b and b \leq a then a = b$), and transitive ($if a \leq b and b \leq c then a \leq c$).
+The order $\leq$ is a partial order, which is defined to be reflexive ($a \leq a$), antisymmetry ($if a \leq b and b \leq a then a = b$), and transitive ($if a \leq b and b \leq c then a \leq c$).
 
 \begin{defs}
 \label{formal.defcrittooptimal}
-Given a criterion $\langle rank, \leq \rangle$, 
-a current system $\alpha$,
-and two systems $\beta_1$ and $\beta_2$,
-iff $rank(\alpha,\beta_1) < rank(\alpha,\beta_2)$ then $\beta_1 <_{\alpha} \beta_2$.
+The \textbf{evolution preference order} $\prec_{\alpha}$ is defined given a criterion $\langle rank, \leq \rangle$, 
+iff $rank(\alpha,\beta_1) < rank(\alpha,\beta_2)$ then $\beta_1 \prec_{\alpha} \beta_2$.
 \end{defs}
-This describes a criterion in terms of the optimal order that can be used in the evolutionary function $E(EP,<_{\alpha})$.
+The evolution preference order, is described with respect to a criterion.
 
-The lexicographic composition of multiple criteria is defined with the operator $\oplus$: 
+
 \begin{defs}
 \label{formal.defcritlex}
-Given two criteria $crit_1 = \langle rank_1, \leq_{1} \rangle$, and $crit_2 = \langle rank_2, \leq_{2} \rangle$,
+The \textbf{lexicographic composition} multiple criteria into a single criterion is defined with the operator $\oplus$.
+Let the two criteria $crit_1 = \langle rank_1, \leq_{1} \rangle$, and $crit_2 = \langle rank_2, \leq_{2} \rangle$,
 where the range of $rank_1$ is $A_1$, and the range of $rank_2$ is $A_2$.
-$crit_1 \oplus crit_2 = \langle rank_L,\leq_L \rangle$, where the range of $rank_L$ is $A_1 \times A_2$, such that $rank_L(\alpha,\beta) = (rank_1(\alpha,\beta),rank_2(\alpha,\beta))$.
-The order $\leq_L$ is then a binary relation over $A_1 \times A_2$ where $(a,b) \leq_L (a',b')$ iff $a <_1 a'$ or $(a = a'$ and $b \leq_2 b')$,
-whose strict order is $<_L$.
+The lexicographical composition of $crit_1$ and $crit_2$, $crit_1 \oplus crit_2$, equal the criterion $\langle rank_L,\leq_L \rangle$.
+The range of $rank_L$ is $A_1 \times A_2$, and $rank_L(\alpha,\beta) = (rank_1(\alpha,\beta),rank_2(\alpha,\beta))$.
+The order $\leq_L$ (whose strict order is $<_L$) is over $A_1 \times A_2$, such that $(a,b) \leq_L (a',b')$ iff $a <_1 a'$ or $(a = a'$ and $b \leq_2 b')$.
 \end{defs}
-As the $rank_L$ function takes two component systems and returns a value in the set $A_1 \times A_2$,
-and the order $\leq_L$ is a partial order \citep{Schroder2003},
-$\langle rank_L,\leq_L \rangle$ is a criterion as well.
-This means that multiple criteria can be composed together, to create a single measure of optimality $<_{\alpha}$.
+$rank_L$ takes two component systems and returns a value in the set $A_1 \times A_2$, making it a ranking function.
+The order $\leq_L$ is a partial order \citep{Schroder2003} over $A_1 \times A_2$.
+Therefore, the tuple $\langle rank_L,\leq_L \rangle$ is a criterion.
 
-In section \ref{formal.mancoosioptimisationformat} the syntax to order criteria is defined, 
-in chapter \ref{implementation} the way in which these criteria are optimised is given,
-and in chapter \ref{strategies} various criteria are defined that fit in this framework.
+The composition of multiple criteria, results in a criterion, which can be used to define the evolution preference order $\prec_{\alpha}$.
 
-\section{Common Upgradeability Description Format}
+In section \ref{formal.mancoosioptimisationformat} a syntax to describe the composition of criteria is defined. 
+In chapter \ref{implementation} an algorithm to find optimal solutions to such criteria is described.
+In chapter \ref{strategies} various criteria are defined that fit within this framework.
+
+\section{Common Upgradeability Description Format and Mancoosi Optimisation Format}
 \label{formal.cudf}
 %%%The description of the represnation of CUDF is described.
-What has been described so far in this chapter is the formal model of component system evolution, with its constraints and it's optimisation.
-These semantics require a representation, a language in which to describe and convey such an evolution problem.
-In this section, the representation of such a problem is described through using the Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common}.
+The Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common} is used as the syntax to represent evolution problems.
 This specification was previously discussed in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
+The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is used as the syntax to define the evolution preference order.
 
-CUDF was defined as an abstract representation the evolution problem of open source software, also described as an upgradeability problem.
-It was designed in order to allow the comparison of various implementations designed to solve CUDF problems, 
-and to create a generalised solver of such problems.
-In both aspects CUDF has succeeded.
-The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012} has been held, both in 2010 and 2011 as well as intermittently, 
-to compare various state of the art, and legacy, solvers.
-The solver MPM, presented in \citep{abate2011}, was designed and created to solve real world problems represented in CUDF.
+CUDF and MOF were created to be an abstract representation of evolution problems and evolution preference order, to allow the comparison of various solvers.
+CUDF and MOF were a success, in this respect.
+The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012} was held in both 2010 and 2011,
+which compared various state of the art, and legacy, solvers that had been modified to solve CUDF problems with MOF preference order.
 
 %%%In this section\ldots
-In this section first the design principles of CUDF are described, this will show the motivations of this definition are aligned to this research.
-The syntax of CUDF is then described, this will not cover all aspects of the CUDF specification, for instance the extensive type system of CUDF is left out.
-This will however, be enough detail to give a broad understanding of the format.
+In this section the design principles and requirements of CUDF are described.
+A brief overview of a CUDF document is then presented.
+The CUDF specification of the syntax of CUDF is then described, this will not cover all aspects of the CUDF specification, for instance the extensive type system of CUDF is left out.
 The defined CUDF syntax is then mapped to our model of the a component system evolution through the constraints that have been defined.
 This includes some minor extensions to the presented definition in section \ref{formal.step}.
 Finally, the Mancoosi format for specifying optimisation criteria, denoted as MOF, is discussed.
@@ -957,7 +977,7 @@ This gives three possible solutions to this problem;
   \item $s_3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
 \end{itemize}
 
-Given some criteria defined with the order $<_{\alpha}$, one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(EP_t,<_{\alpha})$. 
+Given some criteria defined with the order $\prec_{\alpha}$, one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(EP_t,\prec_{\alpha})$. 
 
 \subsection{Mancoosi Optimisation Format}
 \label{formal.mancoosioptimisationformat}
@@ -982,7 +1002,7 @@ This defines a list of \verb+criterion+ with the delimiter \verb+,+ in the form 
 Each criterion is a unique string which expresses a criteria, e.g. $criterion_1 = \langle rank_1, \leq_1 \rangle$.
 The criteria are then composed lexicographically into a single criterion $\langle rank_L, \leq_L \rangle$, 
 where $criterion_1 \oplus \ldots \oplus criterion_n = \langle rank_L, \leq_L \rangle$. 
-This can then be used to create the optimality order $<_{\alpha}$ as described in definition \ref{formal.defcrittooptimal}.
+This can then be used to create the optimality order $\prec_{\alpha}$ as described in definition \ref{formal.defcrittooptimal}.
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
@@ -1012,7 +1032,7 @@ This rank function applied to the possible solutions return in:
   \item $rank(\alpha,s_3) = (5, 3)$
 \end{itemize}
 The order of these ranks over $\leq_L$ is then $rank(\alpha,s_3) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_1)$.
-Therefore, the order of optimality ($<_{\alpha}$) over the possible solutions is $s_3 <_{\alpha} s_2$, $s_3 <_{\alpha} s_1$, and $s_2<_{\alpha} s_1$,
+Therefore, the order of optimality ($\prec_{\alpha}$) over the possible solutions is $s_3 \prec_{\alpha} s_2$, $s_3 \prec_{\alpha} s_1$, and $s_2 \prec_{\alpha} s_1$,
 which makes $s_1$ the optimal solution, as no other solution is greater. 
 
 \section{Summary}
