@@ -38,8 +38,8 @@ A composite component $c$ is defined as a set of components, i.e. $c \subseteq \
 This definition is not included in this model, though it may be possible to be modified to include it if required.} 
 is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
 \end{defs}
-The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
 A component $a$ is then a pair $\langle n,v \rangle$, where $n$ is its name and $v$ is its version.
+The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
 
 \begin{defs}
 \label{formal.componentsystemdef}
@@ -47,10 +47,10 @@ A \textbf{component system} is a finite subset of components, e.g. $\alpha$ is a
 \end{defs}
 The characters $\alpha,\beta,\gamma$ are used to denote component systems.
 
-Constraints are used to restrict possible system.
+Constraints are used to restrict possible systems.
 \begin{defs}
 \label{formal.constraintdefs}
-A \textbf{constraint} is a finite set of component systems, e.g. $con$ is a constraint and $con \subseteq_{finite} 2^{\mathbb{C}}$.
+A \textbf{constraint} is set of component systems, e.g. $con$ is a constraint and $con \subseteq 2^{\mathbb{C}}$.
 \end{defs}
 
 Only certain types of constraints are allowed in this model, these types are:
@@ -61,19 +61,19 @@ Only certain types of constraints are allowed in this model, these types are:
   \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\alpha \in 2^{\mathbb{C}} \mid \mbox{if } a_1 \in \alpha \mbox{ then }  c_1 \in \alpha \mbox{ or } \ldots \mbox{ or } c_n \in \alpha\}$ \label{formal.dependencyconstraint}.
   \item $a_1 + \ldots + a_n = 1 := \{\alpha \in 2^{\mathbb{C}} \mid |\{a_1,\ldots,a_n\} \cap \alpha| = 1\}$ \label{formal.upgradeconstraint}.
 \end{enumerate}
-The set of constraints is restricted to these types as only these are necessary to represent component relationships, and user requests. 
+The set of constraints is restricted to these types as only these are necessary to represent required evolution problems. 
 
 \begin{defs}
 \label{formal.constraintdefs}
-A component system $\alpha$ \textbf{satisfies} a constraint $con$, iff $\alpha \in con$.
+A component system, $\alpha$, \textbf{satisfies} a constraint $con$, iff $\alpha \in con$.
 \end{defs}
 
 \begin{defs}
-An \textbf{evolution problem} $EP$ is a finite set of constraints.
+An \textbf{evolution problem}, $EP$, is a finite set of constraints.
 \end{defs}
 
 \begin{defs}
-A \textbf{solution} $\alpha$ to an evolution problem $EP$ is a component system that is satisfies all constraints in the evolution problem, i.e. $\alpha \in con_i$ for all $con_i \in EP$.  
+A \textbf{solution}, $\alpha$, to an evolution problem, $EP$, is a component system that satisfies all constraints in the evolution problem, i.e. $\alpha \in con_i$ for all $con_i \in EP$.  
 \end{defs}
 
 \begin{defs}
@@ -83,16 +83,13 @@ An evolution problem is \textbf{unsatisfiable} if there exists no solution to it
 
 \subsubsection{Example}
 Consider the evolution problem $EP = \{con_1,con_2\}$
-$con_1$ is $b$ (type \ref{formal.keepconstraint}), which is the set of all component system with $b$ in them.
-$con_2$ is $a \rightarrow c$ (type \ref{formal.dependencyconstraint}), which is the set of all component systems where if $a$ is included, then $c$ is included.
-The intersection of these two constraints includes the solutions $\{a,b,c\}$ and $\{a,b,c,d\}$.
+$con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which defines the set of all component system with $b$ in them.
+$con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), which defines the set of all component systems where if $a$ is included, then $c$ is included.
+The intersection of these two constraints includes the solutions $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
 
-Given an evolution preference order, $\prec$, that is defined to prefer less components in the system, $\{a,b,c,d\} \prec \{a,b,c\}$.
-As there are no solutions to $EP$ with less components than the solution $\{a,b,c\}$, $\{a,b,c\}$ is the optimal solution.
-
-\subsubsection{Component System Evolution is NP-Complete}
-Finding a solution that satisfies all constraints in an evolution problem can be shown to be NP-Complete \citep{cook1971}.
-This is accomplished by mapping the finding of a solution to an evolution problem to a known NP-Complete problem called one-in-three satisfiability.
+\subsubsection{Solving Evolution Problem is NP-Complete}
+Finding a solution that satisfies all constraints in an evolution problem is NP-Complete \citep{cook1971}.
+This can be shown by mapping the evolution problem to a known NP-Complete problem called one-in-three satisfiability.
 This problem is defined by \cite{Schaefer1978} as:
 \begin{quote}
 Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $T$ of the members such that for each $i$, $|T \cap S_i|  =  1$.
@@ -100,105 +97,110 @@ Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $
 
 This can be mapped to an evolution problem where:
 \begin{quote}
-Given constraints $con_1,\ldots,con_m$, each of the type  $a_1 + \ldots + a_n = 1$ where $n = 3$, is there a solution $\alpha$ where for each $i$, $|\alpha \cap con_i|  =  1$
+Let constraints $con_1,\ldots,con_m$ each be defined as $a_1 + a_2 + a_3 = 1$ (constraint type \ref{formal.upgradeconstraint}).
+A component system $\alpha$ is a solution to the evolution problem $EP = \{con_1,\ldots,con_m\}$ iff for each $i$, 
+$con_i$ (defined as $a_1 + a_2 + a_3 = 1$) is mapped to the set $S_i = \{a_1,a_2,a_3\}$, and $|\alpha \cap S_i|  =  1$.
 \end{quote}
-This describes a problem formed by constraints of type \label{formal.upgradeconstraint}, where each constraint contains three components.
 This mapping shows that an evolution problem can be NP-Complete.
 
 \subsection{Constraints, Relationships, and Requests}
 \label{formal.constraints}
-An evolution problem is made of two sets of constraints; constraints created from relationships between components, 
-and constraints created by the request the user has made to change the system.
+An evolution problem is made of two sets of constraints; constraints created by the request the user has made to change the system, 
+and constraints created from relationships between components.
 
 \begin{defs}
-The \textbf{component relationship} constraints $R$ is a set of constraints.
-\end{defs}
-
-\begin{defs}
-The \textbf{user request} constraints $\Delta$ is a set of constraints.
-\end{defs}
-An evolution problem is then defined as $EP = R \cup \Delta$.
-
-%%%Component realtionships constraints
-The constraints in $R$ can be either: 
+The set of \textbf{all user requests}, $\Delta$, is the set of constraints, 
+where each constraint in $\Delta$ is either:
 \begin{itemize}
-  \item \textbf{keep} constraint of type \ref{formal.keepconstraint}, where $a \vee b$ mean keep component $a$ or $b$ in the system.
-  \item \textbf{dependency} constraint of type \ref{formal.dependencyconstraint}, where $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
-  \item \textbf{conflict} constraints of type \ref{formal.conflictconstraint},  where $a \rightarrow \neg b$ means $a$ conflicts with component $b$.
+  \item an \textbf{installation} request of constraint type \ref{formal.keepconstraint}, e.g. $a \vee b$ is a request by the user to install component $a$ or $b$ into the system.
+  \item a \textbf{remove} request of constraint type \ref{formal.removeconstraint}, e.g. $\neg a$ is a request by the user to remove component $a$ from the system.
+  \item an \textbf{upgrade} request of constraint type \ref{formal.upgradeconstraint}, e.g. $a + b = 1$ is a request by the user to upgrade a component to either $a$ or $b$, but not both.
 \end{itemize}
-These constraints are expressive enough to describe many of the relationships from the component models described in section \ref{background.models}.
+\end{defs}
 
-%%%Change constraints
-The constraints in $\Delta$ can be either:
+
+\begin{defs}
+The set of \textbf{all component relationships}, $\Omega$, is a set of constraints,
+where each constraint in $\Omega$ is either: 
 \begin{itemize}
-  \item an \textbf{installation} request constraint of type \ref{formal.keepconstraint}, where $a \vee b$ is a request by the user to install component $a$ or $b$ into the system.
-  \item a \textbf{remove} request constraint of type \ref{formal.removeconstraint}, where $\neg a$ is a request by the user to remove component $a$ from the system.
-  \item an \textbf{upgrade} request constraint of type \ref{formal.upgradeconstraint}, where $a + b = 1$ is a request by the user to upgrade a component to either $a$ or $b$.
-\end{itemize} 
-The upgrade constraint is used to state that exactly one component from a set of more ``up-to-date'' components, should be installed.
+  \item a \textbf{keep} relationship of constraint type \ref{formal.keepconstraint}, e.g.  $a \vee b$ mean keep component $a$ or $b$ in the system.
+  \item a \textbf{dependency} relationship of constraint type \ref{formal.dependencyconstraint}, e.g.  $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
+  \item a \textbf{conflict} relationship of constraint type \ref{formal.conflictconstraint},  e.g. $a \rightarrow \neg b$ means $a$ conflicts with component $b$.
+\end{itemize}
+\end{defs}
 
+At any point in time, the set of component is restricted to only those that exist at that time. 
+\begin{defs}
+$\mathbb{C}_t$ is the finite set of components that exist at time $t$, $\mathbb{C}_t \subset_{finite} \mathbb{C}$
+\end{defs}
+
+\begin{defs}
+Given time $t$, and the set of components $\mathbb{C}_t$, the set of \textbf{component relationships w.r.t. time} is $\Omega_{t}$, where $\Omega_t = \{con \cap 2^{\mathbb{C}_t} \mid con \in \Omega\}$
+\end{defs}
+
+\begin{defs}
+Given time $t$, and the set of components $\mathbb{C}_t$, the set of \textbf{user requests w.r.t. time} is $\Delta_{t}$, where $\Delta_t = \{con \cap 2^{\mathbb{C}_t} \mid con \in \Delta\}$
+\end{defs}
+
+\begin{defs}
+Given a time $t$, a \textbf{user request}, $\delta_t$, is a finite set of user requests at time $t$, where if $con \in \delta_t$ then $con \in \Delta_t$.
+\end{defs}
+
+\begin{defs}
+Given a time $t$, a set of \textbf{component relationships}, $\omega_t$, is a finite set of component relationships at time $t$, where if $con \in \omega_t$ then $con \in \Omega_t$.  
+\end{defs}
+
+An evolution problem, $EP$, can be defined as the union of a user request $\delta_t$ and set of component relationships $\omega_t$, $EP = \delta_t \cup \omega_t$.
+
+\subsubsection{Example}
+At time $t$, the components $a$ and $b$ exist, therefore $\mathbb{C}_t = \{a,b\}$.
+The set of all component systems at time $t$ is $2^{\mathbb{C}_t} = \{\{\},\{a\},\{b\},\{a,b\}\}$.
+A component relationship constraint, $con_1 \in \Omega$, is defined as $a \rightarrow b \vee d$.
+$con_1$ is satisfied by the component systems $\{a,b\}$, $\{a,b,d\}$ and $\{a,d\}$.
+$con_1$  constraint is altered to be included in $\Omega_t$, such that $con_1 \cap 2^{\mathbb{C}_t} = con_1'$, $con_1' = \{\{\},\{b\},\{a,b\}\}$, and $con_1' \in \Omega_t$.
+
+The user request constraint $con_2$ is defined as $a$, which includes the component systems $\{a\}$ and $\{a,b\}$.
+$con_2$ must be altered to be included in $\Delta_t$, $con_2 \cap 2^{\mathbb{C}_t} = con_2'$, $con_2' = \{\{a\},\{a,b\}\}$, and $con_2' \in \Delta_t$.
+
+The set of component relationships $\omega_t = \{con_1'\}$, and the user request $\delta_t = \{con_2'\}$, make the evolution problem $\delta_t \cup \omega_t$.
+There is one solution to this problem, the component system $\{a,b\}$.  
 
 \subsection{Component System Evolution}
 \label{formal.evo}
-A component system is evolved from one system to another in response to a user requesting it to be changed.
-The resulting system must satisfy the comopnent relationship constraints, and the user request.
+A component system is evolved from one system to another in response to a user request.
+
 \begin{defs}
-\textbf{Component system evolution} is the changing of a component system $\alpha$, to a component system $\beta$.
-given a users request $\Delta$, $\alpha \frac{\leadsto}{\Delta} \beta$, where $beta$ satisfies $R \cup \Delta$.
-\end{defs}
-
-
-The concept of time must be introduced into this model, where:
-\begin{itemize}
-  \item $\mathbb{C}_t$ is the set of components that exist at time $t$, i.e. $\mathbb{C}_t \subseteq \mathbb{C}$.
-  \item The \textit{component relationship} constraints $R_t$ is a set of constraints at time $t$, where $con \in R_t \Rightarrow con \subseteq 2^{\mathbb{C_t}}$.
-  \item The \textbf{user request} constraints $\Delta_t$ is a set of constraints at time $t$, where $con \in \Delta_t \Rightarrow con \subseteq 2^{\mathbb{C_t}}$.
-  \item An \textit{evolution problem} $EP$ at time $t$, is defined as $EP_t = R_t \cup \Delta_t$.
-\end{itemize}
-
-As there may be many solutions to a given evolution problem, a preference over which solution to select can be defined.
-This order may be over which changes are preferred, therefore the order must be with respect to the current component system. 
-\begin{defs}
-The \textbf{evolution preference order} is defined as $\prec: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
+Given a component system $\alpha$, an \textbf{evolution preference order} is defined w.r.t. $\alpha$,  $\prec_{\alpha}: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
 \end{defs}
 
 \begin{defs}
-Given an evolution problem $EP$ and an evolution preference order $\prec$, 
-an \textbf{optimal solution} is a solution $\beta_1$ to $EP$, where there is not other solution $\beta_2$ to $EP$ such that $\beta_1 \prec \beta_2$.
-\end{defs}
-That is, a solution is optimal if there does not exist another, more preferred solution.
-
-\begin{defs}
-The \textbf{installed system} $\alpha_t$ is the component system installed at time $t$.
-\end{defs}
-
-When evolving a system, the change of the system may effect the preference of the resulting system.
-Therefore, the evolution preference order may be defined with respect to the installed system.
-\begin{defs}
-Given the installed system $\alpha_t$, the \textbf{evolution preference order} $\prec$, is defined with respect to the installed system, i.e. $\prec_{\alpha_t}$
-\end{defs}
-
-This iterative application of the evolutionary step function results in a series of installed systems.
-The evolutionary step function is instigated by the user requesting to change their system.
-\begin{defs}
-Given a series of user requests $\Delta_{t_1},\ldots \Delta_{t_n}$ that occur at times $t_1,\ldots t_n$, 
-the \textbf{evolution step} function $E$, changes an installed component system to satisfy a users request to change,
-i.e. $E(\alpha_{t_{i-1}}, R_{t_i} \cup \Delta_{t_i}) = \alpha_{t_i}$ given the preference order $\prec_{\alpha_{t_{i-1}}}$.
+Given a component system $\alpha$, an evolution preference order w.r.t. $\alpha$ $\prec_{\alpha}$, and an evolution problem $EP$;
+an \textbf{optimal} component system, $\beta$, is a solution to $EP$, where there exists no other solution to $EP$, $\beta'$, such that $\beta \prec_{\alpha} \beta'$.   
 \end{defs}
 
 \begin{defs}
-The \textbf{initial system}, $\alpha_{t_0}$, could either be a system with no components, or a system that is a pre-defined configuration of components.
+Given a component system $\alpha_{t-1}$, an evolution preference order w.r.t. $\alpha_{t-1}$ $\prec_{\alpha_{t-1}}$, 
+a user request $\delta_t$,a set of component relationships $\omega_t$, at time $t$;
+the \textbf{evolution step} function $\epsilon$ returns an optimal solution to the $\delta_t \cup \omega_t$ evolution problem, 
+$\alpha_t$, where $\epsilon(\alpha_{t-1},\delta_t \cup \omega_t) = \alpha_t$.
+\end{defs}
+
+\begin{defs}
+Given an initial component system $\alpha_{0}$, a series of user requests $\delta_1,\delta_2,\ldots,\delta_{n}$, a series of sets of component relationships $\omega_1,\omega_2,\ldots,\omega_{n}$;
+the \textbf{evolution} function $\epsilon*$ is defined as\\
+$\epsilon*(\alpha_0,\langle \delta_1 \cup \omega_1,\delta_2 \cup \omega_2,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\delta_2 \cup \omega_2 ),\ldots),\delta_n \cup \omega_n)$.
 \end{defs}
 
 A caveat to the evolutionary step function occurs if it is unsatisfiable.
 A practical solution to resolve this situation is:
-Given an evolutionary problem $EP_t$, and the installed system $\alpha_{t_{i-1}}$, if $EP_{t_i}$ is unsatisfiable, then $E(\alpha_{t_{i-1}},EP_{t_i}) = \alpha_{t_{i-1}}$.
+Given an evolutionary problem $EP$, and the installed system $\alpha_{t_{i-1}}$, if $EP$ is unsatisfiable, then $E(\alpha_{t_{i-1}},EP) = \alpha_{t_{i-1}}$.
 
 Another caveat to this process is that a users change request should not be undone with subsequent generations.
 For example, if at time $t_1$ the user requests to install component $a$, then future generations should not remove $a$.
-This could be represented as a hard constraint, where an evolution problem contains all previous user requests.
-That is, $EP_{t_i} = R_{t_i} \cup \Delta_{t_i} \cup \Delta_{t_{i-1}} \cup \ldots \cup \Delta_{t_{0}}$.
-This, however, can create an unsatisfiable evolution problems, as a users requests will often conflict.
+This could be represented as a hard constraint, where the evolution function includes all previous user requests.
+That is,$\epsilon*(\alpha_0,\langle \delta_1 \cup \omega_1,\delta_2 \cup \omega_2,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\delta_1 \cup \delta_2 \cup \omega_2 ),\ldots),\delta_1 \cup \ldots \cup \delta_n \cup \omega_n)$.
+This, however, can create an unsatisfiable evolution problems, as subsequent user requests can conflict.
+For example, a user may select to install component $a$ at one time, then later select to remove component $a$, clearly conflicting constraints.
 Another way to ensure the maximum amount of previous requests are resolved would be to give the evolutionary preference order this responsibility.
 
 \subsubsection{Example}
