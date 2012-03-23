@@ -36,10 +36,10 @@ Let $\mathcal{N}$ be the set of names, and $\mathcal{V}$ be the set of versions 
 a \textbf{component}\footnote{In recursive component models, such as Fractal \citep{Quma2006}, the definition ``component'' would include the concept of a composite component.
 A composite component $c$ is defined as a set of components, i.e. $c \subseteq \mathbb{C}$.
 This definition is not included in this model, though it may be possible to be modified to include it if required.} 
-is in $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
+is an element of $\mathbb{C}$, where $\mathbb{C} = \mathcal{N} \times \mathcal{V}$. 
 \end{defs}
 A component $a$ is then a pair $\langle n,v \rangle$, where $n$ is its name and $v$ is its version.
-The characters  $a,b,c$ are used to denote components, $m,n,o$ used to denote names, and $v,w,x$ used to denote versions.
+The characters  $a,b,c,\ldots$ are used to denote components, $m,n,o,\ldots$ used to denote names, and $v,w,x,\ldots$ used to denote versions.
 
 \begin{defs}
 \label{formal.componentsystemdef}
@@ -82,10 +82,11 @@ An evolution problem is \textbf{unsatisfiable} if there exists no solution to it
 
 
 \subsubsection{Example}
-Consider the evolution problem $EP = \{con_1,con_2\}$
-$con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which defines the set of all component system with $b$ in them.
-$con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), which defines the set of all component systems where if $a$ is included, then $c$ is included.
-The intersection of these two constraints includes the solutions $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
+Assume the evolution problem $EP = \{con_1,con_2\}$.
+The constraints $con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which is defined as the set of all component system with $b$ in them.
+The constraint $con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), which is defined as the set of all component systems where if $a$ is included, then $c$ is included.
+The intersection of these two constraints includes all component systems that are solutions to $EP$, 
+such as $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
 
 \subsubsection{Solving Evolution Problem is NP-Complete}
 Finding a solution that satisfies all constraints in an evolution problem is NP-Complete \citep{cook1971}.
@@ -97,11 +98,14 @@ Given sets $S_1, \ldots, S_n$ each having at most 3 members, is there a subset $
 
 This can be mapped to an evolution problem where:
 \begin{quote}
-Let constraints $con_1,\ldots,con_m$ each be defined as $a_1 + a_2 + a_3 = 1$ (constraint type \ref{formal.upgradeconstraint}).
-A component system $\alpha$ is a solution to the evolution problem $EP = \{con_1,\ldots,con_m\}$ iff for each $i$, 
-$con_i$ (defined as $a_1 + a_2 + a_3 = 1$) is mapped to the set $S_i = \{a_1,a_2,a_3\}$, and $|\alpha \cap S_i|  =  1$.
+Given sets $S_1, \ldots, S_n$ each containing 3 components, and constraints $con_1,\ldots,con_n$
+such that for each $i$, $S_i = \{a,b,c\}$ iff $con_i$ equals constraint $a + b + c = 1$ (constraint type \ref{formal.upgradeconstraint}).
+A set of components $\alpha$ is such that for each $i$, $|\alpha \cap S_i|  =  1$ iff $\alpha$ is a solution to the evolution problem $EP = \{con_1,\ldots,con_m\}$.
 \end{quote}
-This mapping shows that an evolution problem can be NP-Complete.
+This mapping shows that an evolution problem can be NP-Complete, but not all evolution problems are so difficult.
+A trivial evolution problem could be constructed that could be solved efficiently.
+For example, an evolution problem with not explicit (or implicit) component conflicts 
+(constraint types \ref{formal.removeconstraint},\ref{formal.conflictconstraint} and \ref{formal.upgradeconstraint}), can create simple problems \citep{abate2011}.
 
 \subsection{Constraints, Relationships, and Requests}
 \label{formal.constraints}
@@ -109,8 +113,7 @@ An evolution problem is made of two sets of constraints; constraints created by 
 and constraints created from relationships between components.
 
 \begin{defs}
-The set of \textbf{all user requests}, $\Delta$, is the set of constraints, 
-where each constraint in $\Delta$ is either:
+The set of \textbf{all user requests}, $\Delta$, is the set of all constraints where each constraint in $\Delta$ is either:
 \begin{itemize}
   \item an \textbf{installation} request of constraint type \ref{formal.keepconstraint}, e.g. $a \vee b$ is a request by the user to install component $a$ or $b$ into the system.
   \item a \textbf{remove} request of constraint type \ref{formal.removeconstraint}, e.g. $\neg a$ is a request by the user to remove component $a$ from the system.
@@ -120,8 +123,7 @@ where each constraint in $\Delta$ is either:
 
 
 \begin{defs}
-The set of \textbf{all component relationships}, $\Omega$, is a set of constraints,
-where each constraint in $\Omega$ is either: 
+The set of \textbf{all component relationships}, $\Omega$, is a set of all constraints where each constraint in $\Omega$ is either: 
 \begin{itemize}
   \item a \textbf{keep} relationship of constraint type \ref{formal.keepconstraint}, e.g.  $a \vee b$ mean keep component $a$ or $b$ in the system.
   \item a \textbf{dependency} relationship of constraint type \ref{formal.dependencyconstraint}, e.g.  $a \rightarrow b \vee c$ means $a$ depends on component $b$ or $c$.
@@ -129,7 +131,7 @@ where each constraint in $\Omega$ is either:
 \end{itemize}
 \end{defs}
 
-At any point in time, the set of component is restricted to only those that exist at that time. 
+At any point in time, there exists only a finite set of components. 
 \begin{defs}
 $\mathbb{C}_t$ is the finite set of components that exist at time $t$, $\mathbb{C}_t \subset_{finite} \mathbb{C}$
 \end{defs}
@@ -150,85 +152,92 @@ Given a time $t$, a \textbf{user request}, $\delta_t$, is a finite set of user r
 Given a time $t$, a set of \textbf{component relationships}, $\omega_t$, is a finite set of component relationships at time $t$, where if $con \in \omega_t$ then $con \in \Omega_t$.  
 \end{defs}
 
-An evolution problem, $EP$, can be defined as the union of a user request $\delta_t$ and set of component relationships $\omega_t$, $EP = \delta_t \cup \omega_t$.
+An evolution problem, $EP$, can be constructed by combining a user request $\delta_t$ and a set of component relationships $\omega_t$, such that $EP = \delta_t \cup \omega_t$.
 
 \subsubsection{Example}
 At time $t$, the components $a$ and $b$ exist, therefore $\mathbb{C}_t = \{a,b\}$.
 The set of all component systems at time $t$ is $2^{\mathbb{C}_t} = \{\{\},\{a\},\{b\},\{a,b\}\}$.
 A component relationship constraint, $con_1 \in \Omega$, is defined as $a \rightarrow b \vee d$.
-$con_1$ is satisfied by the component systems $\{a,b\}$, $\{a,b,d\}$ and $\{a,d\}$.
-$con_1$  constraint is altered to be included in $\Omega_t$, such that $con_1 \cap 2^{\mathbb{C}_t} = con_1'$, $con_1' = \{\{\},\{b\},\{a,b\}\}$, and $con_1' \in \Omega_t$.
+The constraint $con_1$ is satisfied by the component systems $\{a,b\}$, $\{a,b,d\}$ and $\{a,d\}$.
+The constraint $con_1' \in \Omega_t$, is such that $con_1' = con_1 \cap 2^{\mathbb{C}_t}$, where $con_1' = \{\{\},\{b\},\{a,b\}\}$.
 
-The user request constraint $con_2$ is defined as $a$, which includes the component systems $\{a\}$ and $\{a,b\}$.
-$con_2$ must be altered to be included in $\Delta_t$, $con_2 \cap 2^{\mathbb{C}_t} = con_2'$, $con_2' = \{\{a\},\{a,b\}\}$, and $con_2' \in \Delta_t$.
+The user request constraint $con_2$ is defined as $a$, which is satisfied by the component systems $\{a\}$ and $\{a,b\}$.
+The constraint $con_2' \in \Delta_t$, is such that $con_2' = con_2 \cap 2^{\mathbb{C}_t}$, where $con_2' = \{\{a\},\{a,b\}\}$.
 
-The set of component relationships $\omega_t = \{con_1'\}$, and the user request $\delta_t = \{con_2'\}$, make the evolution problem $\delta_t \cup \omega_t$.
-There is one solution to this problem, the component system $\{a,b\}$.  
+A set of component relationships $\omega_t = \{con_1'\}$, and a user request $\delta_t = \{con_2'\}$, make the evolution problem $\delta_t \cup \omega_t$.
+There only solution to $\delta_t \cup \omega_t$ is the component system $\{a,b\}$.  
 
 \subsection{Component System Evolution}
 \label{formal.evo}
-A component system is evolved from one system to another in response to a user request.
+A component system is evolved from one system to another to satisfy an evolution problem consisting of a user request and set of component relationships.
 
 \begin{defs}
-Given a component system $\alpha$, an \textbf{evolution preference order} is defined w.r.t. $\alpha$,  $\prec_{\alpha}: 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
+Given a component system $\alpha$, an \textbf{evolution preference order} is defined w.r.t. $\alpha$,  $\prec_{\alpha} \subseteq 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
 \end{defs}
 
 \begin{defs}
-Given a component system $\alpha$, an evolution preference order w.r.t. $\alpha$ $\prec_{\alpha}$, and an evolution problem $EP$;
+Given a component system $\alpha$, an evolution preference order w.r.t. $\alpha$, $\prec_{\alpha}$, and an evolution problem $EP$;
 an \textbf{optimal} component system, $\beta$, is a solution to $EP$, where there exists no other solution to $EP$, $\beta'$, such that $\beta \prec_{\alpha} \beta'$.   
 \end{defs}
 
 \begin{defs}
-Given a component system $\alpha_{t-1}$, an evolution preference order w.r.t. $\alpha_{t-1}$ $\prec_{\alpha_{t-1}}$, 
+Given a component system $\alpha_{t-1}$, an evolution preference order w.r.t. $\alpha_{t-1}$, $\prec_{\alpha_{t-1}}$, 
 a user request $\delta_t$,a set of component relationships $\omega_t$, at time $t$;
-the \textbf{evolution step} function $\epsilon$ returns an optimal solution to the $\delta_t \cup \omega_t$ evolution problem, 
-$\alpha_t$, where $\epsilon(\alpha_{t-1},\delta_t \cup \omega_t) = \alpha_t$.
+the \textbf{evolution step} function $\epsilon$ returns an optimal solution, $\alpha_t$, to the evolution problem $\delta_t \cup \omega_t$, 
+where $\epsilon(\alpha_{t-1},\delta_t \cup \omega_t) = \alpha_t$.
 \end{defs}
 
 \begin{defs}
-Given an initial component system $\alpha_{0}$, a series of user requests $\delta_1,\delta_2,\ldots,\delta_{n}$, a series of sets of component relationships $\omega_1,\omega_2,\ldots,\omega_{n}$;
+Given an initial component system $\alpha_{0}$, a series of user requests $\delta_1,\ldots,\delta_{n}$, a series of sets of component relationships $\omega_1,\ldots,\omega_{n}$;
 the \textbf{evolution} function $\epsilon*$ is defined as\\
-$\epsilon*(\alpha_0,\langle \delta_1 \cup \omega_1,\delta_2 \cup \omega_2,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\delta_2 \cup \omega_2 ),\ldots),\delta_n \cup \omega_n)$.
+$\epsilon^*(\alpha_0,\langle \delta_1 \cup \omega_1,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\ldots),\delta_n \cup \omega_n)$
+$=$ $\alpha_n$.
 \end{defs}
 
 A caveat to the evolutionary step function occurs if it is unsatisfiable.
-A practical solution to resolve this situation is:
-Given an evolutionary problem $EP$, and the installed system $\alpha_{t_{i-1}}$, if $EP$ is unsatisfiable, then $E(\alpha_{t_{i-1}},EP) = \alpha_{t_{i-1}}$.
+A possible solution to resolve this situation is:
+Given an evolutionary problem $\delta_t \cup \omega_t$, and the installed system $\alpha_{t_{i-1}}$, if $\delta_t \cup \omega_t$ is unsatisfiable, 
+then $\epsilon(\alpha_{t_{i-1}},\delta_t \cup \omega_t) = \alpha_{t_{i-1}}$.
+This solution is implemented in current solvers, like apt-get,
+and when an evolution step fails some output is generated that highlights the conflicting constraints. 
 
 Another caveat to this process is that a users change request should not be undone with subsequent generations.
-For example, if at time $t_1$ the user requests to install component $a$, then future generations should not remove $a$.
-This could be represented as a hard constraint, where the evolution function includes all previous user requests.
-That is,$\epsilon*(\alpha_0,\langle \delta_1 \cup \omega_1,\delta_2 \cup \omega_2,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\delta_1 \cup \delta_2 \cup \omega_2 ),\ldots),\delta_1 \cup \ldots \cup \delta_n \cup \omega_n)$.
-This, however, can create an unsatisfiable evolution problems, as subsequent user requests can conflict.
-For example, a user may select to install component $a$ at one time, then later select to remove component $a$, clearly conflicting constraints.
-Another way to ensure the maximum amount of previous requests are resolved would be to give the evolutionary preference order this responsibility.
+For example, is a user requests to install component $a$, future generations should not remove $a$.
+This can be a difficult task, as in the future the user may request to remove $a$, which creates an unsatisfiable problem to keep and remove $a$.
+A possible solution is to give the evolutionary preference order this responsibility to ensure the maximum amount of previous user requests are satisfied.
+This is a similar problem that is faced by revision function in the domain of belief revision \citep{alchourron1985logic}.
+Revision functions try to preserve consistency across a set of beliefs as new, and possibly inconsistent, information is included. 
+This aspect of the evolution process is not further explored in this research, though belief revision may provide inspiration for future research.
 
 \subsubsection{Example}
 %%%This makes a sometimes counter intuitive complexity
-The selection of an optimal solution to an evolutionary step, may not be optimal when considering generational evolution.
+The selection of an optimal solution to an evolutionary step, may not be optimal over multiple evolutions.
 
 This can be demonstrated with an example:
 Let the evolutionary preference order select solutions with the minimum number of components altered (the symmetric difference between the solutions), 
 i.e. $\beta \prec_{\alpha} \beta'$ iff $|\alpha \Delta \beta| > |\alpha \Delta \beta'|$.
 Let the initial system $\alpha_0 = \{\}$.
 Let a series of user requests be $\Delta_1 = \{a\}$ and $ \Delta_2 = \{d\}$. 
-Let the set of constraints $R_1 = R_2 = \{a \rightarrow b_1 \vee b_2, b_1 \rightarrow \neg b_2, b_2 \rightarrow c, d \rightarrow b_2\}$.
+Let the set of constraints $\omega_1 = \omega_2 = \{a \rightarrow b_1 \vee b_2, b_1 \rightarrow \neg b_2, b_2 \rightarrow c, d \rightarrow b_2\}$.
 
-Consider component evolution from generation $\alpha_0$ to $\alpha_2$;
+Consider component evolution from $\alpha_0$ to $\alpha_2$;
 \begin{itemize}
   \item $\alpha_0 = \{\}$
-  \item $\alpha_1 = E(\alpha_0,EP_1)$, given the preference order $<_{\alpha_0}$. $|\alpha_0 \Delta \{a,b_1\}| = 2$ is optimal, therefore $\alpha_1 = \{a,b_1\}$.
-  \item $\alpha_2 = E(\alpha_1,EP_2)$, given the preference order $<_{\alpha_1}$. $|\alpha_1 \Delta \{a,b_2,c,d\}| = 4$ is optimal, therefore $\alpha_2 = \{a,b_2,c,d\}$.
+  \item $\alpha_1 = \epsilon(\alpha_0,\delta_1 \cup \omega_1)$, given the preference order $\prec_{\alpha_0}$. $|\alpha_0 \Delta \{a,b_1\}| = 2$ is optimal, therefore $\alpha_1 = \{a,b_1\}$.
+  \item $\alpha_2 = \epsilon(\alpha_1,\delta_2 \cup \omega_2)$, given the preference order $\prec_{\alpha_1}$. $|\alpha_1 \Delta \{a,b_2,c,d\}| = 4$ is optimal, therefore $\alpha_2 = \{a,b_2,c,d\}$.
 \end{itemize}
 
 From $\alpha_0$ to $\alpha_1$ components $a$ and $b_1$ are added, 
 and from $\alpha_1$ to $\alpha_2$ components $b_1$ is removed, and $b_2$, $c$ and $d$ are added.
 The total change across the generations is therefore $6$.
-This is not the global minimal change.
+This, however, is not the optimal change over the multiple evolutions.
 If $\alpha_1 = \{a,b_2,c\}$, and $\alpha_2 = \{a,b_2,c,d\}$, the total change would be $4$.
 This shows that although the evolution step function returned locally optimal solutions,
-the global perspective across generations of systems was not optimal.
+globally (across multiple evolutions) the selection of solutions was not optimal.
 
+%Should define prefernce with repect to future evolution
+%should define 
+ 
 \section{Optimal Component System Selection}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
@@ -240,7 +249,7 @@ The order $\prec_{\alpha}$ is used to define a preference over the possible syst
 By looking at the previously presented CDR implementations in chapter \ref{background} (such as Eclipse P2, apt-get, aptitude, and MPM), some requirements for the preference order have be extracted:
 \begin{itemize}
   \item Multiple criteria to select an optimal solution.
-  \item Different criteria may have different domains to be optimised for (e.g. versions, choices, components, age).
+  \item Different criteria may have different domains to be optimised for (e.g. versions, changed components, age).
 \end{itemize} 
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
@@ -249,24 +258,26 @@ Then for each possible solution the function is applied to return a value, which
 The optimal system is then the system that returns the maximum (or minimum) real value. 
 
 %%%This has draw backs, some criteria are infinitly more important, it is not intuitive for users to weight.
-This method has some drawbacks; information is lost in the conversion to real numbers, e.g. the reason why a specific system was selected over another.
-The relationships between criteria are also difficult to intuitively define.
-Altering weights to express preference does not convey meaningful information about decisions or their impact.
-For example, stating ``size is $.25$ more important than version'' is difficult to understand as versions and size are in two separate domains, 
-and greater versions but smaller size is considered better.
+This method has some drawbacks:
+\begin{itemize}
+  \item Information is lost in the conversion to real numbers, e.g. the reason why a specific system was selected over another.
+  \item The relationships between criteria are also difficult to intuitively define, e.g. ``size $\times$ version'' combination of criteria is confusing.
+  \item Altering weights to express order over criteria does not convey meaningful information about decisions or their impact.
+  For example, stating ``size is $.25$ $\times$ version'' is difficult to understand as versions and size are in two separate domains, 
+and greater versions are preferred where smaller size is preferred.
+\end{itemize}
 
 %%%Using composed orders
-A possibly more intuitive approach to this problem is to define an order for each criterion.
-Then, an overall optimal order ($\prec_{\alpha}$) can be define by composing the different orders together using the lexicographic order.
-This order is used to express that optimising one criteria is more important than another. 
-This composition lets the user assign a preference to each criteria, without having to assign arbitrary weights.
-This method is used in the MPM \citep{abate2011} CDR implementation, and will be presented in this section.
+A possibly more intuitive approach to this problem is to define each criterion as an order over component systems.
+Then, the preference for one criterion over another, can be expressed by combining them together using a lexicographic order.
+This composition lets the user assign a preference to criteria, without having to assign arbitrary weights.
+This method has been used before in the MPM \citep{abate2011} CDR implementation, and will be presented in this section.
 
 \subsection{Criteria and Lexicographic Composition}
 In this section a criterion and the lexicographic composition of criteria are formally defined.
 
 \begin{defs}
-A \textbf{ranking function}, $rank$, is a function that takes two component systems and return a value in the set $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
+A \textbf{ranking function}, $rank$, is a function that takes two component systems and returns a value in the set $A$, i.e. $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$.
 \end{defs}
 A ranking function measures the change from a previous system to the range $A$.
 
@@ -306,9 +317,9 @@ In chapter \ref{strategies} various criteria are defined that fit within this fr
 \section{Common Upgradeability Description Format and Mancoosi Optimisation Format}
 \label{formal.cudf}
 %%%The description of the represnation of CUDF is described.
-The Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common} is used as the syntax to represent evolution problems.
+The Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common} is used as the language to represent evolution problems.
 This specification was previously discussed in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
-The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is used as the syntax to define the evolution preference order.
+The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is used as the language to define the evolution preference order.
 
 CUDF and MOF were created to be an abstract representation of evolution problems and evolution preference order, to allow the comparison of various solvers.
 CUDF and MOF were a success, in this respect.
@@ -373,7 +384,7 @@ In this section a brief description of the CUDF format is presented.
 Some aspects of CUDF are ignored (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
 Where details are removed, or glossed over a reference will be made as to ensure that misinformation is not conveyed. 
 
-A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary step as defined in section \ref{formal.step}.
+A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary problem, as defined in section \ref{formal.step}.
 
 This document is separated into three sections, the preamble, the package descriptions, and the request.
 
@@ -496,33 +507,33 @@ each is a list of \textbf{package formulae} separated by the delimiter ``,'' suc
 %%%Installation of multiple components
 CUDF as a specification mostly resembles the Debian package format, described in section \ref{background.models}.
 A significant difference between these two specifications is that the CUDF model does not explicitly state that only one version of a package can be installed.
-This is a practical decision as other component models, like Red Hat Package manager and OSGi, allow the installation of multiple versions of the same component.
-Although models exist that allow multiple versions of a package to be installed, having multiple versions installed is seen as less optimal as it replicates functionality. 
-This is then left up to the optimisation when finding a solution to try to identify solutions with only one version installed per component.
+This decision allows other component models, like Red Hat Package manager and OSGi, which allow the installation of multiple versions, to be modeled in CUDF.
 
 %%%Upgrading with multiple packages
-A request to upgrade a component is significantly more complicated than the other requests.
-This is partially due to CUDF allowing having multiple versions of the same component installed.
+A request to upgrade a component is more complex than the other requests.
+This complexity may be attributed to CUDF allowing having multiple versions of the same component installed.
 If a package is requested to be upgraded and there are multiple versions of that package installed,
 then all but the highest version must be removed, and only one version can remain in the system.
-For example, if a system has $a_1$ and $a_2$ installed and it is requested to upgrade $a$,
-then $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of $a$ can be installed.
+For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$,
+then $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
 
-Given these semantics, requesting to upgrade a component can actually do nothing to the system
-For example, is $a$ is requested to be upgraded and the only version of $a$ installed is $a_1$, then the system does not have to change to satisfy the request.
-This means that the intuitive request to upgrade a system is left to the optimisation function.
-That is, to get newer versions of component installed it is necessary to define an appropriate $rank$ function.
+Given an upgrade request, no changes may be necessarily made to the system.
+For example, if component with name $n$ are requested to be upgraded, and the only component with name $n$ installed is $a_1$, then the system does not have to change to satisfy the request.
 
 \subsection{CUDF Specification}
 In this section, the model presented in section \ref{formal.step} is mapped to this CUDF specification.
-The package stanzas are used to define to the current component system $\alpha$ and the component relationship constraints $R$, 
-while the request stanza is used to define the user request constraints $\Delta$. 
+The package stanzas are used to define to the set of components that exist at time $t$, $\mathbb{C}_t$, the component system $\alpha_{t-1}$, and the component relationship constraints $\omega_t$. 
+The request stanza is used to define the user request $\delta_t$. 
+A CUDF document then defines an evolution problem.
 
-The first definition is that of the CUDF document, which is made up of three sections; the preamble stanza, a set of package description stanzas, and a request stanza:
 \begin{defs}
-A CUDF document then is described as $CUDF = \langle preamble, PD, request \rangle$ where $PD$ is the set of package description stanzas.
+A \textbf{CUDF stanza} is a set of properties, where each property is a tuple of key/value, i.e. $stanza = \{\langle $\verb+key+, \verb+value+$\rangle\}$.
+\end{defs}
+
+\begin{defs}
+A \textbf{CUDF document} is a preamble $preamble$, a set of package descriptions $PD$, and a request $request$, i.e. $CUDF = \langle preamble, PD, request \rangle$.
 \end{defs} 
-Each stanza is made of a set of properties, where each property is a tuple of key/value, i.e. $stanza = \{\langle $\verb+key+, \verb+value+$\rangle\}$.
+Each 
 This syntax is described in figures \ref{formal:cudfstruct} and \ref{formal.cudfproperties}.
 
 The function $property$ is defined such that it takes a stanza and key and returns a value,
@@ -563,7 +574,7 @@ some having a different syntax than described here.
 Each component is defined by a name and version, as described in section \ref{formal.step}.
 This information is extracted from the package descriptions in a CUDF document.
 The function $pd2c$ takes a package description stanza and returns a component, such that $pd2c(pd) = \langle property(pd, $ \verb+name+ $), property(pd, $ \verb+version+ $) \rangle$.
-The set of components, $\mathbb{C}$, equals the set of converted package descriptions, i.e. $\mathbb{C} = [ pd2c(pd) \mid pd \in PD]$.
+The set of components at time $t$, $\mathbb{C}_t$, equals the set of converted package descriptions, i.e. $\mathbb{C}_t = [ pd2c(pd) \mid pd \in PD]$.
 
 To refer to a property assigned to a component $a$, of the key \verb+key+, it is written $a$.\verb+key+.
 That is, $a$.\verb+key+ $= property(pd, $\verb+key+$)$ where $a = pd2c(pd)$.
@@ -574,8 +585,8 @@ As described above,
 if a request property does not exist for the component, then the default value of that property is returned, and if no default is defined then $\emptyset$ is returned.
 
 A CUDF document not only describes the set of all components, but the set of components that defines the current system.
-The set of components in the current system (denoted as $\alpha$) is defined using the key \verb+installed+,
-such that, $c \in \alpha$ iff  $c.$\verb+installed+ equals \verb+true+.
+The set of components in the component system (denoted as $\alpha_{t-1}$) is defined using the key \verb+installed+,
+such that, $c \in \alpha_{t-1}$ iff  $c.$\verb+installed+ equals \verb+true+.
 That is, only the components whose property \verb+installed+ is set to \verb+true+, are in the current component system.
 
 \subsubsection{Features}
@@ -584,7 +595,8 @@ CUDF specifies an additional aspect to component relationships, that of a featur
 Each component can provide a set of features, where each feature is represented by a name, and a set of versions.
 Unlike a component, which has exactly one version, a component can provide multiple versions of a feature.
 
-A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is the name of the feature, and $V$ is a subset of positive integers representing versions, i.e $V \subseteq \mathbb{N}$.
+A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is the name of the feature, 
+and $V$ is a subset of positive integers representing versions, i.e $V \subseteq \mathbb{N}$.
 The features provided by a component are defined as the property with the key \verb+provides+, 
 whose value follows \verb+<provides>+ from the BNF grammar presented in figure \ref{formal.cudfprovidessyntax}.
 
@@ -688,8 +700,7 @@ That is, the package formula from $keeppf$ is used to query for a set of package
 This creates a constraint to ensure one of the resulting components to be included in the system.
 
 To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
-Given a set of components $\mathbb{C}$ defined in a CUDF document, 
-the set of components $\alpha$ which denotes all installed components, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha} keep(c)$.
+The component system $\alpha_{t-1}$, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha_{t-1}} keep(c)$.
 
 \paragraph{Dependency Constraint}
 The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property key \verb+depends+,
@@ -760,11 +771,11 @@ Finally, given the $\mathbb{C}$ is the set of all components in a CUDF document,
 the set of all conflict constraints for a CUDF document is defined as $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
 
 \paragraph{Union}
-Given a set of components $\mathbb{C}$, the set of currently installed components $\alpha$, 
-the set of all relationship constraints, $R$, is the union of the keep, depends and conflicts constraints defined above.
+Given a set of components $\mathbb{C}_t$, the set of component system $\alpha_{t-1}$, 
+the set of all relationship constraints, $\omega_t$ is the union of the keep, depends and conflicts constraints defined above.
 That is, 
 \begin{defs}
-$R = \bigcup \limits_{c \in \alpha} keep(c) \cup \bigcup \limits_{c\in \mathbb{C}} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
+$\omega_t = \bigcup \limits_{c \in \alpha_{t-1}} keep(c) \cup \bigcup \limits_{c \in \mathbb{C}_t} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}_t} conflicts(a)$.
 \end{defs}
 
 \subsubsection{Request}
@@ -790,35 +801,31 @@ The \verb+install+ property maps to the package formulae set $installpkgflist$; 
 the \verb+upgrade+ property maps to the package formulae set  $upgradepkgflist$.
 
 \paragraph{Install}
-An install constraint is of the form $a_1 \vee \ldots \vee a_n$,
-this is defined semantically as $a_1 \in E_{R \cup \Delta}(\alpha)$ or \ldots or $a_n \in E_{R \cup \Delta}(\alpha)$.
-
+Install requests are made of constraint type \ref{formal.keepconstraint}.
 The function  $install(pf)$ is defined to take a package formula $pf$ and return one install constraint such that $\bigvee packagesThatSatisfy(pf)$.
 Each package formulae in the set $installpkgflist$ creates one install constraint,
 therefore the set of all install constraints is defined as $\bigcup \limits_{pf \in installpkgflist} install(pf)$.
 
 \paragraph{Remove}
-A remove constraint is of the form $\neg a$,
-this is defined semantically as $a \not \in E_{R \cup \Delta}(\alpha)$.
-
+Remove requests are made of constraint type \ref{formal.removeconstraint}.
 The function $remove(pf)$ is defined to take a package formula $pf$ and returns a set of remove constraints such that $[\neg a \mid  a \in packagesThatSatisfy(pf)]$.
 Then the set of remove constraints is the union of all constraints created from the $removepkgflist$ set, i.e. $\bigcup \limits_{pf \in removepkgflist} remove(pf)$.
 
 \paragraph{Upgrade}
 %%%This is a difficult to express
-The upgrade semantics of CUDF are the most difficult to express, this is because of the complicated relationships it causes as discussed in section \ref{formal.cudfdes.request}.
-The upgrade semantics of CUDF state that two constraints must be satisfied for each package formula $pf$ in $upgradepkgflist$:
+The upgrade request in a CUDF document is the most complex request type, as discussed in section \ref{formal.cudfdes.request}
+For each package formula $pf$ in $upgradepkgflist$, two constraint are created to satisfy:
 \begin{enumerate}
   \item exactly one package that satisfies $pf$ is in the system
   \item no packages with a lesser version than the highest currently installed component with the name from $pf$ can be included.
 \end{enumerate} 
 
-The first upgrade constraint is the cardinality constraint of the form $a_1 + \ldots + a_i = 1$, as described in section \ref{formal.step}.
+The first upgrade constraint is the constraint type \ref{formal.upgradeconstraint}.
 Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,
 such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf) = 1$.
 That is, each package that satisfies the package formula is included in the cardinality constraint.
 
-The second type of constraint is of the form $\neg a$, defined as the removal constraint described in section \ref{formal.step}.
+The second upgrade constraint is the constraint type \ref{formal.removeconstraint}.
 To create the required constraints some utility functions $named$ and $maxversion$ are defined.
 
 \begin{defs}
@@ -827,7 +834,7 @@ $named(\beta,n) = \beta \cap packagesThatSatisfy(\langle n,0,> \rangle)$.
 \end{defs} 
 
 \begin{defs}
-Given a set of components and a name $n$ the function $maxversion(\beta,n)$ returns the integer $c$.\verb+version+ 
+Given a set of components $\beta$ and a name $n$ the function $maxversion(\beta,n)$ returns the natural number $c$.\verb+version+ 
 such that $c \in named(\beta,n)$ and $\nexists c' \in named(\beta,n)$ where $c'$.\verb+version+ $> c$.\verb+version+.
 \end{defs}
 That is, $maxversion(\beta,n)$ returns the highest version of any component with a name $n$.
@@ -837,16 +844,16 @@ $packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)$
 So to satisfy the second constraint of the upgrade request to have no package installed with the same name but lesser version that the highest currently installed version,
 the function  $upgrade_2$ is defined as:
 \begin{defs}
-Given the currently installed system $\alpha$ and a package formula $\langle n,v,op \rangle$,
-$upgrade_2(\alpha,\langle n,v,op \rangle) = [\neg a \mid a \in packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)]$
+Given the component system $\alpha_{t-1}$ and a package formula $\langle n,v,op \rangle$,
+$upgrade_2(\alpha_{t-1},\langle n,v,op \rangle) = [\neg a \mid a \in packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)]$
 \end{defs}
 That is, all components of name $n$ that have a lesser version than the highest version currently installed in $\alpha$ cannot be installed in the new system. 
 
 The set of all upgrade constraints is then the union of all constraints created for all package formulae in $upgradepkgflist$,
-i.e. $\bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$.
+i.e. $\bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha_{t-1},pf))$.
 
 \paragraph{Union}
-Given a set of components $\mathbb{C}$, the set of currently installed components $\alpha$,
+Given a set of components $\mathbb{C}_t$, the set of currently installed components $\alpha_{t-1}$,
 and the sets of package formulae mapped from the request stanza properties \verb+install+, \verb+remove+ and \verb+upgrade+ 
 (respectively $installpkgflist$, $removepkgflist$ and $upgradepkgflist$);
 the set of all change constraints represented as $\Delta$ is the union of the install, remove and upgrade constraints above.
@@ -856,9 +863,9 @@ Given
 \begin{itemize}
   \item $i = \bigcup \limits_{pf \in installpkgflist} install(pf)$
   \item $r = \bigcup \limits_{pf \in removepkgflist} remove(pf)$
-  \item $u = \bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha,pf))$
+  \item $u = \bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha_{t-1},pf))$
 \end{itemize}
-$\Delta =  i \cup r \cup u$
+$\delta_t =  i \cup r \cup u$
 \end{defs}
 
 \subsection{Full Example}
@@ -965,7 +972,7 @@ which asserts that the text editor component will be included in the new system,
 
 \subsubsection{Solutions}
 %%%Describe the possible models that can satisfy all constraints 
-The set solutions to the evolution problem $EP_t = R_t \cup \Delta_t$ is the intersection of all constraints in $R_t \cup \Delta_t$.
+The set solutions to the evolution problem $\delta_t \cup \omega_t$ is the intersection of all constraints.
 
 By going through the constraints the solutions can be found.
 Firstly, the request constraint ensures that the text editor component is included, the component $textEditor_1$ will be installed.
@@ -1009,11 +1016,11 @@ This can then be used to create the optimality order $\prec_{\alpha}$ as describ
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
-In this example, the initial system $\alpha$ was  $\{syslib_1\}$, and there were three possible solutions
+In this example, the component system $\alpha_{t-1}$ was  $\{syslib_1\}$, and there were three possible solutions
 \begin{itemize}
-  \item $s_1 = \{syslib_2, textEditor_1, spellChecker_1\}$,
-  \item $s_2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
-  \item $s_3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
+  \item $\alpha_t^1 = \{syslib_2, textEditor_1, spellChecker_1\}$,
+  \item $\alpha_t^2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
+  \item $\alpha_t^3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
 \end{itemize}
 
 The criteria to select a solution could be defined by minimising the change to the solution, then minimising the total size of the components.
@@ -1030,12 +1037,12 @@ The order $\leq_{size}$ is defined as $>$ over natural numbers, as a smaller sys
 For the MOF string \verb+-change,-size+, the resulting criteria would be $crit_{change} \oplus crit_{size} = \langle rank_L, \leq_L \rangle$, as shown in definition \ref{formal.defcritlex}.
 This rank function applied to the possible solutions return in:
 \begin{itemize}
-  \item $rank_L(\alpha,s_1) = (4, 1)$
-  \item $rank(\alpha,s_2) = (4, 2)$
-  \item $rank(\alpha,s_3) = (5, 3)$
+  \item $rank_L(\alpha_{t-1},\alpha_t^1 ) = (4, 1)$
+  \item $rank(\alpha_{t-1},\alpha_t^2 ) = (4, 2)$
+  \item $rank(\alpha_{t-1},\alpha_t^3 ) = (5, 3)$
 \end{itemize}
-The order of these ranks over $\leq_L$ is then $rank(\alpha,s_3) \leq_L rank(\alpha,s_2) \leq_L rank(\alpha,s_1)$.
-Therefore, the order of optimality ($\prec_{\alpha}$) over the possible solutions is $s_3 \prec_{\alpha} s_2$, $s_3 \prec_{\alpha} s_1$, and $s_2 \prec_{\alpha} s_1$,
+The order of these ranks over $\leq_L$ is then $rank(\alpha_{t-1},\alpha_t^_3) \leq_L rank(\alpha_{t-1},\alpha_t^_2) \leq_L rank_L(\alpha_{t-1},\alpha_t^_1)$.
+Therefore, the order of optimality ($\prec_{\alpha_{t-1}}$) over the possible solutions is $s_3 \prec_{\alpha} s_2$, $s_3 \prec_{\alpha} s_1$, and $s_2 \prec_{\alpha} s_1$,
 which makes $s_1$ the optimal solution, as no other solution is greater. 
 
 \section{Summary}

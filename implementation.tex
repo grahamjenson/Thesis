@@ -4,15 +4,15 @@
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-In chapter \ref{formal} the evolutionary step function is to take an evolution problem ($EP$), and an order over component systems that defines optimality ($<_{\alpha}$), 
+In chapter \ref{formal} the evolutionary step function was defined to take an evolution problem, and an order over component systems, 
 and return an optimal solution to the evolution problem.
-This function can be automated into a process called component dependency resolution.
+This function can be automated into a process called component dependency resolution (CDR).
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-In this chapter the CDR implementation GJSolver is presented.
+In this chapter, the CDR implementation named GJSolver is presented.
 GJSolver is implemented to map evolution problems to Boolean Satisfiability Problems (SAT),
 and map the criteria that define an optimal solution using pseudo-Boolean functions \citep{dixon2004automating}. 
-Then through using algorithms like the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} (to find solutions to SAT problems),
+Then, through using algorithms like the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} (to find solutions to SAT problems),
 and iterative strengthening \citep{calistri1994iterative, le2010sat4j} (to find optimal solutions given criteria),
 an optimal solution to an evolution problem can be found.
 
@@ -28,18 +28,18 @@ This chapter ends with a discussion of the process of verification of GJSolver t
 
 \section{Requirements of GJSolver}
 \label{impl.requirement}
-Through the course of this research a CDR implementation grew out of the need to have a modifiable base to experiment with component dependency resolution.
-This CDR implementation is known as GJSolver. 
+Through the course of this research, the CDR implementation GJSolver grew out of the need to have a modifiable base to experiment with component dependency resolution.
 
 Given the context under which GJSolver was developed, the set of requirements that it was designed according to are listed here:
 \begin{enumerate}
   \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
-  A goal of the GJSolver is to be entered in the MISC in order to be compared against other solvers, and be validated to show the implementation is correct.
+  A goal of the GJSolver was to enter it in the MISC in order to be compared against other solvers.
+  This comparison would be the final step in the validation and verification of the implementation.
   Following these standards ensures that the solver can be entered, and then competing can show the relative speed and correctness of the GJSolver implementation.
   This will ensure that GJSolver is a valid and efficient implementation. 
-  \item \textbf{Anytime Algorithm}: Return a solution, even if it is not the optimal solution, within a predefined amount of time. 
+  \item \textbf{Anytime Algorithm}: Return a solution, even if it is not an optimal solution, within a predefined amount of time. 
   CDR problems can be large and complex, finding the ``best'' solution can be difficult. 
-  This requirement ensures that the algorithm will return a solution in a practical time frame.
+  This requirement ensures that the algorithm will return a solution, within a time frame.
   \item \textbf{Easily Creatable Criteria}: The ability to quickly implement and test criteria in a manner that enables experimentation, will increase the speed of research.
 \end{enumerate}
 
@@ -49,26 +49,25 @@ How the entered solvers are executed, what environment they are executed in, and
 
 %%%They are executed on the command line
 The way in which the entered solvers are executed is standardised to allow the automation of the competition.
-This standard requires the entered solvers should be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
+This standard requires the entered solvers to be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
 These arguments are defined as:
 \begin{itemize}
   \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
   \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution.
   \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) that describes the criteria to select a solution. 
 \end{itemize}
-The format of the output file, whose path is the \verb+cudfout+ argument, is a sub set of CUDF.
+The format of the output file, located at the path defined with \verb+cudfout+ argument, is a sub set of CUDF.
 This output only requires package stanzas with the package name, version and installed properties.
 This lowers the size of the output file required to be written by the solver.
 
 %%%The environment POSIX, with 5minutes 1GB of memory
-The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of memory (RAM).
+The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of RAM.
 It contains a Java runtime environment, allowing the use of Java as a primary language.
-The time in which the solver is allowed to run is 5 minutes, after this is will return a result of ABORT at which time the solver will be forcibly executed.
-This time limit either ensures that your algorithm returns a result quickly or is an anytime algorithm, where it can be return a result when interrupted during the search.
-The latter is the option that has been selected for GJSolver, and will be discussed in the next section.
+The time in which the solver is allowed to run is 5 minutes, after this time the solver will be forcibly executed.
+This time limit ensures that the competition can be run in an acceptable time frame.
 
 \subsection{Anytime Algorithm}
-The time required to find an optimal solution to a component evolution problem can be impractical.
+The time required to find an optimal solution to a component evolution problem can be longer than the allowed time within the MISC environment.
 For this reason, GJSolver will be implemented with an anytime algorithm at its core.
 An anytime algorithm can return a valid solution to a problem if it is interrupted before it ends.
 This interruption could be from a user or some other stimuli.
@@ -77,7 +76,7 @@ In the case of GJSolver, the interruption will be caused by an internal timer de
 Such anytime algorithms therefore create a trade-off between time and optimality, where the more time that is set aside for the algorithm to run the more optimal the solution. 
 They can also create inconsistent results, as any input may, on different runs, return many different possible solutions.
 This means that if it is necessary to interrupt the algorithm, it is possible to return non-optimal solutions.
-However, this is only if interuption is necessary, as GJSolver will encounter a wide range of difficult problems, 
+However, this is only if interruption is necessary, as GJSolver will encounter a wide range of difficult problems, 
 it is difficult, or impossible, to judge beforehand if a problem will require the algorithm to be interrupted. 
 
 \subsection{Expendable Criteria}
@@ -106,7 +105,7 @@ Som of the differences between Eclipse P2 and GJ Solver are:
   \item Not representing all criteria as a single pseudo-Boolean function
 \end{itemize}
 
-By starting with Eclipse P2 as a model, GJSolver was efficiently implemented.
+By starting with Eclipse P2 as a model, GJSolver was able to be efficiently implemented.
 
 \subsection{SAT4J}
 Given the use of SAT4J in GJSolver, a brief background of its development is presented here.
@@ -121,12 +120,12 @@ SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT
 The extensions SAT4J makes to MniSAT include the ability to find resolve pseudo-Boolean constraints.
 SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
 This goal has created an easily modifiable and transparent implementation, able to be adapted to be used in various domains.
+SAT4J in this right has been a success.
 
 \section{Formal Mapping}
 \label{impl.mapping}
 GJSolver will represent an evolution problem as a SAT problem, and the set of criteria which define optimality as a list of pseudo-Boolean functions.
-In this section, a SAT problem and pseudo-Boolean functions are defined.
-A mapping from the formal model presented in chapter \ref{formal}, to these elements is then given. 
+In this section, a SAT problem and pseudo-Boolean functions are defined and mapped to the the formal model presented in chapter \ref{formal}. 
 
 \subsection{Boolean Satisfiability Problem}
 Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
@@ -146,28 +145,29 @@ This CNF representation of a SAT problem can be defined as such:
 \label{impl.defSAT}
 .
 \begin{enumerate}
-	\item An instance of a SAT problem is a set of Boolean variables $V$ and a formula $F$, where $F$ is is a set of clauses.
-	\item A literal is a variable $v$ or its negation $\neg v$.
-	\item Each clause in $F$ is a set of literals. \label{impl.whatisaclause}
-	\item A set of literals is said to be consistent if for any variable $v$, the set does not contain both $v$ and its negation $\neg v$.
-	\item A clause $c$ is said to be satisfied by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
-	\item A solution to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
-	\item A partial solution is a subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
-	\item If there exists a $P$ that is a solution of a SAT formula $F$ the problem is said to be satisfiable, otherwise it is unsatisfiable. 
+	\item Let $V$ be a set of variables, a \textbf{variable} is an element of $V$
+	\item A \textbf{literal} is a variable $v$ or its negation $\neg v$.
+	\item A literal $\neg \neg v \equiv v$
+	\item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
+	\item A \textbf{clause} is a set of literals \label{impl.whatisaclause}
+	\item A \textbf{formula} is a set of clauses
+	\item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
+	\item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
+	\item A clause $c$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
+	\item A \textbf{solution} to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
+	\item A \textbf{partial solution} is a subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
+	\item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
-That is, a SAT problem can have the variable set $\{a,b,c\}$ and the formula $\{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
+Assume a SAT problem where $V = \{a,b,c\}$ and $F = \{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in c_1$ and $\neg b \in c_2$.
 However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $c_2$.  
 
-This definition also follows some classical logic rules, such as $\neg \neg v = v$.
-This can be extended to sets of literals,
-where given a set of literals $P$, $\neg P = \{\neg v \mid v \in P\}$.
 
 \subsection{Pseudo-Boolean Extension of CNF}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-A typical extension of the SAT problem is where a CNF clause can be a pseudo-Boolean (PB) constraints \citep{dixon2004automating}.
+A typical extension of the SAT problem is where a clause can be a pseudo-Boolean (PB) constraint \citep{dixon2004automating}.
 PB constraints consist of a linear relation over Boolean variables.
 
 A pseudo-Boolean function takes a set of Boolean literals and returns a natural number, e.g. given a set of literals $P$, $f(P) = 4$.
@@ -199,19 +199,19 @@ Pseudo-Boolean constraints can be included in a SAT problem by modifying the def
 \begin{defs}
 .
 \begin{enumerate}
-\setcounter{enumi}{2}
-	\item Each clause in $F$ is a set of literals \textbf{or a pseudo-Boolean constraint}.
+\setcounter{enumi}{4}
+	\item A \textbf{clause} is a set of literals or a pseudo-Boolean constraint.
 \end{enumerate}
 
 \end{defs}
 
-Adding the definition of what satisfies a pseudo-Boolean constraint:
+Adding the definition of what a PB constraint is, and what satisfies a PB constraint:
 \begin{defs}
 .
 \begin{enumerate}
-\setcounter{enumi}{8}
-  \item A pseudo-Boolean constraint described with a pseudo-Boolean function $f$, a relation $R$, a number $k$ is said to be satisfied by a set of literals $P$,
-	  iff $R(f(P),k)$.
+\setcounter{enumi}{12}
+  \item A \textbf{pseudo-Boolean constraint} is a pseudo-Boolean function $f$, a relation $R \in \{\geq,>,\leq,<,=\}$, and a number $k$
+  \item A pseudo-Boolean constraint is \textbf{satisfied} by a set of literals $P$ iff $\langle f(P),k \rangle \in R$.
 \end{enumerate}
 \end{defs}
 
