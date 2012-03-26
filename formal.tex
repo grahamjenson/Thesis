@@ -182,24 +182,24 @@ an \textbf{optimal} component system, $\beta$, is a solution to $EP$, where ther
 
 \begin{defs}
 Given a component system $\alpha_{t-1}$, an evolution preference order w.r.t. $\alpha_{t-1}$, $\prec_{\alpha_{t-1}}$, 
-a user request $\delta_t$,a set of component relationships $\omega_t$, at time $t$;
+a user request $\delta_t$,a set of component relationships $\omega_t$, and time $t$;
 the \textbf{evolution step} function $\epsilon$ returns an optimal solution, $\alpha_t$, to the evolution problem $\delta_t \cup \omega_t$, 
 where $\epsilon(\alpha_{t-1},\delta_t \cup \omega_t) = \alpha_t$.
 \end{defs}
 
 \begin{defs}
 Given an initial component system $\alpha_{0}$, a series of user requests $\delta_1,\ldots,\delta_{n}$, a series of sets of component relationships $\omega_1,\ldots,\omega_{n}$;
-the \textbf{evolution} function $\epsilon*$ is defined as\\
+the \textbf{evolution} function $\epsilon^*$ is defined as\\
 $\epsilon^*(\alpha_0,\langle \delta_1 \cup \omega_1,\ldots,\delta_{n} \cup \omega_n \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_0,\delta_1 \cup \omega_1),\ldots),\delta_n \cup \omega_n)$
 $=$ $\alpha_n$.
 \end{defs}
 
 A caveat to the evolutionary step function occurs if it is unsatisfiable.
 A possible solution to resolve this situation is:
-Given an evolutionary problem $\delta_t \cup \omega_t$, and the installed system $\alpha_{t_{i-1}}$, if $\delta_t \cup \omega_t$ is unsatisfiable, 
-then $\epsilon(\alpha_{t_{i-1}},\delta_t \cup \omega_t) = \alpha_{t_{i-1}}$.
+Given an evolutionary problem $\delta_t \cup \omega_t$, and the component system $\alpha_{t-1}$, if $\delta_t \cup \omega_t$ is unsatisfiable, 
+then $\epsilon(\alpha_{t-1},\delta_t \cup \omega_t) = \alpha_{t-1}$.
 This solution is implemented in current solvers, like apt-get,
-and when an evolution step fails some output is generated that highlights the conflicting constraints. 
+where when an evolution step fails, no change is made and output describing the failure to the user is generated. 
 
 Another caveat to this process is that a users change request should not be undone with subsequent generations.
 For example, is a user requests to install component $a$, future generations should not remove $a$.
@@ -317,50 +317,48 @@ In chapter \ref{strategies} various criteria are defined that fit within this fr
 \section{Common Upgradeability Description Format and Mancoosi Optimisation Format}
 \label{formal.cudf}
 %%%The description of the represnation of CUDF is described.
-The Common Upgradeability Description Format (CUDF) specification presented by \citep{treinen2009common} is used as the language to represent evolution problems.
-This specification was previously discussed in section \ref{background.models}, where an example of its meta-data was shown in figure \ref{CUDFmetadata}.
-The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is used as the language to define the evolution preference order.
+The Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
+}, 
+specification presented by \citep{treinen2009common}, is a language to describe an evolution problem ($\delta_t \cup \omega_t$) and a component system ($\alpha_{t-1}$). 
+The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is a language to describe an evolution preference order ($\prec_{\alpha_{t-1}}$).
+Together, CUDF and MOF provide a language in which to express enough information for the evolutionary step function.
 
-CUDF and MOF were created to be an abstract representation of evolution problems and evolution preference order, to allow the comparison of various solvers.
-CUDF and MOF were a success, in this respect.
-The Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012} was held in both 2010 and 2011,
-which compared various state of the art, and legacy, solvers that had been modified to solve CUDF problems with MOF preference order.
+CUDF and MOF were to allow the comparison of various solvers in the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012}.
+MISC competition was held in both 2010 and 2011,
+and was entered by various state of the art, and legacy, solvers that had been created, or modified, to solve CUDF problems with MOF preference order.
 
 %%%In this section\ldots
 In this section the design principles and requirements of CUDF are described.
 A brief overview of a CUDF document is then presented.
-The CUDF specification of the syntax of CUDF is then described, this will not cover all aspects of the CUDF specification, for instance the extensive type system of CUDF is left out.
-The defined CUDF syntax is then mapped to our model of the a component system evolution through the constraints that have been defined.
-This includes some minor extensions to the presented definition in section \ref{formal.step}.
-Finally, the Mancoosi format for specifying optimisation criteria, denoted as MOF, is discussed.
+The CUDF specification is then mapped to our model of component system evolution.
+Finally, the MOF for specifying optimisation criteria is mapped to the model.
 
 \subsection{CUDF Design}
-The Mancoosi organisation is a research project whose area is the improvement to the upgrading of Free and Open Source Software (FOSS) distributions.
-This upgrade problem is the same problem defined in this chapter, the evolution of a component system.
-Mancoosi looks at a broad area within this domain, and has made many contributions in the area.
+\label{formal.cudfDesign}
+The Mancoosi organisation is a research project committed to the improvement of the process of evolving Free and Open Source Software (FOSS) distributions.
+Mancoosi looks at various problems within this domain, and have made many contributions.
+One such contribution was to organise a competition between solvers of the evolution problems of FOSS systems, MISC.
+This designed to encourage researchers and practitioners into researching the evolution problem.
 
-One of these contributions was to organise a competition between competing solutions of the evolution problems of FOSS systems.
-This was beneficial as it would encourage researchers and practitioners into researching the evolution problem.
-
-An initial problem faced in organising such a competition is a format in which the competition could represent the upgrade problem.
+An initial problem faced by the organisers of MISC, is that a common format was required to describe evolution problems.
 The design of this format would have to follow some design principles to ensure the results would be useful.
-These principles are presented in \citep{treinen2009common}, summarised as:
+These principles are presented in \citep{treinen2009common}, and are summarised as:
 
 \begin{itemize}
   \item \textbf{Agnostic towards component model details}: 
-  The specific component model and the implementation chosen to solve the problem, should be abstracted as to allow many problems and solutions to be used  
+  The specific component model chosen to represent the problem, should be abstracted to allow many various component models to be described.  
   \item \textbf{Stay close to the original problem}: 
-  The original problem is still the focus of this research, therefore the format should not abstract so far as to be unrecognisable. 
-  By using similar terms and syntax that already exists within the domain, the format will still directly represent the upgrade problem. 
-  \item \textbf{Preserve the ability for humans to inspect encoded problems}:
+  The evolution problem should be the focus of the format, therefore it should not be abstracted so far as to be unrecognisable. 
+  By using similar terms and syntax that already exists within the domain, the format will still directly represent the evolution problem. 
   The analysis and design of a specific problem should be able to be directly accomplished through manual investigation.
-  This will allow greater testing and debugging, also enable the direct inspection of the problem by researchers for study.
+  \item \textbf{Preserve the ability for humans to inspect encoded problems}:
+  This will allow greater testing and debugging, also enable the direct inspection and creation of problems by researchers.
   \item \textbf{Avoid bias towards specific implementations or techniques}:
-  Specific encoding of the problem, e.g. using propositional logic, or constraint programming, may create an advantage or disadvantage for a particular technique or solution.
-  Since a goal of this research is to encourage the advancement of this area, the format should strive to be independent from any technique or implementation. 
+  Specific encoding of the evolution problem, e.g. using propositional logic, or constraint programming, may create an advantage or disadvantage for a particular technique or solution.
+  Since a goal of the format is to encourage the advancement of the component system evolution area, it should strive to be independent from any technique or implementation. 
   \item \textbf{Support legacy tools}:
-  The comparison to tools that are already in use to solve such upgrade problems is a necessity when determining if this research is advancing the field.
-  Ideally, a legacy or current solution should easily be able to be adapted and used with the format.
+  The comparison to tools that are already in use to solve such evolution problems, is a necessity when determining if this research is advancing the field.
+  Ideally, a legacy, or current solution, should easily be able to be adapted and used with the format.
   Conversely though, the format should not stop state-of-the-art solutions from being used.
   \item \textbf{Extensible}:
   Although the format will attempt to abstract the common elements of the problem, there may still be necessary component model specific details that require inclusion.
@@ -369,28 +367,30 @@ These principles are presented in \citep{treinen2009common}, summarised as:
   \item \textbf{Transactional semantics}:
   The format should have the ability to completely represent a problem as a single unit, that can be passed to an implementation for solution.
   Also, the solution passed back should itself be a single unit, of the same format.
-  This ignores aspects of the problem such as install order of the components, though this is outside the scope of this research.
+  This ignores aspects of the problem such as install order of the components, though this is outside the scope of the format.
   \item \textbf{Plain Text Format}:
   The use of plain text, as opposed to a binary format, will allow it to be human readable, as well as make it easier to parse and write.
-  Although plain text may not be the most efficient way to encode a problem, the overhead required to parse other formats may decrease the interest to enter a competition.
+  Although plain text may not be the most efficient way to encode a problem, 
+  the overhead required to parse other formats may decrease the interest of researchers, or practitioners, into researching the evolution problem.
   This also aligns with the morals of the community of FOSS developers, where plain text is the universal information interchange format \citep{raymond2003art}.
 \end{itemize}
 
-The result of these design goals is the CUDF specification, presented in \citep{treinen2009common}, and presented in the following sections.
+The result of these design goals is the CUDF specification, presented in \citep{treinen2009common}, and described in the following sections.
 
 \subsection{CUDF Document}
 %%%Here the CUDF document is defined using text and trying to stay away from too many formalisms, just describing concepts to be used later
 In this section a brief description of the CUDF format is presented.
+This description is not a complete specification, but an overview of CUDF.
 Some aspects of CUDF are ignored (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
-Where details are removed, or glossed over a reference will be made as to ensure that misinformation is not conveyed. 
 
-A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary problem, as defined in section \ref{formal.step}.
+A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary problem.
+A document also contains the description of the set of components that make a component system.
 
-This document is separated into three sections, the preamble, the package descriptions, and the request.
+A CUDF document is separated into three sections, the preamble, the package descriptions, and the request.
 
 \begin{itemize}
   \item \textbf{preamble} stanza: Defines the additional types used in the CUDF document
-  \item \textbf{package descriptions} stanzas: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package)
+  \item \textbf{package description} stanzas: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package)
   \item \textbf{request} stanza: this defines the requested evolutionary change that should be made to the components 
 \end{itemize}
 
@@ -412,7 +412,7 @@ This structure is presented in figure \ref{formal:cudfstruct}.
 
 Every stanza begins with a key of their type (\verb+preamble+, \verb+package+, \verb+request+), followed by several lines ending in a empty line.
 Each stanza line defines a set of properties using key/value pairs separated by the delimiter ``:``, these are in no defined order.
-This structure is presented in figure \ref{formal.cudfproperties}
+This structure is presented in figure \ref{formal.cudfstanza}
 
 \begin{figure}[htp] 
 \begin{center}
@@ -421,15 +421,9 @@ This structure is presented in figure \ref{formal.cudfproperties}
 \textit{key_1}: \textit{value_1}
 \ldots
 \textit{key_n}: \textit{value_n}
-
-\ldots
-
-\textit{stanza}: \textit{value}
-\textit{key_1}: \textit{value_1}
-\ldots
 \end{alltt}
-  \caption[CUDF property structure]{Structure of CUDF properties}
-  \label{formal.cudfproperties}
+  \caption{Structure of  CUDF stanza}
+  \label{formal.cudfstanza}
 \end{center}
 \end{figure}
 
@@ -437,38 +431,56 @@ This structure is presented in figure \ref{formal.cudfproperties}
 The package description stanza starts with the \verb+package+ key followed by the value of package name, a non-empty string.
 The only mandatory property of this stanza is defined with the key \verb+version:+ who's value is the version of the package, a positive integer.
 The pair $\langle name, version \rangle$ of a package is unique, there can exist at most one package description for a given name and version.
-This name and version pair is the atomic unit for the CUDF document. 
 
 Some relevant properties for a package are defined by the keys:
 \begin{itemize}
-  \item \verb+installed+: this Boolean property states whether the package is installed or not in the system. 
-  As the CUDF document describes all packages, installed and not, the set of packages with the property \verb+installed: true+ defines the current component system.
-  \item \verb+keep+: this property defines the keep constraints as defined in section \ref{formal.step}
+  \item \verb+installed+: this Boolean property states whether the package is included in the described component system. 
+  As the CUDF document describes all packages, installed and not, the set of packages with the property \verb+installed: true+ are included in the component system $\alpha_{t-1}$.
+  \item \verb+keep+: this property describes a keep relationship, as defined in section \ref{formal.constraints}.
   Some possible values\footnote{The keep property can also be assigned feature or none} are:
 	  	\begin{itemize}
 	  		\item \verb+version+: keep this particular version of the package installed
 	  		\item \verb+package+: keep at least one version of this package installed
 		\end{itemize}
   \item \verb+provides+: this is a list of names of features or services that this package provides separated by the delimiter ``,''.
-  e.g. \verb+provides: a, b, c+ means this package provides the features \verb+a+, \verb+b+ and \verb+c+.
-  Each feature name can be accompanied by a version, to state what particular version is provided, e.g. \verb+a=10+ means feature \verb+a+ version \verb+10+ is provided.
+  e.g. \verb+provides: n, m, v+ means this package provides the features with name \verb+n+, \verb+m+ and \verb+v+.
+  Each feature name can be accompanied by a version, to state what particular version is provided, e.g. \verb+n=10+ means feature \verb+n+ version \verb+10+ is provided.
   When no version is specified for a feature, it is defined as all versions are provided.
-  \item \verb+depends+: this is a list of lists of \textbf{package formulae}, first separated by the delimiter ``,'' then delimiter ``|''.
-  The list represents a conjunction of disjunctions (conjunctive normal form), with each formulae defining a set of packages.
+  \item \verb+depends+: The value of this property is mapped to a set of dependency relationships, as defined in section \ref{formal.constraints}.
+  The value is a list of lists of \textbf{package formulae}, first separated by the delimiter ``,'' then delimiter ``|''.
+  It is a conjunction of disjunctions (conjunctive normal form), with each formulae defining a set of packages.
   A package is defined using a name of either a package or feature $n$ and optionally an operator and version of the form  $n = v$, $n$ != $v$, $n > v$, $n < v$, $n >= v$, or $n <= v$.
-  For example, \verb+depends: a , b | c < 10+ means the package depends on a packages (or features) ``\verb+a+ AND (\verb+b+ OR \verb+c+ less than version \verb+10+)''.  
+  For example, \verb+depends: n , m | o < 10+ means the package depends on a packages (or features) ``name \verb+=n+ AND (name \verb+m+ OR name \verb+o+ with version less than \verb+10+)''.  
   \item \verb+conflicts+: is a list of \textbf{package formulae} as defined above separated by the delimiter ``,''.
-  For example, \verb+conflicts: a , c > 2+ means this package conflicts with all packages (or features) with the name \verb+a+ AND \verb+c+ greater than the version \verb+2+
+  For example, \verb+conflicts: n , m > 2+ means this package conflicts with all packages (or features) with the ``name \verb+n+ AND name \verb+m+ with version greater than \verb+2+''.
 \end{itemize}
 
+An example of a package description stanza is given in figure \ref{formal.cudfpdstanza}.
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+package: textEditor
+version: 1
+installed: true
+depends: spellCheckerService
+\end{alltt}
+  \caption{Example of Package Description Stanza}
+  \label{formal.cudfpdstanza}
+\end{center}
+\end{figure}
+
 \subsubsection{Preamble}
+\label{cudf.preambledes}
 The preamble stanza starts with the key \verb+preamble:+, no value is necessary for this key.
-The main function of this stanza is to provide the description of addition properties and their types, that can be added to the package descriptions.
-This is described under the key \verb+property+ where the value is a list of properties defining their name, type and optionally a default value separated by the delimiter ``,''.
-Each additional property of name $n$ and type $t$ and optionally a default value is a pair or triple separated first by ``:'' then ``='' where the default is wrapped in ``['' and ``]''.
+The main function of the preamble is to provide the description of additional properties and their types, that can be used by package descriptions.
+This is the mechanism which allows the extension of a CUDF document, as described in design principles of CUDF presented in section \ref{formal.cudfDesign}.
+
+Extension properties are described in the value to key \verb+property+.
+This value is a list of properties that describe a name of the property, the type of the property and optionally the properties default value.
+Each property is separated by the delimiter ``,'', the name is separated from the version by ``:``, and the default value is wrapped in ``['' and ``]'' and separated from the version by ``=``.
 
 For example, \verb+property: size: int, bugs: int = [0]+ defines the integer property of \verb+size+ and the integer property of \verb+bugs+ with the default value \verb+0+.
-Given this preamble, package descriptions can now use these properties as shown in figure \ref{formal.cudfextensionexample}.
+An example where these extended properties are used in a package description stanza is shown in figure \ref{formal.cudfextensionexample}.
 
 \begin{figure}[htp] 
 \begin{center}
@@ -482,10 +494,8 @@ bugs: 10
 size: 2
 depends: spellCheckerService
 
-\ldots
-
 \end{alltt}
-  \caption[Example of Extendable CUDF syntax]{Example of Extendable CUDF syntax}
+  \caption{Example of preamble stanza with extendable CUDF syntax}
   \label{formal.cudfextensionexample}
 \end{center}
 \end{figure}
@@ -493,101 +503,184 @@ depends: spellCheckerService
 \subsubsection{Request}
 \label{formal.cudfdes.request}
 The request stanza starts with the \verb+request:+ key, no value is required for this key.
-This stanza contains three properties that define the request to change the system,
-each is a list of \textbf{package formulae} separated by the delimiter ``,'' such that:
+This stanza contains three properties that define the user request to change the system.
+Each value is a list of \textbf{package formulae} separated by the delimiter ``,''.
+The keys and values are:
 \begin{itemize}
-  \item \verb+install+: is a request to install a set of packages into the system,
-  e.g. \verb+install: a, b >= 2+ means install component \verb+a+ and component \verb+b+ of version two or greater.
-  \item \verb+remove+: is a request to remove a set of packages from the system 
-  e.g. \verb+remove: a , b = 2+ means remove all components with name \verb+a+ and component \verb+b+ of version two.
-  \item \verb+upgrade+: is a request to remove all versions of a package and install greater than or equal versions of the package,
-  e.g. \verb+upgrade: a+ means to remove all packages of name \verb+a+ and install one package of equal or greater versions to that of the maximum version of \verb+a+ currently installed. 
+  \item \verb+install+ key, whose value is mapped to a set of installation requests, as described in section \ref{formal.constraints}.
+  For example, \verb+install: n, m >= 2+ means install component \verb+n+ and component \verb+m+ of version two or greater.
+  \item \verb+remove+ key, whose value is mapped to a set of remove requests, as described in section \ref{formal.constraints}.
+  For example, \verb+remove: n , m = 2+ means remove all components with name \verb+n+ and component \verb+m+ of version two.
+  \item \verb+upgrade+ key, whose value is mapped to a set of upgrade and remove requests, as described in section \ref{formal.constraints}.
+  For example, \verb+upgrade: n+ means to remove all packages of name \verb+n+ and install one package of equal or greater versions to that of the maximum version of \verb+m+ currently installed. 
 \end{itemize}
-
-%%%Installation of multiple components
-CUDF as a specification mostly resembles the Debian package format, described in section \ref{background.models}.
-A significant difference between these two specifications is that the CUDF model does not explicitly state that only one version of a package can be installed.
-This decision allows other component models, like Red Hat Package manager and OSGi, which allow the installation of multiple versions, to be modeled in CUDF.
-
-%%%Upgrading with multiple packages
-A request to upgrade a component is more complex than the other requests.
-This complexity may be attributed to CUDF allowing having multiple versions of the same component installed.
-If a package is requested to be upgraded and there are multiple versions of that package installed,
-then all but the highest version must be removed, and only one version can remain in the system.
-For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$,
-then $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
-
-Given an upgrade request, no changes may be necessarily made to the system.
-For example, if component with name $n$ are requested to be upgraded, and the only component with name $n$ installed is $a_1$, then the system does not have to change to satisfy the request.
-
-\subsection{CUDF Specification}
-In this section, the model presented in section \ref{formal.step} is mapped to this CUDF specification.
-The package stanzas are used to define to the set of components that exist at time $t$, $\mathbb{C}_t$, the component system $\alpha_{t-1}$, and the component relationship constraints $\omega_t$. 
-The request stanza is used to define the user request $\delta_t$. 
-A CUDF document then defines an evolution problem.
-
-\begin{defs}
-A \textbf{CUDF stanza} is a set of properties, where each property is a tuple of key/value, i.e. $stanza = \{\langle $\verb+key+, \verb+value+$\rangle\}$.
-\end{defs}
-
-\begin{defs}
-A \textbf{CUDF document} is a preamble $preamble$, a set of package descriptions $PD$, and a request $request$, i.e. $CUDF = \langle preamble, PD, request \rangle$.
-\end{defs} 
-Each 
-This syntax is described in figures \ref{formal:cudfstruct} and \ref{formal.cudfproperties}.
-
-The function $property$ is defined such that it takes a stanza and key and returns a value,
-i.e. $property: STANZA \times key \rightarrow value$ such that given a stanza $s$ and key \verb+key+,
-$property(s,$\verb+key+$) = $ \verb+value+ where $\langle$\verb+key+, \verb+value+$ \rangle \in s$.
-
-If the key does not exist in the stanza, the default value of the property is returned.
-For instance, the default value in a package description stanza for the \verb+installed+ property is defined as \verb+false+;
-therefore, if the key \verb+installed+ is not defined in a package description stanza $pd$, then $property(pd,$\verb+installed+$)$ equals \verb+false+.
-Further, if a property does not have a defined default value, then $\emptyset$ is returned.
-
-\subsubsection{Preamble}
-%%%Description of a basic preamble, as much of the specification is not used
-The first stanza of any CUDF document is the $preamble$.
-The core goal of this is to define additional properties (and their default values) that can be used to describe a component.
-This property definition is accomplished through using an extensively defined type system in CUDF, and has a complete and complicated specification found in \citep{treinen2009common}.
-However, as much of this specification is not used in this research only a basic syntax and semantics will be described.
-The syntax of the preamble \verb+property+ value is defined in the BNF grammar as \verb+<properties>+ in figure \ref{formal.cudfpropertysyntax}.
 
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
-<properties> ::= <property> ["," <property>]*
-<property> :: = <pname> ":" <type> ("=" "["<defaultvalue>"]")?
-<type> ::= "int"
+request:
+install: n
+remove: m
+upgrade: o
 \end{alltt}
-  \caption{Preamble property syntax}
-  \label{formal.cudfpropertysyntax}
+  \caption{Example of CUDF request stanza}
+  \label{formal.cudfrequeststanza}
 \end{center}
 \end{figure}
 
-This syntax defines each property as a name, a type and a default value, i.e. $\langle name, type, default \rangle$, where $name = $ \verb+<pname>+, $type = $ \verb+<type>+,
-and the $default =$ \verb+<defaultvalue>+. 
-In the full CUDF specification there are more types other than \verb+int+, such as \verb+enum+ and \verb+string+,
-some having a different syntax than described here.
+In figure \ref{formal.cudfrequeststanza}, an example of the request stanza is given.
+In this example, a component of name \verb+n+ is requested to be installed, all components of name \verb+m+ are requested to be removed,
+components of name \verb+o+ are requested to be upgraded.
+
+%%%Upgrading with multiple packages
+The CUDF request to upgrade a component is the most complex request.
+This complexity is because CUDF defines two requirements on the upgrade request,
+\begin{enumerate}
+  \item Only one component of the selected name can be installed.
+  \item The installed component's version must be greater than, or equal to, the currently installed greatest version of a component with that name.
+\end{enumerate}
+For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$.
+Component $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
+
+\subsection{CUDF Specification}
+In this section, the model presented in section \ref{formal.step} is mapped to this CUDF specification.
+The package stanzas are used to define to the set of components, $\mathbb{C}_t$, the component system, $\alpha_{t-1}$, and the component relationship constraints $\omega_t$. 
+The request stanza is used to define the user request $\delta_t$. 
+
+\subsubsection{CUDF BNF Grammar}
+A simplified version of the CUDF EBNF grammar\footnote{http://www.mancoosi.org/cudf/ebnf/ visited 26/3/2012} is given in figure \ref{formal.cudfBNFgrammar}. 
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+(* Top Level Elements *)
+<cudf> ::= <preamble> <packagedescription>* <request>
+<preamble> ::= "preamble:" "\textbackslash{}n" <stanza>
+<packagedescription> ::= "package:" <name> "\textbackslash{}n" "version:" <nat> "\textbackslash{}n" <stanza>
+<request> ::= "request:" "\textbackslash{}n" <stanza>
+(* Structure *)
+<stanza> ::= [<property> "\textbackslash{}n"]* "\textbackslash{}n"
+<property> ::= <key> ":" <value>
+<key> ::= <ident>
+<value> ::= <bool> | <int> | <nat> | <string> \\| <name> | <ident> | <vpkgformula> | <vpkglist> | <veqpkglist> | <typedecls>
+<vpkgformula> ::= <orformula> ("," <orformula>)*
+<orformula> ::= <vpkg> ("|" <vpkg>)*
+<vpkglist> ::= <vpkg> ("," <vpkg>)*
+<vpkg> ::= <name> (<relop> <version>)?
+<relop> ::= "=" | "!=" | ">=" | ">" | "<=" | "<"
+
+<veqpkglist> ::= <veqpkg> ("," <veqpkg>)*
+<veqpkg> ::= <name> ("=" <version>)?
+
+<typedecls> ::= <typedecl> ("," <typedecl>)*
+<typedecl> ::= ident ":" type ("=" "["<nat>"]")?
+<type> ::= "int"
+
+(* Bottom Level Types *)
+<name> ::= ["A"-"Z" | "a"-"z" | "0"-"9" | "-" | "+" | "." | "/" | "@" | "(" ")" | "\%"]+
+<ident> ::= ["a"-"z"][""a"-"z" | "0"-"9"]+		
+<nat> ::= ["0"-"9"]+
+<bool> ::= "true" | "false"
+<int> ::= ("+"|"-")? ["0"-"9"]+
+<string> ::= [^"\textbackslash{}n"| ^"\textbackslash{}n"]* (*Unicode string with no CR or LF*)
+\end{alltt}
+  \caption{CUDF BNF Grammar}
+  \label{formal.cudfBNFgrammar}
+\end{center}
+\end{figure}
+
+\subsubsection{Additional Constraints}
+In figure \ref{formal.cudfBNFgrammar}, a CUDF document is described as a preamble, a list of package descriptions, and a request.
+The preamble is a stanza started with the text \verb+preamble:+.
+A package description is a stanza started with a package name, and a package version.
+The request is a stanza started with the text \verb+request:+.
+
+This grammar does not list all the constraints for each stanza, and each property.
+For example, the property with key \verb+installed+ can only be in a package description, and can only have a \verb+<bool>+ value.
+Each stanza type (preamble, package description or request) can consist of different properties, where each properties value can be of a different type.
+In tables \ref{formal.cudfpremableprops}, \ref{formal.cudfpdprops} and \ref{formal.cudfrequestprops}, 
+the allowed properties for the preamble, a package description, and the request are described respectively.
+
+\begin{table}
+\begin{tabular}{|c|c|c|}
+Property Name & Value Type & Default Value \\ \hline
+property & \verb+<typedecl>+ & \verb+""+
+\end{tabular}
+\caption{Preamble properties}
+\label{formal.cudfpremableprops}
+\end{table}
+
+\begin{table}
+\begin{tabular}{|c|c|c|}
+Property Name & Value Type & Default Value \\ \hline
+\texttt{depends} & \verb+<vpkgformula>+ & \verb+""+ \\
+\texttt{conflicts} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\texttt{provides} & \verb+<veqpkglist>+ & \verb+""+ \\ 
+\texttt{installed} & \verb+<bool>+ & \verb+false+ \\ 
+\texttt{keep} & \texttt{<ident>} either \texttt{"version"}, \texttt{"package"}, or \texttt{"none"} & \texttt{"none"} \\ 
+\end{tabular}
+\caption{Package Description properties}
+\label{formal.cudfpdprops}
+\end{table}
+
+\begin{table}
+\begin{tabular}{|c|c|c|}
+Property Name & Value Type & Default Value \\ \hline
+\texttt{install} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\texttt{remove} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\texttt{upgrade} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\end{tabular}
+\caption{Request properties}
+\label{formal.cudfrequestprops}
+\end{table}
+
+In addition to the properties allowed in the package description, as presented in table \ref{formal.cudfpdprops}, extra properties can be defined in the preamble's \texttt{property} property.
+This is described in section \ref{cudf.preambledes}, and restricted to only defining new \texttt{<int>} typed properties.
+
+\subsubsection{Mapping}
+
+\begin{defs}
+A \textbf{CUDF document} is a preamble stanza ($preamble$), a set of package description stanzas ($PD$) , and a request stanza ($request$), $\langle premable, PD, request \rangle$.
+\end{defs}
+
+Each stanza can be seen as a function:
+\begin{defs}
+A stanza $s$ is a function that takes a key \texttt{key}, and returns a value \texttt{value}, $s($\texttt{key}$) = $\texttt{value}. 
+\end{defs}
+
+This function is abbreviated to use the infix notation \texttt{.}:
+\begin{defs}
+Given a stanza $s$, a key \texttt{key}, and value \texttt{value}, $s$.\texttt{key}$ = $\texttt{value} iff $s($\texttt{key}$) = $\texttt{value}.
+\end{defs}
+For a package description stanza $pd$, $pd$.\texttt{name} returns the \texttt{<name>} describing the name of the component.
+Also, $pd$.\texttt{version} returns the \texttt{<nat>} which defines the version of the component.
+
+In the following sections, this CUDF document is mapped to the set of components $\mathbb{C}_t$, the component system $\alpha_{t-1}$,
+the component relationship constraints $\omega_t$, and the user request constraints $\delta_t$.
 
 \subsubsection{Components}
-Each component is defined by a name and version, as described in section \ref{formal.step}.
-This information is extracted from the package descriptions in a CUDF document.
-The function $pd2c$ takes a package description stanza and returns a component, such that $pd2c(pd) = \langle property(pd, $ \verb+name+ $), property(pd, $ \verb+version+ $) \rangle$.
-The set of components at time $t$, $\mathbb{C}_t$, equals the set of converted package descriptions, i.e. $\mathbb{C}_t = [ pd2c(pd) \mid pd \in PD]$.
+The set of components, $\mathbb{C}_t$, and component system $\alpha_{t-1}$ are defined given a CUDF document.
 
-To refer to a property assigned to a component $a$, of the key \verb+key+, it is written $a$.\verb+key+.
-That is, $a$.\verb+key+ $= property(pd, $\verb+key+$)$ where $a = pd2c(pd)$.
-For example, the name of a component $a$ can be written as $a$.\verb+name+, its version as $a$.\verb+version+.
-A component can still be denoted as $n_v$, where $n$ = $a$.\verb+name+ and $v$ = $a$.\verb+version+.
+\begin{defs}
+The function $pd2c$ is defined to take a package description stanza $pd$, and return a component, $pd2c(pd) = \langle pd.$\texttt{name}, $pd.$\texttt{version} $\rangle$.
+\end{defs}
 
-As described above, 
-if a request property does not exist for the component, then the default value of that property is returned, and if no default is defined then $\emptyset$ is returned.
+The infix notation \texttt{.} can also be used to abbreviate component properties: 
+\begin{defs}
+Given a package description stanza $pd$,  the component $c = pd2c(pd)$, a key \texttt{key}, and value \texttt{value}, 
+$c$.\texttt{key}$ = $\texttt{value} iff $pd$.\texttt{key} $ = $ \texttt{value}.
+\end{defs}
 
-A CUDF document not only describes the set of all components, but the set of components that defines the current system.
-The set of components in the component system (denoted as $\alpha_{t-1}$) is defined using the key \verb+installed+,
-such that, $c \in \alpha_{t-1}$ iff  $c.$\verb+installed+ equals \verb+true+.
-That is, only the components whose property \verb+installed+ is set to \verb+true+, are in the current component system.
+\begin{defs}
+Given a CUDF document $\langle premable, PD, request \rangle$, the set of components $\mathbb{C}_t$ equals the set of package descriptions mapped using the function $pd2c$,
+$\mathbb{C}_t = \{pd2c(pd) \mid pd \in PD\}$
+\end{defs}
+
+\begin{defs}
+Given a CUDF document $\langle premable, PD, request \rangle$, the component system $\alpha_{t-1}$ equals the set of package descriptions, mapped using the function $pd2c$,
+whose property \texttt{installed} equals \texttt{true},
+$\alpha_{t-1} = \{pd2c(pd) \mid pd \in PD $ and $ pd.$\texttt{installed} $=$ \texttt{true} $\}$
+\end{defs}
 
 \subsubsection{Features}
 %%%Features or services
@@ -595,127 +688,106 @@ CUDF specifies an additional aspect to component relationships, that of a featur
 Each component can provide a set of features, where each feature is represented by a name, and a set of versions.
 Unlike a component, which has exactly one version, a component can provide multiple versions of a feature.
 
-A feature is then a pair $(n,V)$ where all features are in the set $F$, $n$ is the name of the feature, 
-and $V$ is a subset of positive integers representing versions, i.e $V \subseteq \mathbb{N}$.
-The features provided by a component are defined as the property with the key \verb+provides+, 
-whose value follows \verb+<provides>+ from the BNF grammar presented in figure \ref{formal.cudfprovidessyntax}.
+\begin{defs}
+A \textbf{feature} $f$ is a pair consisting of a name $n \in \mathcal{N}$ and a set of versions $V \subseteq \mathcal{V}$ , 
+$f = \langle n,V \rangle$
+\end{defs}
 
-\begin{figure}[htp] 
-\begin{center}
-\begin{alltt}
-<provides> ::= <feature> ["," <feature>]*
-<feature> :: = <fname> ("=" <ver>)?
-\end{alltt}
-  \caption[Provides syntax]{CUDF Provides syntax}
-  \label{formal.cudfprovidessyntax}
-\end{center}
-\end{figure}
+The features provided by a component are defined as the property with the key \verb+provides+, which is of the type \texttt{<veqpkglist>}.
+This type is a list of \texttt{<veqpkg>}, either of the form ``\verb+<name>+'' or  ``\verb+<name>+ = \verb+<version>+''.
+\begin{itemize}
+  \item \verb+<name>+ $:=$ $($\verb+<name>+$,\mathbb{V})$
+  \item \verb+<name>+ = \verb+<version>+ $:=$ $($\verb+<fname>+$,\{$\verb+<version>+$\})$
+\end{itemize}
+That is, a \texttt{<veqpkg>} which does not define a version, is defined as a feature that provides all versions.
+A  \texttt{<veqpkg>} the defines a version, is defined as a feature that provides a singleton set of that version.
 
-Each feature represented by \verb+<feature>+ is in the form ``\verb+<fname>+'' or  ``\verb+<fname>+ = \verb+<ver>+'', 
-which is mapped to a feature $($\verb+<fname>+$,\mathbb{N})$ or $($\verb+<fname>+$,\{$\verb+<ver>+$\})$ respectivly.
-That is, a component provides all versions of a feature if a specific version is not defined, and if a version is defined it provides a singleton set of that version.
- 
-The list of features defined by \verb+<provides>+, in the form ``\verb+<feature>+$_1$,\ldots,\verb+<feature>+$_n$'', can then be mapped to a set of features.
-This property is wrapped with the function $providedFeatures$,
-such that given a component $c$, $providedFeatures(c)$ equals the set of features mapped from $c$.\verb+provides+.
+\begin{defs}
+The function $providedFeatures$ is defined to take a component $c$, and return the set of features that component provides,
+$providedFeatures(c) =$ the set of features mapped from the $c$.\texttt{provides} value.
+\end{defs}
 
 \subsubsection{Package formula}
-A package formula is a query to retrieve a set of components from a CUDF document.
-This formula is the mechanism to define all relationships and requests in the CUDF specification.
+A package formula, of type \texttt{<vpkg>}, is a query to retrieve a set of components from a CUDF document.
+This formula is the mechanism that defines all relationships and requests in the CUDF specification.
 
-Each package formula is syntactically defined as \verb+<pkgf>+ in the BNF grammar in figure \ref{formal.cudfpackageformulasyntax}.
-This also defines \verb+<pkgname>+ as the package name, \verb+<ver>+ as the package version, and \verb+<relop>+ as a relational operator expressing the constraint of the query.
+Each \texttt{<vpkg>} is of the form ``\texttt{<name>}'' or  ``\texttt{<name> <relop> <version>}''.
+\begin{defs}
+A \textbf{package formula} $pf$ is a triple, name $n$, version $v$, and relation $r$, $pf = \langle n, v , r \rangle$.
+\end{defs}
 
-\begin{figure}[htp] 
-\begin{center}
-\begin{alltt}
-<pkgf> ::= <pkgname> (<relop> <ver>)?
-<relop> ::=  "=" | "!=" | ">=" | ">" | "<=" | "<"
-\end{alltt}
-  \caption[Package Formulae syntax]{Structure of CUDF package Formulae syntax}
-  \label{formal.cudfpackageformulasyntax}
-\end{center}
-\end{figure}
-
-The syntax of \verb+<relop>+ is parsed to a mathematical relation with the function:  
-$\{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, 
+The syntax of \verb+<relop>+ is parsed to a mathematical relation with the function $relop$:  
+$relop = \{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, 
 \verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$.
-The package formula is in the form ``\verb+<pkgname>+'' or  ``\verb+<pkgname>+ \verb+<relop>+ \verb+<ver>+'',
-given \verb+<relop>+ is mapped to $op$, each form is mapped to a triple $\langle $\verb+<pkgname>+$,0,>\rangle$ or $\langle$\verb+<pkgname>+$,op,$ \verb+<ver>+ $\rangle$ respectively.
-That is, each package formula is a triple of name, operation and version.
-If \verb+<relop>+ and \verb+<ver>+ are not defined, the operation defaults to greater than version 0.
+
+\begin{itemize}
+  \item \texttt{<name>} $:=$ $\langle $\texttt{<name>}$, 0 , > \rangle$
+  \item \texttt{<name> <relop> <version>} $:=$ $\langle $\texttt{<name>}$,$ \texttt{<version>}$, relop($\texttt{<relop>}$) \rangle$
+\end{itemize}
+That is, a \texttt{<vpkg>} that does not define a relation or version, is defined as a package formula that is greater than zero.
 
 %%%Find all packages which satisfy the package formula
-Package formulae (whose set is denoted as $PF$) can be mapped to a set of components through the function $packages: PF \rightarrow 2^{\mathbb{C}}$,
-which takes a package formula and returns all packages that conform to its definition.
-This is defined as:
+A function to find packages that satisfy the package formula is defined:
 \begin{defs}
-Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
-$packages(\langle n,v,op\rangle) = [\langle n_c,v_c \rangle \mid \langle n_c,v_c \rangle \in \mathbb{C} \mbox{ and } n_c = n \mbox{ and } v_c \mbox{ op } v]$.
+The function $packages$ is defined to take a package formula $\langle n,v,op\rangle$ and return the set of components that satisfy the formula,
+$packages(\langle n,v,op\rangle) = \{\langle n,v_c \rangle \mid \langle n,v_c \rangle \in \mathbb{C}_t \mbox{ and } v_c \mbox{ op } v\}$
 \end{defs}
-That is, any component whose name is the same as that in the package formulae and whose version is related through the defined $op$ will be included in the set.
 
 %%%Find all packages who provides a feature which satisfies the package formula
-A package formula does not distinguish between components and features, so a package formula is also used to search for components providing a feature.
-The function $features: PF \rightarrow 2^{\mathbb{C}}$ takes a package formula and returns a set of components that provide the described feature.
+A package formula may not distinguish between components and features, so a package formula is also used to search for components providing a feature.
+A function is then defined to find packages that provide a feature that satisfies a package formula:
 \begin{defs}
-Given a set of components $\mathbb{C}$ defined in a CUDF document, and a package formulae $\langle n,v,op\rangle$
-$features(\langle n,v,op\rangle)$ equals 
-$[c \mid c\in \mathbb{C} \mbox{ and } (n,V) \in providedFeatures(c) \wedge \exists v_f \in V \mbox { such that } v_f \mbox{ op } v ]$.
+The function $features$ is defined to take a package formula $\langle n,v,op\rangle$ and return the set of components that provide a feature that satisfy the formula,
+$features(\langle n,v,op\rangle) = \{c \mid c \in \mathbb{C}_t \mbox{ and } (n,V) \in providedFeatures(c) \mbox{ and } \exists v_f \in V \mbox { where } v_f \mbox{ op } v \}$.
 \end{defs}
-That is, given a package formula, 
-$features$ returns a set of components that provide a feature where the name of the feature is the name in the package formula 
-and there exists a version of that feature that satisfies the relation. 
 
-Give the functions $packages$ and $features$ the resolution of a package formula $pf$ can be described as the function 
+Give the functions $packages$ and $features$ the set of all components that can satisfy a formula:
 \begin{defs}
-$packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+The function $packagesThatSatisfy$ reutrns the set of all components that can satisfy the package formula $pf$, $packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
 \end{defs}
-That is, $packagesThatSatisfy$ takes a package formula and returns a set of packages that either directly satisfy it, or that provide a feature that satisfy the it.
 
 \subsubsection{Relationships}
-Given the function $packagesThatSatisfy$, the CUDF document can be mapped to the relationship constraints described in section \ref{formal.step}.
-
-There are three constraints:
+Given a CUDF document, three sets of relationship constraints, each of different types, are extracted:
 \begin{itemize}
-  \item keep constraint: derived from the property \verb+keep+ of a package descriptions, only included if the property \verb+installed+ is true.
-  \item dependency constraint: derived from the property \verb+depends+ from all package descriptions in a CUDF document.
-  \item conflict constraints: derived from the property \verb+conflicts+ from all package descriptions in a CUDF document.
+  \item keep relationship constraints $\omega_t^{keep}$ are extracted from the \verb+keep+ key of package descriptions in $\alpha_{t-1}$.
+  \item dependency relationship constraints $\omega_t^{dep}$ are extracted from the \verb+depends+ key of package descriptions in $\mathbb{C}_t$.
+  \item conflict relationship constraints $\omega_t^{confl}$ are extracted from the \verb+conflicts+ key of package descriptions in $\mathbb{C}_t$.
 \end{itemize}
+The set of relationship constraints $\omega_t$, as described in section \ref{formal.step}, is then the union of these,
+$\omega_t =  \omega_t^{keep} \cup \omega_t^{dep} \cup \omega_t^{confl}$
 
-\paragraph{Keep Constraint}
-The keep constraint states that a system should maintain either a specific package, or a version of a package in the system.
-In the CUDF specification only the keep constraints of installed components are considered.
 
-The function $keeppf$ is defined to take a component and to return a package formula such that can be used to create a keep constraint.
-Given a component $\langle n,v \rangle = c$, $keeppf$ is defined such that:
+\paragraph{Keep Relationship}
+Given a CUDF document, the set of keep relationship constraints is $\omega_t^{keep}$.
+These constraints are extracted from the key \texttt{keep} of the components in $\alpha_{t-1}$.
+ 
+The values of the property with key \texttt{keep} can be either \texttt{none}, \texttt{version}, or \texttt{package}.
+If the value is \texttt{none}, then no constraints are generated.
+\begin{defs}
+The function $keep$ takes a component $c = \langle n ,v \rangle$, and returns a set of keep relationship constraints, such that
 \begin{itemize}
-	\item if $c$.\verb+keep+ equals \verb+version+: $keeppf(c) = \langle n, =, v \rangle$
-	\item if $c$.\verb+keep+ equals \verb+package+: $keeppf(c) = \langle n, >, 0 \rangle$
+	\item if $c$.\verb+keep+ equals \verb+none+: $keep(c) = \emptyset$
+	\item if $c$.\verb+keep+ equals \verb+version+: $keep(c) = \{c\}$
+	\item if $c$.\verb+keep+ equals \verb+package+: $keep(c) = \{\bigvee packages(\langle n, >, 0 \rangle)\}$
 \end{itemize}
+\end{defs}
+The function $keep$ is defined to take a component $c$ and to return a set of keep relationship constraints where
+if the value of $c$.\verb+keep+ equals \verb+none+ then the empty set if returned.
+If the value of $c$.\verb+keep+ equals \verb+version+, the returned set contains one keep relationship constraint that states that component should be kept;
+If the value of $c$.\verb+keep+ equals \verb+package+, 
+the returned set contains one keep relationship constraint that states that a component with the same name should be kept. 
 
-A keep constraint, of the form $c_1 \vee \ldots \vee c_n$, for a package is then created using the function $keep$,
-where $keep(c) = \bigvee packages(keeppf(c))$.
-That is, the package formula from $keeppf$ is used to query for a set of packages whose disjunction forms the keep constraint.
-This creates a constraint to ensure one of the resulting components to be included in the system.
-
-To create the set of all keep constraints, all installed packages must be mapped to the function $keep$.
-The component system $\alpha_{t-1}$, is used to create the set of keep constraints $\bigcup \limits_{c \in \alpha_{t-1}} keep(c)$.
+\begin{defs}
+Given a CUDF document with component systen $\alpha_{t-1}$, the set of all keep relationship constraints, $\omega_t^{keep}$, 
+equals $\bigcup \limits_{c \in \alpha_{t-1}} keep(c)$.
+\end{defs}
 
 \paragraph{Dependency Constraint}
+%%TODO UPTO HERE
 The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property key \verb+depends+,
 whose syntax is defined as \verb+<depends>+ from the BNF grammar presented in figure \ref{formal.cudfdependssyntax}.
 
-\begin{figure}[htp] 
-\begin{center}
-\begin{alltt}
-<depends> ::= <pkgflist> ("," <pkgflist>)*
-<pkgflist> ::= <pkgf> ("|" <pkgf>)*
-\end{alltt}
-  \caption[CUDF Package depends syntax]{Structure of CUDF depends syntax}
-  \label{formal.cudfdependssyntax}
-\end{center}
-\end{figure}
+
 
 This syntax shows that the depends property is a list of package formula (as defined in figure \ref{formal.cudfpackageformulasyntax}) lists, 
 first separated by the delimiter ``,'' then by the delimiter ``|''.
@@ -745,15 +817,7 @@ such that the set of dependency constraints equals $\bigcup \limits_{c\in \mathb
 The conflict constraints of a given component defines the relationship where it will not be functional with another component in the system.
 The syntax of the \verb+conflicts+ property value is defined as \verb+<conflicts>+ and is presented in figure \ref{formal.cudfconflictsyntax}.
 
-\begin{figure}[htp] 
-\begin{center}
-\begin{alltt}
-<conflicts> ::= <pkgf> ("," <pkgf>)*
-\end{alltt}
-  \caption[CUDF Package conflicts syntax]{Structure of CUDF conflicts syntax}
-  \label{formal.cudfconflictsyntax}
-\end{center}
-\end{figure}
+
 
 This syntax is the same as defined above in the depends property syntax for \verb+<pkgflist>+ except it uses a different delimiter. 
 The mapping is also the same, where the property value is in the form \verb+<pkgf>+$_1$ , \ldots , \verb+<pkgf>+$_n$ and maps to a set of package formulae $conflictPkgF$.
@@ -783,18 +847,6 @@ $\omega_t = \bigcup \limits_{c \in \alpha_{t-1}} keep(c) \cup \bigcup \limits_{c
 In a CUDF document there exist exactly one request stanza, which has three optional properties \verb+install+, \verb+remove+ and \verb+upgrade+ respectively.
 Each value for these properties has the same syntax, shown in figure \ref{formal.requestssyntax}.
 
-\begin{figure}[htp] 
-\begin{center}
-\begin{alltt}
-<install> ::= <pkgflist>
-<remove> ::= <pkgflist>
-<upgrade> ::= <pkgflist>
-<pkgflist> ::= <pkgf> ("," <pkgf>)*
-\end{alltt}
-  \caption[CUDF Package conflicts syntax]{Structure of CUDF conflicts syntax}
-  \label{formal.requestssyntax}
-\end{center}
-\end{figure}
 
 The syntax of \verb+<pkgflist>+ is exactly the same defined above for the conflicts property, and can be mapped to the set of package formulae $pkgflist$.
 The \verb+install+ property maps to the package formulae set $installpkgflist$; the \verb+remove+ property maps to the package formulae set $removepkgflist$;
@@ -1041,7 +1093,7 @@ This rank function applied to the possible solutions return in:
   \item $rank(\alpha_{t-1},\alpha_t^2 ) = (4, 2)$
   \item $rank(\alpha_{t-1},\alpha_t^3 ) = (5, 3)$
 \end{itemize}
-The order of these ranks over $\leq_L$ is then $rank(\alpha_{t-1},\alpha_t^_3) \leq_L rank(\alpha_{t-1},\alpha_t^_2) \leq_L rank_L(\alpha_{t-1},\alpha_t^_1)$.
+The order of these ranks over $\leq_L$ is then $rank(\alpha_{t-1},\alpha_t^3) \leq_L rank(\alpha_{t-1},\alpha_t^2) \leq_L rank_L(\alpha_{t-1},\alpha_t^1)$.
 Therefore, the order of optimality ($\prec_{\alpha_{t-1}}$) over the possible solutions is $s_3 \prec_{\alpha} s_2$, $s_3 \prec_{\alpha} s_1$, and $s_2 \prec_{\alpha} s_1$,
 which makes $s_1$ the optimal solution, as no other solution is greater. 
 
