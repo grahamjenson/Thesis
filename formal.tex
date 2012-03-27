@@ -613,10 +613,10 @@ property & \verb+<typedecl>+ & \verb+""+
 \begin{table}
 \begin{tabular}{|c|c|c|}
 Property Name & Value Type & Default Value \\ \hline
-\texttt{depends} & \verb+<vpkgformula>+ & \verb+""+ \\
-\texttt{conflicts} & \verb+<vpkglist>+ & \verb+""+ \\ 
-\texttt{provides} & \verb+<veqpkglist>+ & \verb+""+ \\ 
-\texttt{installed} & \verb+<bool>+ & \verb+false+ \\ 
+\texttt{depends} & \texttt{<vpkgformula>} & \verb+""+ \\
+\texttt{conflicts} & \texttt{<vpkglist>} & \verb+""+ \\ 
+\texttt{provides} & \texttt{<veqpkglist>} & \verb+""+ \\ 
+\texttt{installed} & \texttt{<bool>} & \verb+false+ \\ 
 \texttt{keep} & \texttt{<ident>} either \texttt{"version"}, \texttt{"package"}, or \texttt{"none"} & \texttt{"none"} \\ 
 \end{tabular}
 \caption{Package Description properties}
@@ -743,23 +743,40 @@ $features(\langle n,v,op\rangle) = \{c \mid c \in \mathbb{C}_t \mbox{ and } (n,V
 
 Give the functions $packages$ and $features$ the set of all components that can satisfy a formula:
 \begin{defs}
-The function $packagesThatSatisfy$ reutrns the set of all components that can satisfy the package formula $pf$, $packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+The function $packagesThatSatisfy$ returns the set of all components that can satisfy the package formula $pf$, $packagesThatSatisfy(pf) = packages(pf) \cup features(pf)$.
+\end{defs}
+
+\paragraph{Sets of Package Formula}
+The elements \texttt{<orformula>} and \texttt{<vpkglist>} are both lists of \texttt{<vpkg>}'s.
+The element \texttt{<vpkgformula>} is a list of \texttt{<orformula>}'s, so is a list of lists of \texttt{<vpkg>}'s.
+
+The mapping of these elements is trivial:
+\begin{itemize}
+  \item \texttt{<orformula>} $ := $ a set of package formula.
+  \item \texttt{<vpkglist>} $ := $ a set of package formula.
+  \item \texttt{<vpkgformula>} $ := $ a set of sets of package formula.
+\end{itemize}
+
+The satisfaction of a 
+\begin{defs}
+The function $allPackagesThatSatisfy$ takes a set of package formula $pkgflist$, and returns all packages that satify a package formula in the list,
+$allPackagesThatSatisfy(pkgflist) = \bigcup \limits_{pkgf \in pkgflist} packagesThatSatisfy(pkgf)$ 
 \end{defs}
 
 \subsubsection{Relationships}
-Given a CUDF document, three sets of relationship constraints, each of different types, are extracted:
+Given a CUDF document, there are three sets of constraints that make up $\omega_t$, each containing a different relationship constraint type:
 \begin{itemize}
   \item keep relationship constraints $\omega_t^{keep}$ are extracted from the \verb+keep+ key of package descriptions in $\alpha_{t-1}$.
   \item dependency relationship constraints $\omega_t^{dep}$ are extracted from the \verb+depends+ key of package descriptions in $\mathbb{C}_t$.
-  \item conflict relationship constraints $\omega_t^{confl}$ are extracted from the \verb+conflicts+ key of package descriptions in $\mathbb{C}_t$.
+  \item conflict relationship constraints $\omega_t^{con}$ are extracted from the \verb+conflicts+ key of package descriptions in $\mathbb{C}_t$.
 \end{itemize}
-The set of relationship constraints $\omega_t$, as described in section \ref{formal.step}, is then the union of these,
-$\omega_t =  \omega_t^{keep} \cup \omega_t^{dep} \cup \omega_t^{confl}$
+The set of relationship constraints $\omega_t$, as described in section \ref{formal.step}, is the union of these,
+$\omega_t =  \omega_t^{keep} \cup \omega_t^{dep} \cup \omega_t^{con}$.
 
 
 \paragraph{Keep Relationship}
 Given a CUDF document, the set of keep relationship constraints is $\omega_t^{keep}$.
-These constraints are extracted from the key \texttt{keep} of the components in $\alpha_{t-1}$.
+These constraints are extracted from the property with the key \texttt{keep} in the components in $\alpha_{t-1}$.
  
 The values of the property with key \texttt{keep} can be either \texttt{none}, \texttt{version}, or \texttt{package}.
 If the value is \texttt{none}, then no constraints are generated.
@@ -772,98 +789,92 @@ The function $keep$ takes a component $c = \langle n ,v \rangle$, and returns a 
 \end{itemize}
 \end{defs}
 The function $keep$ is defined to take a component $c$ and to return a set of keep relationship constraints where
-if the value of $c$.\verb+keep+ equals \verb+none+ then the empty set if returned.
+if the value of $c$.\verb+keep+ equals \verb+none+ then the empty set is returned.
 If the value of $c$.\verb+keep+ equals \verb+version+, the returned set contains one keep relationship constraint that states that component should be kept;
 If the value of $c$.\verb+keep+ equals \verb+package+, 
 the returned set contains one keep relationship constraint that states that a component with the same name should be kept. 
 
 \begin{defs}
-Given a CUDF document with component systen $\alpha_{t-1}$, the set of all keep relationship constraints, $\omega_t^{keep}$, 
+Given a CUDF document with component system $\alpha_{t-1}$, the set of all keep relationship constraints, $\omega_t^{keep}$, 
 equals $\bigcup \limits_{c \in \alpha_{t-1}} keep(c)$.
 \end{defs}
 
 \paragraph{Dependency Constraint}
-%%TODO UPTO HERE
-The dependency constraints of a set of components $\mathbb{C}$ defined in a CUDF document are mapped using the property key \verb+depends+,
-whose syntax is defined as \verb+<depends>+ from the BNF grammar presented in figure \ref{formal.cudfdependssyntax}.
+Given a CUDF document, the set of dependency relationship constraints is $\omega_t^{dep}$.
+These constraints are extracted from the property \texttt{depends} in the components in the set $\mathbb{C}_t$.
+The value of the property with key \texttt{depends} is a \texttt{<vpkgformula>} which is mapped to a set of sets of package formula.
 
+\begin{defs}
+Given a component $a$, the function $dependsOn$ takes a set of package formula and returns a dependency relationship constraint,
+$dependsOn(a,pkgflist)$ returns $a \rightarrow \bigvee allPackagesThatSatisfy(pkgflist)$.
+\end{defs}
+That is, $dependsOn(a,pkgflist)$ creates the dependency relationship constraint where $a$ depends on the disjunction of the union of all components that satisfy a package formula in a set. 
 
+\begin{defs}
+The function $depends$ takes a component $a$, and returns a set of dependency relationship constraints,
+$depends(a)$ returns $\bigcup \limits_{pkgflst \in listpkgflist} dependsOn(a,pkgflst)$, where $listpkgflist$ is mapped from the value $a$.\texttt{depends}.
+\end{defs}
+That is, $depends$ returns the set of dependency relationship constraints for a component is the union of all constraints created from individual \verb+depends+ properties.
 
-This syntax shows that the depends property is a list of package formula (as defined in figure \ref{formal.cudfpackageformulasyntax}) lists, 
-first separated by the delimiter ``,'' then by the delimiter ``|''.
-Each package formula list maps to a single dependency constraint, as described in section \ref{formal.step}.
-
-The syntax of a \verb+<pkgflist>+ is in the form ``\verb+<pkgf>+$_1$ | \ldots | \verb+<pkgf>+$_n$'', where \verb+<pkgf>+$_i$ maps to $pf_i$.
-Each \verb+<pkgflist>+ then maps to a set of package formulae $pkgflist$ such that $pkgflist = \{pf_1,\ldots, pf_n\}$.
-
-The property \verb+<depends>+ is then of the form ``\verb+<pkgflist>+$_1$ ,\ldots, \verb+<pkgflist>+$_n$'', where \verb+<pkgflist>+$_i$ maps to a set of package formulae $pkgflist_i$. 
-The property \verb+<depends>+ is mapped to a set of sets of package formulae $listpkgflist = \{pkgflist_1,\ldots,pkgflist_n\}$.
-
-The function $dependsOn$ is then defined such that it takes a component and a package list to create a single dependency constraint of the form $a \rightarrow c_1 \vee \ldots \vee c_n$,
-as defined in section \ref{formal.step}.
-Given a component $a$ and a package list $pkgflist$, 
-$dependsOn(a,pkgflist)$ equals the constraint $a \rightarrow \bigvee  \bigcup \limits_{pkgf \in pkgflist} packagesThatSatisfy(pkgf)$.
-That is, $dependsOn(a,pkgflist)$ is $a$ implying the disjunction of the union of all components that satisfy a contained package formula to create the dependency constraint. 
-
-The function $depends$ is then defined to return a set of all dependency constraints for a component.
-Given a component $a$, the set of sets of package formulae mapped from $a$.\verb+depends+ denoted as $listpkgflist$,
-$depends(a)$ is defined to equal $\bigcup \limits_{pkgflst \in listpkgflist} dependsOn(a,pkgflst)$.
-That is, the set of dependency constraints for a given component is the union of all constraints created from individual \verb+depends+ properties.
-
-Finally, the set of all dependency constraints is defined given the set of all components $\mathbb{C}$ defined in a CUDF document,
-such that the set of dependency constraints equals $\bigcup \limits_{c\in \mathbb{C}} depends(a)$.
+\begin{defs}
+Given a CUDF document, and the set of components $\mathbb{C}_t$,
+the set of all dependency relationship constraints $\omega_t^{dep}$ equals $\bigcup \limits_{a \in \mathbb{C}_t} depends(a)$.
+\end{defs}
 
 \paragraph{Conflict Constraint}
-The conflict constraints of a given component defines the relationship where it will not be functional with another component in the system.
-The syntax of the \verb+conflicts+ property value is defined as \verb+<conflicts>+ and is presented in figure \ref{formal.cudfconflictsyntax}.
+Given a CUDF document, the set of dependency relationship constraints is $\omega_t^{con}$.
+These constraints are extracted from the property \texttt{conflicts} in the components in the set $\mathbb{C}_t$.
+The value of the property with key \texttt{conflicts} is a \texttt{<vpkglist>} which is mapped to a set of package formula.
 
-
-
-This syntax is the same as defined above in the depends property syntax for \verb+<pkgflist>+ except it uses a different delimiter. 
-The mapping is also the same, where the property value is in the form \verb+<pkgf>+$_1$ , \ldots , \verb+<pkgf>+$_n$ and maps to a set of package formulae $conflictPkgF$.
-
-Given a component $a$ and the set $conflictPkgF$ that is mapped from the $a$.\verb+conflicts+;
-the function $conflictsWith$ is defined to return a set of conflict constraints where each constraints is in the form $a \rightarrow \neg c$, as defined in section \ref{formal.step}.
-This function is defined as, 
-$conflictsWith(a) = [a \rightarrow \neg c \mid c \in packagesThatSatisfy(pf) \mbox{ and } pf \in conflictPkgF \mbox { and } c \not = a]$.
-That is, a component conflicts with any component that satisfies a package formula defined in its \verb+conflicts+ property,
+\begin{defs}
+The function $conflictsWith$ takes a component $a$, and returns a set of conflict relationship constraints,
+$conflictsWith(a)$ returns $\{a \rightarrow \neg c \mid c \in allPackagesThatSatisfy(pkgflist) \mbox { and } c \not = a]$, where $pkgflist$ is mapped from the value $a$.\texttt{conflicts}.
+\end{defs}
+That is, the component $a$ conflicts with any package that satisfies a package formula its conflict property,
 with the exception that it cannot conflict with itself.
 This final caveat of a CUDF conflict is directly taken from the Debian package specification \citep{Barth2005}, 
 as it allows a package to declare a conflict with itself and this forces similar packages to be removed if it is installed.  
 
-Finally, given the $\mathbb{C}$ is the set of all components in a CUDF document,
-the set of all conflict constraints for a CUDF document is defined as $\bigcup \limits_{c\in \mathbb{C}} conflicts(a)$.
-
-\paragraph{Union}
-Given a set of components $\mathbb{C}_t$, the set of component system $\alpha_{t-1}$, 
-the set of all relationship constraints, $\omega_t$ is the union of the keep, depends and conflicts constraints defined above.
-That is, 
 \begin{defs}
-$\omega_t = \bigcup \limits_{c \in \alpha_{t-1}} keep(c) \cup \bigcup \limits_{c \in \mathbb{C}_t} depends(a) \cup \bigcup \limits_{c\in \mathbb{C}_t} conflicts(a)$.
-\end{defs}
+Given a CUDF document, and the set of components $\mathbb{C}_t$,
+the set of all conflict relationship constraints $\omega_t^{con}$ equals $\bigcup \limits_{a\in \mathbb{C}_t} conflicts(a)$.
+\end{defs} 
 
 \subsubsection{Request}
 \label{formal.cudf.request}
-In a CUDF document there exist exactly one request stanza, which has three optional properties \verb+install+, \verb+remove+ and \verb+upgrade+ respectively.
-Each value for these properties has the same syntax, shown in figure \ref{formal.requestssyntax}.
-
-
-The syntax of \verb+<pkgflist>+ is exactly the same defined above for the conflicts property, and can be mapped to the set of package formulae $pkgflist$.
-The \verb+install+ property maps to the package formulae set $installpkgflist$; the \verb+remove+ property maps to the package formulae set $removepkgflist$;
-the \verb+upgrade+ property maps to the package formulae set  $upgradepkgflist$.
+Given a CUDF document, there are three sets of constraints that make up $\delta_t$, each containing a different user request type:
+\begin{itemize}
+  \item installation request constraints $\delta_t^{ins}$ are extracted from the \verb+install+ key of the \texttt{request} stanza.
+  \item remove request constraints  $\delta_t^{rem}$ are extracted from the \verb+remove+ key of the \texttt{request} stanza.
+  \item conflict relationship constraints $\delta_t^{upg}$ are extracted from the \verb+upgrade+ key of the \texttt{request} stanza.
+\end{itemize}
+The set of user request constraints $\delta_t$, as described in section \ref{formal.step}, is the union of these,
+$\delta_t =  \delta_t^{ins} \cup \delta_t^{rem} \cup \delta_t^{upg}$.
 
 \paragraph{Install}
-Install requests are made of constraint type \ref{formal.keepconstraint}.
-The function  $install(pf)$ is defined to take a package formula $pf$ and return one install constraint such that $\bigvee packagesThatSatisfy(pf)$.
-Each package formulae in the set $installpkgflist$ creates one install constraint,
-therefore the set of all install constraints is defined as $\bigcup \limits_{pf \in installpkgflist} install(pf)$.
+Given a CUDF document, the set of install requests $\delta_t^{ins}$. is extracted from the \texttt{request} stanza's property with key \texttt{install}.
+This property's value is of type \texttt{<vpkglist>} which is mapped to a set of package formula.
+\begin{defs}
+The function  $install$ take a package formula $pf$ and returns an install request constraint, $install(pf) = \bigvee packagesThatSatisfy(pf)$, 
+\end{defs}
+
+\begin{defs}
+Given a CUDF document, the set of install request constraints $\delta_t^{ins}$  equals
+$\bigcup \limits_{pf \in pkgflist} install(pf)$, 
+where $pkgflist$ is the set of package formula mapped from the value of the property with key \texttt{install} in the \texttt{request} stanza.
+\end{defs}
 
 \paragraph{Remove}
-Remove requests are made of constraint type \ref{formal.removeconstraint}.
-The function $remove(pf)$ is defined to take a package formula $pf$ and returns a set of remove constraints such that $[\neg a \mid  a \in packagesThatSatisfy(pf)]$.
-Then the set of remove constraints is the union of all constraints created from the $removepkgflist$ set, i.e. $\bigcup \limits_{pf \in removepkgflist} remove(pf)$.
+Given a CUDF document, the set of remove requests $\delta_t^{rem}$. is extracted from the \texttt{request} stanza's property with key \texttt{remove}.
+This property's value is of type \texttt{<vpkglist>} which is mapped to a set of package formula.
+\begin{defs}
+Given a CUDF document, the set of remove request constraints $\delta_t^{ins}$ equals $\{ \neg a \mid a \in allPackagesThatSatisfy(pkgflist)\}$, 
+where $pkgflist$ is the set of package formula mapped from the value of the property with key \texttt{remove} in the \texttt{request} stanza.
+\end{defs}
+
 
 \paragraph{Upgrade}
+%%%TODO up to here
 %%%This is a difficult to express
 The upgrade request in a CUDF document is the most complex request type, as discussed in section \ref{formal.cudfdes.request}
 For each package formula $pf$ in $upgradepkgflist$, two constraint are created to satisfy:
@@ -904,21 +915,6 @@ That is, all components of name $n$ that have a lesser version than the highest 
 The set of all upgrade constraints is then the union of all constraints created for all package formulae in $upgradepkgflist$,
 i.e. $\bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha_{t-1},pf))$.
 
-\paragraph{Union}
-Given a set of components $\mathbb{C}_t$, the set of currently installed components $\alpha_{t-1}$,
-and the sets of package formulae mapped from the request stanza properties \verb+install+, \verb+remove+ and \verb+upgrade+ 
-(respectively $installpkgflist$, $removepkgflist$ and $upgradepkgflist$);
-the set of all change constraints represented as $\Delta$ is the union of the install, remove and upgrade constraints above.
-That is, 
-\begin{defs}
-Given 
-\begin{itemize}
-  \item $i = \bigcup \limits_{pf \in installpkgflist} install(pf)$
-  \item $r = \bigcup \limits_{pf \in removepkgflist} remove(pf)$
-  \item $u = \bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha_{t-1},pf))$
-\end{itemize}
-$\delta_t =  i \cup r \cup u$
-\end{defs}
 
 \subsection{Full Example}
 \label{formal.example}
