@@ -2,8 +2,8 @@
 \label{formal}
 \epigraph{In theory there is no difference between theory and practice. In practice there is.}
 {\textit{Jan L. A. van de Snepscheut}}
-In order to facilitate the study of the component system evolution process, a formal model has been developed.
-Having such a model defines concepts and enables the discussion and investigation of component system evolution.
+In order to facilitate the study of the component system evolution process, a novel formal model has been developed.
+Having such a model allows the definition of concepts, and enables the discussion and investigation of component system evolution.
 
 The component evolution process is modeled as a repetitive selection of solutions to evolution problems.
 The two distinct parts of this model are the evolution problem, and the solution selection.
@@ -11,7 +11,7 @@ These are presented in sections \ref{formal.step} and \ref{formal.opt} respectiv
 
 To represent an evolution problem and the criteria through which a solution is selected,
 the Common Upgradeability Description Format (CUDF) \citep{treinen2009common}
-and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF) are used.
+and the Mancoosi Optimisation Format\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} (MOF) are used as languages.
 Both CUDF and MOF are presented and mapped to the formal model in section \ref{formal.cudf}. 
 
 \section{Formal Model of Component System Evolution}
@@ -536,8 +536,8 @@ components of name \verb+o+ are requested to be upgraded.
 The CUDF request to upgrade a component is the most complex request.
 This complexity is because CUDF defines two requirements on the upgrade request,
 \begin{enumerate}
-  \item Only one component of the selected name can be installed.
-  \item The installed component's version must be greater than, or equal to, the currently installed greatest version of a component with that name.
+  \item only one component with the selected name can be installed.
+  \item the installed component's version must be greater than, or equal to, the currently installed greatest version of a component with that name.
 \end{enumerate}
 For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$.
 Component $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
@@ -652,8 +652,8 @@ This function is abbreviated to use the infix notation \texttt{.}:
 \begin{defs}
 Given a stanza $s$, a key \texttt{key}, and value \texttt{value}, $s$.\texttt{key}$ = $\texttt{value} iff $s($\texttt{key}$) = $\texttt{value}.
 \end{defs}
-For a package description stanza $pd$, $pd$.\texttt{name} returns the \texttt{<name>} describing the name of the component.
-Also, $pd$.\texttt{version} returns the \texttt{<nat>} which defines the version of the component.
+For a package description stanza $pd$, $pd$.\texttt{name} returns the \texttt{<name>} value,
+and $pd$.\texttt{version} returns the \texttt{<nat>} value.
 
 In the following sections, this CUDF document is mapped to the set of components $\mathbb{C}_t$, the component system $\alpha_{t-1}$,
 the component relationship constraints $\omega_t$, and the user request constraints $\delta_t$.
@@ -684,7 +684,7 @@ $\alpha_{t-1} = \{pd2c(pd) \mid pd \in PD $ and $ pd.$\texttt{installed} $=$ \te
 
 \subsubsection{Features}
 %%%Features or services
-CUDF specifies an additional aspect to component relationships, that of a feature or service.
+CUDF specifies an additional aspect to component relationships, that of a feature (this can also be described as a service, or a virtual package).
 Each component can provide a set of features, where each feature is represented by a name, and a set of versions.
 Unlike a component, which has exactly one version, a component can provide multiple versions of a feature.
 
@@ -827,8 +827,8 @@ These constraints are extracted from the property \texttt{conflicts} in the comp
 The value of the property with key \texttt{conflicts} is a \texttt{<vpkglist>} which is mapped to a set of package formula.
 
 \begin{defs}
-The function $conflictsWith$ takes a component $a$, and returns a set of conflict relationship constraints,
-$conflictsWith(a)$ returns $\{a \rightarrow \neg c \mid c \in allPackagesThatSatisfy(pkgflist) \mbox { and } c \not = a]$, where $pkgflist$ is mapped from the value $a$.\texttt{conflicts}.
+The function $conflicts$ takes a component $a$, and returns a set of conflict relationship constraints,
+$conflicts(a)$ returns $\{a \rightarrow \neg c \mid c \in allPackagesThatSatisfy(pkgflist) \mbox { and } c \not = a]$, where $pkgflist$ is mapped from the value $a$.\texttt{conflicts}.
 \end{defs}
 That is, the component $a$ conflicts with any package that satisfies a package formula its conflict property,
 with the exception that it cannot conflict with itself.
@@ -842,18 +842,18 @@ the set of all conflict relationship constraints $\omega_t^{con}$ equals $\bigcu
 
 \subsubsection{Request}
 \label{formal.cudf.request}
-Given a CUDF document, there are three sets of constraints that make up $\delta_t$, each containing a different user request type:
+Given a CUDF document with the \texttt{request} stanza, there are three sets of constraints that make up $\delta_t$, each containing a different user request type:
 \begin{itemize}
-  \item installation request constraints $\delta_t^{ins}$ are extracted from the \verb+install+ key of the \texttt{request} stanza.
-  \item remove request constraints  $\delta_t^{rem}$ are extracted from the \verb+remove+ key of the \texttt{request} stanza.
-  \item conflict relationship constraints $\delta_t^{upg}$ are extracted from the \verb+upgrade+ key of the \texttt{request} stanza.
+  \item installation request constraints $\delta_t^{ins}$ are extracted from the value \texttt{request}.\texttt{install}.
+  \item remove request constraints  $\delta_t^{rem}$ are extracted from the value \texttt{request}.\texttt{remove}.
+  \item conflict relationship constraints $\delta_t^{upg}$ are extracted from the value \texttt{request}.\texttt{upgrade}.
 \end{itemize}
 The set of user request constraints $\delta_t$, as described in section \ref{formal.step}, is the union of these,
 $\delta_t =  \delta_t^{ins} \cup \delta_t^{rem} \cup \delta_t^{upg}$.
 
 \paragraph{Install}
-Given a CUDF document, the set of install requests $\delta_t^{ins}$. is extracted from the \texttt{request} stanza's property with key \texttt{install}.
-This property's value is of type \texttt{<vpkglist>} which is mapped to a set of package formula.
+Given a CUDF document with the \texttt{request} stanza, the set of install requests $\delta_t^{ins}$ is extracted from the \texttt{request}.\texttt{install} value.
+This value is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
 \begin{defs}
 The function  $install$ take a package formula $pf$ and returns an install request constraint, $install(pf) = \bigvee packagesThatSatisfy(pf)$, 
 \end{defs}
@@ -861,64 +861,64 @@ The function  $install$ take a package formula $pf$ and returns an install reque
 \begin{defs}
 Given a CUDF document, the set of install request constraints $\delta_t^{ins}$  equals
 $\bigcup \limits_{pf \in pkgflist} install(pf)$, 
-where $pkgflist$ is the set of package formula mapped from the value of the property with key \texttt{install} in the \texttt{request} stanza.
+where $pkgflist$ is the set of package formula mapped from the value \texttt{request}.\texttt{install}.
 \end{defs}
 
 \paragraph{Remove}
-Given a CUDF document, the set of remove requests $\delta_t^{rem}$. is extracted from the \texttt{request} stanza's property with key \texttt{remove}.
-This property's value is of type \texttt{<vpkglist>} which is mapped to a set of package formula.
+Given a CUDF document with the \texttt{request} stanza, the set of remove requests $\delta_t^{rem}$ is extracted from the value \texttt{request}.\texttt{remove}.
+This property's value is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
 \begin{defs}
 Given a CUDF document, the set of remove request constraints $\delta_t^{ins}$ equals $\{ \neg a \mid a \in allPackagesThatSatisfy(pkgflist)\}$, 
-where $pkgflist$ is the set of package formula mapped from the value of the property with key \texttt{remove} in the \texttt{request} stanza.
+where $pkgflist$ is the set of package formula mapped from the value \texttt{request}.\texttt{remove}.
 \end{defs}
 
 
 \paragraph{Upgrade}
-%%%TODO up to here
-%%%This is a difficult to express
-The upgrade request in a CUDF document is the most complex request type, as discussed in section \ref{formal.cudfdes.request}
-For each package formula $pf$ in $upgradepkgflist$, two constraint are created to satisfy:
+Given a CUDF document with the \texttt{request} stanza, the set of upgrade requests $\delta_t^{upg}$ is extracted from the value \texttt{request}.\texttt{upgrade}.
+This property's value is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
+
+For each package formula, $\langle n, v, op \rangle$, in the set mapped from \texttt{request}.\texttt{upgrade}, the upgrade request is made of two types of constraint 
+(as described in section \ref{formal.cudfdes.request}):
 \begin{enumerate}
-  \item exactly one package that satisfies $pf$ is in the system
-  \item no packages with a lesser version than the highest currently installed component with the name from $pf$ can be included.
-\end{enumerate} 
+  \item only one component with the name $n$ can be in the evolved system, this is constraint type \ref{formal.upgradeconstraint}.
+  \item the component with name $n$ should be have a greater than, or equal to, version than the component with name $n$ with the greatest version in $\alpha_{t-1}$.
+\end{enumerate}
+These constraints, ignore two aspects of the upgrade request, the $v$ and $op$ values, and features.
+They are defined in the full CUDF specification \citep{treinen2009common}, though are not used in this thesis, so are not described here.
 
-The first upgrade constraint is the constraint type \ref{formal.upgradeconstraint}.
-Given the package formula $pf$, the function $upgrade_1$ is defined to return an upgrade constraint,
-such that $upgrade_1(pf) = \bigoplus packagesThatSatisfy(pf) = 1$.
-That is, each package that satisfies the package formula is included in the cardinality constraint.
-
-The second upgrade constraint is the constraint type \ref{formal.removeconstraint}.
-To create the required constraints some utility functions $named$ and $maxversion$ are defined.
-
+The first upgrade constraint:
 \begin{defs}
-Given the a set of components $\beta$ and the package name $n$ the set of packages in $\beta$ of the name $n$ is returned by the function $named$, such that
-$named(\beta,n) = \beta \cap packagesThatSatisfy(\langle n,0,> \rangle)$.
-\end{defs} 
-
-\begin{defs}
-Given a set of components $\beta$ and a name $n$ the function $maxversion(\beta,n)$ returns the natural number $c$.\verb+version+ 
-such that $c \in named(\beta,n)$ and $\nexists c' \in named(\beta,n)$ where $c'$.\verb+version+ $> c$.\verb+version+.
+The function  $upgrade_1$ takes a component name $n$ and returns an upgrade request constraint, 
+$upgrade_1(n) = a_1 + \ldots + a_i = 1$ where $\{a_1,\ldots,a_i\} = packagesThatSatisfy(\langle n,0,>\rangle)$. 
 \end{defs}
-That is, $maxversion(\beta,n)$ returns the highest version of any component with a name $n$.
+That is, $upgrade_1$ returns the constraint that states only one version of a component with name $n$ can be in the evolved system.
 
-Given the name $n$ and a set of component $\beta$, the set of components that are below this maximum version of $n$ in $\beta$ is defined as:
-$packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)$
-So to satisfy the second constraint of the upgrade request to have no package installed with the same name but lesser version that the highest currently installed version,
-the function  $upgrade_2$ is defined as:
+The utility function $maxversion$ is required:
 \begin{defs}
-Given the component system $\alpha_{t-1}$ and a package formula $\langle n,v,op \rangle$,
-$upgrade_2(\alpha_{t-1},\langle n,v,op \rangle) = [\neg a \mid a \in packagesThatSatisfy(\langle n, maxversion(\beta,n), < \rangle)]$
+Given a CUDF document with component system $\alpha_{t-1}$, the function $maxversion$ takes a name $n$ and returns the highest version of a component in $\alpha_{t-1}$ with name $n$,
+$maxversion(n) = v  \mid \langle n,v \rangle \in \alpha_{t-1}$ and there is no other component $\langle n,v' \rangle \in \alpha_{t-1}$ where $v < v'$.
 \end{defs}
-That is, all components of name $n$ that have a lesser version than the highest version currently installed in $\alpha$ cannot be installed in the new system. 
 
-The set of all upgrade constraints is then the union of all constraints created for all package formulae in $upgradepkgflist$,
-i.e. $\bigcup \limits_{pf \in upgradepkgflist} (upgrade_1(pf) \cup upgrade_2(\alpha_{t-1},pf))$.
+The second upgrade constraint:
+\begin{defs}
+Given a CUDF document, the function $upgrade_2$ takes a package formula and returns an upgrade constraint,
+$upgrade_2(n) = a_1 + \ldots + a_i = 1$ where $\{a_1,\ldots,a_i\} = packagesThatSatisfy(\langle n,maxversion(n),\geq\rangle)$. 
+\end{defs}
+That is, $upgrade_2$ returns the constraint that the version of the component with name $n$ in the evolved system, must be greater than the $maxversion$ can be in the evolved system.
+
+\begin{defs}
+Given a CUDF document, the set of upgrade request constraints $\delta_t^{upg}$ equals $\bigcup \limits_{\langle n,v,op \rangle \in pkgflist} \{upgrade_1(n),upgrade_2(n)\}$, 
+where $pkgflist$ is the set of package formula mapped from the value \texttt{request}.\texttt{upgrade}.
+\end{defs}
 
 
-\subsection{Full Example}
+\subsection{CUDF Example}
 \label{formal.example}
-An example of a CUDF document is presented in figure \ref{formal.CUDFEXAMPLE} to illuminate the basic process of mapping a CUDF document to a set of constraints as expressed in section \ref{formal.step}.
+An example of a CUDF document is presented in figure \ref{formal.CUDFEXAMPLE}.
+To briefly illuminate the mapping of a CUDF document to a set of constraints, 
+this example is mapped to a set of components $\mathbb{C}_t$, a system $\alpha_{t-1}$, 
+a set of component relationship constraints $\omega_t$, 
+and a set change request constraints $\delta_t$.
 
 \begin{figure}[htp] 
 \begin{center}
@@ -957,8 +957,6 @@ install:textEditor
 \end{center}
 \end{figure} 
 
-This example can be mapped to a set of components $\mathbb{C}_t$, a system $\alpha$, a set of constraints $R_t$ and a change request $\Delta_t$ in order to define the evolution problem.
-These values must be first extracted from the document, as described below.
 
 \subsubsection{Preamble}
 %%%Describe the preamble
@@ -966,46 +964,37 @@ The preamble from the CUDF document presented in figure \ref{formal.CUDFEXAMPLE}
 defines the addition of one property \verb+size+ of type \verb+int+ whose default value is \verb+0+.
 This extension allows the component \verb+tpspeller+ version 1, to define its \verb+size+ as $2$.
 
-\subsubsection{Constraints}
+\subsubsection{Components}
+The set of components in the CUDF document are mapped from the package stanzas,
+such that $\mathbb{C}_t = \{\langle syslib,1 \rangle, \langle syslib,2\rangle,  \langle textEditor,1 \rangle,  \langle spellChecker,1 \rangle,  \langle tpspeller,1 \rangle\}$.
+These components are defined as
+$\langle syslib,1 \rangle = syslib_1$, $\langle syslib,2\rangle = syslib_2 $,  $\langle textEditor,1 \rangle =  textEditor_1 $,  
+$\langle spellChecker,1 \rangle =  spellChecker_1 $,  $\langle tpspeller,1 \rangle =  tpspeller_1 $.
 
-%%%Describe the set of components and the initial system
-The set of components are defined in the package stanzas in the document,
-such that $\mathbb{C}_t = \{syslib_1, syslib_2,  textEditor_1,  spellChecker_1,  tpspeller_1\}$.
-This represents two system library versions (\verb+syslib+), a text editor component (\verb+textEditor+), a spell checker (\verb+spellChecker+) and a third party spell checker (\verb+tpspeller+).
+The component system $\alpha_{t-1}$ includes all components whose \verb+installed+ property equals \verb+true+.
+The default value for \verb+installed+ value \verb+false+, so components in $\alpha_{t-1}$ must explicitly declare this property.
+Therefore, $\alpha_{t-1} = \{ syslib_1 \}$.
 
-The initial system that $\alpha$ includes all components whose package stanzas include the property \verb+installed+ set as \verb+true+.
-As described above, if \verb+installed+ is not defined the property defaults to the value \verb+false+,
-therefore $\alpha = \{ syslib_1 \}$.
-
+\subsubsection{Relationships}
 %%%Describe the depends constraints (including features and inequalities)
-The set of constraints $R_t$ for this CUDF document is extracted from the package description stanzas, where the relevant properties of \verb+depends+, \verb+conflicts+ and \verb+provides+ are
-mapped as described in the previous sections. 
-The only depends constraints in this document are from the $textEditor_1$ component;
-where the depends property is broken into two \verb+<pkgflist>+, \verb+spellChecker | spellCheckerService+ and \verb+syslib > 1+.
-The first \verb+<pkgflist>+ is broken into two package formulae, \verb+spellChecker+  and \verb+spellCheckerService+,
-which are mapped to $\langle $\verb+spellChecker+$,0,>\rangle$ and $\langle $\verb+spellCheckerService+$,0,>\rangle$ denoted as $pf_1$ and $pf_2$ respectively.
-The second has exactly one package formulae, mapped to $\langle $\verb+syslib+$,1,>\rangle$ denoted as $pf_3$.
+The set of constraints $\omega_t = \omega_t^{keep} \cup \omega_t^{dep} \cup \omega_t^{con}$.
+No package has a \texttt{keep} property, therefore $\omega_t^{keep} = \emptyset$.
 
-The $packagesThatSatisfy(pf_1)$ equals $\{spellChecker_1\}$, and $packagesThatSatisfy(pf_2)$ equals $\{tpspeller_1\}$.
-The function $dependsOn(textEditor_1 , \{pf_1,pf_2\} )$ 
-then equals the constraint $textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1$,
-expressing the text editor depends on either the spell checker component or a component that provides a third party spell checker service.
 
-The $packagesThatSatisfy(pf_3)$ equals $\{syslib_2\}$,
-and the function  $dependsOn(textEditor_1 , \{pf_3\} )$ returns the constraint  $textEditor_1 \rightarrow syslib_2$.
-This expresses that for the text editor to be installed the component $syslib_2$ must be installed.
+The set of dependency relationship constraints $\omega_t^{dep}$, is extracted from the only component with a depends relationship, $textEditor_1$.
+The value $textEditor_1$.\texttt{depends} is mapped to the set of sets of package formula $\{\{\langle $\verb+spellChecker+$,0,>\rangle,\langle $\verb+spellCheckerService+$,0,>\rangle\},\{\langle $\verb+syslib+$,1,>\rangle\}\}$ .
+The function $dependsOn(textEditor_1 , \{\langle $\verb+spellChecker+$,0,>\rangle,\langle $\verb+spellCheckerService+$,0,>\rangle\} )$
+returns the set of constraints $\{textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1\}$.
+The function $dependsOn(textEditor_1 , \{\langle $\verb+syslib+$,1,>\rangle\} )$
+returns the set of constraints  $\{textEditor_1 \rightarrow syslib_2\}$.
+Therefore, $\omega_t^{dep}$ equals $\{textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1 , textEditor_1 \rightarrow syslib_2\}$.
 
-%%%Describe the conflicts constraints
-In this example there are two components that declare conflicts, $syslib_1$ and $syslib_2$.
-Both of these are the \verb+<pkgflist>+ with one package formulae mapped to  $\langle $\verb+syslib+$,0,>\rangle$, which is denoted as $pf_4$.
-The function $packagesThatSatisfy(pf_4)$ equals $\{ syslib_1,syslib_2 \}$,
-however the $conflictsWith$ function returns different conflicts because of the caveat that a component cannot conflict with itself.
-Therefore, $conflictsWith(syslib_1)$ returns the set of constraints $\{syslib_1 \rightarrow \neg syslib_2\}$,
-and $conflictsWith(syslib_2)$ returns the set of constraints $\{syslib_2 \rightarrow \neg syslib_1\}$.
-Note: these constraints are semantically the same.
+The set of conflict relationship constraints $\omega_t^{con}$, is extracted from the components $syslib_1$ and $syslib_2$.
+The function $conflicts(syslib_1)$ returns the set of constraints $\{syslib_1 \rightarrow \neg syslib_2\}$,
+and  $conflicts(syslib_2)$ returns the set of constraints $\{syslib_2 \rightarrow \neg syslib_1\}$.
+Therefore, $\omega_t^{con}$ equals $\{syslib_1 \rightarrow \neg syslib_2, syslib_2 \rightarrow \neg syslib_1\}$.
 
-%%%All request constraints are then\ldots
-Given this example the set of constraints $R_t$ is then the constraints
+The set of component relationship constraints $\omega_t$ equals
 $\{ textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1,$ 
 $textEditor_1 \rightarrow syslib_2,$ 
 $syslib_2 \rightarrow \neg syslib_1,$   
@@ -1013,12 +1002,15 @@ $syslib_2 \rightarrow \neg syslib_1\}$.
 
 \subsubsection{Request}
 %%%Describe the request constraint
-The user's request constraints $\Delta_t$ are defined in the request stanza, which includes the request to \verb+install+ the component \verb+textEditor+. 
-This package formula maps to $\langle $\verb+textEditor+$,0,>\rangle$, where $packagesThatSatisfy(\langle textEditor,0,>\rangle)$ equals $\{textEditor_1\}$.
-Through functions $install$ and $installpkgflist$ this returns the constraint $textEditor_1$,
-which asserts that the text editor component will be included in the new system, i.e. $\Delta_t = \{textEditor_1\}$.
+The user's request $\delta_t =  \delta_t^{ins} \cup \delta_t^{rem} \cup \delta_t^{upg}$.
+As the only request in this example is to install, both $\delta_t^{rem}$ and $\delta_t^{upg}$ equal the empty set.
 
-\subsubsection{Solutions}
+The set of install request constraints $ \delta_t^{ins}$ is extracted from the request stanza $request$.
+The value $request$.\texttt{install} is maped to the set of package formula $\{\langle $\verb+textEditor+$,0,>\rangle\}$.
+the function $install(\{\langle $\verb+textEditor+$,0,>\rangle\})$ returns the set of constraints $\{textEditor_1\}$
+Therefore, $\delta_t^{ins}$ equals $\{textEditor_1\}$, and $\delta_t$ equals $\{textEditor_1\}$.
+
+\subsubsection{Possible Solutions}
 %%%Describe the possible models that can satisfy all constraints 
 The set solutions to the evolution problem $\delta_t \cup \omega_t$ is the intersection of all constraints.
 
@@ -1030,23 +1022,21 @@ Of the two components that are left, $spellChecker_1$ and $tpspeller_1$, at leas
 
 This gives three possible solutions to this problem;
 \begin{itemize}
-  \item $s_1 = \{syslib_2, textEditor_1, spellChecker_1\}$,
-  \item $s_2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
-  \item $s_3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
+  \item $\alpha_t^1 = \{syslib_2, textEditor_1, spellChecker_1\}$,
+  \item $\alpha_t^2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
+  \item $\alpha_t^3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
 \end{itemize}
-
-Given some criteria defined with the order $\prec_{\alpha}$, one of the solutions $s_1,s_2,s_3$ must be selected in the function $E(EP_t,\prec_{\alpha})$. 
 
 \subsection{Mancoosi Optimisation Format}
 \label{formal.mancoosioptimisationformat}
 %%%Describe the format by which mancoosi has required optimisation criteria formatted
 The CUDF specification does not specify the criteria used to select a solution.
 For the purpose of the MISC competition, the Mancoosi organisation gave a specification to represent optimisation criteria.
-This representation here is called the Mancoosi Optimisation Format (MOF), which can be mapped to the model described in section \ref{formal.opt}
-This representation was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
-This results in the relatively simple BNF grammar, as opposed to other possible specifications such as the framework presented in \citep{Treinen2009}. 
-This grammar is described in figure \ref{formal.optbnf}.
+This representation is called in this thesis the Mancoosi Optimisation Format (MOF).
 
+MOF was designed to be passed to the CUDF solver on the command line, this meant that it must be expressible in a single line of human readable text.
+This results in the relatively simple BNF grammar (as opposed to other possible specifications, such as the framework presented in \citep{Treinen2009}). 
+This grammar is described in figure \ref{formal.optbnf}.
 \begin{figure}[h!]
 \begin{center}
 \begin{alltt}
@@ -1064,7 +1054,7 @@ This can then be used to create the optimality order $\prec_{\alpha}$ as describ
 
 \subsubsection{Example}
 An example of how to use this mapping for a practical problem can be extracted from the above CUDF document example presented in figure \ref{formal.CUDFEXAMPLE}.
-In this example, the component system $\alpha_{t-1}$ was  $\{syslib_1\}$, and there were three possible solutions
+In this example, the component system $\alpha_{t-1}$ was  $\{syslib_1\}$, and there were three possible solutions:
 \begin{itemize}
   \item $\alpha_t^1 = \{syslib_2, textEditor_1, spellChecker_1\}$,
   \item $\alpha_t^2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
@@ -1090,7 +1080,7 @@ This rank function applied to the possible solutions return in:
   \item $rank(\alpha_{t-1},\alpha_t^3 ) = (5, 3)$
 \end{itemize}
 The order of these ranks over $\leq_L$ is then $rank(\alpha_{t-1},\alpha_t^3) \leq_L rank(\alpha_{t-1},\alpha_t^2) \leq_L rank_L(\alpha_{t-1},\alpha_t^1)$.
-Therefore, the order of optimality ($\prec_{\alpha_{t-1}}$) over the possible solutions is $s_3 \prec_{\alpha} s_2$, $s_3 \prec_{\alpha} s_1$, and $s_2 \prec_{\alpha} s_1$,
+Therefore, the order of optimality ($\prec_{\alpha_{t-1}}$) over the possible solutions is $s_3 \prec_{\alpha_{t-1}} s_2$, $s_3 \prec_{\alpha_{t-1}} s_1$, and $s_2 \prec_{\alpha_{t-1}} s_1$,
 which makes $s_1$ the optimal solution, as no other solution is greater. 
 
 \section{Summary}
