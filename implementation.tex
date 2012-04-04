@@ -5,19 +5,18 @@
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
 In chapter \ref{formal} the evolutionary step function was defined to take an evolution problem, and an order over component systems, 
-and return an optimal solution to the evolution problem.
+and return a component system.
 This function can be automated into a process called component dependency resolution (CDR).
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-In this chapter, the CDR implementation named GJSolver is presented.
-GJSolver is implemented to map evolution problems to Boolean Satisfiability Problems (SAT),
-and map the criteria that define an optimal solution using pseudo-Boolean functions \citep{dixon2004automating}. 
-Then, through using algorithms like the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} (to find solutions to SAT problems),
-and iterative strengthening \citep{calistri1994iterative, le2010sat4j} (to find optimal solutions given criteria),
-an optimal solution to an evolution problem can be found.
+To simulate the evolution of component systems efficiently a novel CDR implementation, named GJSolver, was created.
+GJSolver maps evolution problems to Boolean Satisfiability Problems (SAT),
+and maps the criteria that define an optimal solution to a set of lexicographically ordered pseudo-Boolean functions \citep{dixon2004automating}. 
+Then, through using the Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} to find solutions to SAT problems,
+and a modified iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find optimal solutions to lexicographically ordered pseudo-Boolean functions,
+the evolutionary step function is can be implemented.
 
 %%%In this chapter\ldots
-In this chapter GJSolver is described.
 Firstly, in section \ref{impl.requirement}, the requirements and design decisions of GJSolver are discussed.
 In section \ref{impl.mapping}, the SAT problem and pseudo-Boolean functions are defined then mapped to the evolution problem and criteria defined in the chapter \ref{formal}.
 The algorithms used to find an optimal solution to an optimal solution to the SAT problem given the criteria are described in chapter \ref{impl.algorithms}
@@ -54,7 +53,7 @@ These arguments are defined as:
 \begin{itemize}
   \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
   \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution.
-  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) that describes the criteria to select a solution. 
+  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) description of the criteria to select an optimal solution. 
 \end{itemize}
 The format of the output file, located at the path defined with \verb+cudfout+ argument, is a sub set of CUDF.
 This output only requires package stanzas with the package name, version and installed properties.
@@ -134,157 +133,208 @@ The fundamental difficulty of SAT problems,
 combined with the ability to map many problems to SAT has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
 dedicated to creating, enhancing, and testing various SAT solver implementations. 
 Such SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
-model verification \citep{dennis2006}, and, of course, component system evolution \citep{leBerre2010}.
+model verification \citep{dennis2006}, and, component system evolution \citep{leBerre2010}.
 
 A common representation of a SAT equation is in Conjunctive Normal Form (CNF).
 CNF is defined as a conjunction of clauses, 
 where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
-This CNF representation of a SAT problem can be defined as such:
+A SAT problem in CNF is defined as:
 \begin{defs}
 \label{impl.defSAT}
-.
+{\ }
 \begin{enumerate}
-	\item Let $V$ be a set of variables, a \textbf{variable} is an element of $V$
+	\item Let $V$ be a set of variables
 	\item A \textbf{literal} is a variable $v$ or its negation $\neg v$.
 	\item A literal $\neg \neg v \equiv v$
 	\item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
-	\item A \textbf{clause} is a set of literals \label{impl.whatisaclause}
-	\item A \textbf{formula} is a set of clauses
+	\item A \textbf{clause} is a set of literals 
+	\item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
 	\item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
 	\item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
-	\item A clause $c$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $c$ that is also in $P$.
-	\item A \textbf{solution} to a SAT formula $F$ is a consistent set of literals $P$, such that for every clause $c$ in $F$, $c$ is satisfied by $P$.
-	\item A \textbf{partial solution} is a subset of any solution, e.g. given $P$ is a solution $P'$ is a partial solution iff $P' \subseteq P$.
+	\item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
+	\item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
+	\item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
 	\item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
-Assume a SAT problem where $V = \{a,b,c\}$ and $F = \{c_1,c_2\}$, where clauses $c_1 = {a,b}$ and $c_2 = {\neg b, c}$.
-A solution for this problem could be $\{a,\neg b,c\}$ as $a \in c_1$ and $\neg b \in c_2$.
-However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $c_2$.  
+Assume a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = {a,b}$ and $\mathcal{C}_2 = {\neg b, c}$.
+A solution for this problem could be $\{a,\neg b,c\}$ as $a \in \mathcal{C}_1$ and $\neg b \in \mathcal{C}_2$.
+However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $\mathcal{C}_2$.  
 
 
 \subsection{Pseudo-Boolean Extension of CNF}
 %%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-A typical extension of the SAT problem is where a clause can be a pseudo-Boolean (PB) constraint \citep{dixon2004automating}.
+A typical extension of the SAT problem is where a clause in a CNF formula can be a pseudo-Boolean (PB) constraint \citep{dixon2004automating}.
 PB constraints consist of a linear relation over Boolean variables.
 
-A pseudo-Boolean function takes a set of Boolean literals and returns a natural number, e.g. given a set of literals $P$, $f(P) = 4$.
-A pseudo-Boolean constraint is a relation between a the function and a number, e.g. given a set of literals $P$, $f(P) \leq 3$.
-A pseudo-Boolean function is defined as:
+A pseudo-Boolean function takes a set of Boolean literals and returns an integer, e.g. given a set of literals $P$, $f(P) = 4$.
 \begin{defs}
 \label{impl.PBfunction}
-Given a tuple of literals $lits = \langle l_1,\ldots,l_n \rangle$ and a tuple of coefficients $cos = \langle a_1,\ldots,a_n\rangle$,
-a pseudo-Boolean function takes a set of literals $x$, and is defined as
+Given a tuple of literals $\langle l_1,\ldots,l_n \rangle$ and a tuple of integers $\langle a_1,\ldots,a_n\rangle$,
+a \textbf{pseudo-Boolean function} takes a set of literals $P$, and returns an integer such that:
 
-$f(x) = \sum \limits_{l_i \in (lits \cap x)} a_i$
+$f(P) = \sum \limits_{i=0}^n f_i(P)$
+where $f_i(P) = \begin{cases} a_i & l_i \in P \\ 0 & l_i \not \in P \end{cases}$
 \end{defs}
-A pseudo-Boolean function can be fully described by defining the tuples $lits$ and $cos$.
-For example, the pseudo-Boolean function $f$ where $lits = \langle x_1, \neg x_2\rangle$ and $cos \langle 1,3\rangle$,
-for the input $\{x_1,\neg x_2,x_3\}$ will equal $4$.
+For example, the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$,
+ $f(\{x_1,\neg x_2,x_3\})$ will equal $4$.
 
-Such a function can become a constraint:
+A pseudo-Boolean constraint is a relation between a the function and a number, e.g. given a set of literals $P$, $f(P) \leq 3$.
 \begin{defs}
 \label{impl.PBConstraint}
-Given an integer $k$, and a pseudo-Boolean function $f$, a pseudo-Boolean constraint is of the form
-
-$f(x) \geq k$, $f(x) > k$, $f(x) \leq k$, $f(x) < k$ or $f(x) = k$
-
-
-\end{defs}
-A pseudo-Boolean constraint can be described with a pseudo-Boolean function $f$, an relation in $\{\geq,>,\leq,<,=\}$, and a number $k$.
-
-Pseudo-Boolean constraints can be included in a SAT problem by modifying the definition \ref{impl.defSAT}.\ref{impl.whatisaclause} to:
-\begin{defs}
-.
-\begin{enumerate}
-\setcounter{enumi}{4}
-	\item A \textbf{clause} is a set of literals or a pseudo-Boolean constraint.
-\end{enumerate}
-
+A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relationship  $R$ in $\{\geq,>,\leq,<,=\}$, and an integer $k$, i.e. $\langle f,R,k\rangle$.
 \end{defs}
 
-Adding the definition of what a PB constraint is, and what satisfies a PB constraint:
 \begin{defs}
-.
+A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
+\end{defs}
+For example, the pseudo-Boolean $f$ described above, can be used to create the constraint $f(x) > 2$, described as 
+This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4 > 2$, but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1 \not > 2$.
+
+Pseudo-Boolean constraints can be included in the above defined SAT problem by modifying its definition.
+First by adding the definition of what a PB constraint is, and what satisfies a PB constraint:
+\begin{defs}
+{\ }
 \begin{enumerate}
 \setcounter{enumi}{12}
-  \item A \textbf{pseudo-Boolean constraint} is a pseudo-Boolean function $f$, a relation $R \in \{\geq,>,\leq,<,=\}$, and a number $k$
-  \item A pseudo-Boolean constraint is \textbf{satisfied} by a set of literals $P$ iff $\langle f(P),k \rangle \in R$.
+  \item A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relation $R$ in $\{\geq,>,\leq,<,=\}$, and a number $k$, i.e. $\langle f,R,k\rangle$.
+  \item A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
 \end{enumerate}
 \end{defs}
 
-For example, the pseudo-Boolean function $f$ described above with can be used to create the constraint $f(x) > 2$.
-This constraint will be satisfied by the set of literals $s_1 = \{ x_1, \neg x_2 \}$ as $f(s_1) = 4 > 2$, but not with the set of literals $s_2 = \{ x_1,  x_2 \}$ as $f(s_2) = 1 \not > 2$.
+Second, by modifying the definition of what a formula can contain and what a solution to it is:
+\begin{defs}
+{\ }
+\begin{enumerate}
+\setcounter{enumi}{5}
+	\item A \textbf{formula} is a set of clauses and pseudo-Boolean constraints
+\end{enumerate}
+\begin{enumerate}
+\setcounter{enumi}{9}
+	\item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$,
+	and for every pseudo-Boolean constraint $pb$ in $F$, $pb$ is satisfied by $P$. 
+\end{enumerate}
+\end{defs}
 
 Pseudo-Boolean constraints, can be translated into CNF clauses, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
-Also given the proper amendments to unit propagation and other algorithms (some of which is described in \citep{Sheini2006}), 
+Given the proper amendments to algorithms that solve SAT problems (some of which are described in \citep{Sheini2006}), 
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
 Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
 
-\subsection{Component System}
-A component system is a set of components which is mapped to in the SAT problem as a set of literals.
-Firstly, the set of components is a subset of variables in the SAT problem, i.e. $\mathbb{C} \subseteq V$.
-This means that all components are variables, though there can be variables that are not componnets.
+\subsection{Mapping to Formal Model}
+An evolutionary step function is defined given a set of components $\mathbb{C}_t$, an evolution problem $\delta_{t_i} \cup \omega_{t_i}$,
+a component system $\alpha_{t_{i-1}}$, and an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$.
+These are mapped to the above defined SAT problem with PB extensions such that:
+\begin{defs}
+The set of components $\mathbb{C}_t$ is a subset of the variables, i.e $\mathbb{C}_t \subseteq V$.
+\end{defs}
+This means that all components are variables, though there can be auxiliary variables that are not components.
+A literal could represent some other aspect of the problem (as described below).
 
-
+\begin{defs}
+{\ }
 \begin{itemize}
-  \item A set of literals $P$ is mapped to a component system such that $P := \{x \mid x \in \mathbb{C} \wedge x \in P\}$
-  \item A component system, $\alpha$ maps to a set of literals such that $\alpha := \alpha \cup \{\neg x \mid x \in \mathbb{C} \wedge x \not \in \alpha\}$
+  \item A component system $\alpha$ is mapped to a set of literals where $\alpha := \alpha \cup \{\neg x \mid x \in \mathbb{C}_t$ and $ x \not \in \alpha\}$.
+  \item A set of literals $P$ is mapped to a component system such that $P := \{x \mid x \in \mathbb{C}_t$ and $x \in P\}$
 \end{itemize}
+\end{defs}
 That is, a set of literals $P$ is mapped to a component system such that all components that are positive literals in $P$, are in the component system.
 A component system $\alpha$ is mapped to a set of literals that is the union of $\alpha$ and the set of negative literals of components not in $\alpha$.
-For example, a set of literals $\{a,b,c,\neg d,\neg e,f\}$ where $a,b,c,d,e$ are components, is mapped to the component system $\{a,b,c\}$.
-To map this system back to a set of literals results in $\{a,b,c,\neg d,\neg e\}$.
+As every component has a literal, the mapping from literals to components is surjective, and the mapping from components to literals is injective.
 
-As seen in the above example this mapping loses the information about the literal $f$, as it is not a component.
-This literal, may represent some other information in the SAT problem.
-This does not represent a problem, however, as such mappings only occur at points that do not effect CDR.
+For example, given a set of components $\mathbb{C}_t = \{a,b,c,d,e\}$, a set of literals $\{a,b,c,\neg d,\neg e,f\}$ is mapped to the component system $\{a,b,c\}$.
+Note, that $f$ is an auxiliary variable and does not represent a component, so although $f$ is positive in the set of literals, it is not in the resulting component system.
+A component system $\{a,b,c\}$ is mapped back to a set of literals results in $\{a,b,c,\neg d,\neg e\}$.
+Note, in the reverse mapping, $f$ is not included as the information of whether it was positive or not has been list.
 
-\subsubsection{Evolution Problem Mapping}
-The evolution problem is defined as as a set of five types of constraints.
-Each type of constraint in an evolution problem can be mapped to a SAT clause or PB constraint:
+The evolution problem has previously been defined as a set of constraints, limited to five different types.
+Each type of constraint in $\delta_{t_i} \cup \omega_{t_i}$ can be mapped to a SAT clause or PB constraint:
 \begin{enumerate}
-  \item $\neg a := \{\neg a\}$
-  \item $a \rightarrow \neg c := \{\neg a, \neg c\}$ 
-  \item $a_1 \vee \ldots \vee a_n := \{a_1, \ldots,  a_n\}$ 
-  \item $a \rightarrow c_1 \vee \ldots \vee c_n := \{\neg a, c_1, \ldots, c_n\}$
-  \item $a_1 + \ldots + a_n = 1 := $ a pseudo-Boolean constraint described with the function where $lits = \langle a_1 ,\ldots , a_n\rangle$ and $cos = \langle 1_1,\ldots,1_n \rangle$,
-  whose relation is $=$ to the number $1$, as described in definition \ref{impl.PBConstraint}.  
+  \item \textbf{Exclusion}: $\neg a := \{\neg a\}$
+  \item \textbf{Conflict}: $a \rightarrow \neg c := \{\neg a, \neg c\}$ 
+  \item \textbf{Inclusive Disjunction}: $a_1 \vee \ldots \vee a_n := \{a_1, \ldots,  a_n\}$ 
+  \item \textbf{Dependence}: $a \rightarrow c_1 \vee \ldots \vee c_n := \{\neg a, c_1, \ldots, c_n\}$
+  \item \textbf{Exactly One}: $a_1 + \ldots + a_n = 1 := $ a pseudo-Boolean constraint $f(P) = 1$, 
+  where $f$ described with the tuple of literals $\langle a_1 ,\ldots , a_n\rangle$ and the tuple of natural numbers $\langle 1_1,\ldots,1_n \rangle$,
 \end{enumerate}
-
-By mapping each constraint in an evolution problem $EP$ as defined above, will create a SAT formula $F$.
+By mapping each constraint in an evolution problem $\delta_{t_i} \cup \omega_{t_i}$ as defined above, the set of clauses and PB constraints will define the formula $F$.
 
 \subsubsection{Criteria Mapping}
-Criteria in chapter \ref{formal} is defined as $\langle rank,< \rangle$, where $rank : 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow A$ and $<$ is a binary relation over $A$.
-These criteria can be lexicographically composed through the operator $\oplus$.
-The overall optimisation criteria is then $crit_1 \oplus \ldots \oplus crit_n$, where $crit_i$ is a criteria $\langle rank_i,<_i \rangle$.
-
-A pseudo-Boolean criteria is a tuple $\langle f, r \rangle$, where $f$ is a pseudo-Boolean function, and $r \in \{<,>\}$ which are orders over natural numbers.
-
-The main problem with mapping between the functions $f$ and $rank$ is that $rank$ takes both current and proposed systems as parameters, where $f$ takes only the proposed.
-However, as the current system $\alpha$ stays invariable for a given evolution problem, 
-the function $f_{\alpha}$ is defined to mean, a psuedo-Boolean function with respect to the current solution $\alpha$.
+In this section the implementation criteria, called pseudo-Boolean criteria, are presented.
+The prior definition of a criterion, presented in chapter \ref{formal} as a ranking function and a partial order over its range, is a broad definition of what a criterion can be.
+However, given the selected method of finding an optimal solution only allows the use of pseudo-Boolean criteria (as defined below),
+some restrictions on the kind of criterion used must be imposed.
+This restriction is made to keep the search for an optimal solution efficient.
+This means, that only a partial mapping of the criteria (presented in chapter \ref{formal}) to the pseudo-Boolean criteria (presented in this section) is given.
 
 \begin{defs}
-A criteria $\langle rank,< \rangle$,
-is mapped to a pseudo-Boolean criteria is a tuple $\langle f_{\alpha}, r \rangle$
-such that $rank(\alpha,\beta) = f_{\alpha}(\beta)$, and $< = r$. 
+Given a component system $\alpha$, a \textbf{pseudo-Boolean criterion} is a tuple consisting of a pseudo-Boolean function $f_{\alpha}$,
+relation over integers $R$ which is either $<$ or $>$, and a formula $I$ consisting of clauses and/or pseudo-Boolean constraints (as defined in \ref{impl.defSAT}),
+i.e. $\langle f_{\alpha}, R , I \rangle$.
 \end{defs}
+The formula $I$ is used to define the auxiliary variables.
+These variables are used to represent values within the problem, but do not alter the problem.
+Auxiliary variables have been used before in CDR implementations \citep{argelich2010solving}.
 
-This definition limits the possible ranking functions to only pseudo-Boolean functions over natural numbers, 
-and possible orders over natural numbers to only greater than or less than.
-These restriction is necessary to use the iterative strengthening algorithm presented later in this chapter.
+To map a criterion $\langle rank_{\alpha},\leq \rangle$ to a pseudo-Boolean criterion,
+some restrictions are necessary:
+\begin{itemize}
+  \item The range of $rank_{\alpha}$ $A$, must be the set of integers $\mathbb{Z}$, i.e. $A = \mathbb{Z}$.
+  \item $\leq$ must either the ``greater than or equal to'' ($\geq$), or the ``less than or equal to'' ($\leq$) orders over integers.
+\end{itemize} 
 
 \begin{defs}
-Lexicographically composed criteria $crit_1 \oplus \ldots \oplus crit_n$ is mapped to a tuple of pseudo-Boolean criteria $\langle crit_1,\ldots,crit_n\rangle$.
+A ranking criteria $\langle rank_{\alpha},\leq \rangle$ maps to a pseudo-Boolean criterion  $\langle f_{\alpha}, < , I \rangle$ 
+(similarly, $\langle rank_{\alpha},\geq \rangle $ maps to $ \langle f_{\alpha}, > , I \rangle$) iff
+$f_{\alpha}(P) = rank_{\alpha}(\beta)$ where $\beta$ is the component system mapped from $P$. 
 \end{defs}
-This tuple of  pseudo-Boolean criteria is later used in the iterative strengthening algorithm.
+
+Even simple mappings of a criteria to a pseudo-Boolean criteria can be complex.
+For example, given components $a$ and $b$, a criterion $\langle rank_{\alpha},\leq \rangle$, whose ranking function $rank_{\alpha}$ is defined:
+
+$rank_{\alpha}(\beta) = \begin{cases} 1 & a \in \beta \text{ or } b \in \beta\\ 0 & \text{otherwise} \end{cases}$
+
+This criteria expressed the preference of having either components $a$ or $b$ in the system.
+There is no direct way to map the ranking function $rank_{\alpha}$ to a pseudo-Boolean function $f_{\alpha}$ in a pseudo-Boolean criterion $\langle f_{\alpha}, < , I \rangle$.
+However, if a variable $x$ (not a component) where true iff $a$ or $b$ were in $\beta$, i.e. $x \Leftrightarrow a \in \beta \vee b \in \beta$.
+A pseudo-Boolean function $f_{\alpha}$ described with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$,
+then satisfies the condition $f_{\alpha}(P) = rank_{\alpha}(\beta)$.
+This is shown in table \ref{impl.critmapexmp}.
+\begin{table}[h!]
+\centering
+\begin{tabular}{| c | c | c | c |}
+\hline
+$P$								&	$\beta$			& $rank_{\alpha}(\beta)$ 	& $f_{\alpha}(P)$\\ \hline	
+$\{\neg a, \neg b, \neg x\}$ 	& $\{\}$				& 0						& 0 \\
+$\{\neg a,  b, x\}$ 			& $\{b\}$				& 1						& 1 \\
+$\{ a,  \neg b, x\}$ 			& $\{a\}$				& 1						& 1 \\
+$\{ a,  b, x\}$ 				& $\{a,b\}$				& 1						& 1 \\ \hline
+\end{tabular}
+\caption{Values to show $f_{\alpha}$  maps to $rank_{\alpha}$}
+\label{impl.critmapexmp}
+\end{table}
+
+To ensure the variable $x$ is assigned correctly, the constraint $x \Leftrightarrow a \vee b$ is mapped to the set of CNF clauses (as defined in \ref{impl.defSAT}),
+$\{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
+This set of clauses is the formula $I$ in the pseudo-Boolean criterion.
+
+Only a small set of criteria are used in this research, and as such a general mapping is not provided.
+However, a set of criteria and their mapping to pseudo-Boolean criteria is given in the chapter \ref{strategies}. 
+
+\subsubsection{Lexicographic Criteria Mapping}
+Criteria that are lexicographically composed together are mapped to a tuple of pseudo-Boolean criteria. 
+\begin{defs}
+Lexicographically composed criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria $\langle crit_1',\ldots,crit_n'\rangle$,
+where criterion $crit_i$ is mapped to a pseudo-Boolean criterion $crit_i'$.
+\end{defs}
 
 \section{Algorithms}
 \label{impl.algorithms}
-The algorithms to find a solution to a SAT problem, and to find an optimal solution given a list of criteria that are defined using pseudo-Boolean functions are described.
+Above the formal model of an evolution problem is mapped to a SAT problem, 
+and the lexicographically composed criteria that describe the evolution preference order are mapped to a tuple of pseudo-Boolean criteria.
+In this section, a description is given of the algorithms used to find an optimal solution to a SAT problem given a tuple of pseudo-Boolean criteria. 
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
@@ -293,9 +343,10 @@ backtracking-based search algorithm for SAT problems represented in conjunctive 
 
 It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
-By first calling DPLL with $P$ being the empty set, by adding literals to $P$ and recursively  calling itself, the DPLL function searches for whether a solution to the formula exists, 
+By first calling DPLL with $P$ being the empty set, by adding literals to $P$, then recursively calling itself; 
+the DPLL function searches for whether a solution to the formula exists, 
 i.e the formula is satisfiable.
-The DPLL algorithm in defined in figure \ref{impl.DPLL} as presented in \citep{dixon2004automating}:
+The DPLL algorithm in defined in figure \ref{impl.DPLL} a slight modification of the algorithm presented in \citep{dixon2004automating}:
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
@@ -304,10 +355,10 @@ function DPLL(\(F, P\))
    if \(P\) is not consistent:
        then return UNSATISIFABLE;
    if \(P\) is a solution to \(F\):
-       then return SATISFIABLE;
+       then return \(P\);
    \(l\) = decide\((P)\);
-   if DPLL\((F, P \cup \{l\})\)
-       return SATISFIABLE
+   if DPLL\((F, P \cup \{l\})\) != UNSATISIFABLE 
+       return DPLL\((F, P \cup \{l\})\)
    else
        return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
@@ -316,26 +367,35 @@ function DPLL(\(F, P\))
 \end{center}
 \end{figure}
 
-The first \verb+if+ branch returns \verb+UNSATISIFABLE+ if the partial assignment $P$ is inconsistent.
-The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning \verb+SATISFIABLE+.
-The \verb+unit-propagation+ function finds literals that must be in $P$ for $P$ to be a partial solution,
-and the \verb+decide+ function returns a literal to be added to $P$.
-These functions are described in the following sections. 
+The first function call to \texttt{unit-propagation} derives additional literals that are added to the partial assignment $P$ (this function is discussed later in section \ref{impl.unit}).
+The \verb+if+ branch returns \texttt{UNSATISIFABLE} if the partial assignment $P$ is inconsistent.
+The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning the solution $P$.
+The \texttt{decide} function returns a literal $l$ that is not in $P$, nor whose negation $\neg l$ is in $P$ (this function is discussed later in section \ref{impl.litorder}).
+The search is then continued by adding the literal $l$ to $P$ and checking if that is a partial solution using \texttt{DPLL}.
+If the partial assignment $P$ with $l$ is a is a partial solution, then \texttt{DPLL} does not equal \texttt{UNSATISIFABLE} and the found solution is returned.
+However, if $P$ with $l$ is not a partial solution, then $P$ with $\neg l$ is checked to be a partial solution.
 
 \subsubsection{Unit Propagation}
-The first line in the  DPLL algorithm calls the \verb+unit-propagation+ function.
-This function uses the clauses in the formula and the partial assignment and adds literals to $P$ that must be included if $P$ is to be a partial solution.
+\label{impl.unit}
+The first line in the  DPLL algorithm calls the \texttt{unit-propagation} function.
+This function uses the clauses in the formula, and the partial assignment to identify and add literals to $P$ that must be included if $P$ is to be a partial solution.
 
-A clause $c$ is called unit given a partial assignment $P$, if $c$ is not satisfied by $P$, and $P$ contains all but one of its literals negations.
+\begin{defs}
+Given a partial assignment $P$, a clause $\mathcal{C}$ is called \textbf{unit} iff $\mathcal{C}$ is not satisfied by $P$, and $P$ contains all but one of the literals in $\neg \mathcal{C}$.
+\end{defs}
+
+\begin{defs}
+Given a partial assignment $P$, a literal $l$ is called a \textbf{unit literal} iff $l$ is in a unit clause $\mathcal{C}$, and $\neg l \not \in P$.  
+\end{defs}
+
 For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but neither $a$ or $\neg a$.
-A unit literal is then defined as the literal in a unit clause whose negation is not in the partial assignment.
-In the above example, the literal $a$ is the unit literal.
+The literal $a$ is then a unit literal.
 
 For a formula to be satisfiable given partial assignment, each unit literal must be included in the partial assignment,
 because if their negation is included the clause is not satisfied by the partial assignment.
-For example, given a formula $\{c\}$, where $c = \{a,b\}$;
-given the assignment $\{\neg a\}$ the clause $c$ is unit and unit literal is $b$.
-If $\neg b$ where in the partial assignment, $c$ would not be satisfied by the partial assignment,
+For example, given a formula $\{c\}$, where $\mathcal{C} = \{a,b\}$;
+given the assignment $\{\neg a\}$ the clause $\mathcal{C}$ is unit and unit literal is $b$.
+If $\neg b$ where in the partial assignment, $\mathcal{C}$ would not be satisfied by the partial assignment,
 therefore $b$ must be in the partial assignment for it to be a partial solution.
 
 The process of unit propagation is defined in figure \ref{impl.propagation}.
@@ -343,8 +403,8 @@ The process of unit propagation is defined in figure \ref{impl.propagation}.
 \begin{center}
 \begin{alltt}
 unit-propagate(\(F, P\)):
-  while P is consistent and there exists a \(c \in F\) that given \(P\) is unit:
-    \(l\) = unit literal in \(c\)
+  while P is consistent and there exists a \(\mathcal{C} \in F\) that given \(P\) is unit:
+    \(l\) = unit literal in \(\mathcal{C}\)
     \(P\) = \(P \cup \{l\}\)
 \end{alltt}
   \caption{Pseudo code of Unit Propagation}
@@ -352,15 +412,15 @@ unit-propagate(\(F, P\)):
 \end{center}
 \end{figure}
 
-\subsubsection{Literal Order}
-The function \verb+decide+ returns a literal who is not in the partial assignment, nor whose negation is in the partial assignment.
+\subsubsection{Decide}
+\label{impl.litorder}
+The function \verb+decide+ returns a literal that is not in the partial assignment, nor whose negation is in the partial assignment.
 That is, if $l =$ \verb+decide+$(P)$, then $\{l\} \not \in P$ and $\{\neg l\} \not \in P$.
 This literal is then added to the partial assignment as an assumption that it might be in the final solution.
-This assumption is checked to be correct or not by recursively calling the DPLL function again with the new partial assignment.
+This assumption is checked to be correct or not by recursively calling the \texttt{DPLL} function again with the new partial assignment.
 
-If the \verb+decide+ function selects literals that are in the final solution then the search for whether the formula is satisfiable is quickly resolved.
-However, if it returns literals that are not in the final solution, the search can be extensive and costly.
-Therefore, the efficacy of this selection has a great impact on the overall efficiency of the DPLL algorithm.
+The order in which the \verb+decide+ function selects literals is also known as the literal order.
+This order greatly impact the efficiency of the algorithm, as clearly selecting literals that are in a solution (if one exists) is the goal.
 
 \subsection{Advancements in SAT Solvers}
 Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been significantly altered to increase efficiency.
@@ -370,7 +430,7 @@ in order to show that their application to problems like component evolution is 
 
 \subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished by remembering what unit clauses, also known as reasons, caused literals to be added to the partial assignment. 
+This is accomplished by remembering what unit clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
 This process works by identifying a variable both inferred to be true and false,
 then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
 This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
@@ -402,7 +462,7 @@ This research describes search methods that use other reason clauses to find sma
 The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
 
 \subsubsection{Watched Literals}
-As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation occurs.
+As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation in DPLL occurs.
 Attempts to increase the efficiency of this task was initially to find better heuristics \citep{JamesMCrawford1996} for the literal order, to encourage cascades of unit propagation.
 These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
 
@@ -415,28 +475,29 @@ This ``don't call us, we will call you'' concept makes the efficiency of the uni
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
 Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
 
-
 \subsection{Iterative Strengthening}
-The algorithm known as iterative strengthening, presented in \citep{calistri1994iterative} and \citep{le2010sat4j}, 
+The iterative strengthening algorithm, presented in \citep{calistri1994iterative} and \citep{le2010sat4j}, 
 describes an anytime algorithm using constraint satisfaction that iteratively finds better solutions.
-This algorithm can be used to find optimal solutions to an evolution problem, where only one criterion is optimised.
-This is done by first finding a solution, then iteratively adding constraints to the formula that ensure the next solution found will be better than the previous.
-This continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
+This algorithm can be used to find optimal solutions to an evolution problem, where only one pseudo-Boolean criterion is optimised.
+This is done by first finding a solution, then iteratively adding constraints created from the criterion to ensure the next solution found will be better than the previous.
+This is the strengthening process.
+Strengthening continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
 This algorithm is defined in figure \ref{impl.strength}.
 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-find-solution(\(F\),strengthen):
+iterative-strengthening(\(F\),\(\langle f_{\alpha}, R, I \rangle\)):
     \(answer\) = DPLL(\(F\))
-    if \(answer\) = UNSAT:
-        return UNSAT
+    if \(answer\) = UNSATISIFABLE:
+        return UNSATISIFABLE
+    \(F\) = \(F \cup I\)
     do:
         \(model\) = \(answer\)
-        \(constraints\) = strengthen(\(model\))
-        \(F\) = \(F \cup constraints\)
+        \(J\) = strengthen(\(model\),\(\langle f_{\alpha}, R, I \rangle\))
+        \(F\) = \(F \cup J\)
         \(answer\) = DPLL(\(F\))
-    while not interrupted() and \(answer\) != UNSAT
+    while not (interrupted() or  \(answer\) == UNSATISIFABLE)
     return \(model\) 
 \end{alltt}
   \caption{Pseudo code of Iterative Strengthening Algorithm}
@@ -444,29 +505,36 @@ find-solution(\(F\),strengthen):
 \end{center}
 \end{figure}
 
-The first aspect to note in this algorithm is that the \verb+DPLL+ function has been altered slightly.
-This function now takes the formula $F$ as a parameter and returns a solution, $answer$, that satisfies $F$. 
-If the formula is unsatisfiable, however, \verb+DPLL+ returns \verb+UNSAT+.
+The first action in the \texttt{iterative-strengthening} is to check if there exists a solution to the problem.
+This is accomplished by passing the formula to the \verb+DPLL+ function, and assigning its output to the variable $answer$.
+If the output from \texttt{DPLL} is \texttt{UNSATISIFABLE}, then the algorithm stops and returns \texttt{UNSATISIFABLE}, as there are no solutions.
 
-The first action in this algorithm is to check if the formula is satisfiable, by assigning the output of the \verb+DPLL+ function to the variable $answer$.
-If $answer$ is \verb+UNSAT+, then the algorithm stops and returns that the formula is unsatisfiable.
+The next action is to initialise any auxiliary variables used by the criterion's pseudo-Boolean function.
+This is accomplished by adding the criterion's initial constraints to the formula.
 
-The main loop of this function first assigns the contents of the variable $answer$ to the variable $model$.
+The main loop of this function is then defined.
+The first action in this loop is to assign the contents of the variable $answer$ to the variable $model$.
+The variable $model$ is used as a store of the currently best found solution.
 
-The function \verb+strengthen+ is then called on $model$, to generate a set of constraints that when added to the formula ensure that only solutions more optimal are satisfiable.
-Therefore, given some function $d$ measures how optimal a solution is, $model_1$ satisfies $F$, and $constraints = $ \verb+strengthen+$(model_1)$;
-any $model_2$ that satisfies $F \cup constraints$ must be of the relation $d(model_1) < d(model_2)$.
-That is, that given some measurement of optimal, adding the constraints ensure that only more optimal solutions satisfy the formula with the strengthened constraints. 
+The function \texttt{strengthen} is then called to create a formula $J$.
+This formula ensures that when \texttt{DPLL} is next called, either:
+\begin{itemize}
+  \item a solution is returned that is better than the currently best found solution $model$. 
+  \item \texttt{UNSATISIFABLE} is returned, showing that no better solution exists.
+\end{itemize}
 
-The constraints from the \verb+strengthen+ function are then added to the formula, a more optimal solution is searched for with \verb+DPLL+.
+\begin{defs}
+Given a set of literals $model$, and the criterion $\langle f_{\alpha}, R, I \rangle$,
+the \texttt{strengthen} function returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R,f_{\alpha}(model) \rangle \}$
+\end{defs}
+That is, \texttt{strengthen} returns a formula $J$,
+that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f_{\alpha}(P)$ than the previously best solutions value of $f_{\alpha}(model)$.
 
-To ensure that this algorithm will end, and not just have \verb+DPLL+ repeatedly return the same answer to the formula, 
-the found $model$ must not satisfy the formula with the strengthened constraints.
-If this is the case, the number of answers that satisfy $F$ will decrease by at least one per iteration.
+The next steps are then to add the formula $J$ to $F$, then search for a new solution using \texttt{DPLL}.
 
-This main loop will continue until the function \verb+interrupted+ returns true, which may happen given some external cause (like a user stopping the algorithm or a timer running out),
-or the strengthened formula is found to be unsatisfiable.
-At this point the previously best solution discovered stored in the variable $model$ will be returned.
+The main loop will end given the condition that either the \texttt{interrupted} function returns $true$, or the \texttt{DPLL} function returns \texttt{UNSATISIFABLE}.
+The \texttt{interrupted} method is typically defined to return false until some external input (like a user stopping the algorithm or a timer running out) is encountered.
+When the main loop ends, currently best found solution $model$ is returned.
 
 \subsubsection{Lexicographic Optimisation}
 %%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
@@ -481,20 +549,19 @@ This altered algorithm is presented in figure \ref{impl.lexstrength}.
 \begin{alltt}
 find-lex-solution(\(F\), \(\langle crit_1, \ldots ,crit_n \rangle \)):
     
-    \(F\) = \(F \cup \) initial-constraints(\(\langle crit_1, \ldots ,crit_n \rangle \))
     \(answer\) = DPLL(\(F\))
-    if \(answer\) = UNSAT:
-        return UNSAT
+    if \(answer\) = UNSATISIFABLE:
+        return UNSATISIFABLE
     \(i\) = 0
     do:
         \(i = i + 1\)
         do:
             \(model\) = \(answer\)
-            \(constraints\) = \(crit_i\).strengthen(\(model\))
-            \(F\) = \(F \cup constraints\)
+            \(J\) = \(crit_i\).strengthen(\(model\))
+            \(F\) = \(F \cup J\)
             \(answer\) = DPLL(\(F\))
-        while not interrupted() and \(answer\) != UNSAT
-        \(F\) = \(F \backslash constraints\)
+        while not interrupted() and \(answer\) != UNSATISIFABLE
+        \(F\) = \(F \backslash J\)
         \(F\) = \(F \cup \) \(crit_i\).lock(\(model\))
         \(answer\) = \(model\)
     while not interrupted() and \(i\) != \(n\)
@@ -520,8 +587,8 @@ This loop find optimal solution for each criteria, then moves to the next includ
 The first action is to $\verb+pop+$ off the (current) most important criteria and store it in the variable \verb+current-criterion+.
 
 Then the inner loop based from original iterative strengthening algorithms main loop is then defined.
-This main difference between this and the originals inner loop is the \verb+strengthen+ function is now defined per criteria from the function \verb+current-criterion.strengthen+.
-This means the \verb+strengthen+ function changes with the outer loop, as it optimises for different criteria.
+This main difference between this and the originals inner loop is the \texttt{strengthen} function is now defined per criteria from the function \verb+current-criterion.strengthen+.
+This means the \texttt{strengthen} function changes with the outer loop, as it optimises for different criteria.
 As this inner loop iterates more optimal solutions are found, until there exist no more to be found.
 
 When the \verb+current-criterion+ has strengthened the formula to make it unsatisfiable, the constraints that made it unsatisfiable are removed.
@@ -536,7 +603,7 @@ That is, the resulting system of components is equal to $[c \mid c \in \mathbb{C
 \subsubsection{Criteria}
 %%%This algorithm shows the use of some methods that criteria must implement
 This new algorithm allows us to describe the necessary requirements a criteria must define in order to be used.
-Each criteria must define the functions \verb+strengthen+ and \verb+lock+ to be used in this algorithm.
+Each criteria must define the functions \texttt{strengthen} and \verb+lock+ to be used in this algorithm.
 Further more, through altering the \verb+decide+, or literal order, function in the DPLL algorithm, each criteria could make the search for optimal solutions more efficient.
 This will help guide the search to near optimal solutions, which will lower the upper bound of the number of loops necessary to find the most optimal solution.
 
@@ -550,19 +617,7 @@ Although a component was removed and a new one added, the component name $a$ sti
 
 Further description of how initial constraints are used is given in chapter \ref{strategies}. 
 
-\subsubsection{Formal Criteria}
-Each criterion in the stack \verb+criteria+ contains a pseudo-Boolean function that either requires minimisation or maximisation.
-This equation, represented by a list of literals and coefficients, is used to define the \verb+strengthen+ function.
 
-The ranking function \verb+criteria+.$f$ is the pseudo-Boolean function used by the criteria.
-Given a criterion's pseudo-Boolean function $f$,
-the function \verb+strengthen+ the criterion is defined to return a pseudo-Boolean constraint such that:
-\begin{itemize}
-  \item if the function is being minimised then the returned constraint is $\langle f,<,f(l_2) \rangle$
-  \item if the function is being maximised then the returned constraint is $\langle f,>,f(l_2) \rangle$
-\end{itemize}
-That is, the strengthen function for a criteria is created from its pseudo-Boolean function.
-The function \verb+lock+ is similarly defined except the inequalities $>$ and $<$ are replaced respectively with $\geq$ and $\leq$.
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
