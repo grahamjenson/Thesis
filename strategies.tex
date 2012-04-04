@@ -208,14 +208,14 @@ These three measurements can be used to define criteria such that:
 \end{defs}
 
 \begin{defs}
-	 The removed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
+	The removed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
 	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha\}$.
 	That is, it sums the components that are in the previous system, that are not in the proposed solution.
 	This criterion is defined in the MOF as \verb+-removedcomp+.
 \end{defs}
 
 \begin{defs}
-	 The changed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
+	The changed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
 	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha \} \cup \{x \mid x \in \mathbb{C} \wedge \neg x \in \alpha \}$.
 	That is, it sum both added and removed components as described above.
 	This criterion is defined in the MOF as \verb+-changedcomp+.

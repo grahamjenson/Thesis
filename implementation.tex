@@ -144,18 +144,18 @@ A SAT problem in CNF is defined as:
 \label{impl.defSAT}
 {\ }
 \begin{enumerate}
-	\item Let $V$ be a set of variables
-	\item A \textbf{literal} is a variable $v$ or its negation $\neg v$.
-	\item A literal $\neg \neg v \equiv v$
-	\item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
-	\item A \textbf{clause} is a set of literals 
-	\item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
-	\item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
-	\item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
-	\item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
-	\item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
-	\item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
-	\item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
+    \item Let $V$ be a set of variables
+    \item A \textbf{literal} is a variable $v$ or its negation $\neg v$.
+    \item A literal $\neg \neg v \equiv v$
+    \item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
+    \item A \textbf{clause} is a set of literals 
+    \item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
+    \item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
+    \item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
+    \item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
+    \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
+    \item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
+    \item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
@@ -209,12 +209,12 @@ Second, by modifying the definition of what a formula can contain and what a sol
 {\ }
 \begin{enumerate}
 \setcounter{enumi}{5}
-	\item A \textbf{formula} is a set of clauses and pseudo-Boolean constraints
+    \item A \textbf{formula} is a set of clauses and pseudo-Boolean constraints
 \end{enumerate}
 \begin{enumerate}
 \setcounter{enumi}{9}
-	\item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$,
-	and for every pseudo-Boolean constraint $pb$ in $F$, $pb$ is satisfied by $P$. 
+    \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$,
+    and for every pseudo-Boolean constraint $pb$ in $F$, $pb$ is satisfied by $P$. 
 \end{enumerate}
 \end{defs}
 
@@ -306,11 +306,11 @@ This is shown in table \ref{impl.critmapexmp}.
 \centering
 \begin{tabular}{| c | c | c | c |}
 \hline
-$P$								&	$\beta$			& $rank_{\alpha}(\beta)$ 	& $f_{\alpha}(P)$\\ \hline	
-$\{\neg a, \neg b, \neg x\}$ 	& $\{\}$				& 0						& 0 \\
-$\{\neg a,  b, x\}$ 			& $\{b\}$				& 1						& 1 \\
-$\{ a,  \neg b, x\}$ 			& $\{a\}$				& 1						& 1 \\
-$\{ a,  b, x\}$ 				& $\{a,b\}$				& 1						& 1 \\ \hline
+$P$                                &    $\beta$            & $rank_{\alpha}(\beta)$     & $f_{\alpha}(P)$\\ \hline    
+$\{\neg a, \neg b, \neg x\}$     & $\{\}$                & 0                        & 0 \\
+$\{\neg a,  b, x\}$             & $\{b\}$                & 1                        & 1 \\
+$\{ a,  \neg b, x\}$             & $\{a\}$                & 1                        & 1 \\
+$\{ a,  b, x\}$                 & $\{a,b\}$                & 1                        & 1 \\ \hline
 \end{tabular}
 \caption{Values to show $f_{\alpha}$  maps to $rank_{\alpha}$}
 \label{impl.critmapexmp}
@@ -487,14 +487,14 @@ This algorithm is defined in figure \ref{impl.strength}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-iterative-strengthening(\(F\),\(\langle f_{\alpha}, R, I \rangle\)):
+iterative-strengthening(\(F\),\(\langle f\sb{\alpha}, R, I \rangle\)):
+    \(F\) = \(F \cup I\)
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSATISIFABLE:
         return UNSATISIFABLE
-    \(F\) = \(F \cup I\)
     do:
         \(model\) = \(answer\)
-        \(J\) = strengthen(\(model\),\(\langle f_{\alpha}, R, I \rangle\))
+        \(J\) = strengthen(\(model\),\(\langle f\sb{\alpha}, R, I \rangle\))
         \(F\) = \(F \cup J\)
         \(answer\) = DPLL(\(F\))
     while not (interrupted() or  \(answer\) == UNSATISIFABLE)
@@ -505,27 +505,27 @@ iterative-strengthening(\(F\),\(\langle f_{\alpha}, R, I \rangle\)):
 \end{center}
 \end{figure}
 
-The first action in the \texttt{iterative-strengthening} is to check if there exists a solution to the problem.
+The first action in the \texttt{iterative-strengthening} is to initialise any auxiliary variables used by the criterion's pseudo-Boolean function.
+This is accomplished by adding the criterion's initial constraints $I$ to the formula $F$.
+
+The next action is to check if the formula is satisfiable.
 This is accomplished by passing the formula to the \verb+DPLL+ function, and assigning its output to the variable $answer$.
 If the output from \texttt{DPLL} is \texttt{UNSATISIFABLE}, then the algorithm stops and returns \texttt{UNSATISIFABLE}, as there are no solutions.
 
-The next action is to initialise any auxiliary variables used by the criterion's pseudo-Boolean function.
-This is accomplished by adding the criterion's initial constraints to the formula.
-
-The main loop of this function is then defined.
+The main loop of this algorithm is then defined.
 The first action in this loop is to assign the contents of the variable $answer$ to the variable $model$.
-The variable $model$ is used as a store of the currently best found solution.
+The variable $model$ is a set of literals, used as a store of the currently best found solution.
 
 The function \texttt{strengthen} is then called to create a formula $J$.
-This formula ensures that when \texttt{DPLL} is next called, either:
+The formula $J$ ensures that if \texttt{DPLL} is called with formula $F \cup J$, either:
 \begin{itemize}
-  \item a solution is returned that is better than the currently best found solution $model$. 
+  \item a solution is returned that is better (w.r.t. the criterion) than the currently best found solution $model$. 
   \item \texttt{UNSATISIFABLE} is returned, showing that no better solution exists.
 \end{itemize}
 
 \begin{defs}
-Given a set of literals $model$, and the criterion $\langle f_{\alpha}, R, I \rangle$,
-the \texttt{strengthen} function returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R,f_{\alpha}(model) \rangle \}$
+Given a set of literals $model$, and a criterion $\langle f_{\alpha}, R, I \rangle$,
+the function \texttt{strengthen} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R,f_{\alpha}(model) \rangle \}$.
 \end{defs}
 That is, \texttt{strengthen} returns a formula $J$,
 that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f_{\alpha}(P)$ than the previously best solutions value of $f_{\alpha}(model)$.
@@ -534,37 +534,31 @@ The next steps are then to add the formula $J$ to $F$, then search for a new sol
 
 The main loop will end given the condition that either the \texttt{interrupted} function returns $true$, or the \texttt{DPLL} function returns \texttt{UNSATISIFABLE}.
 The \texttt{interrupted} method is typically defined to return false until some external input (like a user stopping the algorithm or a timer running out) is encountered.
+The \texttt{interrupted} method has the additional responsibility of stopping the \texttt{DPLL} function.
+That is, if at any point \texttt{interrupted} returns true the \texttt{DPLL} function immediately returns $\emptyset$.
 When the main loop ends, currently best found solution $model$ is returned.
 
-\subsubsection{Lexicographic Optimisation}
+\subsection{Lexicographic Optimisation}
 %%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
-The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be modified to handle lexicographically related criteria, so as to solve component evolution problems.
-By adding an additional outer loop, including other necessary alterations, the original algorithm has been modified to handle lexicographical criteria.
-
-The original iterative strengthening algorithm with the lexicographical extension has been implemented in GJSolver. 
-This altered algorithm is presented in figure \ref{impl.lexstrength}.
+The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be used find optimal solutions to lexicographically composed criteria.
+This can be accomplished by iteratively strengthening the each composed criteria in order of lexicographical composition.
+This lexicographic iterative strengthening algorithm is presented in figure \ref{impl.lexstrength}.
 
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-find-lex-solution(\(F\), \(\langle crit_1, \ldots ,crit_n \rangle \)):
-    
+lexicographic-iterative-strengthening(\(F\), \(\langle crit_1, \ldots ,crit_n \rangle \)):  
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSATISIFABLE:
         return UNSATISIFABLE
     \(i\) = 0
+    \(model\) = \(answer\)
     do:
         \(i = i + 1\)
-        do:
-            \(model\) = \(answer\)
-            \(J\) = \(crit_i\).strengthen(\(model\))
-            \(F\) = \(F \cup J\)
-            \(answer\) = DPLL(\(F\))
-        while not interrupted() and \(answer\) != UNSATISIFABLE
-        \(F\) = \(F \backslash J\)
-        \(F\) = \(F \cup \) \(crit_i\).lock(\(model\))
-        \(answer\) = \(model\)
-    while not interrupted() and \(i\) != \(n\)
+        \(K\) = lock(\(model\),\(crit_i\))
+        \(F\) = \(F \cup K\)
+        \(model\) = iterative-strengthening(\(F\),\(crit_i\))
+    while not (interrupted() or \(i\) == \(n\))
     return \(model\) 
 \end{alltt}
   \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
@@ -572,70 +566,63 @@ find-lex-solution(\(F\), \(\langle crit_1, \ldots ,crit_n \rangle \)):
 \end{center}
 \end{figure}
 
-The first alteration to the original algorithm is that this version takes two parameters, firstly the formula denoted as $F$;
-secondly a stack of criteria, ordered so the top of the stack is the criteria most lexicographically important.
+The first action of the \texttt{lexicographic-iterative-strengthening} algorithm is to check if the formula is satisfiable using the \texttt{DPLL} algorithm.
+If it is unsatisfiable, this algorithm returns \texttt{UNSATISIFABLE}.
 
-The first action of this algorithm is to include initial criteria constraints,
-these constraints may define new literals that can be used in other criteria functions.
-These constraints are just a union of sets of initial constraints given by individual criteria, and they should not effect a solutions satisfiability. 
+The variable $i$ is then defined, this variable is a counter used to select the criterion to be strengthened.
+Also, $model$ is assigned to be the set of literals $answer$, and is used to store the currently best found solution.
 
-The next action of this algorithm is to check whether the formula is satisfiable,
-and if it is not, return unsatisfied.
+The main loop of this algorithm is then defined.
+This loop first increments the counter $i$, to select the appropriate criterion to be strengthened.
 
-A new outer loop is defined, that loops over the criteria until either there is none left or it is interrupted.
-This loop find optimal solution for each criteria, then moves to the next including the constraints stopping a less optimal solution to be found.
-The first action is to $\verb+pop+$ off the (current) most important criteria and store it in the variable \verb+current-criterion+.
+The function \texttt{lock} is then called to return a formula $K$.
+The formula $K$ ensures that if \texttt{DPLL} is called with $F \cup K$:
+\begin{itemize}
+  \item a solution is returned that is not worse (w.r.t. the criterion $crit_i$) than the solution $model$. 
+\end{itemize}
 
-Then the inner loop based from original iterative strengthening algorithms main loop is then defined.
-This main difference between this and the originals inner loop is the \texttt{strengthen} function is now defined per criteria from the function \verb+current-criterion.strengthen+.
-This means the \texttt{strengthen} function changes with the outer loop, as it optimises for different criteria.
-As this inner loop iterates more optimal solutions are found, until there exist no more to be found.
+\begin{defs}
+Given a set of literals $model$, and a criterion $\langle f_{\alpha}, R, I \rangle$,
+the function \texttt{lock} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R',f_{\alpha}(model) \rangle \}$,
+where if $R = <$ then $R' = \leq$, else if $R = >$ then $R' = \geq$.
+\end{defs}
+That is, \texttt{lock} returns a formula $K$,
+that ensures any solution $P$, to the formula $F \cup K$, must not have a worse ( w.r.t. $R$) value of $f_{\alpha}(P)$ than the value $f_{\alpha}(model)$.
 
-When the \verb+current-criterion+ has strengthened the formula to make it unsatisfiable, the constraints that made it unsatisfiable are removed.
-This is necessary to continue the search for more optimal solutions judged by the next criteria.
-The formula then has constraints from the function \verb+current-criterion.lock+ added to it, this ensures no worse solution will be found on the next iteration.
+It is important to note that $K$ does not effect the satisfiability of $F$, as $model$ is still a valid solution to $F \cup K$.
 
-These loops will iterate until either all the criteria have been optimised, or the function is interrupted.
-The result is a set of literals that satisfy the constraints in the variable $model$.
-These literals can be easily mapped to a set of components that are non-negative literals in the model.
-That is, the resulting system of components is equal to $[c \mid c \in \mathbb{C}$ and $c \in model]$.
+The formula $K$ is then added to the formula $F$, i.e. $F = F \cup K$,
+then the \texttt{iterative-strengthening} algorithm is called to find an optimal solution to $F$ given the criterion $crit_i$.
+As the formula $F$ is known at this point in the algorithm to be satisfiable, the only possible returned value from \texttt{iterative-strengthening}
+is a solution that is no worse than $model$.
+This means that the returned value could be equivalent to the previously defined solution, if there exists no better solution than what has already been found.
 
-\subsubsection{Criteria}
-%%%This algorithm shows the use of some methods that criteria must implement
-This new algorithm allows us to describe the necessary requirements a criteria must define in order to be used.
-Each criteria must define the functions \texttt{strengthen} and \verb+lock+ to be used in this algorithm.
-Further more, through altering the \verb+decide+, or literal order, function in the DPLL algorithm, each criteria could make the search for optimal solutions more efficient.
-This will help guide the search to near optimal solutions, which will lower the upper bound of the number of loops necessary to find the most optimal solution.
+The main loop will iterate until either all the criteria have been optimised, or the function is interrupted.
+When the loop ends, the currently best found solution $model$ will be returned.
 
-%%%Initial constraints
-Some criteria also require the ability to add constraints to the formula before the outer loop starts,
-this is implemented in the function \verb+criteria.initial-constraints+.
-These constraints are typically used to measure quantities that have no direct variable available.
-A typical case for this is when a criteria needs to measure component by their names.
-For instance, if component $\langle a,2\rangle$ was removed and component $\langle a,3 \rangle$ was added. 
-Although a component was removed and a new one added, the component name $a$ still exists in the system, so no change to component names were made.
-
-Further description of how initial constraints are used is given in chapter \ref{strategies}. 
-
-
+Some enhancements to the implementation of the lexicographic iterative strengthening algorithm can be made.
+For example, when the \texttt{iterative-strengthening} is called, it is known that $F$ is satisfiable. 
+Therefore, checking its satisfiability again within the \texttt{iterative-strengthening} function is not necessary.
+Such enhancements were made in GJSolver, to increase the efficiency of this algorithm. 
 
 \subsection{Drawbacks of this Optimisation approach}
 %%%There are a few drawbacks to this mapping;
-GJSolver's implementation tries to address the initial set of requirements by using an SAT solver extended with pseudo-Boolean constraints as its core,
-and the lexicographic iterative strengthening algorithm for optimisation.
-This has created some drawbacks that will be discussed here.
+There are some drawbacks to using the lexicographic iterative strengthening algorithm (as described earlier) 
+as GJSolver's method of optimisation.
 
 %%%The optimisation must be represented linearly
-As GJSolver uses a SAT solver at its core, 
-and it has been noted in \citep{le_berre_dependency_2009} and \citep{leBerre2010} there is no easy solution to extending a SAT solver to handle non-linear constraints.
-There is no practical way of creating criteria that can optimise have non-linear functions within GJSolver.
-This will stop many criteria from being defined, though the trade-off is that GJSolver will remain relatively simple and efficient.
+GJSolver uses the SAT4J solver as its implementation of the DPLL function. 
+It has been noted in \citep{le_berre_dependency_2009} and \citep{leBerre2010} there is no easy method of extending a SAT solver to handle non-linear constraints.
+This means that many criteria that could be defined in the formalism, presented in chapter \ref{formal}, will either not be able to be represented as pseudo-Boolean criteria, 
+or they will be inefficient to use a SAT solver to find optimal solutions.  
+The trade-off for not including the ability to define more complex criteria is that GJSolver is relatively simple and efficient. 
 
 %%%Real numbers must be truncated to fit the integer representation. 
-The pseudo-Boolean constraints use only integer and not real coefficients.
-This stops the definition of criteria that optimise values like percentages.
-A practical solution to this is to multiply any real number by a large value and truncate the product to an integer representation.
-Scaling a value in such a manner, may remove a small amount of resolution of the real value, though it does allow for criteria to use real values numbers.
+The pseudo-Boolean criteria can only be defined to use integers and not real numbers.
+This means that defining criteria that optimise real values, like percentages, a challenge.
+The practical solution used by GJSolver is to scale real numbers up, and truncate them to be an integer.
+Scaling these values may remove a small amount of resolution of the real value.
+Though this can be mitigated by allowing criteria to define their own scale value.
 
 \section{Verification of GJSolver}
 \label{impl.verif}
