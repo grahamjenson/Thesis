@@ -43,6 +43,7 @@ Given the context under which GJSolver was developed, the set of requirements th
 \end{enumerate}
 
 \subsection{Mancoosi International Solver Competition}
+\label{impl.MISCDEF}
 Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
 How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects to the development of GJSolver.
 
@@ -52,7 +53,7 @@ This standard requires the entered solvers to be able to be executed on the comm
 These arguments are defined as:
 \begin{itemize}
   \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
-  \item \verb+cudfout+: is a relative path to a non-existent file which is created by the solver to output the solution.
+  \item \verb+cudfout+: is a relative path to a non-existent file, which is created by the solver to output the solution.
   \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) description of the criteria to select an optimal solution. 
 \end{itemize}
 The format of the output file, located at the path defined with \verb+cudfout+ argument, is a sub set of CUDF.
@@ -62,7 +63,7 @@ This lowers the size of the output file required to be written by the solver.
 %%%The environment POSIX, with 5minutes 1GB of memory
 The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of RAM.
 It contains a Java runtime environment, allowing the use of Java as a primary language.
-The time in which the solver is allowed to run is 5 minutes, after this time the solver will be forcibly executed.
+The time in which the solver is allowed to run is five minutes, after this time the solver will be forcibly executed.
 This time limit ensures that the competition can be run in an acceptable time frame.
 
 \subsection{Anytime Algorithm}
@@ -261,42 +262,48 @@ Each type of constraint in $\delta_{t_i} \cup \omega_{t_i}$ can be mapped to a S
 \end{enumerate}
 By mapping each constraint in an evolution problem $\delta_{t_i} \cup \omega_{t_i}$ as defined above, the set of clauses and PB constraints will define the formula $F$.
 
-\subsubsection{Criteria Mapping}
+\subsubsection{Criteria Partial-Mapping}
 In this section the implementation criteria, called pseudo-Boolean criteria, are presented.
-The prior definition of a criterion, presented in chapter \ref{formal} as a ranking function and a partial order over its range, is a broad definition of what a criterion can be.
-However, given the selected method of finding an optimal solution only allows the use of pseudo-Boolean criteria (as defined below),
-some restrictions on the kind of criterion used must be imposed.
-This restriction is made to keep the search for an optimal solution efficient.
-This means, that only a partial mapping of the criteria (presented in chapter \ref{formal}) to the pseudo-Boolean criteria (presented in this section) is given.
 
 \begin{defs}
-Given a component system $\alpha$, a \textbf{pseudo-Boolean criterion} is a tuple consisting of a pseudo-Boolean function $f_{\alpha}$,
+Given a component system $\alpha$, a \textbf{pseudo-Boolean criterion} $\mathfrak{crit}$ is a tuple consisting of a pseudo-Boolean function $f_{\alpha}$,
 relation over integers $R$ which is either $<$ or $>$, and a formula $I$ consisting of clauses and/or pseudo-Boolean constraints (as defined in \ref{impl.defSAT}),
-i.e. $\langle f_{\alpha}, R , I \rangle$.
+i.e. $\mathfrak{crit} = \langle f_{\alpha}, R , I \rangle$.
 \end{defs}
 The formula $I$ is used to define the auxiliary variables.
 These variables are used to represent values within the problem, but do not alter the problem.
 Auxiliary variables have been used before in CDR implementations \citep{argelich2010solving}.
 
-To map a criterion $\langle rank_{\alpha},\leq \rangle$ to a pseudo-Boolean criterion,
-some restrictions are necessary:
+Some general restrictions of mapping a criterion $\langle rank_{\alpha},\leq \rangle$ to a pseudo-Boolean criterion, are:
 \begin{itemize}
   \item The range of $rank_{\alpha}$ $A$, must be the set of integers $\mathbb{Z}$, i.e. $A = \mathbb{Z}$.
-  \item $\leq$ must either the ``greater than or equal to'' ($\geq$), or the ``less than or equal to'' ($\leq$) orders over integers.
+  \item $\leq$ must either be the ``greater than or equal to'' ($\geq$), or the ``less than or equal to'' ($\leq$) orders over integers.
 \end{itemize} 
 
+This leads to the mapping definition:
 \begin{defs}
 A ranking criteria $\langle rank_{\alpha},\leq \rangle$ maps to a pseudo-Boolean criterion  $\langle f_{\alpha}, < , I \rangle$ 
 (similarly, $\langle rank_{\alpha},\geq \rangle $ maps to $ \langle f_{\alpha}, > , I \rangle$) iff
 $f_{\alpha}(P) = rank_{\alpha}(\beta)$ where $\beta$ is the component system mapped from $P$. 
 \end{defs}
 
+The prior definition of a criterion, presented in chapter \ref{formal}, as a ranking function and a partial order over its range, is a broad definition of what a criterion can be.
+Many criteria that can be defined in this formalism can be only inefficiently represented using pseudo-Boolean criteria.
+Also, many of the  criteria are also not desirable or inane, e.g. maximising the number of components whose name starts with the letter \texttt{a}.
+
+Creating a total mapping between criteria and pseudo-Boolean criteria may be a difficult and unrewarding challenge.
+Therefore, only a partial mapping from criteria to pseudo-Boolean criteria is given.
+Further, only the specific criteria that are used in GJSolver are mapped to pseudo-Boolean criteria,
+as mapping criteria that are not used is superfluous. 
+The set of mapped criteria is given in chapter \ref{strategies}.
+
+\paragraph{Example}
 Even simple mappings of a criteria to a pseudo-Boolean criteria can be complex.
 For example, given components $a$ and $b$, a criterion $\langle rank_{\alpha},\leq \rangle$, whose ranking function $rank_{\alpha}$ is defined:
 
 $rank_{\alpha}(\beta) = \begin{cases} 1 & a \in \beta \text{ or } b \in \beta\\ 0 & \text{otherwise} \end{cases}$
 
-This criteria expressed the preference of having either components $a$ or $b$ in the system.
+This criteria expressed the preference of either components $a$ or $b$ (or both) in the system.
 There is no direct way to map the ranking function $rank_{\alpha}$ to a pseudo-Boolean function $f_{\alpha}$ in a pseudo-Boolean criterion $\langle f_{\alpha}, < , I \rangle$.
 However, if a variable $x$ (not a component) where true iff $a$ or $b$ were in $\beta$, i.e. $x \Leftrightarrow a \in \beta \vee b \in \beta$.
 A pseudo-Boolean function $f_{\alpha}$ described with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$,
@@ -320,14 +327,11 @@ To ensure the variable $x$ is assigned correctly, the constraint $x \Leftrightar
 $\{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
 This set of clauses is the formula $I$ in the pseudo-Boolean criterion.
 
-Only a small set of criteria are used in this research, and as such a general mapping is not provided.
-However, a set of criteria and their mapping to pseudo-Boolean criteria is given in the chapter \ref{strategies}. 
-
 \subsubsection{Lexicographic Criteria Mapping}
 Criteria that are lexicographically composed together are mapped to a tuple of pseudo-Boolean criteria. 
 \begin{defs}
-Lexicographically composed criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria $\langle crit_1',\ldots,crit_n'\rangle$,
-where criterion $crit_i$ is mapped to a pseudo-Boolean criterion $crit_i'$.
+Lexicographically composed criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n\rangle$,
+where criterion $crit_i$ is mapped to a pseudo-Boolean criterion $\mathfrak{crit}_i$.
 \end{defs}
 
 \section{Algorithms}
@@ -343,10 +347,11 @@ backtracking-based search algorithm for SAT problems represented in conjunctive 
 
 It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
-By first calling DPLL with $P$ being the empty set, by adding literals to $P$, then recursively calling itself; 
+When \texttt{DPLL} is called without a value $P$, $P$ is defaulted to equal the empty set $\emptyset$.
+By first calling \texttt{DPLL} with $P$ being the empty set, by adding literals to $P$, then recursively calling itself; 
 the DPLL function searches for whether a solution to the formula exists, 
 i.e the formula is satisfiable.
-The DPLL algorithm in defined in figure \ref{impl.DPLL} a slight modification of the algorithm presented in \citep{dixon2004automating}:
+The DPLL algorithm in defined in figure \ref{impl.DPLL} (a slight modification of the algorithm presented in \citep{dixon2004automating}):
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
@@ -539,6 +544,7 @@ That is, if at any point \texttt{interrupted} returns true the \texttt{DPLL} fun
 When the main loop ends, currently best found solution $model$ is returned.
 
 \subsection{Lexicographic Optimisation}
+\label{impl.lexiterstre}
 %%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
 The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be used find optimal solutions to lexicographically composed criteria.
 This can be accomplished by iteratively strengthening the each composed criteria in order of lexicographical composition.
@@ -547,7 +553,7 @@ This lexicographic iterative strengthening algorithm is presented in figure \ref
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
-lexicographic-iterative-strengthening(\(F\),\(\langle{}crit\sb{1}, \ldots ,crit\sb{n}\rangle\)):  
+lexicographic-iterative-strengthening(\(F\),\(\langle{}\mathfrak{crit}\sb{1}, \ldots ,\mathfrak{crit}\sb{n}\rangle\)):  
     \(answer\) = DPLL(\(F\))
     if \(answer\) = UNSATISIFABLE:
         return UNSATISIFABLE
@@ -555,9 +561,9 @@ lexicographic-iterative-strengthening(\(F\),\(\langle{}crit\sb{1}, \ldots ,crit\
     \(model\) = \(answer\)
     do:
         \(i = i + 1\)
-        \(K\) = lock(\(model\),\(crit\sb{i}\))
+        \(K\) = lock(\(model\),\(\mathfrak{crit}\sb{i}\))
         \(F\) = \(F \cup K\)
-        \(model\) = iterative-strengthening(\(F\),\(crit\sb{i}\))
+        \(model\) = iterative-strengthening(\(F\),\(\mathfrak{crit}\sb{i}\))
     while not (interrupted() or \(i\) == \(n\))
     return \(model\) 
 \end{alltt}
@@ -578,7 +584,7 @@ This loop first increments the counter $i$, to select the appropriate criterion 
 The function \texttt{lock} is then called to return a formula $K$.
 The formula $K$ ensures that if \texttt{DPLL} is called with $F \cup K$:
 \begin{itemize}
-  \item a solution is returned that is not worse (w.r.t. the criterion $crit_i$) than the solution $model$. 
+  \item a solution is returned that is not worse (w.r.t. the criterion $\mathfrak{crit}_i$) than the solution $model$. 
 \end{itemize}
 
 \begin{defs}
@@ -592,7 +598,7 @@ that ensures any solution $P$, to the formula $F \cup K$, must not have a worse 
 It is important to note that $K$ does not effect the satisfiability of $F$, as $model$ is still a valid solution to $F \cup K$.
 
 The formula $K$ is then added to the formula $F$, i.e. $F = F \cup K$,
-then the \texttt{iterative-strengthening} algorithm is called to find an optimal solution to $F$ given the criterion $crit_i$.
+then the \texttt{iterative-strengthening} algorithm is called to find an optimal solution to $F$ given the criterion $\mathfrak{crit}_i$.
 As the formula $F$ is known at this point in the algorithm to be satisfiable, the only possible returned value from \texttt{iterative-strengthening}
 is a solution that is no worse than $model$.
 This means that the returned value could be equivalent to the previously defined solution, if there exists no better solution than what has already been found.
@@ -624,6 +630,39 @@ The practical solution used by GJSolver is to scale real numbers up, and truncat
 Scaling these values may remove a small amount of resolution of the real value.
 Though this can be mitigated by allowing criteria to define their own scale value.
 
+\section{GJSolver}
+\label{impl.gjsolver}
+Using the algorithms and mappings that have been presented,
+the GJSolver is implemented to complete one evolutionary step of a component system.
+
+GJSolver takes as input (as described in \ref{impl.MISCDEF}):
+\begin{itemize}
+  \item \verb+cudfin+: a relative path to a CUDF document.
+  \item \verb+cudfout+: a relative path to a non-existent file.
+  \item \verb+criteria+: is a string in MOF. 
+\end{itemize}
+
+As described in chapter \ref{formal}, these values are then mapped to the formal model:
+\begin{itemize}
+  \item the CUDF file at \verb+cudfin+ is mapped to an evolution problem ($\delta_{t_i} \cup \omega_{t_i}$) and a component system ($\alpha_{t_{i-1}}$).
+  \item the MOF description \verb+criteria+ is mapped to a lexicographically ordered set of criteria ($crit_1 \oplus \ldots \oplus crit_n$), each w.r.t. $\alpha_{t_{i-1}}$.
+\end{itemize}
+
+As described in section \ref{impl.mapping}, these values are mapped to a SAT problem and pseudo-Boolean criteria:
+\begin{itemize}
+  \item the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is mapped to a SAT formula ($F$).
+  \item the criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria ($\langle \mathfrak{crit}_1, \ldots ,\mathfrak{crit}_n \rangle$), each w.r.t. $\alpha_{t_{i-1}}$. 
+\end{itemize}
+
+Using the \texttt{lexicographic-iterative-strengthening} algorithm (described in section \ref{impl.lexiterstre}),
+with the input $F$ and $\langle \mathfrak{crit}_1, \ldots ,\mathfrak{crit}_n \rangle$, an optimal solution is searched for.
+This search is interrupted after five minutes has elapsed, this timeout value is used in the MISC competition.
+If the algorithm returns a solution as a set of literals, that solution is mapped to component system $\alpha_{t_i}$.
+If the algorithm returns \texttt{UNSATISIFABLE}, no solution to the evolution problem exists, and $\alpha_{t_i} = \alpha_{t_{i-1}}$ 
+(as defined in the evolutionary step definition \ref{formal.stepdef}).
+
+The component system $\alpha_{t_i}$ is then converted into CUDF, which is then written to a file at the location \verb+cudfout+.
+
 \section{Verification of GJSolver}
 \label{impl.verif}
 %%%We entered this solver into two Mancoosi MISC competitions
@@ -631,6 +670,12 @@ The GJSolver implementation was verified by entering it into the Mancoosi Intern
 This process was taken twice, firstly in a MISC Live event, which is an interim competition held during the year;
 secondly at the MISC 2011 event\footnote{The results for MISC 2011 were announced at the Workshop on Logics for Component Configuration\footnote{http://www.pps.jussieu.fr/~treinen/lococo/2011/ accessed 6/3/2012}.}, 
 which is the main competition. 
+
+The main difference to GJSolver as described above, and the GJSolver entered into the MISC competition occurs when the evolution problem is unsatisfiable.
+In the evolutionary step definition (\ref{formal.stepdef}) the component system $\alpha_{t_{i-1}}$ is returned if the evolution problem is unsatisfiable.
+However, in this case, MISC requires that a file with only the text \texttt{FAIL} is written to the location of the output CUDF file.
+This is to correctly score a solver returning an incorrect solution to an evolution problem, 
+and a solver finding an unsatisfiable problem.
 
 \subsection{Tracks and Scoring}
 Each MISC competition is broken down into three possible tracks, where each track is defined by the criteria used.
@@ -714,7 +759,7 @@ It may be said that the reason for GJSolvers win of the 'user' track could be pu
 \end{itemize}
 
 \section{Summary}
-In this chapter, the implementation of GJSolver is described. 
+In this chapter, the implementation and validation of GJSolver is described.
 First an evolution problem was mapped to a SAT problem, and the criteria where mapped to pseudo-Boolean criteria.
 The algorithms used to find an optimal solution to the SAT problem given lexicographically ordered pseudo-Boolean criteria, was described.
 These algorithms include, DPLL, iterative strengthening, and lexicographic iterative strengthening.
