@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>0000-Thesis</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>net.sourceforge.texlipse.builder.TexlipseBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>net.sourceforge.texlipse.builder.TexlipseNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>--Thesis--.bib</name>
+			<type>1</type>
+			<location>/home/gdjenson/PhD/References/Bibtex/--Thesis--.bib</location>
+		</link>
+		<link>
+			<name>CBSE2011.bib</name>
+			<type>1</type>
+			<location>/home/gdjenson/PhD/References/Bibtex/CBSE2011.bib</location>
+		</link>
+		<link>
+			<name>doc/--Thesis--.bib</name>
+			<type>1</type>
+			<location>/home/gdjenson/PhD/References/Bibtex/--Thesis--.bib</location>
+		</link>
+	</linkedResources>
+</projectDescription>
