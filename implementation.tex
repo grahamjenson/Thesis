@@ -4,17 +4,17 @@
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-In chapter \ref{formal} the evolutionary step function was defined to take an evolution problem, and an order over component systems, 
-and return a component system.
-This function can be automated into a process called component dependency resolution (CDR).
+In chapter \ref{formal} the process of component system evolution was defined as the iterative application of the evolutionary step function.
+This evolutionary step function can be automated into a process called Component Dependency Resolution (CDR).
+CDR takes the evolution problem and tries to return an optimal solution given some criteria.
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-To simulate the evolution of component systems efficiently a novel CDR implementation, named GJSolver, was created.
+In this chapter a novel CDR implementation, named GJSolver, is described.
 GJSolver maps evolution problems to Boolean Satisfiability Problems (SAT),
-and maps the criteria that define an optimal solution to a set of lexicographically ordered pseudo-Boolean functions \citep{dixon2004automating}. 
-Then, through using the Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} to find solutions to SAT problems,
-and a modified iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find optimal solutions to lexicographically ordered pseudo-Boolean functions,
-the evolutionary step function is can be implemented.
+and maps the criteria that define an optimal solution to lexicographically ordered pseudo-Boolean \citep{dixon2004automating} criteria. 
+Then through using the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine}
+and iterative strengthening \citep{calistri1994iterative, le2010sat4j} algorithms,
+GJSolver searches for an optimal solution to the evolution problem given the criteria.
 
 %%%In this chapter\ldots
 Firstly, in section \ref{impl.requirement}, the requirements and design decisions of GJSolver are discussed.
