@@ -22,12 +22,13 @@ These models where created to be used in the Mancoosi International Solver Compe
 which is held to encourage research into such problems.
 To support this standard, and to be able to enter the MISC competition, a mapping from CUDF and MOF to the CSE model is necessary.   
 
-The relationships between models used in this research, that represent the CSE process, are presented in figure \ref{formal.models}.
+The relationships between models that are used in this research to represent the CSE process are presented in figure \ref{formal.models}.
 This figure shows the CSE model (1),
 CUDF (2) and MOF (3), which are presented in this chapter.
-In chapter \ref{implementation} a SAT problem (4), and an extension to a SAT problem with psuedo-Boolean (PB) \citep{dixon2004automating} constraints (5) is described.
-The CSE model presented in this chapter is then mapped to the ``SAT + PB'' model.
-In chapter \ref{ubunutsimulation}, the Debian package metadata model (6) is mapped to CUDF, this enables the simulation of the evolution of an Ubuntu system. 
+In chapter \ref{implementation} the Boolean satisfiability (SAT) problem (4), and an extension to the SAT problem with psuedo-Boolean (PB) \citep{dixon2004automating} constraints (5) is described.
+The CSE model is mapped to the ``SAT + PB'' model to enable an implementation to be developed to automate the evolution of a component system.
+In chapter \ref{ubunutsimulation}, the Debian \citep{Barth2005} package metadata model (6) is mapped to CUDF, this enables the simulation of the evolution of an Ubuntu system.
+This mapping is largely superficial as the CUDF model is based on the dpkg metadata.
 
 \begin{figure}[htp]
 \begin{center}
