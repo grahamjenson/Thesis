@@ -5,38 +5,26 @@
 
 %%%TODO not a good comparison, this thesis is not about construction of component systems, but their evolution, look at Complex system evolution
 %%%The start of this thesis leads the reader to the idea that when building a complex system, breaking the probelm into parts is a natural and beneficial instinct
-When confronted with building a complex system, an analytical person's first instinct is often to break the system into smaller, simpler components. 
-These components can be defined by their contribution to the whole system and their relationships to other components.
-Through such a ``divide and conquer'' method, the design and construction of a complex system becomes a manageable task.
+Predicting how a software system will evolve is a very difficult task.
+This is because software is a complex system, and any change made may require further changes.
 
-%%%The metaphor of building a car to explain breaking systems into components
-This method of breaking a system into smaller components has been used numerous times to construct complex systems.
-For example, to manufacture a car it is broken into parts for design and assembly.
-Such a complex system that is manufactured by breaking it into parts for design and construction.
-It requires a body, electrical system, interior, suspension, steering, engine \ldots. 
-The engine can be further broken into other parts like cooling, oil system, exhaust, intake, fuel, carburettor and so on.
-Each of these parts can be defined by their provided function to the engine, and their relationships to other engine components.
-For instance, the \textit{carburettor} is the fuel delivery system that blends the air from the \textit{intake} with petrol from the \textit{fuel system}.
-
-%%%Software is complex and components can be used to manage their complexity.
-Software systems are also complex as they have many intricate, and interrelated parts, that when combined should provide a function.
-An objective of software engineering is to manage this complexity through various techniques like the hierarchical decomposition of object orientation \citep{goldberg1983smalltalk}, 
+%%%How do software engineers manage complexity
+To make evolution more predictable, software can be created using various techniques like the hierarchical decomposition of object orientation \citep{goldberg1983smalltalk}, 
 the decoupling of relationships through dependency inversion \citep{martin1996dependency}, 
 separation of concerns through aspect-oriented programming \citep{Kiczales1997},
-and the abstraction of knowledge through model driven engineering \citep{schmidt2006}. 
-Another such method to manage the complexity of software is to break the system apart into independent units of composition called \textbf{software components} \citep{Szyperski2002}. 
+and the abstraction of knowledge through model driven engineering \citep{schmidt2006}.
 
 %%%What are Software components, why use software components
-The exactly what software components are is still in dispute (as further discussed in chapter \ref{background}),
-though the one characterisation that is agreed upon ``software components are able to be composed''.
-What else is agreed is that software components are composed together using a set of rules, known as the \textbf{component model}.
-This component model is the core difference between other modularisation techniques as it constrains how component systems are built.
+Another method to manage the complexity of software is to break the system apart into independent units of composition called \textbf{software components} \citep{Szyperski2002}. 
+A core attribute of a software component is that it conforms to a \textbf{component model}.
+This model expresses the constraints that the component must satisfy to be used.
+This component model is the core difference between other modularisation techniques.
 
-The key arguments for developers to construct a system using software components are enumerated in \citep{Szyperski2000} as:
-\begin{enumerate}
-	\item \textit{Extensibility}: a software system allowing the future addition of functionality
-	\item \textit{Evolvability}: changing a software system to reflect a changing environment
-\end{enumerate}
+A key argument for developers to construct a system using software components is the \textbf{evolvability} \citep{Szyperski2000}.
+The increased evolvability of software that is created using components 
+
+
+
 
 %%%This research is looking at the key arguments of evolvability and extensibility through software evolution
 Extensibility and evolvability of component software come from the understanding that a system must change over time to be maintained, enhanced or fixed.

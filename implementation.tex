@@ -23,6 +23,48 @@ The algorithms used to find an optimal solution to an optimal solution to the SA
 The CDR implementation, called GJSolver, created through this research is then described in section \ref{impl.gjsolver}.
 The specific requirements that GJSolver was developed towards, the formal mapping, and the implementation decisions are described.
 
+\digraph[scale=0.5]{implgraph}{
+rankdir=BT;
+\modelnamewx [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>\modelnamewx</TD></TR>
+</TABLE>
+> shape=none];
+\modelimplwx [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>\modelimplwx</TD></TR>
+</TABLE>
+> shape=none];
+modelinstance [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>:\modelimplwx</TD></TR>
+</TABLE>
+> shape=none];
+SAT [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>SAT</TD></TR>
+</TABLE>
+> shape=none];
+SATPB [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>SAT with PB</TD></TR>
+</TABLE>
+> shape=none];
+SATPBI [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>:SAT with PB</TD></TR>
+</TABLE>
+> shape=none];
+\modelimplwx-> \modelnamewx [ label="implements" ]; 
+modelinstance -> \modelimplwx [ label = "instantiates"];
+SATPB -> SAT [label=extends];
+SATPBI -> SATPB [label=instantiates];
+subgraph {
+rank=same;
+modelinstance -> SATPBI [label="maps to"];
+SATPBI -> modelinstance [label="maps to"];}
+}
+
 This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver Competition (MISC).  
 
 \section{Requirements of GJSolver}

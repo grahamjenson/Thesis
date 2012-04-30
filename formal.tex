@@ -1,10 +1,10 @@
 \chapter{Formal Model of Component System Evolution}
 \label{formal}
-\epigraph{In theory there is no difference between theory and practice. In practice there is.}
-{\textit{Jan L. A. van de Snepscheut}}
-In order to facilitate the study of the component system evolution (CSE) process, a novel formal model has been developed.
+\epigraph{We are like sailors who on the open sea must reconstruct their ship but are never able to start afresh from the bottom.}
+{\textit{Willard Van Orman Quine, Word and Object, 1960}}
+In order to facilitate the study of the component system evolution (CSE) process, a novel formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) has been developed.
 
-Having such a model allows the definition of concepts, and enables the discussion and investigation of CSE.
+\modelname allows the definition of concepts, and enables the discussion and investigation of CSE.
 The qualities that an effective and useful model should posses are described in \citep{Selic2003} as:
 \begin{itemize}
   \item \textbf{Abstractness}: A model is a reduction of reality, removing or hiding detail that is irrelevant.
@@ -13,44 +13,64 @@ The qualities that an effective and useful model should posses are described in 
   \item \textbf{Predictiveness}: A model must be able to be used to predict the modeled systems non-obvious, yet interesting properties.
   \item \textbf{Inexpensive}: A model must be cheaper to construct and analyze than the modeled system.
 \end{itemize}
-These qualities are aimed for in the CSE model presented in this chapter.
+These qualities are aimed for in \modelname.
 
-During this research, the Mancoosi project developed two novel models to describe CSE;
-the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format (MOF) \citep{abate2011}.
-These models where created to be used in the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 16/4/2012},
-which is held to encourage research into component system evolution problems.
-To support this standard, and to be able to enter the MISC competition, a mapping from CUDF and MOF to the CSE model is necessary.
-The model presented in this chapter takes a higher view of the iterative process of component system evolution (as is the focus of this research), 
-where the CUDF and MOF models only look at single iteration of CSE (as was the purpose of their creation).
-This means that the CSE model in its entirity cannot be mapped to the CUDF and MOF models.
-
-The relationships between models that are used in this research to represent the CSE process are presented in figure \ref{formal.models}.
-This figure shows the CSE model (1),
-CUDF (2) and MOF (3), which are presented in this chapter.
-In chapter \ref{implementation} the Boolean satisfiability (SAT) problem (4), and an extension to the SAT problem with psuedo-Boolean (PB) \citep{dixon2004automating} constraints (5) is described.
-The CSE model is mapped to the ``SAT + PB'' model to enable an implementation to be developed to automate the evolution of a component system.
-In chapter \ref{ubunutsimulation}, the Debian \citep{Barth2005} package metadata model (6) is mapped to CUDF, this enables the simulation of the evolution of an Ubuntu system.
-This mapping is largely superficial as the CUDF model is based on the dpkg metadata.
+For \modelname to enable experimentation an implementation and a concrete syntax are required.
+\modelimpl is the implementation of \modelname, and is defined in Java.
+The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF) \citep{abate2011} 
+provide the expressiveness required of a concrete syntax.
+A CUDF document and MOF criteria can be parsed to create an instance of \modelimpl.
+The \modelimpl can also be serialized to create a CUDF document as a means to storing state.
+These relationships are described in figure \ref{formal.modeldiagram}.
 
 \begin{figure}[htp]
 \begin{center}
-  \includegraphics[width = .5\textwidth]{diagrams/models}
-  \caption{Relationships between models discussed in this thesis}
-  \label{formal.models}
+
+\digraph[scale=.5]{formalmodeldiagram}{
+rankdir=BT;
+\modelnamewx [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>\modelnamewx</TD></TR>
+</TABLE>
+> shape=none];
+\modelimplwx [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>\modelimplwx</TD></TR>
+</TABLE>
+> shape=none];
+modelinstance [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>:\modelimplwx</TD></TR>
+</TABLE>
+> shape=none];
+CM[label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>CUDF<BR/>MOF</TD></TR>
+</TABLE>
+> shape=none];
+CMI[label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
+  <TR><TD>Document:CUDF<BR/>Criteria:MOF</TD></TR>
+</TABLE>
+> shape=none];
+rank=max;
+\modelimplwx-> \modelnamewx [ label="implements" ]; 
+modelinstance -> \modelimplwx [ label = "instantiates"];
+CMI -> CM [ label="instantiates"];
+subgraph {
+rank=same;
+CMI -> modelinstance [ label="parse" ];
+modelinstance -> CMI [ label="serialize" ];
+}
+}
+  \caption[labelInTOC]{figureCaption}
+  \label{formal.modeldiagram}
 \end{center}
 \end{figure}
 
-The CSE process is modeled as a repetitive application of evolutionary steps.
-Each step satisfies a is the selection of an optimal component system that satisfies a user's request to evolve their system.
-This evolution step and the CSE model are described in section \ref{formal.step}.
-To define what an optimal system is, a user may have many various criteria.
-Through combining these criteria lexicographically, a single measure to select a component system for an evolutionary step.
-In section \ref{formal.opt} the multi-criteria problem of selecting an optimal evolution is explored.
-
-The mapping of the CUDF and MOF models to the presented CSE model is necessary to enable the participation in the MISC competition.
-It is also a useful 
-Finally in section \ref{formal.cudf}, the CUDF and MOF models are mapped to the CSE model.
+\modelname is presented in sections \ref{formal.step} and \ref{formal.opt}.
+CUDF and MOF are presented in section \ref{formal.cudf}, and a brief description of the parsing from a CUDF document to an instance of \modelname is given.
+The full mapping from CUDF to \modelname is given in 
  
 \section{Formal Model of Component System Evolution}
 \label{formal.step}
@@ -60,7 +80,7 @@ Further assume there are three spell-checker components available.
 To satisfy a users request for a text editor to be in the system, the system must evolve to a new system which includes the text-editor.
 Given the text-editor requires a spell checker, at least one of these spell checkers must also be in the evolved system.
 
-A formal model is presented in this section to represent such problems. 
+The \modelname model is presented in this section to represent such problems. 
 
 \subsection{Evolution Problem}
 An evolution problem defines the set of valid component systems that can be evolved to.
@@ -288,9 +308,12 @@ $=$ $\alpha_{t_n}$.
 This definition of the evolution function encapsulates the process of a component system evolving.
 This process is the focus of this thesis.
 
-A possible problem during this process is that a users change request could be undone with subsequent evolutions.
+\subsubsection{Prior User Requests}
+\begin{obs}
+A user's request may not be satisfied with subsequent evolutions.
+\end{obs}
 For example, if a user requests to install a text editor into the system, 
-the user would expect that after future evolutions, the text editor will be included in the system.
+the user would expect that in future the text editor will remain in the system.
 This property is not explicitly stated in the model, because (as described above) it is difficult to determine a users intention with a request.
 
 A similar problem is faced by the revision function in the domain of belief revision \citep{alchourron1985logic}.
@@ -299,8 +322,6 @@ This is similar, as a set of previous user requests should try to remain satisfi
 This problem with the evolution process is not further explored in this research, though belief revision may provide inspiration for future research.
 
 \subsubsection{Optimal Solutions}
-%%%This makes a sometimes counter intuitive complexity
-The definition of the evolution function allows the observation:
 \begin{obs}
 Multiple evolutionary steps may produce a less optimal component system than an equivalent, single evolutionary step.
 \end{obs}
@@ -412,14 +433,43 @@ Therefore, the tuple  $\langle rank^L_{\alpha},\leq_L \rangle$ is a criterion.
 This means that any number of criteria can be composed together using $\oplus$,
 and resulting criterion can then be used to define the evolution preference order $\prec_{\alpha}$
 
+
+\section{Implementation}
+\modelimpl is the implemenation of this model in Java.
+A component is class with attributes pair name and version as described in figure \ref{formal.componentclass}.
+\begin{figure}[htp]
+\begin{center}
+
+\digraph[scale=.5]{formalcomponentclass}{
+rankdir=BT;
+CM [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+  <TR><TD>Component</TD></TR>
+  <TR><TD>+name:String <BR/>+version:Integer</TD></TR>
+  <TR><TD></TD></TR>
+</TABLE>
+> shape=none];
+}
+  \caption[labelInTOC]{figureCaption}
+  \label{formal.componentclass}
+\end{center}
+\end{figure}
+
+A component system (or any set of components) is a \texttt{Set} of components, i.e. \texttt{Set<Component>}.
+Each constraint is a list of components \texttt{List<Constraint>},
+and each type of constraint is held in a variable of type \texttt{Set<List<Constraint>>}.
+
+
+
 \section{Common Upgradeability Description Format and Mancoosi Optimisation Format}
 \label{formal.cudf}
 %%%The description of the represnation of CUDF is described.
 The Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
 }
-specification presented by \citep{treinen2009common}, is a language to describe an evolution problem ($\delta_{t_i} \cup \omega_{t_i}$) and a component system ($\alpha_{t_{i-1}}$). 
-The Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}, is a language to describe an evolution preference order ($\prec_{\alpha_{t_{i-1}}}$).
-Together, CUDF and MOF provide express enough information to take a single evolutionary step.
+\citep{treinen2009common} and the Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}
+together are used as a concrete syntax for the \modelname.
+CUDF is parsed to create to a set of components $\mathbb{C}_{t_i}$, the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ and a component system $\alpha_{t_{i-1}}$.
+MOF is parsed to create an evolution preference order ($\prec_{\alpha_{t_{i-1}}}$).
 
 CUDF and MOF were created to allow the comparison of various solvers in the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012}.
 The MISC competition was held in both 2010 and 2011,
@@ -433,7 +483,7 @@ Finally, MOF is described and is mapped to the formal optimisation model.
 
 \subsection{CUDF Design}
 \label{formal.cudfDesign}
-The Mancoosi organisation is a research project committed to the improvement of the process of evolving Free and Open Source Software (FOSS) distributions.
+Mancoosi is a research project committed to the improvement of the process of evolving Free and Open Source Software (FOSS) distributions.
 Mancoosi looks at various problems within this domain, and have made many contributions.
 One such contribution was to organise a competition between solvers of the evolution problems of FOSS systems, MISC.
 This designed to encourage researchers and practitioners into researching the evolution problem.
