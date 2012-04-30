@@ -434,7 +434,7 @@ This was accomplished by running multiple large CUDF problems from the MISC to d
 \section{Simulation Validation}
 %%%This is validated to measure the difference to reality to find if the error is tolerable
 The validation of the implementation of the simulation is an important step in the use of this simulation.
-As no simulation exactly describes reality, this step validates that our assumptions does not make the simulation differ from reality to extensively.
+As no simulation exactly describes reality, this step validates that our assumptions do not make the simulation differ from reality to extensively.
 Therefore, this not only highlights the similarities to real component evolution, but also the differences.
 The identification of differences is important, as the assumptions made will lead to errors, these can be measured to find if the simulation is within tolerable error. 
 
@@ -448,7 +448,7 @@ The core output from this simulation is the resulting systems created during exe
 Looking at this output alone is difficult to state that it is correct, only that it looks correct.
 This process was iteratively done throughout development, as the core stakeholder is also the simulation developer.
 
-\subsection{Controlled Validation}
+\subsection{Validation via Recorded System}
 %%%Controlled Environment
 To attempt to validate this simulation a controlled system was created that updates every day over a time frame of November 1st to 30th in 2011.
 A computer had Ubuntu 11.10 (Oneiric Ocelot) installed on it, every day a script that used APT to update the system, and then saved the repository and the system state.
@@ -472,9 +472,9 @@ These can be used as a broad measure of validity, as they are symptoms of the ev
 
 %%%TODO Complete this validation
 
-\subsection{Validation against User Log}
+\subsection{Validation via User Logs}
 %%%Real User Log
-To further validate this simulation, the submitted user logs were compared with the output of the simulation.
+To further validate this simulation, the submitted user logs were compared with the output of the simulation, over a month.
 Some of the user logs fall within the dates of the simulation, this means that by generating custom user action sets these users actions can be directly simulated.
 Their update probabilities and install distributions can also be extracted and used to create similar simulated users, to validate the creating of user action sets.
 
@@ -488,7 +488,7 @@ The update and install criteria that used by the APT application, and the rest a
 \subsubsection{Validating Generating User Actions Sets}
 %%%Creating generated users, from the simulated versions to validate the generating of the users returns about the right results.
 The entire simulation depends on being able to generate users that abstract from real users.
-As discussed extensivly in this, and the previous, chapter this is a very difficult challenge.
+As discussed in this, and the previous, chapter this is a very difficult challenge.
 Through comparing generated user action sets with the real users that are meant to abstract them, the difference can be determined.
 Then by simulating these generated users, and comparing the results of the actions to the real system log the error that is caused by the generation can be measured.  
 
