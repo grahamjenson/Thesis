@@ -2,7 +2,8 @@
 \label{formal}
 \epigraph{We are like sailors who on the open sea must reconstruct their ship but are never able to start afresh from the bottom.}
 {\textit{Willard Van Orman Quine, Word and Object, 1960}}
-In order to facilitate the study of the component system evolution (CSE) process, a novel formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) has been developed.
+In order to facilitate the study of the component system evolution (CSE) process, 
+a novel formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) has been developed.
 
 \modelname allows the definition of concepts, and enables the discussion and investigation of CSE.
 The qualities that an effective and useful model should posses are described in \citep{Selic2003} as:
@@ -15,12 +16,11 @@ The qualities that an effective and useful model should posses are described in 
 \end{itemize}
 These qualities are aimed for in \modelname.
 
-For \modelname to enable experimentation an implementation and a concrete syntax are required.
-\modelimpl is the implementation of \modelname, and is defined in Java.
-The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF) \citep{abate2011} 
-provide the expressiveness required of a concrete syntax.
-A CUDF document and MOF criteria can be parsed to create an instance of \modelimpl.
-The \modelimpl can also be serialized to create a CUDF document as a means to storing state.
+For \modelname to enable experimentation a concrete syntax is required.
+This syntax is defined by in the CUDF* model created by combining and extending the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
+and the Mancoosi Optimisation Format (MOF) \citep{abate2011}.
+A CUDF* document can be parsed to create an instance of \modelname,
+and an instance of \modelname can be serialized into CUDF* document.
 These relationships are described in figure \ref{formal.modeldiagram}.
 
 \begin{figure}[htp]
@@ -28,39 +28,19 @@ These relationships are described in figure \ref{formal.modeldiagram}.
 
 \digraph[scale=.5]{formalmodeldiagram}{
 rankdir=BT;
-\modelnamewx [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>\modelnamewx</TD></TR>
-</TABLE>
-> shape=none];
-\modelimplwx [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>\modelimplwx</TD></TR>
-</TABLE>
-> shape=none];
-modelinstance [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>:\modelimplwx</TD></TR>
-</TABLE>
-> shape=none];
-CM[label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>CUDF<BR/>MOF</TD></TR>
-</TABLE>
-> shape=none];
-CMI[label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>Document:CUDF<BR/>Criteria:MOF</TD></TR>
-</TABLE>
-> shape=none];
+\modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx</TD></TR></TABLE>> shape=none];
+FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+CM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF<BR/>MOF</TD></TR></TABLE>> shape=none];
+CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF*</TD></TR></TABLE>> shape=none];
+CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
 rank=max;
-\modelimplwx-> \modelnamewx [ label="implements" ]; 
-modelinstance -> \modelimplwx [ label = "instantiates"];
-CMI -> CM [ label="instantiates"];
+FMI -> \modelnamewx [ label = "instantiates"];
+CMS -> CM [ label="extends"];
+CMI -> CMS [ label="instantiates"];
 subgraph {
-rank=same;
-CMI -> modelinstance [ label="parse" ];
-modelinstance -> CMI [ label="serialize" ];
+	rank=same;
+	CMI -> FMI [ label="parse" ];
+	FMI -> CMI [ label="serialize" ];
 }
 }
   \caption[labelInTOC]{figureCaption}
@@ -69,8 +49,7 @@ modelinstance -> CMI [ label="serialize" ];
 \end{figure}
 
 \modelname is presented in sections \ref{formal.step} and \ref{formal.opt}.
-CUDF and MOF are presented in section \ref{formal.cudf}, and a brief description of the parsing from a CUDF document to an instance of \modelname is given.
-The full mapping from CUDF to \modelname is given in 
+CUDF and MOF are presented in section \ref{formal.cudf}, and their extension to CUDF* is presented in section \ref{formal.cudf*}.
  
 \section{Formal Model of Component System Evolution}
 \label{formal.step}
@@ -177,7 +156,11 @@ However, if this constraint type was not included into this formalism, the evolu
 as one-in-three satisfiability can be reduced to a problem consisting of  constraint types \ref{formal.conflictconstraint} and \ref{formal.keepconstraint}.
 
 \subsection{Constraints and Requests}
-\label{formal.constraints}
+\label{formal.constraints}er, compassion was largely unrelated to how generous they were, according to the findings which are published in the most recent online issue of the journal Social Psychological and Personality Science.
+
+The results challenge a widespread assumption that acts of generosity and charity are largely driven by feelings of empathy and compassion, researchers said. In the study, the link between compassion and generosity was found to be stronger for those who identified as being non-religious or less religious.
+
+“Overall, we find that for less religious people, the strength of their emotional c
 An evolution problem is made of two sets of constraints; constraints created by the user's request to change the system, 
 and constraints required for the system to be valid.
 
@@ -298,15 +281,24 @@ Making no assumptions about the intent of the user's request is therefore the pr
 
 \begin{defs}
 Given a series of times $t_0,\ldots,t_n$, an initial component system $\alpha_{t_0}$, 
-a series of user requests $\delta_{t_1},\ldots,\delta_{t_n}$, a series of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$,
+sets of components $C_{t_1},\ldots,C_{t_n}$, a series of user requests $\delta_{t_1},\ldots,\delta_{t_n}$, a series of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$,
 and a series of evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$;
 the \textbf{evolution} function $\epsilon^*$ is defined as\\
 $\epsilon^*(\alpha_{t_0},\langle \delta_{t_1} \cup \omega_{t_1},\ldots,\delta_{t_n} \cup \omega_{t_n} \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_{t_0},\delta_{t_1} \cup \omega_{t_1}),\ldots),\delta_{t_n} \cup \omega_{t_n})$
 $=$ $\alpha_{t_n}$.
 \end{defs}
 
-This definition of the evolution function encapsulates the process of a component system evolving.
-This process is the focus of this thesis.
+This evolution function is the core definition in \modelname as it represents the process by which component systems evolve.
+The elements of this process, i.e. 
+\begin{itemize}
+  \item series of times $t_0,\ldots,t_n$
+  \item sets of components $C_{t_1},\ldots,C_{t_n}$
+  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$
+  \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$
+  \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$
+  \item initial system $\alpha_{t_0}$
+\end{itemize}
+must be defined in instances of \modelname.
 
 \subsubsection{Prior User Requests}
 \begin{obs}
@@ -434,49 +426,23 @@ This means that any number of criteria can be composed together using $\oplus$,
 and resulting criterion can then be used to define the evolution preference order $\prec_{\alpha}$
 
 
-\section{Implementation}
-\modelimpl is the implemenation of this model in Java.
-A component is class with attributes pair name and version as described in figure \ref{formal.componentclass}.
-\begin{figure}[htp]
-\begin{center}
-
-\digraph[scale=.5]{formalcomponentclass}{
-rankdir=BT;
-CM [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-  <TR><TD>Component</TD></TR>
-  <TR><TD>+name:String <BR/>+version:Integer</TD></TR>
-  <TR><TD></TD></TR>
-</TABLE>
-> shape=none];
-}
-  \caption[labelInTOC]{figureCaption}
-  \label{formal.componentclass}
-\end{center}
-\end{figure}
-
-A component system (or any set of components) is a \texttt{Set} of components, i.e. \texttt{Set<Component>}.
-Each constraint is a list of components \texttt{List<Constraint>},
-and each type of constraint is held in a variable of type \texttt{Set<List<Constraint>>}.
-
-
-
 \section{Common Upgradeability Description Format and Mancoosi Optimisation Format}
 \label{formal.cudf}
-%%%The description of the represnation of CUDF is described.
 The Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
 }
 \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}
-together are used as a concrete syntax for the \modelname.
-CUDF is parsed to create to a set of components $\mathbb{C}_{t_i}$, the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ and a component system $\alpha_{t_{i-1}}$.
-MOF is parsed to create an evolution preference order ($\prec_{\alpha_{t_{i-1}}}$).
+are standards proposed by the Mancoosi organisation.
+A CUDF document can be parsed to create a set of components $\mathbb{C}_{t_i}$, the user request $\delta_{t_i}$, the system constraints $\omega_{t_i}$,
+and a component system $\alpha_{t_{i-1}}$.
+A MOF criteria string can be parsed to create an evolution preference order ($\prec_{\alpha_{t_{i-1}}}$).
+This is enough information to execute a single evolutionary step with the $\epsilon$ function.
 
-CUDF and MOF were created to allow the comparison of various solvers in the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc/ accessed 6/3/2012}.
-The MISC competition was held in both 2010 and 2011,
-and was entered by various state of the art, and legacy, solvers that had been created, or modified, to solve CUDF problems, with MOF preference orders.
+To represent enough information to execute the $\epsilon^*$ function,
+CUDF and MOF are combined and extended into CUDF* model.
+A CUDF* document can be parsed to create a \modelname instance, and be used to simulate the evolution of a component based system.
 
-%%%In this section\ldots
-In this section the design principles and requirements of CUDF are described.
+In this section the CUDF and MOF specifications are described.
+
 A brief overview of a CUDF document is then presented.
 The CUDF specification is then mapped to our model of component system evolution.
 Finally, MOF is described and is mapped to the formal optimisation model.
@@ -489,7 +455,7 @@ One such contribution was to organise a competition between solvers of the evolu
 This designed to encourage researchers and practitioners into researching the evolution problem.
 
 An initial problem faced by the organisers of MISC, is that a common format was required to describe evolution problems.
-The design of this format would have to follow some design principles to ensure the results would be useful.
+The design of this format had to follow some design principles to ensure the results would be useful.
 These principles are presented in \citep{treinen2009common}, and are summarised as:
 
 \begin{itemize}

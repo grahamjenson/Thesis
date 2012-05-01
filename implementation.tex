@@ -23,47 +23,40 @@ The algorithms used to find an optimal solution to an optimal solution to the SA
 The CDR implementation, called GJSolver, created through this research is then described in section \ref{impl.gjsolver}.
 The specific requirements that GJSolver was developed towards, the formal mapping, and the implementation decisions are described.
 
-\digraph[scale=0.5]{implgraph}{
+\begin{figure}[htp]
+\begin{center}
+\digraph[scale=0.5]{implsatgraph}{
 rankdir=BT;
-\modelnamewx [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>\modelnamewx</TD></TR>
-</TABLE>
-> shape=none];
-\modelimplwx [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>\modelimplwx</TD></TR>
-</TABLE>
-> shape=none];
-modelinstance [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>:\modelimplwx</TD></TR>
-</TABLE>
-> shape=none];
-SAT [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>SAT</TD></TR>
-</TABLE>
-> shape=none];
-SATPB [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>SAT with PB</TD></TR>
-</TABLE>
-> shape=none];
-SATPBI [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5">
-  <TR><TD>:SAT with PB</TD></TR>
-</TABLE>
-> shape=none];
-\modelimplwx-> \modelnamewx [ label="implements" ]; 
-modelinstance -> \modelimplwx [ label = "instantiates"];
-SATPB -> SAT [label=extends];
-SATPBI -> SATPB [label=instantiates];
+SAT [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">SAT problem</TD></TR></TABLE>> shape=none];
 subgraph {
-rank=same;
-modelinstance -> SATPBI [label="maps to"];
-SATPBI -> modelinstance [label="maps to"];}
+	rank=same;
+	PBCrit [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">PB criteria</TD></TR></TABLE>> shape=none];
+	SATPB [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">SATwPB problem</TD></TR></TABLE>> shape=none];
 }
+\modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5">
+	<TR><TD WIDTH="150">\modelnamewx</TD></TR>
+</TABLE>> shape=none];
+\modelimplwx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5">
+	<TR><TD WIDTH="150">\modelimplwx</TD></TR>
+</TABLE>> shape=none];
+subgraph {
+	rank=same;
+	FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+	IMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+}
+SATPB -> SAT [label=extends];
+FMI -> \modelnamewx [ label = "instantiates"];
+IMI -> \modelimplwx [ label = "instantiates"];
+IMI -> FMI [label=maps dir=both]
+\modelimplwx -> SATPB [label="uses" ]
+\modelimplwx -> PBCrit [label="uses" ]
+}
+  \caption[labelInTOC]{figureCaption}
+  \label{impl.modelsatdiagram}
+\end{center}
+\end{figure}
+
+
 
 This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver Competition (MISC).  
 
@@ -266,7 +259,7 @@ Given the proper amendments to algorithms that solve SAT problems (some of which
 it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
 Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
 
-\subsection{Mapping to Formal Model}
+\subsection{Mapping of $\epsilon$}
 An evolutionary step function is defined given a set of components $\mathbb{C}_t$, an evolution problem $\delta_{t_i} \cup \omega_{t_i}$,
 a component system $\alpha_{t_{i-1}}$, and an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$.
 These are mapped to the above defined SAT problem with PB extensions such that:
@@ -300,7 +293,7 @@ Each type of constraint in $\delta_{t_i} \cup \omega_{t_i}$ can be mapped to a S
   \item \textbf{Inclusive Disjunction}: $a_1 \vee \ldots \vee a_n := \{a_1, \ldots,  a_n\}$ 
   \item \textbf{Dependence}: $a \rightarrow c_1 \vee \ldots \vee c_n := \{\neg a, c_1, \ldots, c_n\}$
   \item \textbf{Exactly One}: $a_1 + \ldots + a_n = 1 := $ a pseudo-Boolean constraint $f(P) = 1$, 
-  where $f$ described with the tuple of literals $\langle a_1 ,\ldots , a_n\rangle$ and the tuple of natural numbers $\langle 1_1,\ldots,1_n \rangle$,
+  where $f$ described with the tuple of literals $\langle a_1 ,\ldots , a_n\rangle$ and the tuple of natural numbers $\langle 1_1,\ldots,1_n \rangle$, %TODO not correct
 \end{enumerate}
 By mapping each constraint in an evolution problem $\delta_{t_i} \cup \omega_{t_i}$ as defined above, the set of clauses and PB constraints will define the formula $F$.
 

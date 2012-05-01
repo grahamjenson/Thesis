@@ -5,16 +5,37 @@ A simulation is the implementation of a model over time.
 A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
-{}To access various strategies when evolving a component system, the environment in which these evolutions occur must be studied.
-{}This study can be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
-{}Each of these options is discussed and weighed for their costs and benefits.
-{}The simulation method is selected as it has the best attributes required for this research.
+To access various strategies when evolving a component system, the environment in which these evolutions occur must be studied.
+This study can be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
+Each of these options is discussed and weighed for their costs and benefits.
+The simulation method is selected as it has the best attributes required for this research.
 
-{}The methodology outlined by \cite{Law2005} is used to create a valid and credible simulation.
-{}The basic artifact of this methodology is a ``conceptual model'', this is an simplified abstraction of reality.
-{}It describes the individual sub-models of the user, repository, and resolver; the variables in the configuration of the simulation;
-{}and the processes in which these variables are used to simulate reality.
-{}This chapter concludes with the discussion of the validation process of this conceptual model.
+The methodology outlined by \cite{Law2005} is used to create a valid and credible simulation.
+The basic artifact of this methodology is a ``conceptual model'', this is an simplified abstraction of reality.
+It describes the individual sub-models of the user, repository, and resolver; the variables in the configuration of the simulation;
+and the processes in which these variables are used to simulate reality.
+This chapter concludes with the discussion of the validation process of this conceptual model.
+
+\begin{figure}[htp]
+\begin{center}
+\digraph[scale=.5]{simmodeldiagram}{
+rankdir=BT;
+CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF*</TD></TR></TABLE>> shape=none];
+subgraph {
+	rank=same;
+	CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
+	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:Conceptual Model</TD></TR></TABLE>> shape=none];
+}
+ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">Conceptual Model</TD></TR></TABLE>> shape=none];
+CMI -> CMS [ label="instantiates"];
+ConMI -> ConM [ label="instantiates"];
+ConMI -> CMI [ label="creates"];
+}
+  \caption[labelInTOC]{figureCaption}
+  \label{sim.modeldiagram}
+\end{center}
+\end{figure}
+
 
 \section{Problem Definition}
 The problem addressed in this thesis is outlined by the research goal (previously defined in chapter \ref{introduction},
