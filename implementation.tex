@@ -1,12 +1,11 @@
-\chapter{Component Dependency Resolution}
+\chapter{GJSolver: \modelname implementation}
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
 
 %%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-In chapter \ref{formal} the process of component system evolution was defined as the iterative application of the evolutionary step function.
-This evolutionary step function can be automated into a process called Component Dependency Resolution (CDR).
-CDR takes the evolution problem and tries to return an optimal solution given some criteria.
+In chapter \ref{formal} the model \modelname was presented to describe the process of component system evolution.
+
 
 %%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
 In this chapter a novel CDR implementation, named GJSolver, is described.
@@ -42,7 +41,7 @@ subgraph {
 subgraph {
 	rank=same;
 	FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
-	IMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+	IMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelimplwx</TD></TR></TABLE>> shape=none];
 }
 SATPB -> SAT [label=extends];
 FMI -> \modelnamewx [ label = "instantiates"];

@@ -22,6 +22,33 @@ These objectives determine the included functionality and as the objectives chan
 Another influence on what actions a user takes is the perceived risk of taking an action, or not taking an action.
 For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
 
+\begin{figure}[htp]
+\begin{center}
+\digraph[scale=0.5]{criteriamapping}{
+rankdir=BT
+subgraph {
+	rank=same;
+	PB [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">PB Criteria</TD></TR></TABLE>> shape=none];
+	MOF [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">MOF</TD></TR></TABLE>> shape=none];
+	\modelnamewx [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx_criteria</TD></TR></TABLE>> shape=none];
+}
+subgraph {
+	rank=same;
+	PBI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:PB Criteria</TD></TR></TABLE>> shape=none];
+	MOFI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:MOF</TD></TR></TABLE>> shape=none];
+	IM [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx_criteria</TD></TR></TABLE>> shape=none];
+}
+PBI -> PB [ label = "instantiates"];
+MOFI -> MOF [ label = "instantiates"];
+IM -> \modelnamewx [ label = "instantiates"];
+MOFI -> IM [ label = "parses"];
+IM -> PBI  [ label = "maps to"];
+}
+  \caption[labelInTOC]{figureCaption}
+  \label{impl.criteriamapping}
+\end{center}
+\end{figure}
+
 %%%In this chapter\ldots
 In this chapter, the users that evolve component systems and their selection of strategy is explored. 
 Firstly, a survey that was given to users in order to determine their strategies of how they evolve their component systems is discussed in section \ref{strat.usersurvey}.

@@ -5,7 +5,7 @@
 In order to facilitate the study of the component system evolution (CSE) process, 
 a novel formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) has been developed.
 
-\modelname allows the definition of concepts, and enables the discussion and investigation of CSE.
+\modelname contains definitions of concepts that enables the discussion and investigation of CSE.
 The qualities that an effective and useful model should posses are described in \citep{Selic2003} as:
 \begin{itemize}
   \item \textbf{Abstractness}: A model is a reduction of reality, removing or hiding detail that is irrelevant.
@@ -19,8 +19,7 @@ These qualities are aimed for in \modelname.
 For \modelname to enable experimentation a concrete syntax is required.
 This syntax is defined by in the CUDF* model created by combining and extending the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
 and the Mancoosi Optimisation Format (MOF) \citep{abate2011}.
-A CUDF* document can be parsed to create an instance of \modelname,
-and an instance of \modelname can be serialized into CUDF* document.
+A CUDF* document can be parsed to create an instances of \modelname.
 These relationships are described in figure \ref{formal.modeldiagram}.
 
 \begin{figure}[htp]
@@ -40,7 +39,6 @@ CMI -> CMS [ label="instantiates"];
 subgraph {
 	rank=same;
 	CMI -> FMI [ label="parse" ];
-	FMI -> CMI [ label="serialize" ];
 }
 }
   \caption[labelInTOC]{figureCaption}
@@ -156,11 +154,7 @@ However, if this constraint type was not included into this formalism, the evolu
 as one-in-three satisfiability can be reduced to a problem consisting of  constraint types \ref{formal.conflictconstraint} and \ref{formal.keepconstraint}.
 
 \subsection{Constraints and Requests}
-\label{formal.constraints}er, compassion was largely unrelated to how generous they were, according to the findings which are published in the most recent online issue of the journal Social Psychological and Personality Science.
-
-The results challenge a widespread assumption that acts of generosity and charity are largely driven by feelings of empathy and compassion, researchers said. In the study, the link between compassion and generosity was found to be stronger for those who identified as being non-religious or less religious.
-
-“Overall, we find that for less religious people, the strength of their emotional c
+\label{formal.constraints}
 An evolution problem is made of two sets of constraints; constraints created by the user's request to change the system, 
 and constraints required for the system to be valid.
 
@@ -494,7 +488,7 @@ The design of such a format should follow the principles \citep{treinen2009commo
 
 The result of these design goals is the CUDF specification \citep{treinen2009common}, described in the following sections.
 
-\subsection{CUDF Document}
+\subsubsection{CUDF Document}
 In this section a brief description of the CUDF format is presented.
 This description is not a complete specification, but an overview of CUDF.
 Some aspects of CUDF are ignored (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
@@ -664,7 +658,7 @@ For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \
 Component $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
 
 
-\subsection{CUDF Example}
+\subsubsection{CUDF Example}
 \label{formal.example}
 An example of a CUDF document is presented in figure \ref{formal.CUDFEXAMPLE},
 to demonstrate how it can define a set of components $\mathbb{C}_{t_1}$, a system $\alpha_{t_{0}}$, 
@@ -789,6 +783,7 @@ with the $\oplus$ operator.
 This criterion can be used to create the optimality order $\prec_{\alpha}$ as described in definition \ref{formal.defcrittooptimal}.
 
 \subsubsection{Example}
+\label{formal.mofexample}
 An example of how MOF is used to define an evolution order is given using the example presented in section \ref{formal.example}.
 
 In this example, the component system $\alpha_{t_{0}}$ was  $\{syslib_1\}$, and there were three possible solutions:
@@ -821,22 +816,46 @@ Therefore, the order of optimality ($\prec_{\alpha_{t_{0}}}$) over the possible 
 This makes $s_1$ an optimal solution, as no other solutions $rank^{L}_{\alpha_{t_{0}}}$ is greater w.r.t. $\leq_L$. 
 
 \subsection{CUDF*}
-CUDF* is an extension and combination of the CUDF and MOF models in order to define a single document that can be mapped to a instance of \modelname.
-The notable differences between CUDF and CUDF* are:
+CUDF* is an extension and combination of the CUDF and MOF models created in order to define a single document that can be mapped to an instance of \modelname.
+The differences between CUDF and CUDF* are:
 \begin{itemize}
-  \item there can be multiple requests.
-  \item each request stanza must define a time, and MOF criteria string, where the time maps to $t_i$, the stanza maps to $\delta_{t_i}$, and a MOF criteria maps to $\prec_{\alpha_{t_{i-1}}}$.
-  \item the preamble defines the time $t_0$.
   \item each package description stanza must defines a time that the component first existed.
+  \item the preamble defines the time $t_0$. 
+  \item there can be multiple requests stanza's, where each request stanza must define a time $_i$, and MOF criteria string. 
+  The stanza maps to request $\delta_{t_i}$, and a MOF criteria maps to $\prec_{\alpha_{t_{i-1}}}$.
 \end{itemize}
-The final difference exists to create the sets of components $\mathbb{C}_{t_i}$ by including all components mapped from package descriptions that existed at (or before) time $t_i$.
+
+By defining when each package first existed, the set of components $\mathbb{C}_{t_i}$ can be found for any arbitrary time $t_i$.
+Additionally, the system constraints $\omega_{t_i}$ are extracted from only the components that existed at time $t_i$, i.e components in $\mathbb{C}_{t_i}$.
+
+The overall structure of a CUDF* document where the preamble defines $t_0$, and there are multiple requests each defining a time is presented in figure \ref{formal.cudfstarstruct}.
+\begin{figure}[htp]
+\centering
+\begin{tabular}{|c|}
+\hline preamble$_{t_0}$ \\ \hline
+\hline package description$_{1}$ \\ \hline
+\hline package description$_{2}$ \\ \hline
+ \multicolumn{1}{c}{\ldots}  \\ 
+\hline package description$_{i}$\\ \hline
+\hline request$_{t_1}$\\ \hline
+\hline request$_{t_2}$\\ \hline
+\multicolumn{1}{c}{\ldots}  \\
+\hline request$_{t_j}$\\ \hline
+\end{tabular}
+\caption{Structure of the CUDF* stanzas}
+\label{formal.cudfstarstruct}
+\end{figure}
+
+
+With these extensions, a CUDF* document is able to define the necessary elements in an instance of \modelname.
+For a full description of the process of parsing a CUDF* document to a \modelname instance, please refer to appendix \ref{apx.cudf}.
 
 \subsubsection{CUDF* Example}
 \label{formal.cudfstarexample}
 An example of a CUDF* document is presented in figure \ref{formal.CUDFstarEXAMPLE} that is similar to the example presented in \ref{formal.CUDFEXAMPLE}.
 This example is designed to to demonstrate the differences between CUDF, MOF and CUDF*.
 
-\begin{figure}[ht] 
+\begin{figure}[h] 
 \begin{center}
 \begin{alltt}
 preamble: 100
@@ -891,54 +910,62 @@ which includes:
   \item initial system $\alpha_{t_0}$
 \end{itemize}
 
+The initial component system $\alpha_{t_0}$ is $\{syslib_1\}$ (the same from the previous example).
 
-Time $t_0$ is defined in the preamble, such that $t_0 = 100$.
-Times $t_1$ and $t_2$ are defined in the requests as $t_1 = 200$, and $t_2 = 300$.
+The times are natural numbers, where $t_0$ is defined in the preamble as $t_0 = 100$, and $t_1$ and $t_2$ are defined in the requests as $t_1 = 200$ and $t_2 = 300$.
 
-The set of components $C_{t_0}$ is the set of components that existed at time $t_0$, $C_{t_0} = \{syslib_1\}$
-The set of components $C_{t_1}$ is the set of components that existed at time $t_1$, $C_{t_1} = \{syslib_1, syslib_2, textEditor_1, spellChecker_1\}$
-The set of components $C_{t_2}$ is the set of components that existed at time $t_2$, $C_{t_2} = \{syslib_1, syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
-
-The request $\delta_{t_1}$ is the constraint set $\{textEditor_1\}$.
-The request $\delta_{t_2}$ is the constraint set $\{tpspeller_1\}$.
-
-The set of system constraints $\omega_{t_1}$ is the constraint set $\{ textEditor_1 \rightarrow spellChecker_1$,
-$textEditor_1 \rightarrow syslib_2$, 
-$syslib_2 \rightarrow \neg syslib_1\}$.
-
-The set of system constraints $\omega_{t_2}$ is the constraint set $\{textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1$,
-$textEditor_1 \rightarrow syslib_2$, 
-$syslib_2 \rightarrow \neg syslib_1\}$.
-
-The evolution preference order $\prec_{\alpha_{t_0}}$ is defined from the $\langle rank^{L}_{\alpha_{t_{0}}}, \leq_L \rangle$ criterion mapped from the MOF criteria string \texttt{-change,-size}.
-The evolution preference order $\prec_{\alpha_{t_1}}$ is defined from the $\langle rank^{L}_{\alpha_{t_{1}}}, \leq_L \rangle$ criterion mapped from the MOF criteria string \texttt{-size,-change}.
-
-The initial component system $\alpha_{t_0}$ is $\{syslib_1\}$.
-
-$\alpha_{t_1} = \{syslib_2, textEditor_1, spellChecker_1\}$.
-
-
+The set of components $C_{t_i}$ is the set of components that existed at time $t_i$:
 \begin{itemize}
-  \item $\alpha_{t_2}^2 = \{syslib_2, textEditor_1, tpspeller_1\}$,
-  \item $\alpha_{t_2}^3 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
+  \item $C_{t_0} = \{syslib_1\}$
+  \item $C_{t_1} = \{syslib_1, syslib_2, textEditor_1, spellChecker_1\}$
+  \item $C_{t_2} = \{syslib_1, syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
+\end{itemize} 
+
+The system constraints $\omega_{t_i}$ are constructed from the set of components $C_{t_i}$:
+\begin{itemize}
+  \item $\omega_{t_1}$ $=$ $\{ textEditor_1 \rightarrow spellChecker_1$, $textEditor_1 \rightarrow syslib_2$,  $syslib_2 \rightarrow \neg syslib_1\}$
+  \item $\omega_{t_2}$ $=$ $\{textEditor_1 \rightarrow spellChecker_1 \vee tpspeller_1$,$textEditor_1 \rightarrow syslib_2$, $syslib_2 \rightarrow \neg syslib_1\}$.
 \end{itemize}
 
 
+The requests are installation requests:
 \begin{itemize}
-  \item $rank^{L}_{\alpha_{t_{1}}}(\alpha_{t_2}^1 ) = r_1 = (2, 2)$
-  \item $rank^{L}_{\alpha_{t_{1}}}(\alpha_{t_2}^2 ) = r_2 = (3, 1)$
+  \item $\delta_{t_1}$ $=$  $\{textEditor_1\}$.
+  \item $\delta_{t_2}$ $=$ $\{tpspeller_1\}$.
 \end{itemize}
 
-$\alpha_{t_2}$ is therefore $\{syslib_2, textEditor_1, tpspeller_1\}$
+The preference orders are extracted from the MOF criteria in each request.
+As described in section \ref{formal.mofexample} the MOF criterion \texttt{-size} is mapped to $crit_{size}$, and \texttt{-changed} maps to $crit_{change}$.  
+\begin{itemize}
+  \item the criteria $crit_{change} \oplus crit_{size}$ is used to define $\prec_{\alpha_{t_0}}$
+  \item the criteria $crit_{size} \oplus crit_{change}$ is used to define $\prec_{\alpha_{t_1}}$
+\end{itemize}
+
+Consider the evolution from $\alpha_{t_0}$ to $\alpha_{t_1}$.
+The only component system that satisfies the evolution problem $\delta_{t_1} \cup \omega_{t_1}$
+is $\{syslib_2, textEditor_1, spellChecker_1\}$.
+Therefore, $\alpha_{t_1} = \{syslib_2, textEditor_1, spellChecker_1\}$.
+
+Consider the evolution from $\alpha_{t_1}$ to $\alpha_{t_2}$.
+There exist two component systems that satisfy the evolution problem $\delta_{t_2} \cup \omega_{t_2}$:
+\begin{itemize}
+  \item $s_1 = \{syslib_2, textEditor_1, tpspeller_1\}$,
+  \item $s_2 = \{syslib_2, textEditor_1, spellChecker_1, tpspeller_1\}$
+\end{itemize}
+
+The evolution preference order $\prec_{\alpha_{t_1}}$ describes an order in which the minimum size of the system is the most significant attribute.
+As the system $s_1$ has size $2$, and the system $s_2$ has size $3$, the optimal solution is $s_1$.
+Therefore, $\alpha_{t_2} = \{syslib_2, textEditor_1, tpspeller_1\}$.
 
 This CUDF* document therefore describes the evolution of a component system from 
 $\{syslib_1\}$, to $\{syslib_2, textEditor_1, spellChecker_1\}$, then to $\{syslib_2, textEditor_1, tpspeller_1\}$.
+CUDF* documents can then be used to describe and study the CSE process. 
 
 \section{Summary}
 In this chapter the formal model \modelname is presented to describe the process of component system evolution.
-This evolution process was formally defined as the iterative application of an evolutionary step function.
-The languages of CUDF and MOF where mapped to the formal model and used to describe an evolutionary step.
-With these tools the evolution of a component system can be described and represented.
+How to compose multiple criteria into a single evolution preference order was then discussed.
+The CUDF and MOF were then presented and their parsing into a \modelname instance that represented a single evolutionary step was described.
+Given multiple steps are required to express the CSE process, CUDF* was presented as an extension and combination of the CUDF and MOF models.
+The mapping from a CUDF* document to a \modelname instance was then described.
 
-In the following chapters, the evolutionary step function is implemented and strategies that are used to evolve a system are discussed.
-These chapters bring the ideas and concepts presented in this chapter to a concrete level, to allow the study of the component system evolution process.
+The models presented in this chapter can be used to simulate and study the CSE process.
