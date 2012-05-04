@@ -38,7 +38,7 @@ CMS -> CM [ label="extends"];
 CMI -> CMS [ label="instantiates"];
 subgraph {
 	rank=same;
-	CMI -> FMI [ label="parse" ];
+	CMI -> FMI [ label="parsed to" ];
 }
 }
   \caption[labelInTOC]{figureCaption}
@@ -283,14 +283,14 @@ $=$ $\alpha_{t_n}$.
 \end{defs}
 
 This evolution function is the core definition in \modelname as it represents the process by which component systems evolve.
-An instance of \modelname will then contain: 
+An instance of \modelname will contain: 
 \begin{itemize}
-  \item a series of times $t_0,\ldots,t_n$
-  \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$
-  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$
-  \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$
-  \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$
-  \item initial system $\alpha_{t_0}$
+  \item a series of times $t_0,\ldots,t_n$.
+  \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$.
+  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$.
+  \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
+  \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
+  \item initial system $\alpha_{t_0}$.
 \end{itemize}
 
 \subsubsection{Prior User Requests}

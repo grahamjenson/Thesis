@@ -283,63 +283,6 @@ and the user who updates the most, is the most likely to install one package on 
 
 These values can be assigned to their configuration variables in order to represent typical users and to answer different questions.
 
-\subsection{Scripts of Processes}
-The processes described in chapter \ref{simulation} have been implemented using a set of BASH and Python scripts.
-First these scripts generate a user action files, which is a store for user actions so that they can be reused with different configurations.
-These are then used with the criteria for installation and updating by a script to generate CUDF problems and execute the simulation.
-
-\subsubsection{Generate User Script}
-%%%The process used to generate files
-The generate user script is an implementation of the process described in figure \ref{generateuser}, 
-it takes in the configuration and generates a set of tuples, which are stored in the user file format.
-An example of a user file is shown in figure \ref{userfile}.
-
-%%%The User file
-\begin{figure}[htp]
-\begin{center}
-1258110000.0;;;update
-1258196400.0;;;update
-1258282800.0;install:vinagre;;update
-1258369200.0;install:compiz-core;keep:vinagre;update
-1258455600.0;;keep:vinagre,compiz-core;update
-1258542000.0;install:gdebi;keep:vinagre,compiz-core;update
-  \caption[User File example]{An example of a User file}
-  \label{userfile}
-\end{center}
-\end{figure}
-
-This user file follows the grammar ``time;[install:PACKAGE[,PACKAGE]*]?;[keep:PACKAGE[,PACKAGE]*]?;[update]?''.
-This directly maps to the user action tuple with a time variable, an install action, a keep action, and an update action separated by a delimiter of ``;''.
-
-%%%Pratical differences between the pseudo code and real script, creating multiple users per configuration. And inputting multiple User cycles, and User install distribution to create 
-The practical use of this algorithm differs in a few aspects, that should be discussed.
-Firstly, given the random process introduced by probabilities in the configuration e.g. user package installation,
-a single generated user may not be representative of the entire group, so multiple users for the same configuration can be generated.
-
-As the simulation will also compare multiple different combinations of values, the script allows the input of multiple user update probabilities and multiple user install distributions.
-This will output all combinations of these values as user action files.
-
-The generation of multiple user action files has two benefits, it lowers the loading and processing of some of the data, notably package distributions, which can be intensive on computer resources.
-Also it makes the script more usable as generating many different user action files individually can be a time consuming task.
-
-\paragraph{Input}
-The way in which this generate user action script takes the user update probabilities, user install distributions and package probabilities are in individual file formats.
-
-The user update probabilities is a file consisting of one line that are the probabilities separated by the delimiter ``,'', e.g. .9,.85,.4
-
-In figure \ref{userprob} is an example of the file describing the probability distribution of a users likely hood to install a number of packages.
-Each line represents a user, each list of real numbers is a users probability distribution separated by the delimiter ``,''.
-The first line then means that a user has a 75.5\% chance of installing 0 packages, a 17.5\% chance of installing 1 package and a 5\% chance of installing 2 packages per day.
-
-\begin{figure}[htp]
-\begin{center}
-75.5, 17.5, 5.0
-73.0, 18.0, 6.0, 1.0
-54.0, 34.0, 9.0, 2.0
-\caption[Install Distribution Example File]{An example of a users installation distributions}
-\label{userprob}
-\end{center}
-\end{figure}
 
 In figure \ref{packageprob} the file is laid out as a list of lines, each line is package name, then an integer separated by a comma.
 The integer is the weight which represents the likelihood the package will be selected to be installed.
