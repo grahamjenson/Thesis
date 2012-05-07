@@ -2,39 +2,45 @@
 \label{formal}
 \epigraph{We are like sailors who on the open sea must reconstruct their ship but are never able to start afresh from the bottom.}
 {\textit{Willard Van Orman Quine, Word and Object, 1960}}
-In order to facilitate the study of the component system evolution (CSE) process, 
-a novel formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) has been developed.
+This chapter describes the model (\modelname) and the syntax (CUDF*) of a document used to describe the a component system's evolution. 
+These were developed to be used to simulate the evolution of a component system.
+They also enable the discussion of CSE as they define terms and concepts used in this domain.
 
-\modelname contains definitions of concepts that enables the discussion and investigation of CSE.
-The qualities that an effective and useful model should posses are described in \citep{Selic2003} as:
+The developed model is called \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution).
+\modelname aims for the qualities described in \citep{Selic2003}:
 \begin{itemize}
   \item \textbf{Abstractness}: A model is a reduction of reality, removing or hiding detail that is irrelevant.
-  \item \textbf{Understandability}: A model directly appeals to our intuition, to convey complex ideas with little intellectual effort.
+  \item \textbf{Understandability}: A model directly appeals to intuition, to convey complex ideas with little intellectual effort.
   \item \textbf{Accuracy}: A model must provide a true to life representation of the modeled system.
-  \item \textbf{Predictiveness}: A model must be able to be used to predict the modeled systems non-obvious, yet interesting properties.
+  \item \textbf{Predictiveness}: A model must be able to be used to predict the modeled system's non-obvious, yet interesting properties.
   \item \textbf{Inexpensive}: A model must be cheaper to construct and analyze than the modeled system.
 \end{itemize}
-These qualities are aimed for in \modelname.
+\modelname describes CSE as a series of evolution steps,
+where each step is in response to a user's request to change the system. 
 
-For \modelname to enable experimentation a concrete syntax is required.
-This syntax is defined by in the CUDF* model created by combining and extending the Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format (MOF) \citep{abate2011}.
-A CUDF* document can be parsed to create an instances of \modelname.
-These relationships are described in figure \ref{formal.modeldiagram}.
+The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
+and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have been used previously to describe component system evolution.
+A CUDF document and a MOF string can be used to describe a single evolution step.
+CUDF and MOF are therefore insufficient to describe a \modelname instance which may consist of multiple evolution steps.
+The CUDF* syntax was developed to describe a \modelname instance.
+CUDF* is a combination and extension of the CUDF and MOF models.
+An instance of CUDF* (known as a CUDF* document) can be parsed to create an instance of \modelname.
 
+The relationships between the models presented in this chapter are described in figure \ref{formal.modeldiagram}.
 \begin{figure}[htp]
 \begin{center}
-
 \digraph[scale=.5]{formalmodeldiagram}{
 rankdir=BT;
 \modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx</TD></TR></TABLE>> shape=none];
 FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
-CM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF<BR/>MOF</TD></TR></TABLE>> shape=none];
+CM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF</TD></TR></TABLE>> shape=none];
+MOF[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">MOF</TD></TR></TABLE>> shape=none];
 CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF*</TD></TR></TABLE>> shape=none];
 CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
 rank=max;
 FMI -> \modelnamewx [ label = "instantiates"];
 CMS -> CM [ label="extends"];
+CMS -> MOF [label=extends];
 CMI -> CMS [ label="instantiates"];
 subgraph {
 	rank=same;
@@ -46,8 +52,9 @@ subgraph {
 \end{center}
 \end{figure}
 
-\modelname is presented in sections \ref{formal.step} and \ref{formal.opt}.
-CUDF and MOF are presented in section \ref{formal.cudf}, and their extension to CUDF* is presented in section \ref{formal.cudf*}.
+In sections \ref{formal.step} and \ref{formal.opt} the \modelname model is defined and discussed.
+The CUDF and MOF models are then presented in section \ref{formal.cudf}, and their extension to CUDF* is presented in section \ref{formal.cudf*}.
+The description of parsing a CUDF* document to an instance of \modelname is presented in appendix \ref{apx.cudf}.
  
 \section{Formal Model of Component System Evolution}
 \label{formal.step}
