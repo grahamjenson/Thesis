@@ -2,12 +2,14 @@
 \label{formal}
 \epigraph{We are like sailors who on the open sea must reconstruct their ship but are never able to start afresh from the bottom.}
 {\textit{Willard Van Orman Quine, Word and Object, 1960}}
-This chapter describes the model (\modelname) and the syntax (CUDF*) of a document used to describe the a component system's evolution. 
-These were developed to be used to simulate the evolution of a component system.
+In the previous chapter, component system evolution (CSE) was described as the continual alteration of the composition of components in a system by a composer or user.
+Any change made during evolution must satisfy constraints to ensure that the resulting system is valid.
+
+This chapter describes a model (\modelname) and syntax (CUDF*) used to describe CSE. 
+These were developed to simulate the evolution of a component system.
 They also enable the discussion of CSE as they define terms and concepts used in this domain.
 
-The developed model is called \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution).
-\modelname aims for the qualities described in \citep{Selic2003}:
+The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aims for the qualities described in \citep{Selic2003}:
 \begin{itemize}
   \item \textbf{Abstractness}: A model is a reduction of reality, removing or hiding detail that is irrelevant.
   \item \textbf{Understandability}: A model directly appeals to intuition, to convey complex ideas with little intellectual effort.
@@ -15,16 +17,13 @@ The developed model is called \modelname (\textbf{Co}mponent \textbf{Sy}stem \te
   \item \textbf{Predictiveness}: A model must be able to be used to predict the modeled system's non-obvious, yet interesting properties.
   \item \textbf{Inexpensive}: A model must be cheaper to construct and analyze than the modeled system.
 \end{itemize}
-\modelname describes CSE as a series of evolution steps,
-where each step is in response to a user's request to change the system. 
+\modelname describes CSE as a series of evolution steps, where each step is in response to a user's request to alter the system. 
 
 The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have been used previously to describe component system evolution.
-A CUDF document and a MOF string can be used to describe a single evolution step.
-CUDF and MOF are therefore insufficient to describe a \modelname instance which may consist of multiple evolution steps.
-The CUDF* syntax was developed to describe a \modelname instance.
-CUDF* is a combination and extension of the CUDF and MOF models.
-An instance of CUDF* (known as a CUDF* document) can be parsed to create an instance of \modelname.
+and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have previously been used to describe a single evolution step.
+However, for the purpose of this thesis, this formats are insufficient due to the fact that \modelname describes CSE as a series of steps rather than a single step.
+To address this issue the CUDF* syntax was developed as a combination and extension of the CUDF and MOF models.
+A CUDF* document can be parsed to create an instance of \modelname.
 
 The relationships between the models presented in this chapter are described in figure \ref{formal.modeldiagram}.
 \begin{figure}[htp]
@@ -47,24 +46,22 @@ subgraph {
 	CMI -> FMI [ label="parsed to" ];
 }
 }
-  \caption[labelInTOC]{figureCaption}
+  \caption{A diagram of the relationships of CUDF* and \modelname}
   \label{formal.modeldiagram}
 \end{center}
 \end{figure}
 
 In sections \ref{formal.step} and \ref{formal.opt} the \modelname model is defined and discussed.
-The CUDF and MOF models are then presented in section \ref{formal.cudf}, and their extension to CUDF* is presented in section \ref{formal.cudf*}.
-The description of parsing a CUDF* document to an instance of \modelname is presented in appendix \ref{apx.cudf}.
+The CUDF* syntax is presented in section \ref{formal.cudf}.
+The complete description of parsing a CUDF* document to an instance of \modelname is presented in appendix \ref{apx.cudf}.
  
-\section{Formal Model of Component System Evolution}
+\section{\modelname Model of Component System Evolution}
 \label{formal.step}
-Consider the problem where a user wants to install a text-editor component into their system.
-For the text-editor to be functional in a component system, a spell-checker must also be in the system. 
-Further assume there are three spell-checker components available.
-To satisfy a users request for a text editor to be in the system, the system must evolve to a new system which includes the text-editor.
-Given the text-editor requires a spell checker, at least one of these spell checkers must also be in the evolved system.
-
-The \modelname model is presented in this section to represent such problems. 
+This section presents the \modelname model of component system evolution. 
+\modelname describes the evolution of a component system as a series of evolution steps.
+Each step tries to satisfy a user's request for change and the system constraints that ensure the system is valid.
+The selection problem (discussed in chapter \ref{background}) that occurs during and evolution step is also modeled.
+This is when multiple component systems satisfy the user's request and the system constraints, and the best solution for the user should be selected.
 
 \subsection{Evolution Problem}
 An evolution problem defines the set of valid component systems that can be evolved to.
@@ -95,10 +92,12 @@ This definition is not included in this model, though it may be possible to be m
 Constraints are used to restrict valid systems.
 \begin{defs}
 \label{formal.constraintdefs}
-A \textbf{constraint} is set of component systems, e.g. $con$ is a constraint and $con \subseteq 2^{\mathbb{C}}$.
+A \textbf{constraint} is a set of component systems, e.g. $con$ is a constraint and $con \subseteq 2^{\mathbb{C}}$.
 \end{defs}
 
-Only certain types of constraints are considered in this model, these types are:
+Only certain types of constraints are required to be able to describe component system evolution.
+Therefore, only certain types of constraint are considered in this model.
+There types are:
 \begin{enumerate}
   \item \textbf{Exclusion}: $\neg a := \{\alpha \in 2^{\mathbb{C}} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}.
   \item \textbf{Conflict}: $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}.
@@ -122,13 +121,12 @@ An \textbf{evolution problem} $EP$ is a finite set of constraints.
 \begin{defs}
 A \textbf{solution} to an evolution problem $EP$ is a component system  $\alpha$  that satisfies all constraints in the evolution problem, i.e. $\alpha \in con_i$ for all $con_i \in EP$.  
 \end{defs}
-A valid system, w.r.t. an evolution problem, is described as a solution to the evolution problem.
+A valid system with respect to an evolution problem, is described as a solution to the evolution problem.
 
 There can exist evolution problems that have no solution: 
 \begin{defs}
 An evolution problem is \textbf{unsatisfiable} if there exists no solution to it.  
 \end{defs}
-
 
 \subsubsection{Example}
 Assume the evolution problem $EP$ is defined as the set of two constraints $con_1$ and $con_2$, i.e. $EP = \{con_1,con_2\}$.
@@ -137,7 +135,7 @@ The constraint $con_2$ is $a \rightarrow c$ (constraint type \ref{formal.depende
 The component systems that satisfy both $con_1$ and $con_2$ are solutions to $EP$.
 Some solutions to $EP$ are $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
 
-\subsubsection{Complexity of the Evolution Problem}
+\subsubsection{Complexity of an Evolution Problem}
 When investigating the complexity of an evolution problem, the observation was made that:
 \begin{obs}
 Finding a solution to an evolution problem is NP-complete \citep{cook1971}.
@@ -166,7 +164,7 @@ An evolution problem is made of two sets of constraints; constraints created by 
 and constraints required for the system to be valid.
 
 \begin{defs}
-The set of \textbf{user requests} $\Delta$ is the set of all constraints, where each constraint in $\Delta$ is either:
+The set of \textbf{user's requests} $\Delta$ is the set of all constraints, where each constraint in $\Delta$ is either:
 \begin{itemize}
   \item an \textbf{installation} request of constraint type \ref{formal.keepconstraint}.
   \item a \textbf{remove} request of constraint type \ref{formal.removeconstraint}.
@@ -209,24 +207,24 @@ The set $T$ is the set of times, which it is strictly totally ordered under $<_{
 
 At any time, there exists only a finite set of components. 
 \begin{defs}
-$\mathbb{C}_{t}$ is the finite set of components that exist at time $t$, $\mathbb{C}_{t} \subset_{finite} \mathbb{C}$
+$\mathbb{C}_{t}$ is the finite set of components that exists at time $t$, $\mathbb{C}_{t} \subset_{finite} \mathbb{C}$
 \end{defs}
 
-At any point in time, the sets of system constraints and user request constraints must be with respect to the set of components that exist at that time.
+At any point in time, the sets of system constraints and user's request constraints are with respect to the set of components that exist at that time.
 \begin{defs}
 Given time $t$, and the set of components $\mathbb{C}_{t}$, the set of \textbf{system constraints w.r.t. time} is $\Omega_{t}$, where $\Omega_{t} = \{con \cap 2^{\mathbb{C}_{t}} \mid con \in \Omega\}$,
-and the set of \textbf{user requests w.r.t. time} is $\Delta_{t}$, where $\Delta_{t} = \{con \cap 2^{\mathbb{C}_{t}} \mid con \in \Delta\}$
+and the set of \textbf{user's requests w.r.t. time} is $\Delta_{t}$, where $\Delta_{t} = \{con \cap 2^{\mathbb{C}_{t}} \mid con \in \Delta\}$
 \end{defs}
 
 \begin{defs}
-Given a time $t$, a \textbf{user request}, $\delta_{t}$, is a finite set of user requests at time $t$, i.e. $\delta_{t} \subseteq_{finite} \Delta_{t}$;
+Given a time $t$, a \textbf{user's request}, $\delta_{t}$, is a finite set of user's requests at time $t$, i.e. $\delta_{t} \subseteq_{finite} \Delta_{t}$;
 and a set of \textbf{system constraints}, $\omega_{t}$, is a finite set of system constraints at time $t$, i.e. $\omega_{t} \subseteq_{finite} \Omega_{t}$.  
 \end{defs}
 
-An evolution problem, $EP$, can be defined by combining a user request $\delta_{t}$ and a set of system constraints $\omega_{t}$, such that $EP = \delta_{t} \cup \omega_{t}$.
+An evolution problem, $EP$, can be defined by combining a user's request $\delta_{t}$ and a set of system constraints $\omega_{t}$, such that $EP = \delta_{t} \cup \omega_{t}$.
 
 \subsubsection{Example}
-Consider the system constraint $con_1$ that is defined as $a \rightarrow b \vee d$, and the user request constraint $con_2$ defined as $a$ (a singleton installation constraint).
+Consider the system constraint $con_1$ that is defined as $a \rightarrow b \vee d$, and the user's request constraint $con_2$ defined as $a$ (a singleton installation constraint).
 The constraint $con_1$ can (but is not limited to) be satisfied by the component systems $\{\}$, $\{b\}$, $\{a,b\}$, $\{a,b,d\}$, and $\{a,d\}$,
 and the constraint $con_2$ can (but is not limited to) be satisfied by component systems $\{a\}$, $\{a,b\}$ and $\{a,b,d\}$.
 
@@ -235,16 +233,16 @@ The set of all component systems at time $t$ is $2^{\mathbb{C}_{t}} = \{\{\},\{a
 Therefore, at time $t$ component $d$ does not exist, therefore is not in $\mathbb{C}_{t}$, nor in any component system in $2^{\mathbb{C}_{t}}$.
 
 The system constraint $con_1' \in \Omega_{t}$, is such that $con_1' = con_1 \cap 2^{\mathbb{C}_{t}} = \{\{\},\{b\},\{a,b\}\}$.
-The user request constraint $con_2' \in \Delta_{t}$, is such that $con_2' = con_2 \cap 2^{\mathbb{C}_{t}} = \{\{a\},\{a,b\}\}$.
+The user's request constraint $con_2' \in \Delta_{t}$, is such that $con_2' = con_2 \cap 2^{\mathbb{C}_{t}} = \{\{a\},\{a,b\}\}$.
 
-Assume a set of system constraints $\omega_{t} = \{con_1'\}$, and a user request constraints $\delta_{t} = \{con_2'\}$.
+Assume a set of system constraints $\omega_{t} = \{con_1'\}$, and a user's request constraints $\delta_{t} = \{con_2'\}$.
 An evolution problem $\delta_{t} \cup \omega_{t}$, will have exactly one solution, the component system $\{a,b\}$.  
 
 \subsection{Component System Evolution}
 \label{formal.evo}
-A component system is evolved from one system to another to satisfy an evolution problem consisting of a user request and set of system constraints.
+A component system is evolved from one system to another to satisfy an evolution problem consisting of a user's request and a set of system constraints.
 Many evolution problems have multiple valid solutions, as evolution problems are generally under-constrained \citep{Berre2008}.
-As solutions have different properties, and a user may prefer one property over another; an order over the solutions exists.  
+As solutions have different properties, and a user may prefer one property over another, an order over the solutions exists.  
 
 \begin{defs}
 Given a component system $\alpha$, an \textbf{evolution preference order} is a strict partial order defined w.r.t. $\alpha$,  $\prec_{\alpha} \subseteq 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
@@ -261,28 +259,28 @@ a component system $\beta$ is \textbf{optimal} if $\beta$ is a solution to $EP$,
 \begin{defs}
 \label{formal.stepdef}
 Given times $t_{i-1}$ and $t_i$, a component system $\alpha_{t_{i-1}}$, an evolution preference order $\prec_{\alpha_{t_{i-1}}}$, 
-a user request $\delta_{t_i}$, and a set of system constraints $\omega_{t_i}$;
+a user's request $\delta_{t_i}$, and a set of system constraints $\omega_{t_i}$;
 the \textbf{evolution step} function  $\epsilon(\alpha_{t_{i-1}},\delta_{t_i} \cup \omega_{t_i})$ returns the component system $\alpha_{t_i}$ such that:
 \begin{itemize}
   \item iff the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is satisfiable, $\alpha_{t_i}$ is an optimal solution to $\delta_{t_i} \cup \omega_{t_i}$.
   \item iff the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is unsatisfiable, $\alpha_{t_i}$ equals $\alpha_{t_{i-1}}$.
 \end{itemize}
 \end{defs}
-If the evolution problem is unsatisfiable, the evolutionary step function does not evolve the system and returns the system $\alpha_{t_{i-1}}$.
+If the evolution problem is unsatisfiable, the evolution step function does not evolve the system and returns the system $\alpha_{t_{i-1}}$.
 Such a situation occurs when the user requests a change that either conflicts with itself, or conflicts with the system constraints.
 At the implementation level, if a request is unsatisfiable, typically a report will be returned to the user explaining why the evolution problem is unsatisfiable.
 This report may also include hints to the user as to how to make the request satisfiable.
 The report is not included in this model, as it is beyond the scope of the study.
 
-Another approach to take when an evolution problem is unsatisfiable would be to return a component system that maximises the number of satisfied constraints in the user's request.
-This approach, however, is made difficult because the intentions of a user's request are impossible to determine.
+If an evolution problem is unsatisfiable it could be possible to return a component system that maximises the number of satisfied constraints in the user's request.
+This approach, however, is difficult because the intentions of a user's request are impossible to determine.
 For example, if a user requested to install components $a$ and $b$, however either $a$ or $b$, but not both, could be installed, what component system should be returned?
-Given the user request, this is a question cannot be answered as the user may of only required both $a$ and $b$, and only installing one will not satisfy the user.
+Given the user's request, this question cannot be answered as the user may of only required both $a$ and $b$, and only installing one will not satisfy the user.
 Making no assumptions about the intent of the user's request is therefore the prudent approach taken in this model.
 
 \begin{defs}
 Given a series of times $t_0,\ldots,t_n$, an initial component system $\alpha_{t_0}$, 
-sets of components $C_{t_1},\ldots,C_{t_n}$, a series of user requests $\delta_{t_1},\ldots,\delta_{t_n}$, a series of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$,
+sets of components $C_{t_1},\ldots,C_{t_n}$, a series of user's requests $\delta_{t_1},\ldots,\delta_{t_n}$, a series of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$,
 and a series of evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$;
 the \textbf{evolution} function $\epsilon^*$ is defined as\\
 $\epsilon^*(\alpha_{t_0},\langle \delta_{t_1} \cup \omega_{t_1},\ldots,\delta_{t_n} \cup \omega_{t_n} \rangle)$ $=$ $\epsilon(\epsilon(\ldots \epsilon(\alpha_{t_0},\delta_{t_1} \cup \omega_{t_1}),\ldots),\delta_{t_n} \cup \omega_{t_n})$
@@ -294,13 +292,13 @@ An instance of \modelname will contain:
 \begin{itemize}
   \item a series of times $t_0,\ldots,t_n$.
   \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$.
-  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$.
+  \item sets of user's requests $\delta_{t_1},\ldots,\delta_{t_n}$.
   \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
   \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
   \item initial system $\alpha_{t_0}$.
 \end{itemize}
 
-\subsubsection{Prior User Requests}
+\subsubsection{Prior User's Requests}
 \begin{obs}
 A user's request may not be satisfied with subsequent evolutions.
 \end{obs}
@@ -310,23 +308,23 @@ This property is not explicitly stated in the model, because (as described above
 
 A similar problem is faced by the revision function in the domain of belief revision \citep{alchourron1985logic}.
 Revision functions try to preserve consistency across a set of beliefs as new, and possibly inconsistent, information is introduced.
-This is similar, as a set of previous user requests should try to remain satisfied with the component system, as the user requests to change the system.    
-This problem with the evolution process is not further explored in this research, though belief revision may provide inspiration for future research.
+This is similar, as a set of previous user's requests should try to remain satisfied with the component system, as the user requests to change the system.    
+This problem with the evolution process is not further explored in this research, while belief revision may provide inspiration for future research.
 
 \subsubsection{Optimal Solutions}
 \begin{obs}
-Multiple evolutionary steps may produce a less optimal component system than an equivalent, single evolutionary step.
+Multiple evolution steps may produce a less optimal component system than an equivalent, single evolution step.
 \end{obs}
 
 This can be demonstrated by describing an instance of \modelname.
-Let the evolutionary preference order select solutions with the minimum number of components altered (the symmetric difference between the solutions), 
+Let the evolution preference order select solutions with the minimum number of components altered (the symmetric difference between the solutions), 
 i.e. $\beta \prec_{\alpha} \beta'$ iff $|\alpha \Delta \beta| > |\alpha \Delta \beta'|$.
 Further, let:
 \begin{itemize}
   \item the times $0$, $1$ and $2$;
   \item the set of components $\mathbb{C}_0 = \mathbb{C}_1 = \mathbb{C}_2 = \{a,b,c,d\}$;
   \item the system at time $0$ be $\alpha_0 = \{\}$
-  \item a series of user requests be $\delta_1 = \{a\}$ and $ \delta_2 = \{c\}$
+  \item a series of user's requests be $\delta_1 = \{a\}$ and $ \delta_2 = \{c\}$
   \item the set of constraints $\omega_1 = \omega_2 = \{a \rightarrow b \vee c, c \rightarrow d\}$
 \end{itemize}
 
@@ -344,19 +342,19 @@ Further, consider the component evolution directly from $\alpha_0$ to $\alpha_2$
 \end{itemize}
 
 In this example, the system $\alpha_2$ is less optimal than the system $\alpha_2'$ w.r.t. the order $\prec_{\alpha_0}$.
-This counter-intuitive result shows that the incomplete knowledge of future user requests may effect the optimality of the evolved component system.
+This counter-intuitive result shows that the incomplete knowledge of future user's requests may effect the optimality of the evolved component system.
 
-\section{Optimal Component System Selection}
+\subsection{Optimal Component System Selection}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
 The order $\prec_{\alpha}$ is a preference order over component systems.
-Systems presented in chapter \ref{background} such as Eclipse P2, apt-get, aptitude, and MPM all define multiple criteria that express the preference in their systems.
+All systems presented in chapter \ref{background} such as Eclipse P2, apt-get, aptitude, and MPM, define multiple criteria that express the preference in their systems.
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
-A naive way to define the order $\prec_{\alpha}$, can be by defining a scoring function ($f: 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow \mathbb{R}$) for each criterion. 
+A simple way to define the order $\prec_{\alpha}$, can be by defining a scoring function ($f: 2^{\mathbb{C}} \times 2^{\mathbb{C}} \rightarrow \mathbb{R}$) for each criterion. 
 These functions can then be aggregated, e.g. using addition or multiplication (possibly with weights), and used to define $\prec_{\alpha}$.
 
-For example, a function that returns the number of component that have changed between systems is defined $f_{change}(\alpha,\beta) = |\alpha \Delta \beta|$.
+For example, a function that returns the number of components that have changed between systems is defined $f_{change}(\alpha,\beta) = |\alpha \Delta \beta|$.
 A function that returns the size of all components in a component system is defined $f_{size}(\alpha,\beta) = \sum \limits_{c \in \beta} size(c)$,
  where $size$ is a function that takes a component and returns its size in kilobytes.
 The evolution preference order could then be defined as $\beta \prec_{\alpha} \beta'$ iff $f_{change}(\alpha,\beta) + f_{size}(\alpha,\beta) > f_{change}(\alpha,\beta') + f_{size}(\alpha,\beta')$.
@@ -373,14 +371,14 @@ Defining the evolution preference order in this manner has some drawbacks:
 %%%Using composed orders
 A possibly more intuitive approach to define the evolution preference order is to define a ranking function that measures a component system against an arbitrary range.
 A criterion is then a ranking function and an order over its range. 
-By not reducing the problem to only real numbers information can be retained about the selection of a component system.
+By not reducing the problem to only real numbers, information can be retained about the selection of a component system.
 
-Each criterion can then be composed together using a lexicographic order into a composite criterion.
+Using a lexicographic order each criterion can then be composed together into a composite criterion.
 The lexicographic composition lets an order over the preference of criteria be defined, without having to assign arbitrary weights.
 This method has been used before in the MPM \citep{abate2011}.
-It is the selected mechanism to define the preference order in this thesis, and is defined in this section.
+It is the selected mechanism to define the preference order in this thesis, and is defined in the following section.
 
-\subsection{Criteria and Lexicographic Composition}
+\subsubsection{Criteria and Lexicographic Composition}
 In this section a criterion and the lexicographic composition of criteria are formally defined.
 
 \begin{defs}
@@ -423,17 +421,17 @@ This means that any number of criteria can be composed together using $\oplus$,
 and resulting criterion can then be used to define the evolution preference order $\prec_{\alpha}$
 
 
-\section{CUDF* concrete syntax for \modelname}
+\section{CUDF* Syntax}
 \label{formal.cudf}
-For \modelname to be practically used to study CSE, a concrete syntax to describe CSE problems and store results is required.
+For \modelname to be practically used to study CSE, a syntax to describe CSE problems is required.
 This syntax is defined in CUDF* which extends and combines the Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
 }
 \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}.
 
-A CUDF document can be parsed to create a set of components $\mathbb{C}_{t_1}$, the user request $\delta_{t_1}$, system constraints $\omega_{t_1}$,
+A CUDF document can be parsed to create a set of components $\mathbb{C}_{t_1}$, the user's request $\delta_{t_1}$, system constraints $\omega_{t_1}$,
 and a component system $\alpha_{t_{0}}$.
 A MOF criteria string can be parsed to create an evolution preference order ($\prec_{\alpha_{t_0}}$).
-Together CUDF and MOF provide only enough information to describe the evolutionary step from system  $\alpha_{t_{0}}$ to  $\alpha_{t_{1}}$.
+Together CUDF and MOF provide only enough information to describe the evolution step from system  $\alpha_{t_{0}}$ to  $\alpha_{t_{1}}$.
 
 To provide enough information to fully describe the CSE process, as defined by the $\epsilon^*$ function,
 CUDF and MOF are combined and extended into the CUDF* model.
@@ -442,7 +440,7 @@ which includes:
 \begin{itemize}
   \item a series of times $t_0,\ldots,t_n$
   \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$
-  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$
+  \item sets of user's requests $\delta_{t_1},\ldots,\delta_{t_n}$
   \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$
   \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$
   \item initial system $\alpha_{t_0}$
@@ -498,20 +496,17 @@ The result of these design goals is the CUDF specification \citep{treinen2009com
 \subsubsection{CUDF Document}
 In this section a brief description of the CUDF format is presented.
 This description is not a complete specification, but an overview of CUDF.
-Some aspects of CUDF are ignored (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
+Some aspects of CUDF are not taken into account (e.g. the formal type system) as a complete redefinition of the original specification is not the goal of this section.
 
-A CUDF document is a single plain text file, that represents all information necessary to define an evolutionary problem.
+A CUDF document is a single plain text file, that represents all information necessary to define an evolution problem.
 A document also contains the description of the set of components that make a component system.
 
-A CUDF document is separated into three sections, the preamble, the package descriptions, and the request.
-
+As shown in figure \ref{formal:cudfstruct}, a CUDF document is separated into three sections:
 \begin{itemize}
   \item \textbf{preamble} stanza: Defines the additional types used in the CUDF document.
   \item \textbf{package description} stanzas: typically the bulk of a CUDF document, this defines the set of components (using the FOSS term package).
-  \item \textbf{request} stanza: this defines the requested evolutionary change that should be made to the components .
+  \item \textbf{request} stanza: this defines the requested change that should be made to the components.
 \end{itemize}
-
-This structure is presented in figure \ref{formal:cudfstruct}.
 
 \begin{figure}[htp]
 \centering
@@ -624,8 +619,8 @@ depends: spellCheckerService
 \subsubsection{Request}
 \label{formal.cudfdes.request}
 The request stanza starts with the \verb+request:+ key (no value is required for this key).
-This stanza is mapped to the user request $\delta_{t_1}$.
-The request stanza contains three properties that define the user request to change the system.
+This stanza is mapped to the user's request $\delta_{t_1}$.
+The request stanza contains three properties that define the user's request to change the system.
 Each value is a list of \textbf{package formula} separated by the delimiter ``,''.
 The keys and values are:
 \begin{itemize}
@@ -823,6 +818,7 @@ Therefore, the order of optimality ($\prec_{\alpha_{t_{0}}}$) over the possible 
 This makes $s_1$ an optimal solution, as no other solutions $rank^{L}_{\alpha_{t_{0}}}$ is greater w.r.t. $\leq_L$. 
 
 \subsection{CUDF*}
+\label{formal.cudfstar}
 CUDF* is an extension and combination of the CUDF and MOF models created in order to define a single document that can be mapped to an instance of \modelname.
 The differences between CUDF and CUDF* are:
 \begin{itemize}
@@ -911,7 +907,7 @@ which includes:
 \begin{itemize}
   \item a series of times $t_0,t_1,t_2$
   \item sets of components $\mathbb{C}_{t_0},\mathbb{C}_{t_1},\mathbb{C}_{t_2}$
-  \item sets of user requests $\delta_{t_1},\delta_{t_2}$
+  \item sets of user's requests $\delta_{t_1},\delta_{t_2}$
   \item sets of system constraints $\omega_{t_1},\omega_{t_2}$
   \item evolution preference orders $\prec_{\alpha_{t_0}}, \prec_{\alpha_{t_{1}}}$
   \item initial system $\alpha_{t_0}$
@@ -969,10 +965,10 @@ $\{syslib_1\}$, to $\{syslib_2, textEditor_1, spellChecker_1\}$, then to $\{sysl
 CUDF* documents can then be used to describe and study the CSE process. 
 
 \section{Summary}
-In this chapter the formal model \modelname is presented to describe the process of component system evolution.
-How to compose multiple criteria into a single evolution preference order was then discussed.
-The CUDF and MOF were then presented and their parsing into a \modelname instance that represented a single evolutionary step was described.
-Given multiple steps are required to express the CSE process, CUDF* was presented as an extension and combination of the CUDF and MOF models.
-The mapping from a CUDF* document to a \modelname instance was then described.
+This chapter described the model \modelname and the syntax CUDF* which are used to represent component system evolution.
+Also presented was an example of parsing a CUDF* document to create an instance of \modelname to describe the evolution of a component system.
+The full description of parsing a CUDF* document to a \modelname instance is given in appendix \ref{apx.cudf}.
 
-The models presented in this chapter can be used to simulate and study the CSE process.
+Although a \modelname instance describes the evolution of a component system, it may require significant calculation to find the evolved component systems.
+To calculate these systems the following chapter presents the mapping an instance of \modelname to a problem that can be efficiently solved.
+Then it describes the process of finding a solution to that problem.
