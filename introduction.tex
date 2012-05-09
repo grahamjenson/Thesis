@@ -2,29 +2,21 @@
 \label{introduction}
 \epigraph{E pluribus unum -- Latin for "Out of many, one"}
 {\textit{de facto motto of the United States 1782 - 1956}}
+The study of the software evolution phenomenon of evolving a piece of software is regularly cited as over 50\% the total cost of the project.
 
-%%%TODO not a good comparison, this thesis is not about construction of component systems, but their evolution, look at Complex system evolution
-%%%The start of this thesis leads the reader to the idea that when building a complex system, breaking the probelm into parts is a natural and beneficial instinct
 Predicting how a software system will evolve is a very difficult task.
-This is because software is a complex system, and any change made may require further changes.
+This is because software is complex and any change made to it will be complex.
 
 %%%How do software engineers manage complexity
-To make evolution more predictable, software can be created using various techniques like the hierarchical decomposition of object orientation \citep{goldberg1983smalltalk}, 
+To make software evolution more predictable, software can be created using various techniques like the hierarchical decomposition of object orientation \citep{goldberg1983smalltalk}, 
 the decoupling of relationships through dependency inversion \citep{martin1996dependency}, 
 separation of concerns through aspect-oriented programming \citep{Kiczales1997},
 and the abstraction of knowledge through model driven engineering \citep{schmidt2006}.
 
 %%%What are Software components, why use software components
 Another method to manage the complexity of software is to break the system apart into independent units of composition called \textbf{software components} \citep{Szyperski2002}. 
-A core attribute of a software component is that it conforms to a \textbf{component model}.
-This model expresses the constraints that the component must satisfy to be used.
-This component model is the core difference between other modularisation techniques.
-
-A key argument for developers to construct a system using software components is the \textbf{evolvability} \citep{Szyperski2000}.
-The increased evolvability of software that is created using components 
-
-
-
+Changing a component system is less complex because it it done by either adding or removing components to or from the system.
+These granular changes make evolution  a key argument for the use of software components \textbf{evolvability} \citep{Szyperski2000}.
 
 %%%This research is looking at the key arguments of evolvability and extensibility through software evolution
 Extensibility and evolvability of component software come from the understanding that a system must change over time to be maintained, enhanced or fixed.
@@ -103,12 +95,12 @@ Over time, as the user requests many actions to evolve the system, the component
 This is the way in which a component system evolves, and how the strategy employed by the user effects this evolution is yet to be explored. 
 
 \section{Research Goals}
-The core themes of this thesis are component system evolution, user strategies and CDR.
-The selected method to explore these themes is through the simulation of the environment in which component evolution occurs.
-Various user strategies can be compared through altering the variables of the simulation and comparing their output.
+The core theme of this thesis is the study of the component system evolution (CSE) phenomenon.
+This study is conducted by simulating CSE and studying the results. 
+By altering various user strategies in the simulation, predictions can be made and recommendations given.
 The main research goal is then to:
 \begin{quote}
-Model component system evolution strategies that use component dependency resolution and assess them using a simulation that has been developed.
+An exploration of the component system evolution phenomenon by using a developed simulation in order to predict user strategies outcomes.
 \end{quote}
 
 This goals leads to various lines of inquiry including component system evolution, component dependency resolution, user strategies, and the simulation of component system evolution.
