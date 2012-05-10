@@ -2,14 +2,14 @@
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
-The previous chapter presented the model \modelname whose instances describe evolutions of component systems as a series of evolution steps.
-Each step evolves the component system to a new system that satisfies the user's request and system constraints, and is optimal with respect to some criteria.
-The process of calculating the resulting systems of the evolution steps is described as \textbf{resolving} a \modelname instance.
+The previous chapter presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
+Each step evolves the component system by satisfying a user request and system constraints with a new component system that is optimal with respect to some criteria.
+Calculating the resulting systems of these evolution steps is described as \textbf{resolving} a \modelname instance.
 Resolving a \modelname instance can require a significant effort due to the nature of the problem (as discussed in the previous chapter).
 
-This chapter describes the relationships between an instance of \modelname and \modelimpl problems.
-A \modelimpl problem is uses a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating},
-and lexicographically ordered pseudo-Boolean criteria. 
+This chapter describes the resolving of a \modelname instance by mapping each of its steps to, then solving, a \modelimpl problem.
+\modelimpl uses lexicographically ordered pseudo-Boolean criteria 
+to find an optimal solution to a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
 
 \begin{figure}[htp]
@@ -41,8 +41,9 @@ FMI -> \modelnamewx [ label = "instantiates"];
 The algorithm employed to solve \modelimpl problems is the novel lexicographic-iterative-strengthening algorithm.
 This algorithm uses the iterative strengthening \citep{calistri1994iterative, le2010sat4j} and Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithms.
 
-This chapter also describes the implementation GJSolver which takes a CUDF* document parses it into a a \modelname instance (as described in appendix \ref{apx.cudf}),
-and resolves it by solving \modelimpl problems.
+This chapter also describes the implementation GJSolver.
+GJSolver takes a CUDF* document parses it into a a \modelname instance (as described in appendix \ref{apx.cudf}),
+and resolves it with the process described in this chapter.
 The verification of GJSolver through the Mancoosi International Solver Competition (MISC) competition is also described.
 
 Firstly, in section \ref{impl.mapping} this chapter describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
@@ -52,16 +53,17 @@ Finally, in section \ref{impl.gjsolver} GJSolver is discussed, followed by the d
 \section{\modelimpl}
 \label{impl.mapping}
 A \modelname instance may consist of many evolution steps.
-Each of these steps consists of an evolution problem and an evolution preference order.
+Each of these steps involves satisfying an evolution problem with an optimal solution defined using an evolution preference order.
 To resolve a \modelname instance each evolution step is mapped to a \modelimpl problem.
-This problem uses the Boolean satisfiability problem (SAT) problem extended with pseudo-Boolean constraints (SAT+PB) to represent the evolution problem.
-It also uses the lexicographically ordered pseudo-Boolean criteria to represent the evolution preference order.
+A \modelimpl problem involves satisfying a SAT+PB problem with an optimal solution defined using lexicographically ordered PB criteria.
+By mapping each evolution problem to a SAT+PB problem, and each evolution preference order to lexicographically ordered PB criteria,
+a \modelname instance can be resolved.
 
-This section describes the SAT problem and its extension to include pseudo-Boolean constraints.
+This section describes the SAT problem and its extension to the SAT+PB problem by including pseudo-Boolean constraints.
 It also presents the \modelimpl problem as consisting of a SAT+PB problem with PB criteria. 
 The mapping from an evolution step of a \modelname instance to a \modelimpl problem is then described.
 
-\subsection{Boolean Satisfiability Problem}
+\subsection{Boolean Satisfiability Problem (SAT)}
 Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
 SAT was the first identified NP-Complete problem, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
 The fundamental difficulty of SAT problems, 
@@ -85,23 +87,24 @@ A SAT problem in CNF is defined as:
     \item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
     \item A \textbf{clause} is a set of literals 
     \item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
-    \item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
+    \item A \textbf{SAT problem} is a set of variables $V$ and a formula $F$
     \item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
     \item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
     \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
     \item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
-    \item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
+    \item A SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
-Assume a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = {a,b}$ and $\mathcal{C}_2 = {\neg b, c}$.
+Consider a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in \mathcal{C}_1$ and $\neg b \in \mathcal{C}_2$.
 However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $\mathcal{C}_2$.  
 
 
-\subsubsection{Pseudo-Boolean Extension of SAT}
-A typical extension of the SAT problem is where a clause in a CNF formula can be a pseudo-Boolean (PB) constraint \citep{dixon2004automating}.
-PB constraints consist of a linear relation over Boolean variables.
+\subsubsection{Pseudo-Boolean Extension of SAT to SAT+PB}
+A typical extension of the SAT problem is the inclusion of pseudo-Boolean constraints \citep{dixon2004automating} into SAT formula.
+This extends the SAT problem to a SAT+PB problem.
+PB constraints are a linear relation over Boolean variables.
 
 A pseudo-Boolean function takes a set of Boolean literals and returns an integer, e.g. given a set of literals $P$, $f(P) = 4$.
 \begin{defs}
@@ -115,31 +118,32 @@ where $f_i(P) = \begin{cases} a_i & l_i \in P \\ 0 & l_i \not \in P \end{cases}$
 For example, the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$,
  $f(\{x_1, x_2\})$ will equal $1$.
 
-A pseudo-Boolean constraint is a relation between a the function and a number, e.g. given a set of literals $P$, $f(P) \leq 3$.
+A pseudo-Boolean constraint is a relation between a PB function and an integer, e.g. given a set of literals $P$, $f(P) \leq 3$.
 \begin{defs}
 \label{impl.PBConstraint}
 A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relationship  $R$ in $\{\geq,>,\leq,<,=\}$, and an integer $k$, i.e. $\langle f,R,k\rangle$.
 \end{defs}
 
 \begin{defs}
-A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
+A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P)$ $R$ $k$.
 \end{defs}
 For example, the pseudo-Boolean $f$ described in the above example can be used to create the constraint $\langle f, >, 2 \rangle$.  
-This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4 > 2$, but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1 \not > 2$.
+This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4$ and $4 > 2$, 
+but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1$  and $ 1 \not > 2$.
 
-Pseudo-Boolean constraints can be included in the above defined SAT problem by first adding the definition of what a PB constraint is, and what satisfies a PB constraint:
-\begin{defs}
-{\ }
+A SAT problem can be extended to include pseudo-Boolean constraints by modifying definition \ref{impl.defSAT}.
+This extension is accomplished first by adding the definition of what a PB constraint is, and what satisfies a PB constraint:
+
+\textit{
 \begin{enumerate}
 \setcounter{enumi}{12}
   \item A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relation $R$ in $\{\geq,>,\leq,<,=\}$, and a number $k$, i.e. $\langle f,R,k\rangle$.
-  \item A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
+  \item A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P)$ $R$ $k$.
 \end{enumerate}
-\end{defs}
+}
 
-Second, by modifying the definition of what a formula can contain and what a solution to it is:
-\begin{defs}
-{\ }
+Secondly, by modifying the definition of what a formula can contain and what a solution to it is:
+\textit{
 \begin{enumerate}
 \setcounter{enumi}{5}
     \item A \textbf{formula} is a set of clauses and pseudo-Boolean constraints
@@ -149,19 +153,28 @@ Second, by modifying the definition of what a formula can contain and what a sol
     \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$,
     and for every pseudo-Boolean constraint $pb$ in $F$, $pb$ is satisfied by $P$. 
 \end{enumerate}
-\end{defs}
+}
 
-Pseudo-Boolean constraints, can be translated into CNF clauses, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
-Given the proper amendments to algorithms that solve SAT problems (some of which are described in \citep{Sheini2006}), 
-it can also be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
+Consider a SAT+PB problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2, \langle f, <, 2 \rangle\}$. 
+Clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$, 
+and the function $f$ is defined with the tuple of literals $\langle a, b\rangle$ and a tuple of integers $\langle 1,3\rangle$.
+A solution for this problem could be $\{a,\neg b,\neg c\}$ as $a \in \mathcal{C}_1$, $\neg b \in \mathcal{C}_2$, and $f(\{a,\neg b,\neg c\}) < 2$.
+However, $\{\neg a, b, c\}$ is not a solution because $f(\{\neg a, b, c\}) \not < 2$. 
+
+Pseudo-Boolean constraints can be translated into CNF clauses.
+However, with the extension to include pseudo-Boolean constraints problems can be exponentially more concise, 
+and more quickly solved \citep{dixon2004automating}.
+Additionally, only minor amendments may be required to allow SAT solving algorithms (e.g. DPLL) to also solve SAT+PB problems.
+Some such amendments are described in \citep{Sheini2006}, 
 
 \subsection{\modelimpl Problem}
 \label{impl.lexsatproblem}
-To find an optimal solution \modelimpl uses pseudo-Boolean criteria.
+In order to define a \modelimpl problem, criteria that define an optimal solution are required.
+The pseudo-Boolean criteria use a PB function to define an optimal solution.
 
 \begin{defs}
 A \textbf{pseudo-Boolean criterion} $\mathfrak{crit}$ is a tuple consisting of a pseudo-Boolean function $f$,
-a relation over integers $R$ that is either $<$ or $>$, and a SAT formula $I$ (as defined in \ref{impl.defSAT}),
+a relation over integers $R$ that is either $<$ or $>$, and a SAT+PB formula $I$,
 i.e. $\mathfrak{crit} = \langle f, R , I \rangle$.
 \end{defs}
 The formula $I$ is used to define the auxiliary variables that are used to represent values within the problem, but do not alter the problem.
@@ -177,23 +190,26 @@ $P$ and $P'$ are \textbf{equal} w.r.t. $\langle f,R, I \rangle$
 iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P) = f(P')$.
 \end{defs}
 Note that both $P$ and $P'$ must be solutions to the formula $F \cup I$, not just the formula $F$.
-This is to ensure that the auxiliary variables required by the criteria are used.
+This is to ensure that the auxiliary variables required by the criteria are available.
 
 \begin{defs}
 Given a SAT+PB formula $F$, a pseudo-Boolean criteria $\langle f,R, I \rangle$, and two sets of literals $P$ and $P'$, 
 $P$ is \textbf{greater than}  $P'$ w.r.t. $\langle f,R, I \rangle$
-iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P) R f(P')$.
+iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P')$ $R$ $f(P)$.
 \end{defs}
 
+These definitions are used to define the lexicographic order:
 \begin{defs}
 Given a formula $F$, lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$, and two sets of literals $P$ and $P'$,
-the $P$ is \textbf{lexicographically greater than} $P'$
+the $P$ is \textbf{lexicographically greater than}  $P'$ w.r.t. to $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
 iff there exists an $i$ between $1$ and $n$ where for all $j < i$, $P$ is equal to $P'$ w.r.t. to $\mathfrak{crit}_j$ and $P$ is greater than $P'$ w.r.t. $\mathfrak{crit}_i$.
 \end{defs}
 
+This lexicographic order is then used to define an optimal solution:
 \begin{defs}
 Given a formula $F$ and lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
-an \textbf{optimal solution} is a set of literals $P$ where no other set of literals $P'$ exist, such that $P'$ is lexicographically greater than $P$. 
+an \textbf{optimal solution} is a solution $P$ to $F$ 
+where no other solution $P'$ to $F$ exists such that $P'$ is lexicographically greater than $P$ w.r.t. to $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$. 
 \end{defs}
 
 A \modelimpl problem consists of:
@@ -201,7 +217,7 @@ A \modelimpl problem consists of:
   \item a tuple of lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
   \item a SAT+PB formula $F$
 \end{itemize}
-A solution to \modelimpl problem is the optimal solution w.r.t. to the PB criteria.
+A solution to \modelimpl problem is the optimal solution to $F$ w.r.t. to its PB criteria.
 
 \subsection{Mapping \modelname Instance to \modelimpl Problem}
 \label{impl.mapping}
@@ -215,9 +231,10 @@ An instance of \modelname contains:
   \item initial system $\alpha_{t_0}$.
 \end{itemize}
 
-For each $i$ between $1$ and $n$ a step is defined as:
+For each $i$ between $1$ and $n$ there is an evolution step.
+Each step consists of:
 \begin{itemize}
-  \item time $t_i$
+  \item a time $t_i$
   \item the set of components $\mathbb{C}_{t_i}$ 
   \item an evolution problem $\delta_{t_i} \cup \omega_{t_i}$
   \item an evolution preference order $\prec_{\alpha_{t_{i-1}}}$
@@ -227,10 +244,10 @@ For each $i$ between $1$ and $n$ a step is defined as:
 To resolve a \modelname instance each step is mapped to a \modelimpl problem which consists of a SAT+PB formula $F$ 
 and lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$.
 
-Firstly the set of components $\mathbb{C}_{t_i}$ are mapped to variables, i.e $\mathbb{C}_{t_i} \subseteq V_{t_i}$.
+The set of components $\mathbb{C}_{t_i}$ are variables in the problem, i.e $\mathbb{C}_{t_i} \subseteq V_{t_i}$.
 
 \begin{defs}
-  \item A component system $\alpha_{t_{i-1}}$ is mapped to a set of literals where
+	A component system $\alpha_{t_{i-1}}$ is mapped to a set of literals where
    $\alpha_{t_{i-1}} := \alpha_{t_{i-1}} \cup \{\neg c \mid c \in \mathbb{C}_{t_i}$ and $ c \not \in \alpha_{t_{i-1}}\}$.
 \end{defs}
 A component system $\alpha_{t_{i-1}}$ is mapped to a set of literals that is the union of $\alpha_{t_{i-1}}$ and the set of negative literals of components not in $\alpha_{t_{i-1}}$.
@@ -262,18 +279,25 @@ by mapping each criterion $crit_{i}$ to a PB criterion $\mathfrak{crit}_i$.
 
 A criterion $\langle rank_{\alpha} ,\leq \rangle$ maps to a PB criteria $\langle f, R , I \rangle$ iff:
 \begin{itemize}
-  \item $R$ must equal $\leq$.
-  \item given a solution $P$ to $I$, where $P$ maps to the component system, $\beta$, $f(P) = rank_{\alpha}(\beta)$. 
+  \item $R$ equals the strict order of $\leq$.
+  \item given a solution $P$ to formula $I$, and $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$. 
 \end{itemize} 
 
-Given the evolution preference order must be created from lexicographically composed criteria,
-and not all criteria can be mapped to PB criteria, only a partial mapping of evolution preference orders in \modelname can be mapped to PB criteria tuples.
-Of the criteria that can be mapped, generalizing their mapping may be a difficult and unrewarding challenge.
+To map an evolution preference order to the PB criteria,
+it must be defined with the lexicographically composed criteria.
+To map a criterion to a PB criterion, it must satisfy the above constraints.
+This means that:
+\begin{itemize}
+  \item not all evolution preference orders can be described with lexicographically ordered PB criteria
+  \item not all criteria can be mapped to PB criteria
+\end{itemize} 
+Therefore, the mapping from evolution preference orders to PB criteria is a partial mapping.
+
+Of the criteria that can be mapped to PB criteria, generalizing their mapping may be a difficult and unrewarding challenge.
 This is because many of the criteria that can be defined are not desirable, e.g. maximising the number of components whose name starts with the letter \texttt{a}.
-Therefore, only specific set of criteria are mapped from \modelname to \modelimpl.
+Therefore, only specific set of criteria are mapped.
 These criteria are presented in chapter \ref{strategies}. 
 
-\paragraph{Example}
 To further describe the mapping from a criterion to a PB criteria, an example is presented.
 Consider two components $a$ and $b$, a criterion $\langle rank_{\alpha},< \rangle$, whose ranking function $rank_{\alpha}$ is defined:
 
@@ -287,9 +311,9 @@ This variable must be  converted to the set of CNF clauses, and included in $I$,
 i.e. $I = \{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
 The PB function $f$ is defined with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$.
 
-The criterion $\langle rank_{\alpha},< \rangle$ maps to $\langle f, < , I \rangle$,
-as the relationship from the criterion equals the relationship from the PB criterion;
-given a solution $P$ to $I$, where $P$ maps to the component system, $\beta$, $f(P) = rank_{\alpha}(\beta)$
+The criterion $\langle rank_{\alpha}, \leq \rangle$ maps to $\langle f, < , I \rangle$,
+as the strict order $<$ from the criterion equals the order $<$ in the PB criterion;
+given a solution $P$ to $I$, where $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$.
 This can is shown in table \ref{impl.critmapexmp}.
 \begin{table}[h!]
 \centering
@@ -305,7 +329,6 @@ $\{ a,  b, x\}$                 & $\{a,b\}$                & 1                  
 \label{impl.critmapexmp}
 \end{table}
 
-
 \section{Solving a \modelimpl problem}
 \label{impl.algorithms}
 Above a description is given how to map and instance of \modelname to \modelimpl problems.
@@ -317,37 +340,40 @@ These algorithms and their purposes are:
   \item the novel lexicographic iterative strengthening algorithm is used to find a solution to a \modelimpl problem.
 \end{itemize}
 
-The lexicographic iterative strengthening algorithm is an anytime algorithm, it can return a valid solution to a \modelimpl algorithm even if it is interrupted.
-However, if interrupted the solution returned may not be the optimal solution to the problem.
-This anytime behaviour is important as finding an optimal solution can be a practical problem.
-The interruption of the algorithm, although not preferred, is a practical necessity to solve \modelimpl problems.
+The lexicographic iterative strengthening algorithm is an anytime algorithm.
+It has been designed to return a solution to a \modelimpl problem, even if it is interrupted.
+If interrupted however, the returned solution may not be an optimal solution.
+The reason for this anytime behaviour is that \modelimpl problems can be very difficult to solve.
+This difficulty can make solving some problems take an impractical amount of time.
+It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
+and interrupt it when this time limit is reached. 
 
 Finally, this section describes how a \modelname instance is resolved by mapping to \modelimpl problems.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
-The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} for solving SAT problems is a complete (meaning it will find a solution if one exists), 
-backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
+The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is a complete (meaning it will find a solution if one exists), 
+backtracking-based search algorithm for solving SAT and SAT+PB problems.
 
-DPLL takes a formula $F$ and a set of literals $P$ (described as a partial assignment), and return a solution to $F$ if $P$ is a partial solution, 
+DPLL takes a formula $F$ and a set of literals $P$ (described as a partial assignment), and returns a solution to $F$ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
 When \texttt{DPLL} is called without a value $P$, $P$ is defaulted to equal the empty set .
-By first calling \texttt{DPLL} with $P$ being the empty set, by adding literals to $P$, then recursively calling itself; 
-the DPLL function searches for whether a solution to the formula exists, 
-i.e the formula is satisfiable.
+By first calling \texttt{DPLL} with $P$ as the empty set, then adding literals to $P$ and recursively calling itself; 
+the DPLL function searches for whether a solution to the formula is satisfiable.
 The DPLL algorithm in defined in figure \ref{impl.DPLL} (a slight modification of the algorithm presented in \citep{dixon2004automating}):
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
-function DPLL(\(F, P\))
+function DPLL(\(F, P\)):
    \(P\) = unit-propagate(\(F, P\))
    if \(P\) is not consistent:
        then return UNSATISIFABLE;
    if \(P\) is a solution to \(F\):
        then return \(P\);
    \(l\) = decide\((P)\);
-   if DPLL\((F, P \cup \{l\})\) != UNSATISIFABLE 
-       return DPLL\((F, P \cup \{l\})\)
+   \(answer\) = DPLL\((F, P \cup \{l\})\)
+   if answer != UNSATISIFABLE 
+       return answer
    else
        return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
@@ -356,13 +382,13 @@ function DPLL(\(F, P\))
 \end{center}
 \end{figure}
 
-The first function call to \texttt{unit-propagation} derives additional literals that are added to the partial assignment $P$ (this function is discussed later in section \ref{impl.unit}).
-The \verb+if+ branch returns \texttt{UNSATISIFABLE} if the partial assignment $P$ is inconsistent.
-The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning the solution $P$.
-The \texttt{decide} function returns a literal $l$ that is not in $P$, nor whose negation $\neg l$ is in $P$ (this function is discussed later in section \ref{impl.litorder}).
-The search is then continued by adding the literal $l$ to $P$ and checking if that is a partial solution using \texttt{DPLL}.
-If the partial assignment $P$ with $l$ is a is a partial solution, then \texttt{DPLL} does not equal \texttt{UNSATISIFABLE} and the found solution is returned.
-However, if $P$ with $l$ is not a partial solution, then $P$ with $\neg l$ is checked to be a partial solution.
+\texttt{DPLL} first calls the \texttt{unit-propagation} function (further described in section \ref{impl.unit}) which derives literals that must be in $P$ if it is a solution.
+Next DPLL checks whether $P$ is inconsistent, which means it is not a partial assignment.
+Then DPLL checks if $P$ is a solution to $F$, at which point $P$ is returned.
+The \texttt{decide} function (further discussed in section \ref{impl.litorder}) returns a literal $l$ that is not, nor whose negation is in $P$.
+The literal $l$ is added to $P$, which is then checked to be a partial solution by recursively calling \texttt{DPLL}.
+If $P$ with $l$ is a solution then the found solution is returned,
+otherwise the search continues by adding $\neg l$ to $P$ and checking if it is a partial solution by calling \texttt{DPLL}.
 
 \subsubsection{Unit Propagation}
 \label{impl.unit}
@@ -371,10 +397,7 @@ This function uses the clauses in the formula, and the partial assignment to ide
 
 \begin{defs}
 Given a partial assignment $P$, a clause $\mathcal{C}$ is called \textbf{unit} iff $\mathcal{C}$ is not satisfied by $P$, and $P$ contains all but one of the literals in $\neg \mathcal{C}$.
-\end{defs}
-
-\begin{defs}
-Given a partial assignment $P$, a literal $l$ is called a \textbf{unit literal} iff $l$ is in a unit clause $\mathcal{C}$, and $\neg l \not \in P$.  
+The literal whose negation is not in $P$ is called a \textbf{unit literal}. 
 \end{defs}
 
 For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but neither $a$ or $\neg a$.
@@ -382,17 +405,17 @@ The literal $a$ is then a unit literal.
 
 For a formula to be satisfiable given partial assignment, each unit literal must be included in the partial assignment,
 because if their negation is included the clause is not satisfied by the partial assignment.
-For example, given a formula $\{c\}$, where $\mathcal{C} = \{a,b\}$;
+For example, given a formula $\{\mathcal{C}\}$, where $\mathcal{C} = \{a,b\}$;
 given the assignment $\{\neg a\}$ the clause $\mathcal{C}$ is unit and unit literal is $b$.
-If $\neg b$ where in the partial assignment, $\mathcal{C}$ would not be satisfied by the partial assignment,
-therefore $b$ must be in the partial assignment for it to be a partial solution.
+If $\neg b$ were in the partial assignment, $\mathcal{C}$ would not be satisfied by $P$.
+Therefore, $b$ must be in the $P$ for $\mathcal{C}$ to be satisfied.
 
 The process of unit propagation is defined in figure \ref{impl.propagation}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
 unit-propagate(\(F, P\)):
-  while P is consistent and there exists a \(\mathcal{C} \in F\) that given \(P\) is unit:
+  while \(P\) is consistent and there exists a \(\mathcal{C} \in F\) that given \(P\) is unit:
     \(l\) = unit literal in \(\mathcal{C}\)
     \(P\) = \(P \cup \{l\}\)
   return \(P\)
@@ -404,23 +427,20 @@ unit-propagate(\(F, P\)):
 
 \subsubsection{Decide}
 \label{impl.litorder}
-The function \verb+decide+ returns a literal that is not in the partial assignment, nor whose negation is in the partial assignment.
+The function \verb+decide+ takes a partial assignmnet $P$ and returns a literal $l$ such that $l \not \in P$ and $\neg l \not \in P$.
 That is, if $l =$ \verb+decide+$(P)$, then $\{l\} \not \in P$ and $\{\neg l\} \not \in P$.
-This literal is then added to the partial assignment as an assumption that it might be in the final solution.
-This assumption is checked to be correct or not by recursively calling the \texttt{DPLL} function again with the new partial assignment.
+This literal is the point which the algorithm branches.
+The order in which the \verb+decide+ function selects literals to branch on is also known as the literal order.
+This order greatly impacts the efficiency of DPLL, as selecting literals that are in a solution (if one exists) would quickly return the result.
 
-The order in which the \verb+decide+ function selects literals is also known as the literal order.
-This order greatly impact the efficiency of the algorithm, as selecting literals that are in a solution (if one exists) is the goal.
-
-\subsection{Advancements in SAT Solvers}
-Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been significantly altered to increase efficiency.
+\subsection{DPLL Advancements}
+Though the DPLL algorithm is the basis of many modern SAT solvers, the actual implementations have been altered to increase efficiency.
 Some changes, including the use of conflict learning, backjumping, and watched literals, are briefly described here.
-This section should give a broad overview of the techniques used in current SAT solvers, 
-in order to show that their application to problems like component evolution is justified. 
+This section is aimed at giving a broad overview of techniques used in current solvers.
 
 \subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished by remembering what unit clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
+This is accomplished by remembering what clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
 This process works by identifying a variable both inferred to be true and false,
 then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
 This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
@@ -458,8 +478,8 @@ These attempts were shown to work well on random SAT problems but be less effici
 
 It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
 The naive approach to unit propagation is to examine every clause, and then every literal in the clause to find if it is unit or not.
-A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of having the clauses examined, 
-the clauses maintain an index of the necessary literals and notify the algorithm when they become unit.
+A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of examining each clause, 
+the clauses maintain an index of all necessary literals and notify the algorithm when they become unit.
 This ``don't call us, we will call you'' concept makes the efficiency of the unit propagation function less dependent on the amount of clauses in the formula.
 
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
@@ -467,9 +487,9 @@ Such algorithms enable larger formulae to be solved without necessarily increasi
 
 \subsection{Iterative Strengthening}
 The iterative strengthening algorithm  \citep{calistri1994iterative, le2010sat4j} 
-is an anytime algorithm using constraint satisfaction to iteratively find better solutions t a SAT+PB formula w.r.t. a PB criteria.
+is an anytime algorithm using constraint satisfaction to iteratively find better solutions to a SAT+PB formula w.r.t. a PB criteria.
 This algorithm can be used to find optimal solutions to an evolution problem, given a pseudo-Boolean criterion.
-This is done by first finding a solution, then iteratively adding constraints created from the criterion to ensure the next solution found will be better than the previous solution.
+This is done by first finding a solution, then iteratively adding constraints (created using the criterion) to ensure the next solution found will be better than the previous solution.
 This is the strengthening process.
 Strengthening continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
 This algorithm is defined in figure \ref{impl.strength}.
@@ -508,10 +528,7 @@ The variable $model$ is a set of literals, used as a store of the currently best
 
 The function \texttt{strengthen} is then called to create a formula $J$.
 The formula $J$ ensures that if \texttt{DPLL} is called with formula $F \cup J$, either:
-\begin{itemize}ula I is used to define the auxiliary variables that are used to represent values
-within the problem, but do not alter the problem. Auxiliary variables have been used
-before in si
-  \item 
+\begin{itemize}
   \item a solution is returned that is better (w.r.t. the criterion) than the currently best found solution $model$. 
   \item \texttt{UNSATISIFABLE} is returned, showing that no better solution exists.
 \end{itemize}

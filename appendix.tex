@@ -395,7 +395,7 @@ where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{upg
 
 \subsection{Criteria}
 Given a CUDF* document, an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$ is extracted from the value $r$.\texttt{criteria} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
-The value $r$.\texttt{criteria} is a list of \verb+criterion+ separated by the delimiter ``\verb+,+'' that can be mapped to a tuple o strings $\langle criterion_1, \ldots, criterion_n \rangle$.
+The value $r$.\texttt{criteria} is a list of \verb+criterion+ separated by the delimiter ``\verb+,+'' that can be mapped to a tuple of strings $\langle criterion_1, \ldots, criterion_n \rangle$.
 
 \begin{defs}
 A partial function $critmap$ is defined such that it takes a string $criterion_j$ and returns a criterion (from \modelname) $\langle rank^j_{\alpha}, \leq_j \rangle$, 
