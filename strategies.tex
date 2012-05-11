@@ -6,45 +6,12 @@ The whole code of her laws may be written on the thumbnail, or the signet of a r
 The previous chapters have left the role a user plays in the evolution of their component system unexplored.
 This chapter describes the motivations and strategies for users to evolve their component systems.
 
-
-%%%What are strategies, Plans to employ to evolve a component system
-A strategy is the plan or pattern employed by a user to evolve a system to attain the systems objectives.
-How does the user then select a strategy to evolve their system?
-A fundamental influence on the user selects the strategy to evolve their system is the objectives of the system.
-These objectives determine the included functionality and as the objectives change the way in which this functionality is altered.  
-Another influence on what actions a user takes is the perceived risk of taking an action, or not taking an action.
+A strategy is the plan or pattern employed by a user to evolve a system.
+A fundamental influence on the user's strategy is their perception of risk.
+Each change to the system the user requests, and the criteria used to accomplish this change is effected by the risk of that change.
 For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
 
-\begin{figure}[htp]
-\begin{center}
-\digraph[scale=0.5]{criteriamapping}{
-rankdir=BT
-subgraph {
-	rank=same;
-	PB [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">PB Criteria</TD></TR></TABLE>> shape=none];
-	MOF [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">MOF</TD></TR></TABLE>> shape=none];
-	\modelnamewx [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx_criteria</TD></TR></TABLE>> shape=none];
-}
-subgraph {
-	rank=same;
-	PBI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:PB Criteria</TD></TR></TABLE>> shape=none];
-	MOFI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:MOF</TD></TR></TABLE>> shape=none];
-	IM [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx_criteria</TD></TR></TABLE>> shape=none];
-}
-PBI -> PB [ label = "instantiates"];
-MOFI -> MOF [ label = "instantiates"];
-IM -> \modelnamewx [ label = "instantiates"];
-MOFI -> IM [ label = "parses"];
-IM -> PBI  [ label = "maps to"];
-}
-  \caption[labelInTOC]{figureCaption}
-  \label{impl.criteriamapping}
-\end{center}
-\end{figure}
-
-%%%In this chapter\ldots
-In this chapter, the users that evolve component systems and their selection of strategy is explored. 
-Firstly, a survey that was given to users in order to determine their strategies of how they evolve their component systems is discussed in section \ref{strat.usersurvey}.
+To explore the users role in CSE a survey was given to users, the results are discussed in section \ref{strat.usersurvey}.
 This survey was conducted in order to illuminate general user strategies and discuss aspects like interactions while evolving component systems.
 The criteria a user judges solutions by are then discussed, the reasons and system objectives they fulfil are described.
 Each criteria is mapped to the pseudo-Boolean function to be either minimised or maximised as discussed in chapter \ref{implementation}.
@@ -201,54 +168,51 @@ For example, a server administrator that is running a mission critical system wi
 However, a user running a desktop personal computer system may be more interested in new functionality than the up-time of the computer, so would change more readily.
 
 \section{Criteria}
-%%%What do we mean by criteria
-Any requested change to a system may be satisfied by many possible solutions.
-When a user is confronted with many solutions to choose from, they are forced to judging, then selecting a system that suites their requirements.
-The criteria used to judge and select the system therefore will have a great effect on the evolution of a component system.
+In previous chapters the exact criteria that can be used has not been defined.
+This section describes various criteria that can be used and discusses their applicability to be used in CSE.
+Then a selection of these criteria are mapped to MOF criteria names and PB criteria for use in the simulation of CSE. 
 
-%%%In this section
-%%%Here we specifically define different criteria/heuristics 
-%%%All defined formally, and ready for use for the simulation in the next chapter
-In this section the definition of different criteria used to select solution is defined and their positive and negative implications are discussed.
-Each criteria is defined as a pseudo-Boolean function to be minimised or maximised, as described in chapter \ref{implementation},
-and assigned a unique string to be used in the Mancoosi optimisation format (MOF).
-Finally in this section the discussion of the use of these criteria, how they relate each other and the possible actions the user can take to evolve their component systems.  
+\subsection{Change Criteria}
+Simple definitions of criteria can often have negative effects during CSE.
+Some simple criteria are defined that minimise change and maximise versions, and their potential effects discussed.
 
-\subsection{Simple Criteria}
-There are simple definitions of criteria to minimise change and maximise versions.
-
-\subsubsection{Added, Removed and Changed Components}
-The three most direct measurements of change of a system is through the summing the added, removed, or total changed components in the system.
-These three measurements can be used to define criteria such that:
+The three most direct measurement of change of a component system is the measurement of the total changed components.
 \begin{defs}
-	The added components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{x \mid x \in \mathbb{C} \wedge \neg x \in \alpha\}$.
-	That is, it sums the components that are not in the previous system, that are in the proposed solution.
-	This criterion is defined in the Mancoosi optimisation format as \verb+-addedcomp+.
+	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
+	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
+\end{defs}
+That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
+This criterion's measurements are an inaccurate representation of the risks of changing a system.
+For example, a component being replaced by another version of itself is less risky than it being replaced with an entirely different component.  
+
+To create a change criterion that takes into account changing between similar components is less risky, a components name can be considered.
+For this purpose the function $V$ is defined as: 
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
+\end{defs}
+
+This function can be used to define a criterion that considers the name of a component:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+This criterion can be altered to also consider new and removed components:
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
 \end{defs}
 
 \begin{defs}
-	The removed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha\}$.
-	That is, it sums the components that are in the previous system, that are not in the proposed solution.
-	This criterion is defined in the MOF as \verb+-removedcomp+.
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
 \end{defs}
 
-\begin{defs}
-	The changed components criterion is defined to minimise the function $f_{\alpha}(\beta) = 1.a_1 + \ldots + 1.a_n$
-	where $\{a_1,\ldots,a_n\} = \{\neg x \mid x \in \mathbb{C} \wedge x \in \alpha \} \cup \{x \mid x \in \mathbb{C} \wedge \neg x \in \alpha \}$.
-	That is, it sum both added and removed components as described above.
-	This criterion is defined in the MOF as \verb+-changedcomp+.
-\end{defs}
+These criteria were defined by Mancoosi for MISC.
+They can be used as a representation of the risk that change has to a system.
 
-These criteria define change as addition or removal of a component to or from the resulting solution, the fundamental alterations of the system during evolution.
-These measurements may be an inaccurate representation of the risks of changing a system.
-This is best seen with the example of updating a component, which involves removing a old version, and adding a newer version of a component with the same name.
-By many users the act of updating is seen as less risky than removing a component, as shown in the survey presented earlier in this chapter,
-though here it is measured as twice the value.
-These simple criteria do not take into account the name of a component, which is seen as (and may indeed) have an impact on the risk of an evolution.
-
-\subsubsection{Maximise Version}
+\subsubsection{Version criteria}
 %%%Maximise version, just sum up all versions and maximise their value
 The problems with measuring the up-to-dateness of a component system (as described above), and this leads to difficulty in defining appropriate criteria.
 The simplest criterion that can be defined to keep the system up to date, would be to simply maximise the sum of the versions.
@@ -373,73 +337,6 @@ For example, given a set of component versions $c_1$, $c_2$ and $c_3$, if $c_3$ 
 this criteria does not consider the better version between $c_1$ and $c_2$.
 Therefore, this criteria will not try to maximise the versions in the system, merely try to make sure the maximum version is installed.
 
-\subsubsection{Sum}
-The final Mancoosi defined criteria are functions that either minimises or maximises the sum of a property of the installed components. 
-The property is left as a variable, and as long as each component has a value for that property the criteria can be used.
-
-These are defined as:
-\begin{defs}
-The criterion to maximise a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C}]$.
-This criterion is defined in the MOF as \verb!+sum(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to minimise a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C}]$.
-This criterion is defined in the MOF as \verb+-sum(+$X$\verb+)+.
-\end{defs}
-
-The property $X$ is arbitrary though practically is must be defined in the CUDF document.
-For example, the property $size$ that defines the size in kB of the component could be minimised with the criteria definition \verb+-sum(+$size$\verb+)+.
-Using the expendable nature of the CUDF specification many various properties of a component could have can be represented and optimised for.
-Some such properties that can be used, like PageRank or instability, are defined later in this section.
-
-\subsubsection{Added, Removed, and Changed Properties}
-Three further functions, added, removed, and changed, that are useful to define criteria are defined.
-These were not defined in by the Mancoosi group, but they are similar to the definition of the sum functions, therefore are presented here..
-The added criteria sums the values of a property added to a system, 
-the removed criteria sums the properties removed from the system,
- and changed criteria sums the properties changed in the system. 
-Each of these is used to define two criteria, to either maximise or to minimise the function.
-
-\begin{defs}
-The criterion to maximise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in \alpha]$.
-This criterion is defined in the MOF as \verb!+added(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, c) \mid c \in \mathbb{C} \wedge \neg c \in \alpha]$.
-This criterion is defined in the MOF as \verb!-added(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to maximise the removed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge  c \in \alpha]$.
-This criterion is defined in the MOF as \verb!+removed(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to minimise the added value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X, \neg c) \mid c \in \mathbb{C} \wedge c \in \alpha]$.
-This criterion is defined in the MOF as \verb!-removed(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to maximise the changed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in \alpha] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in \alpha]$.
-This criterion is defined in the MOF as \verb!+changed(!$X$\verb+)+.
-\end{defs}
-
-\begin{defs}
-The criterion to minimise the changed value of a property $X$ is defined by the pseudo-Boolean function 
-represented by the set of pairs $[(c.X,\neg c) \mid c \in \mathbb{C} c \in \alpha] \cup [(c.X,c) \mid c \in \mathbb{C} \neg c \in \alpha]$.
-This criterion is defined in the MOF as \verb!-changed(!$X$\verb+)+.
-\end{defs}
-
-These criteria, like the sum criteria, can be used in a versatile manner to optimise for various component properties.
 
 \subsection{P2}
 %%%Looking at the criteria from the P2 solver
@@ -467,146 +364,6 @@ However, this criteria can still be mislead by different components.
 For example, if a component constantly releases versions, with little changes or no changes, the age of a component can quickly force an update, 
 although their may be little risk of not upgrading. 
 
-
-\subsection{Dependency Based Criteria}
-A components dependence on another component creates a tangible connection that should be considered when evolving a system.
-This connection can be seen as a form of trust, given a developer selects the components to have their components depend on,
-or as a measure of importance to a system, as a component that is highly depended on has more responsibility to the system.
-Such metrics of a component could be considered when making the choice to either remove or add a component to a system.
-
-Many such metrics are based on dependency graph analysis, that is the study of the graph caused by the dependency relationships between components. 
-To use such metrics, the structure of component dependencies must be abstracted to a directed graph $G = (V,E)$;
-such that the vertices $V$ are a set of components from $\mathbb{C}$, 
-and the edges are created from the dependency rules where $(a,b) \in E$ iff there is a dependency constraint in $R$ 
-where $a \rightarrow c_1 \vee \ldots \vee c_n$ where $b = c_i$ for some $i$.
-
-%%%What set of components is used to create the graph
-The set of components used to create this dependency graph is defined as the set of all components.
-This implies that given the set of all components does not change, the following metrics presented will be invariable.
-That is, the dependency graph that is referred to is not created with a subset of components, such as the previous system.
-Using all components has one significant practical benefit, it makes recalculations of metrics unnecessary.
-If each metric was calculated with respect to the graph of the previous solution, 
-it would require that each problem using the same set of components recalculate possibly expensive metrics to be used in optimisation.
-
-%%%Metrics that return Real Numbers not integers for Pseudo Boolean function, must be scaled by multiplication and truncation.
-Another aspect of note is that some of the presented metrics return real numbers not integers which are required for pseudo-Boolean functions.
-This is solved by scaling the values of these metrics by multiplying with a large number and then rounding the result to an integer.
-The selection of this large integer, is made per metric, and is selected to provide the required resolution to make the metric useful.
-
-\subsubsection{Martin Metrics}
-The first metric that is defined is based on the ``instability'' metric presented in \citep{martin2003}.
-This metric was created to measure the a components resistance to change using the incoming and outgoing edges of a package.
-
-\begin{defs}
-The number of components that depend on a component, the incoming edges of a node in a dependency graph, is described as the afferent couplings, denoted as $Ca$.
-The number of components that a component depends on, the outgoing edges of a node in a dependency graph, is described as the efferent couplings, denoted as $Ce$. 
-The instability of a component is then the ratio of efferent couplings to to total couplings, that is $Ce/(Ce+Ca)$.
-\end{defs}
-
-This metric could be said to measure the unimportance of a component, or the relative safety of changing a component.
-For example, given a component $a$ depends on no other components and has three other components depending on it, $a$'s ``instability'' would be $0$.
-The component $a$ is then important and also may be a risk to change in the system, as it may effect components that depend upon it.
-This is opposed to a component $b$ that is not depended upon by any components but depends on three other components, $b$'s ``instability'' would be $1$.
-That is to say that is is unimportant to other components, but has little to no risk when changing as any change will only effect itself.
-
-This criteria can then be used by a conservative user to minimise the risk of a change by minimising the removed stability,
-that is by maximising the removed instability.
-Given the instability of a component is assigned to the property \verb+instability+,
-the removed instability can be maximised with the criteria \verb!+removed(instability)!.
-
-\subsubsection{PageRank}
-The measurement of the instability of a component only takes into consideration other components that are directly connected to it.
-Such a metric, does not take into consideration the entire structure of a graph, therefore can give only local information about a component.
-
-PageRank, presented in \citep{page1998}, is a link analysis algorithm designed to measure the importance of a node in a directed graph.
-This algorithm, originally designed to rank the popularity of web pages in returned results from a search engine.
-It can also be used over a dependency graph to measure a components relative importance.
-It propagates values though the graph, meaning that the importance of a component will depend on importance of components that do not directly upon it. 
-
-This PageRank function is defined;
-Given a node in a graph $a$, the function $PR(a)$ returns the PageRank of $a$, 
-the function $L(a)$ returns the number of outbound links from $a$, 
-and the function $I(a)$ returns the set of nodes with edges incoming to $a$.
-The PageRank of a node $a$ is then $PR(a) = 1-d + d\sum\limits_{v \in I(a)} \frac{PR(v)}{L(v)}$,
-where $d$ is the damping factor (typically set to $.85$).
-Also to note, a node that has no outbound edges, i.e. $L(a) = 0$, is assumed to link to all nodes (including itself) in the graph.
-This function is iteratively applied and normalised so the sum of all PageRanks equals $1$, until it stabilises.
-The specific implementation used to calculate PageRank is from the library networkx\footnote{http://networkx.lanl.gov/ accessed 6/3/2012}.
-
-Like the instability metric, the PageRank of a component represents the risk of changing a component.
-The higher the PageRank, the more depended upon it could be in a given system.
-If given the choice in the system between removing a component that is highly depended upon, or one that is less so,
-the clear choice would be removing the latter as it will potentially effect less of the other components in the system.
-Therefore given the PageRank a component is assigned to the property \verb+pagerank+, the criteria to minimise the removed PageRank is defined as \verb!-removed(pagerank)!.
-
-
-\subsubsection{HITS}
-The HITS algorithm, like PageRank, is a link analysis algorithm that returns two metrics for each component, hubs and authority measures.
-The hub metric measures the amount a component depends on authorities, and the authorities measures the amount it is depended on by hubs.
-
-This recursive definition can be defined:
-given the function $auth(a)$ returns the authority metric of node $a$, $hub(a)$ returns the hub metric of node $a$,
-$I(a)$ returns the set of nodes with edges incoming to $a$, and $O(a)$ returns the set of nodes with edges outgoing from $a$;
-$auth(a) = \sum \limits_{i \in I(a)} hub(i)$ and  $hub(a) = \sum \limits_{i \in O(a)} auth(i)$.
-To calculate these values, they are itertivly applied till they stabalise.
-The specific implementation used to calculate HITs values is from the library networkx\footnote{http://networkx.lanl.gov/ accessed 6/3/2012}.
-
-The authority metric this is similar to the PageRank and instability metrics, in that it can be used as a measure of risk in changing a component.
-Removing a component that has a high authority may increase the risk of change in the system.
-Therefore, given the authority measure is assigned to property \verb+auth+, the criteria to minimise the removed authority is defined as \verb!-removed(auth)!.
-
-\subsection{Other Criteria}
-There are many other types of criteria that can be considered when judging the optimality of a solution.
-Criteria that maybe component model dependent, that use properties located in component meta-data (e.g., size, vendor and licence),
-generated through component contracts and composition testing (e.g., reliability and speed),
-or community sourced meta-data stored in repositories (e.g., popularity) could be used through optimisation.
-
-%%%Discuss information from component met-data
-Component meta-data such as the examples presented in the chapter \ref{background}, can be an ample source of information when evolving a system.
-Users may have preferences on any range of contained information that could be extracted, such as licence agreements, developers, vendors,
-or other more specific information like date of release or certification.
-This information may effect the desirability of a system, therefore could be considered. 
-For example, there are many users of systems that have a preference for open source software, 
-which can be released under licences like the GNU General Public Licence\footnote{http://www.gnu.org/copyleft/gpl.html accessed 6/3/2012} (GPL).
-This preference could come from the moral decision that freed software is better or from some business rule stating that GPL licences conform to a business model.
-Therefore, a component that has such a licence is preferred over one that does not.
-Allowing the specification of such criteria may allow more users to evolve systems to be more suited to their needs.
-
-%%%Discuss information from component testing (e.g. treaty, unit tests)
-The functional testing of components, through predefined test cases or component contracts, may allow for functional and non-functional metrics to be included optimised.
-Some components make public test suites that are used in order to show the process by which they are developed,
-such test suites could be used to compare versions of the same component, or competing component with the same functionality in order to select the best component.
-Implemented component contracts, which verify the interaction between components, could also be used with different components in order to select the correct one. 
-For example, given a test suite has been developed to test spell checkers, 
-this suite could be run against various spell checker components and the number of passed tests and the time it took to pass them measured.
-Then a criteria could be developed in order to select the spell checker that passed the most tests, then took the least average time.
-
-%%%Discuss community stored information, e.g. app-install-data, reccommendation systems, community forums\ldots
-Community efforts to rank and review different components could also be used in order to optimise evolution.
-Many such communities already exist that discuss and rate components, they provide a unique source of information that the user may use to evolve their system.
-For example, the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012} is an automated survey that collects information from the community to find popular components.
-If such information was used, more popular components could be installed with the assumption they are more developed and maintained.
-
-%%%Why have we not defined such criteria
-There are two core reasons why these types of criteria have not been fully defined in this chapter,
-they are difficult to implement, and they may be impossible to validate within the scope of this research.
-The discussed criteria in this chapter may require large amount of effort, including coding, testing and specification to implement them.
-Even if this i accomplished, the scope of this defined project, which does not deal with the specific implementation details of a component model,
-may make the validation of such criteria difficult or impossible.
-Therefore, these criteria may be used and be useful in the future, but in this project are not further defined.
-
-\subsection{Criteria Composition}
-The composition of criteria, the way in which they are lexicographically related through the Mancoosi optimisation format,
-will effect the selected solution.
-Each different action that a user can take, e.g. add a component, remove a component or upgrade a component, may have a different composition of criteria to optimise its evolutionary step.
-
-Defining such compositions must be carefully accomplished as sometimes intuitively correct criteria may result in unforeseen complications.
-For example, when defining the criteria to optimise the upgrade action a users goals may be to minimise the changed components during the upgrade.
-With the composition \verb+-changedcomp,-uptodateage+, the system may never upgrade anything, as the upgrade command (as defined in CUDF) does not require any component to change.
-Another example would be to set the install instructions to minimise the size of installed components then minimise change,
-e.g. \verb!-sum(size),-changedcomp!, this may remove much of the system as the size of most components is above zero.
-
-How the criteria are ordered, is just as important as the criteria selected, and he consequences of incorrectly defining a composition can be significant.
 
 \section{Summary}
 In this chapter the strategies a user may employ in order to evolve their component systems were discussed.

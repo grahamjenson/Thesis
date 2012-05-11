@@ -7,7 +7,7 @@ Each step evolves the component system by satisfying a user request and system c
 Calculating the resulting systems of these evolution steps is described as \textbf{resolving} a \modelname instance.
 Resolving a \modelname instance can require a significant effort due to the nature of the problem (as discussed in the previous chapter).
 
-This chapter describes the resolving of a \modelname instance by mapping each of its steps to, then solving, a \modelimpl problem.
+This chapter turns attention to the way of resolving of a \modelname instance by mapping each of its steps to, then solving, a \modelimpl problem.
 \modelimpl uses lexicographically ordered pseudo-Boolean criteria 
 to find an optimal solution to a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
@@ -42,11 +42,11 @@ The algorithm employed to solve \modelimpl problems is the novel lexicographic-i
 This algorithm uses the iterative strengthening \citep{calistri1994iterative, le2010sat4j} and Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithms.
 
 This chapter also describes the implementation GJSolver.
-GJSolver takes a CUDF* document parses it into a a \modelname instance (as described in appendix \ref{apx.cudf}),
-and resolves it with the process described in this chapter.
-The verification of GJSolver through the Mancoosi International Solver Competition (MISC) competition is also described.
+GJSolver takes a CUDF* document parses it into a \modelname instance (as described in appendix \ref{apx.cudf}),
+and resolves it by following the process described further in this chapter.
+It will also be shown how GJSolver was verified through MISC.
 
-Firstly, in section \ref{impl.mapping} this chapter describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
+Firstly, this chapter, in section \ref{impl.mapping} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
 In section \ref{impl.algorithms}, the algorithms used to solve a \modelimpl problem, and resolve a \modelname instance are described.
 Finally, in section \ref{impl.gjsolver} GJSolver is discussed, followed by the description of its verification through MISC.
 
@@ -64,15 +64,15 @@ It also presents the \modelimpl problem as consisting of a SAT+PB problem with P
 The mapping from an evolution step of a \modelname instance to a \modelimpl problem is then described.
 
 \subsection{Boolean Satisfiability Problem (SAT)}
-Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
-SAT was the first identified NP-Complete problem, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
+Boolean satisfiability (SAT)  is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
+SAT was the first identified NP-Complete problem \cite{cook1971}, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
 The fundamental difficulty of SAT problems, 
-combined with the ability to map many problems to SAT has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
+combined with the ability to map many problems to SAT, has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
 dedicated to creating, enhancing, and testing various SAT solver implementations. 
-Such SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
-model verification \citep{dennis2006}, and, component system evolution \citep{leBerre2010}.
+SAT solvers have been used in various domains to address problems such as electronic design automation \citep{Marques-Silva2000}, 
+model verification \citep{dennis2006}, and component system evolution \citep{leBerre2010}.
 
-A common representation of a SAT equation is in Conjunctive Normal Form (CNF).
+A common representation of a SAT equation is in Conjunctive Normal Form (CNF) \cite{Moskewicz2001}.
 CNF is defined as a conjunction of clauses, 
 where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
@@ -96,7 +96,7 @@ A SAT problem in CNF is defined as:
 \end{enumerate}
 \end{defs}
 
-Consider a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$.
+For example, consider a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in \mathcal{C}_1$ and $\neg b \in \mathcal{C}_2$.
 However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $\mathcal{C}_2$.  
 
@@ -115,8 +115,8 @@ a \textbf{pseudo-Boolean function} takes a set of literals $P$, and returns an i
 $f(P) = \sum \limits_{i=0}^n f_i(P)$
 where $f_i(P) = \begin{cases} a_i & l_i \in P \\ 0 & l_i \not \in P \end{cases}$
 \end{defs}
-For example, the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$,
- $f(\{x_1, x_2\})$ will equal $1$.
+For example, consider the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$.
+The value of $f(\{x_1\})$ will equal $1$, $f(\{\neg x_2\})$ will equal $3$, and $f(\{x_1,\neg x_2\})$ equals $4$.
 
 A pseudo-Boolean constraint is a relation between a PB function and an integer, e.g. given a set of literals $P$, $f(P) \leq 3$.
 \begin{defs}
@@ -127,7 +127,7 @@ A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$
 \begin{defs}
 A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P)$ $R$ $k$.
 \end{defs}
-For example, the pseudo-Boolean $f$ described in the above example can be used to create the constraint $\langle f, >, 2 \rangle$.  
+For example, the pseudo-Boolean function $f$ described in the above example can be combined with a relation $>$ and number $2$ to create the constraint $\langle f, >, 2 \rangle$.  
 This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4$ and $4 > 2$, 
 but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1$  and $ 1 \not > 2$.
 
@@ -155,7 +155,8 @@ Secondly, by modifying the definition of what a formula can contain and what a s
 \end{enumerate}
 }
 
-Consider a SAT+PB problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2, \langle f, <, 2 \rangle\}$. 
+To illustrate how the modified definition from SAT to SAT+PB problem works, 
+consider a SAT+PB problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2, \langle f, <, 2 \rangle\}$. 
 Clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$, 
 and the function $f$ is defined with the tuple of literals $\langle a, b\rangle$ and a tuple of integers $\langle 1,3\rangle$.
 A solution for this problem could be $\{a,\neg b,\neg c\}$ as $a \in \mathcal{C}_1$, $\neg b \in \mathcal{C}_2$, and $f(\{a,\neg b,\neg c\}) < 2$.
@@ -165,19 +166,19 @@ Pseudo-Boolean constraints can be translated into CNF clauses.
 However, with the extension to include pseudo-Boolean constraints problems can be exponentially more concise, 
 and more quickly solved \citep{dixon2004automating}.
 Additionally, only minor amendments may be required to allow SAT solving algorithms (e.g. DPLL) to also solve SAT+PB problems.
-Some such amendments are described in \citep{Sheini2006}, 
+Some such amendments are described by \cite{Sheini2006}.
 
 \subsection{\modelimpl Problem}
 \label{impl.lexsatproblem}
-In order to define a \modelimpl problem, criteria that define an optimal solution are required.
-The pseudo-Boolean criteria use a PB function to define an optimal solution.
+In order to create a \modelimpl problem, some criteria used to define what properties an optimal solution have are required.
+Pseudo-Boolean criteria use a PB function to define an optimal solution.
 
 \begin{defs}
 A \textbf{pseudo-Boolean criterion} $\mathfrak{crit}$ is a tuple consisting of a pseudo-Boolean function $f$,
 a relation over integers $R$ that is either $<$ or $>$, and a SAT+PB formula $I$,
 i.e. $\mathfrak{crit} = \langle f, R , I \rangle$.
 \end{defs}
-The formula $I$ is used to define the auxiliary variables that are used to represent values within the problem, but do not alter the problem.
+The formula $I$ is used to define the auxiliary variables that represent values within the problem, but do not alter the problem.
 Auxiliary variables have been used before in similar implementations \citep{argelich2010solving}.
 
 
@@ -190,7 +191,7 @@ $P$ and $P'$ are \textbf{equal} w.r.t. $\langle f,R, I \rangle$
 iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P) = f(P')$.
 \end{defs}
 Note that both $P$ and $P'$ must be solutions to the formula $F \cup I$, not just the formula $F$.
-This is to ensure that the auxiliary variables required by the criteria are available.
+This is done to ensure that the auxiliary variables required by the criteria are available.
 
 \begin{defs}
 Given a SAT+PB formula $F$, a pseudo-Boolean criteria $\langle f,R, I \rangle$, and two sets of literals $P$ and $P'$, 
@@ -221,17 +222,8 @@ A solution to \modelimpl problem is the optimal solution to $F$ w.r.t. to its PB
 
 \subsection{Mapping \modelname Instance to \modelimpl Problem}
 \label{impl.mapping}
-An instance of \modelname contains:
-\begin{itemize}
-  \item a series of times $t_0,\ldots,t_n$.
-  \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$.
-  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$.
-  \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
-  \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
-  \item initial system $\alpha_{t_0}$.
-\end{itemize}
-
-For each $i$ between $1$ and $n$ there is an evolution step.
+Following from the definition of \modelname in section \ref{formal.step}, 
+an instance of \modelname consists of a series of evolution steps at time $t_i$, where $i$ is from $1$ to $n$.
 Each step consists of:
 \begin{itemize}
   \item a time $t_i$
@@ -293,17 +285,17 @@ This means that:
 \end{itemize} 
 Therefore, the mapping from evolution preference orders to PB criteria is a partial mapping.
 
-Of the criteria that can be mapped to PB criteria, generalizing their mapping may be a difficult and unrewarding challenge.
-This is because many of the criteria that can be defined are not desirable, e.g. maximising the number of components whose name starts with the letter \texttt{a}.
-Therefore, only specific set of criteria are mapped.
-These criteria are presented in chapter \ref{strategies}. 
+The partial mapping from \modename criteria to PB criteria is not presented here.
+This is because many of the \modename criteria that can be defined are not useful, 
+e.g. a criteria that maximises the number of components whose name starts with the letter \texttt{a}.
+Only specific criteria are mapped to PB criteria, these are presented in chapter \ref{strategies}. 
 
-To further describe the mapping from a criterion to a PB criteria, an example is presented.
-Consider two components $a$ and $b$, a criterion $\langle rank_{\alpha},< \rangle$, whose ranking function $rank_{\alpha}$ is defined:
+To further illustrate the mapping from a \modelname criteria to a PB criteria, an example is presented.
+Consider two components $a$ and $b$, a criterion $\langle rank_{\alpha},< \rangle$ whose ranking function $rank_{\alpha}$ is defined as:
 
 $rank_{\alpha}(\beta) = \begin{cases} 1 & a \in \beta \text{ or } b \in \beta\\ 0 & \text{otherwise} \end{cases}$
 
-This criteria expresses the preference of having either components $a$ or $b$ (or both) in the system.
+This criterion expresses the preference of having either components $a$ or $b$ (or both) in the system.
 
 Further consider the pseudo-Boolean criterion $\langle f, < , I \rangle$.
 The auxiliary variable $x$ is defined such that $x \Leftrightarrow a \in \beta \vee b \in \beta$.
@@ -312,8 +304,8 @@ i.e. $I = \{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
 The PB function $f$ is defined with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$.
 
 The criterion $\langle rank_{\alpha}, \leq \rangle$ maps to $\langle f, < , I \rangle$,
-as the strict order $<$ from the criterion equals the order $<$ in the PB criterion;
-given a solution $P$ to $I$, where $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$.
+as the strict order $<$ from the criterion equals the order $<$ in the PB criterion.
+Given a solution $P$ to $I$, where $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$.
 This can is shown in table \ref{impl.critmapexmp}.
 \begin{table}[h!]
 \centering
@@ -329,24 +321,16 @@ $\{ a,  b, x\}$                 & $\{a,b\}$                & 1                  
 \label{impl.critmapexmp}
 \end{table}
 
+The above example describes how a \modelname criterion can be mapped to a PB criterion.
+In the following section, an algorithm that uses PB criteria to find optimal solutions to \modelimpl problems is presented. 
+
 \section{Solving a \modelimpl problem}
 \label{impl.algorithms}
 Above a description is given how to map and instance of \modelname to \modelimpl problems.
-This section describes the algorithms to solve a \modelimpl problem.
-These algorithms and their purposes are:
-\begin{itemize}
-  \item the Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine}  is used to find a solution to a SAT+PB formula.
-  \item the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} is used to find an optimal solution to an evolution problem given a PB criterion.
-  \item the novel lexicographic iterative strengthening algorithm is used to find a solution to a \modelimpl problem.
-\end{itemize}
+This section describes the novel lexicographic iterative strengthening algorithms to solve \modelimpl problems.
+This algorithm uses the DPLL algorithm \citep{Davis1960, davis1962machine} to find a solution to a SAT+PB formula,
+and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find an optimal solution to a SAT+PB problem given a  single PB criterion.
 
-The lexicographic iterative strengthening algorithm is an anytime algorithm.
-It has been designed to return a solution to a \modelimpl problem, even if it is interrupted.
-If interrupted however, the returned solution may not be an optimal solution.
-The reason for this anytime behaviour is that \modelimpl problems can be very difficult to solve.
-This difficulty can make solving some problems take an impractical amount of time.
-It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
-and interrupt it when this time limit is reached. 
 
 Finally, this section describes how a \modelname instance is resolved by mapping to \modelimpl problems.
 
@@ -550,8 +534,8 @@ When the main loop ends, currently best found solution $model$ is returned.
 
 \subsection{Lexicographic Optimisation}
 \label{impl.lexiterstre}
-The iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be used find optimal solutions to lexicographically ordered criteria.
-This can be accomplished by iteratively strengthening the each composed criteria in order of lexicographical composition.
+The iterative strengthening algorithm can be used find optimal solutions to lexicographically ordered criteria
+by iteratively strengthening the each criteria in order.
 This lexicographic iterative strengthening algorithm is presented in figure \ref{impl.lexstrength}.
 
 \begin{figure}[htp]
@@ -612,6 +596,14 @@ When the loop ends, the currently best found solution $model$ will be returned.
 Some enhancements to the implementation of the lexicographic iterative strengthening algorithm can be made.
 For example, when the \texttt{iterative-strengthening} is called, it is known that $F$ is satisfiable. 
 Therefore, checking its satisfiability again within the \texttt{iterative-strengthening} function is not necessary.
+
+The lexicographic iterative strengthening algorithm is an anytime algorithm.
+It has been designed to return a solution to a \modelimpl problem, even if it is interrupted.
+If interrupted however, the returned solution may not be an optimal solution.
+The reason for this anytime behaviour is that \modelimpl problems can be very difficult to solve.
+This difficulty can make solving some problems take an impractical amount of time.
+It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
+and interrupt it when this time limit is reached. 
 
 \subsection{Resolving a \modelname instance}
 Resolving a \modelname instance involves finding the series of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
@@ -753,7 +745,7 @@ The first basic track, is 'paranoid', the second more advanced track is 'trendy'
 Both 'paranoid' and 'trendy' have pre-defined criteria defined in MOF.
 The 'user' track uses a set of pre-defined criteria, though the exact optimisation criteria is unknown before the competition.
 This means that 'paranoid' and 'trendy' can have solvers tailored to their specific criteria, where the 'user' track cannot.
-The exact criteria that is used for these tracks will be discussed in the next chapter.
+The exact criteria that is used for these tracks can be found on the MISC website\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 12/5/2012}.
 
 For each track, a set of solvers is entered.
 Each track has a set of evolution problems defined in CUDF.
