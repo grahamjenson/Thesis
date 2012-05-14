@@ -2,27 +2,45 @@
 \label{introduction}
 \epigraph{E pluribus unum -- Latin for "Out of many, one"}
 {\textit{de facto motto of the United States 1782 - 1956}}
-%%%Software evolution is important
+Plutarch, a Greek philospher, proposed a paradox in his biography \textit{The life of Theseus}, 
+that in essence is the question:
+\begin{quote}
+If an object has all its component parts replaced, is it the same object?
+\end{quote}
+This question deals with the themes of objects made of components, the change of the comopnent parts,
+and how this change effects the object in question.
+These themes are at the center of this thesis.
+
+A software system can be constructed by composing together independent units called \textbf{software components} \citep{Szyperski2002}.
+Like Plutarch's question, this research asks the question "what happens to a comopnent system when it changes?".
+
+
+%%%The study of Software evolution is important
 Software evolution is the repeated alteration to a software system in order to maintain the system or satisfy changing requirements.
 Software evolution is regularly cited as over 50\% the total cost of a project \citep{Grubb2003},
 and it is also a significant risk as any change to software may introduce new errors \citep{Brooks1975}.
 Software evolution is also necessary, as any sufficiently complex system will require change to remain satisfactory \citep{lehman1980}. 
-By studying the process of software evolution, it is hoped that risks can be mitigated and the costs can be lowered.
+Studying the process of software evolution provides an understanding that can be used to mitigate the risks and lower the costs.
 
-%%%How to make software less costly during evolution
-To address the issues of risk and cost during software evolution, software can be created using various techniques.
-For example, creating software with the hierarchical decomposition of object orientation \citep{goldberg1983smalltalk}, 
-the decoupling of relationships through dependency inversion \citep{martin1996dependency}, 
-separation of concerns through aspect-oriented programming \citep{Kiczales1997},
-and the abstraction of knowledge through model driven engineering \citep{schmidt2006}.
-Another method is to construct software systems by composing together independent units called \textbf{software components} \citep{Szyperski2002}.
+%%%Component systems
 
+These components explicitly declare the constraints that are required for their use,
+including the dependencies and conflicts with other comopnents.
+The strength of software comopnents comes from these constraints.
+Unlike other modularisation techniques, a software components constraints allows the calculation of a system.
+as they can be used to calculate 
+
+%%%Component evolution
+
+
+%%%Component system evolution
 By creating a system from components, the process of software evolution can be split into two different parts;
 component evolution and component system evolution (CSE).
 Component evolution is the change of a component by a developer at the code level,
 e.g. adding functionality to a component then releasing a new version.  
 CSE is the change of a system by a composer (user) at the component level,
 i.e. removing an old version of a component from a system, then replacing it with a newer version.
+
 
 \section{Objective}
 The objective of this research is to study the process of component system evolution using a developed simulation.
