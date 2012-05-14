@@ -407,6 +407,21 @@ $\langle  rank^L_{\alpha}, \leq_L \rangle$ is used to create the evolution optim
 
 This can be used to define the optimality orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
 
+\chapter{Full Criteria Mapping}
+\label{apx.critmapping}
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
+\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
+\texttt{-uptodatedistance} 	& $crit_{uptodatedistance} = \langle rank^{uptodatedistance}_{\alpha}, \leq \rangle$ & $\langle f_{uptodatedistance}, <, I_{uptodatedistance} \rangle$ \\
+\texttt{-stableversion(N)} 	& $crit_{stableversion} = \langle rank^{stableversion}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{tablelabel}
+\end{table}
+
 
 \chapter{Glossary}
 MISC

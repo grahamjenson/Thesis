@@ -7,7 +7,7 @@ Each step evolves the component system by satisfying a user request and system c
 Calculating the resulting systems of these evolution steps is described as \textbf{resolving} a \modelname instance.
 Resolving a \modelname instance can require a significant effort due to the nature of the problem (as discussed in the previous chapter).
 
-This chapter turns attention to the way of resolving of a \modelname instance by mapping each of its steps to, then solving, a \modelimpl problem.
+This chapter turns its attention a way of resolving a \modelname instance by mapping each of its evolution steps to, then solving, a \modelimpl problem.
 \modelimpl uses lexicographically ordered pseudo-Boolean criteria 
 to find an optimal solution to a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
@@ -41,13 +41,17 @@ FMI -> \modelnamewx [ label = "instantiates"];
 The algorithm employed to solve \modelimpl problems is the novel lexicographic-iterative-strengthening algorithm.
 This algorithm uses the iterative strengthening \citep{calistri1994iterative, le2010sat4j} and Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithms.
 
+To create an instance of \modelname to be resolved, some criteria must be defined. 
+Some selected criteria are presented and defined, and their mapping from MOF criteria names, to \modelname criteria, and to PB criteria is presented. 
+
 This chapter also describes the implementation GJSolver.
 GJSolver takes a CUDF* document parses it into a \modelname instance (as described in appendix \ref{apx.cudf}),
 and resolves it by following the process described further in this chapter.
 It will also be shown how GJSolver was verified through MISC.
 
-Firstly, this chapter, in section \ref{impl.mapping} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
+This chapter, in section \ref{impl.mapping} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
 In section \ref{impl.algorithms}, the algorithms used to solve a \modelimpl problem, and resolve a \modelname instance are described.
+Section \ref{impl.criteria} presents and defies the mapping of selected criteria.
 Finally, in section \ref{impl.gjsolver} GJSolver is discussed, followed by the description of its verification through MISC.
 
 \section{\modelimpl}
@@ -285,8 +289,8 @@ This means that:
 \end{itemize} 
 Therefore, the mapping from evolution preference orders to PB criteria is a partial mapping.
 
-The partial mapping from \modename criteria to PB criteria is not presented here.
-This is because many of the \modename criteria that can be defined are not useful, 
+The partial mapping from \modelname criteria to PB criteria is not presented here.
+This is because many of the \modelname criteria that can be defined are not useful, 
 e.g. a criteria that maximises the number of components whose name starts with the letter \texttt{a}.
 Only specific criteria are mapped to PB criteria, these are presented in chapter \ref{strategies}. 
 
@@ -330,9 +334,7 @@ Above a description is given how to map and instance of \modelname to \modelimpl
 This section describes the novel lexicographic iterative strengthening algorithms to solve \modelimpl problems.
 This algorithm uses the DPLL algorithm \citep{Davis1960, davis1962machine} to find a solution to a SAT+PB formula,
 and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find an optimal solution to a SAT+PB problem given a  single PB criterion.
-
-
-Finally, this section describes how a \modelname instance is resolved by mapping to \modelimpl problems.
+This section also describes how a \modelname instance is resolved by mapping to \modelimpl problems.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
@@ -599,9 +601,7 @@ Therefore, checking its satisfiability again within the \texttt{iterative-streng
 
 The lexicographic iterative strengthening algorithm is an anytime algorithm.
 It has been designed to return a solution to a \modelimpl problem, even if it is interrupted.
-If interrupted however, the returned solution may not be an optimal solution.
-The reason for this anytime behaviour is that \modelimpl problems can be very difficult to solve.
-This difficulty can make solving some problems take an impractical amount of time.
+The reason for this anytime behaviour is that \modelimpl problems can take an impractical amount of time to solve.
 It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
 and interrupt it when this time limit is reached. 
 
@@ -630,9 +630,99 @@ resolver:
 In this algorithm, the systems are calculated starting at time $t_1$ and stopping at time $t_n$.
 For each evolution step at time $t_i$ is mapped to a SAT + PB formula $F$ and PB criteria $\langle \mathfrak{crit}_{1}, \ldots ,\mathfrak{crit}_{n} \rangle$.
 The algorithm \texttt{lexicographic-iterative-strengthening} is then used to find an optimal solution to $F$ with respect to the PB criteria, and return $answer$.
-Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_{t_i}$ is assigned as the previous system $\alpha_{t_{i-1}}$ (according to ).
+Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_{t_i}$ is assigned as the previous system $\alpha_{t_{i-1}}$ (according to definition \ref{forml.stepdef}).
 Otherwise, $answer$ is a set of literals that can be mapped back to the component system $\alpha_{t_i}$.
 This algorithm, once completed, returns the set of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
+
+\section{Criteria}
+\label{impl.criteria}
+This section presents a selection of criteria and their mapping to between \modelname criteria, PB criteria, and MOF.
+They are presented in two general categories, minimising change to the system, and maximising the versions of components.
+The minimising change criteria were developed by Mancoosi and the versions criterion developed for Eclipse P2 solver \citep{leBerre2010}.
+For each category a discussion over the negative effects of using simple definitions of criteria is given.
+
+\subsection{Change Criteria}
+Simple definitions of criteria to minimise change can often have negative effects during CSE.
+For example, the most direct measurement of change of a component system is the measurement of the total changed components.
+This is defined as a \modelname criterion:
+\begin{defs}
+	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
+	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
+\end{defs}
+That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
+This criterion's measurements are an inaccurate representation of the risks of changing a system.
+For example, a component being replaced by another version of itself is seen as less risky than it being replaced with an entirely different component.  
+Yet using the $crit_{changec}$ criterion, these would be seen as equivalent changes.
+
+To define a change criterion that takes into account changing between components of the same name, is less risky, a components name can be considered.
+For this purpose the function $V$ is defined as: 
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
+\end{defs}
+
+This function can be used to define a criterion that considers the name of a component:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+This criterion can be altered to also consider new and removed components:
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+\end{defs}
+
+\begin{defs}
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+\end{defs}
+
+The change, new and remove criteria were taken directly from the MISC competitions definition of criteria.
+
+The mapping between these elements is presented in table \ref{impl.critmapping}.
+A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
+\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.critmapping}
+\end{table}
+
+\subsubsection{Version criteria}
+%%%Maximise version, just sum up all versions and maximise their value
+Defining how up-to-date a component system is, is a difficult task. 
+This is due to two properties of component versions:
+\begin{itemize}
+  \item A version of a component can only be compared to another version of the same component, 
+  i.e. given two components $\langle n,v \rangle$ and  $\langle n',v' \rangle$ comparing $v$ and $v'$ is only useful if $n = n'$.
+  \item The sum of versions is not a useful as two lesser versions will not be greater than one greater version, e.g. given components $\langle n,2 \rangle$,  $\langle n,3 \rangle$ and  $\langle n,4 \rangle$,
+  a system with only $\langle n,2 \rangle$ and $\langle n,3 \rangle$ is not better than a system with just $\langle n,4 \rangle$. 
+\end{itemize}
+
+These problems can be seen in the simple criterion to maximise the versions in a system:
+\begin{defs}
+	The \textbf{maxversion} criterion is defined as $crit_{maxversion} = \langle rank^{maxversion}_{\alpha}, \geq \rangle$,
+	where $rank^{maxversion}_{\alpha}(\beta) = \sum_{c \in \beta} c.$\texttt{version}.
+\end{defs}
+Both properties are ignored in this criteria, thus creating a simple but ineffective criterion.
+
+A useful criterion has been defined in Eclipse P2 that minimises a measurement of the out-of-dateness of a component name, in a component system.
+This out-of-dateness measurement is defined as:
+\begin{defs}
+The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
+i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
+\end{defs}
+
+By creating a criterion with this measurement, the measurement of a system's up-to-dateness does not depend on the components version: 
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
+	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
+\end{defs}
 
 \section{GJSolver}
 \label{impl.gjsolver}
@@ -653,7 +743,7 @@ FMI [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150
 \modelimplwx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelimplwx</TD></TR></TABLE>> shape=none]
 CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
 CMI -> FMI [ label="parsed to" ];
-FMI -> \modelimplwx [ label="resolved by" ];
+FMI -> \modelimplwx [ label="mapped to" ];
 }
 }
   \caption[labelInTOC]{GJSolver implementation description}
@@ -669,20 +759,21 @@ The first decision made about the design of GJSolver was to base it on another s
 Basing the design on an existing implementation allowed the reuse of tools, and most importantly the reduction in risks during implementation.
 The basis of GJSolver on Eclipse P2 lead to the following choices:
 \begin{itemize}
-  \item Java as the main implementation language
-  \item SAT4J as the core SAT+PB solver
+  \item Java as the main implementation language.
+  \item SAT4J as the core SAT+PB solver.
+  \item Optimisation using PB criteria.
 \end{itemize}
 
-The main aspects where GJSolver does not reuse, or replicate Eclipse P2 is because P2 is designed especially for the OSGi and Eclipse component model, where GJSolver is designed for CUDF.
+The main aspects where GJSolver does not reuse, or replicate Eclipse P2 is because P2 is designed especially for the OSGi and Eclipse component model, where GJSolver is designed for CUDF*.
 Some of the differences between Eclipse P2 and GJSolver are:
 \begin{itemize}
-  \item No OSGi or Eclipse specific code in GJSolver
-  \item The internal representation of components is not based on OSGi
+  \item No OSGi or Eclipse specific code in GJSolver.
+  \item The internal representation of components is not based on OSGi.
 \end{itemize}
 
-GJSolver, like Eclipse P2, uses iterative strengthening to find a solution.
-However, Eclipse P2 represents all criteria as a single PB criterion, where GJSolver represents them as a tuple (as described in section \ref{impl.lexiterstre}).
-How these two methods directly compare has not been explored in this research.
+Another important difference between Eclipse P2 and GJSolver is that Eclipse uses the iterative strengthening algorithm to optimise.
+Eclipse P2 does this by compressing the tuple of PB criteria into a single criteria to be optimised (further described by \cite{leBerre2010}).  
+How the optimisation approach used by GJSolver compares to the approach used by Eclipse P2 has not been explored in this research.
 
 \subsubsection{SAT4J}
 Given the use of SAT4J in GJSolver, a brief background of its development is presented here.
@@ -694,18 +785,17 @@ This has also lead to a track in the 2011 SAT competitions\footnote{http://www.s
 This means that MiniSAT has been repeatedly validated for performance by third parties across many different SAT problems. 
 
 SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
-The extensions SAT4J makes to MniSAT include the ability to find resolve pseudo-Boolean constraints.
-SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
-This goal has created an easily modifiable and transparent implementation, able to be adapted to be used in various domains.
-SAT4J in this right has been a success.
+SAT4J has been extended to efficiently solve a variety of related problems to SAT, including SAT+PB problems.
+Due to the easily modifiable and transparent implementation of SAT4J, it has been able to be adapted to be used in various domains.
 
 \subsection{Verification of GJSolver}
 \label{impl.verif}
-The GJSolver implementation can be easily modified to solve CUDF problems, as a CUDF problem can be seen as a CUDF* problem that has only one evolution step.
+The verification of GJSolver is through the MISC competition held in 2011, and organised by Mancoosi.
+This competition compares CUDF solvers by asking them to correctly parse and resolve hundreds of CUDF problems, and return optimal solutions with respect to various criteria.
+MISC was created to promote interest in the component system evolution problems.
+
+By viewing a CUDF problem as a single evolutionary step in a CUDF* problem, GJSolver has been modified to also solve CUDF problems.
 Using such a modification, GJSolver could then be entered into the Mancoosi International Solver Competition (MISC) competition.
-MISC compares many CUDF solvers, and was created to promote interest in the component system evolution problems.
-In MISC GJSolver will be required to correctly parse and resolve hundreds of CUDF problems.
-MISC is therefore used as a third-party verification of GJSolver, by the creators of CUDF and MOF.
 
 GJSolver was entered twice into MISC, firstly in a MISC Live event, which is an interim competition held during the year;
 secondly at the MISC 2011 event\footnote{The results for MISC 2011 were announced at the Workshop on Logics for Component Configuration\footnote{http://www.pps.jussieu.fr/~treinen/lococo/2011/ accessed 6/3/2012}.}, 
@@ -736,8 +826,8 @@ The format of the output file, located at the path defined with \verb+cudfout+ a
 %%%The environment POSIX, with 5minutes 1GB of memory
 The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of RAM.
 It contains a Java runtime environment, allowing the use of Java as a primary language.
-The time in which the solver is allowed to run is five minutes, after this time the solver will be forcibly executed.
-This time limit ensures that the competition can be run in an acceptable time frame.
+The time in which the solver is allowed to run is five minutes, after this time the solver will be forcibly stopped.
+This time limit ensures that the competition can be run in an practical time frame.
 
 \subsubsection{Tracks and Scoring}
 Each MISC competition is broken down into three possible tracks, where each track is defined by the criteria used.
@@ -750,8 +840,8 @@ The exact criteria that is used for these tracks can be found on the MISC websit
 For each track, a set of solvers is entered.
 Each track has a set of evolution problems defined in CUDF.
 The solvers for each track are then called to return optimal solutions for all problems given the tracks criteria.
-As MISC competitions were created to compare various solvers, a scoring system was developed. 
 
+As MISC competitions were created to compare various solvers, a scoring system was developed. 
 When a solver is given a CUDF problem and some criteria, the returned solution falls into one of three classes:
 \begin{itemize}
   \item a \textbf{real solution} is any solution to the CUDF problem.
@@ -778,9 +868,7 @@ This total time value is used as the tie breaker.
 The MISC Live was entered when GJSolver was only partially implemented.
 Therefore, the only track that was possible to enter was the 'paranoid' track.
 The results for this track\footnote{http://mancoosi.org/misc-live/20101126/paranoid/ accessed 6/3/2012} where promising, though some improvements were necessary.
-Due to the competition openly distributing all problems in each track, all the solutions of all solvers for all tracks, 
-and the output from each solver;
-GJSolver's deficiencies were easily identified and corrected.
+Due to the competition openly distributing all competition data, GJSolver's deficiencies were identified and corrected.
 
 \subsubsection{MISC}
 The main verification of GJSolver was through the MISC 2011 event.
@@ -809,9 +897,9 @@ The winner for the 'user' track was GJSolver.
 The results from the MISC competition show:
 \begin{itemize}
   \item During the competition GJSolver had very consistent results.
-These results allowed it to compete with the other solvers, and even win the 'user' track.
+These results allowed it to compete with the other solvers, and win the 'user' track.
  \item No CUDF problem in the competition was incorrectly solved by GJSolver. 
- This could be argued to show that the parsing of CUDF to \modelname, mapping to \modelimpl problems, and the implementations of the algorithms are correct.
+ This could be used to argue that the parsing of CUDF to \modelname, mapping to \modelimpl problems, and the implementations of the algorithms are correct.
  \item When compared to the similar implementation of Eclipse P2, GJSolver produces similar results, in a similar time. 
  As GJSolver was based on Eclipse P2, this is seen as a validation that the differences between the two are not detrimental, and possibly improvements. 
 \end{itemize}

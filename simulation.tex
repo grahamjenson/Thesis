@@ -208,6 +208,172 @@ This is because the limits of the projects resources excludes the employment of 
 This may reduce the validity of the end model, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
+
+
+\section{User Survey}
+\label{strat.usersurvey}
+The previous chapters have left the role a user plays in the evolution of their component system unexplored.
+This chapter describes the motivations and strategies for users to evolve their component systems.
+
+A strategy is the plan or pattern employed by a user to evolve a system.
+A fundamental influence on the user's strategy is their perception of risk.
+Each change to the system the user requests, and the criteria used to accomplish this change is effected by the risk of that change.
+For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
+
+To explore the users role in CSE a survey was given to users, the results are discussed in section \ref{strat.usersurvey}.
+This survey was conducted in order to illuminate general user strategies and discuss aspects like interactions while evolving component systems.
+The criteria a user judges solutions by are then discussed, the reasons and system objectives they fulfil are described.
+Each criteria is mapped to the pseudo-Boolean function to be either minimised or maximised as discussed in chapter \ref{implementation}.
+This chapter is finished with a brief discussion on how criteria can be composed to fulfil different user objectives. 
+
+%%%The survey used to validate and refine the model
+To describe and define the strategies that different users employ to evolve their component systems an online survey was conducted.
+This survey targeted users of GNU/Linux distributions (specifically Ubuntu), and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
+In this context the way in which component systems are evolved is through package managers, as described in chapter \ref{background}.
+It was completed by 59 users, who answered questions about themselves, the system they are evolving, and the way in which they evolve it.
+It also involved the submission of package manager log files, which through analysis can provide greater detail of their behaviours.
+These logs are not analysed here, but are used further discussed in chapter \ref{ubunutsimulation}.
+
+In this section a brief description of the survey and an analysis of responses is given.
+The full set of questions in the survey is presented in section \ref{apx.survey}. 
+
+\subsection{Questions}
+%%%The goals of the survey:
+There are two types of questions in the survey; a set to identify the type of user, and a set to describe their interactions with package managers.
+
+A set of questions used to identify the user are:
+\begin{itemize}
+  \item How experienced with package managers are you? 
+  \item What system are you using?
+  \item What package manager are you using?
+\end{itemize}
+These can be used to categorise the type of user and put into context the answers that they give.
+They can also be used to weigh their answers for credibility and potentially exclude results from novice or inexperienced users. 
+
+A set of questions asked about their use of package mangers are:
+\begin{itemize}
+  \item Describe your initial interaction with the package manager.
+  \item Describe your day to day interactions with the package manager.
+  \item What usage life cycle do you have with the package manager?
+  \item Describe an unusual scenario in which the package manager was used.
+\end{itemize}
+The main focus of these questions is to identify the life-cycle of interactions that the user has when evolving a system.
+The responses will provide reasons for these actions to occur, and illuminates the users objectives and strategies.
+
+The survey finished with the question:
+\begin{itemize}
+  \item What other questions should I have asked?
+\end{itemize}
+This question tried to illicit comments and possible information that could of been gathered.
+It also provided a small verification of the survey, as to see if anything was missing that should of been asked.
+
+\subsection{Results}
+%%%The results are summarised as:
+The type of user that submitted the survey is important to be able to put in context their replies.
+Most users (29/59) used the dpkg component model, either in Debian or Ubuntu systems.
+The majority of these users used apt-get as their package manager.
+The next largest component model used was ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012} (13/59),
+all using the package manager pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012}.
+Other represented component models and package mangers include, Fedora with the rpm component model and the yum package manger,
+Slackware with pkgtools, and Gentoo with portage.
+
+The users mean experience was recorded as 3.9/5.
+This is of course a subjective measure but describes the confidence in which the participants answered the questions. 
+
+The life cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
+
+\begin{table}[htp]
+\begin{tabular}{l | c | c | c | c |}
+Request & Init. & Daily & Weekly & Monthly \\
+Upgrade  & 45 & 27 & 16 & 0 \\
+Install & 49 & 6 & 17 & 3 \\
+Remove & 6 & 4 & 1 & 0\\
+\end{tabular}
+\caption{Summary of the frequency of user actions with package managers}
+\label{strat.tblaction}
+\end{table}
+
+This table shows the amount of users from the survey who perform the actions of upgrading their system, installing or removing a package 
+initially (when the system is first created), daily, weekly or monthly.
+It shows that the vast majority of users when they create a system upgrade the system and install required packages.
+This also shows that most users upgrade their system daily, and if they will likely install a package weekly.
+
+The unusual scenarios which the user described using the package manager included 
+11 of the 59 users stating that they had installed a set of packages to fulfil a specific task only to remove them the next day.
+This is described by the users response 
+\begin{quote}
+``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
+\end{quote}
+
+Also, 3 of the users stated that the package manager broke their system at some point, which then required to be fixed through the package manager.
+
+In the final question asked if there is any more questions the general themes of responses include:
+\begin{itemize}
+  \item the mitigation of failed actions
+  \item installing multiple versions of packages
+  \item using a graphical user interface v.s. console based package manager
+\end{itemize} 
+The majority (37/59) users did not fill out this option in the survey, a potential indicator that the survey was complete.
+One user even remarked to this question:
+\begin{quote}
+``Quite an all encompassing survey!''
+\end{quote}
+
+\subsection{Progressive vs. Conservative Users}
+The main outcome of this survey was the identification of different user attitudes towards evolving a component system.
+These attitudes have been used to define user stereotypes, which are described as either \textbf{conservative} or \textbf{progressive}.
+These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society,
+where progressivism promotes change and reform.
+These ideologies can be caused because of a conflicting perception of risk; the risk of change introducing new problems, and the risk of not changing having old problems persist.
+
+These ideologies are analogous to component system evolution where there is a force that wishes to reduce the risk to a system by not altering it,
+and one to reduce risk by installing new versions of components.
+The majority of users from the survey found some middle ground in which to mitigate both types of risk.
+
+For example, a users response that express a slight conservative attitude:
+\begin{quotation}
+In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).
+\end{quotation}
+That is they are more likely not to change the system, even though it may be beneficial as it may lead to a fault. 
+
+Another example of a users response expressing a slight progressive attitude:
+\begin{quotation}
+I update my packages whenever I log in each day
+\end{quotation}
+Upgrading the system each day will ensure that no packages with fixed bugs will be installed, though may require significant change.
+
+Both of these ideologies have extremes though, where users who try to eliminate all of a risk.
+
+For example, a user's response in the survey with an extreme progressive attitude:
+\begin{quotation}
+I do run an unstable system all the time, I help mitigate this with some redundancy in my most frequently used components, 
+using packages which perform the same function, but have different dependencies, since it's less likely to have multiple packages break at the same time. 
+If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.
+\end{quotation}
+This user has components in their system that are so new as to not be fully tested, which are described as unstable packages.
+To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system to ensure that it can be used.
+This users system will almost certainly be completely up to date, as any new component versions will be immediately integrated into their system.
+
+An example of an extremely conservative user's response when asked about the frequency with which they interact with the package manager:
+\begin{quotation}
+As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
+Following the configuration and construction, only the occasional upgrade is necessary. 
+Unless, of course, I receive a security notice about something.
+\end{quotation}
+So after the setting up of a system, this user will not evolve the system unless there is a direct security risk.
+This lack of change will result in the system quickly becoming out of date.
+
+%%%The reasons for keeping a system up-to-date; the fixing of bugs security, the adding of functionality, 
+The reasons for these progressive attitudes of users is that maintaining an up-to-date system will eliminate known security exploits against the system,
+and also introduce more efficient or new functionality into the system.
+%%%The reasons for minimal change; through change unknown bugs could be introduced, the act of changing can create bugs, the effort of changing can consume resources  (e.g. network traffic).
+Where the conservative attitudes come from the wither the perceived risk that unknown bugs could be introduced into the system, the act of changing a system can cause faults,
+or the consumed resources (e.g. time, network traffic) are to expensive compared to the benefits.
+
+Both concerns are valid assessments of the risk of component system evolution, the user must decide with respect to the system objectives what they require. 
+For example, a server administrator that is running a mission critical system will likely change the system begrudgingly as any fault could cause massive damage.
+However, a user running a desktop personal computer system may be more interested in new functionality than the up-time of the computer, so would change more readily.
+
 \section{Conceptual Model}
 In this section the ``conceptual model'' of the component system evolution process is presented.
 The c the conceptual model is defined to represent \textbf{realistic} component system evolutions.

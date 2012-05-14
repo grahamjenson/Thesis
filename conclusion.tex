@@ -10,6 +10,43 @@ To attain this goal the semantics of component system evolution where defined, a
 and finally a simulation of the evolution of Ubuntu component systems conducted.
 The assessment of the strategies took the form of answering various questions.
 
+% \begin{figure}[htp]
+% \begin{center}
+% \digraph[scale=.4]{formalmodeldiagram}{
+% rankdir=BT;
+% subgraph{
+% 	rank=same;
+% 	\modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx</TD></TR></TABLE>> shape=none];
+% 	CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF*</TD></TR></TABLE>> shape=none];
+% 	SS [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelimplwx</TD></TR></TABLE>> shape=none];
+% 	ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">Conceptual Model</TD></TR></TABLE>> shape=none];
+% }
+% FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+% CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
+% SSI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelimplwx</TD></TR></TABLE>> shape=none];
+% ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:Conceptual Model</TD></TR></TABLE>> shape=none];
+% FMI -> \modelnamewx [ label = "instantiates"];
+% CMI -> CMS [ label="instantiates"];
+% SSI -> SS [ label="instantiates"];
+% ConMI -> ConM  [ label="instantiates"];
+% ConMI -> CMI [label="creates 1..m"]
+% subgraph cluster_0 {
+% 	rankdir=BT;
+% 	label="GJSolver";
+% 	style=filled;
+% 	color=lightgrey;
+% 	subgraph{
+% 	rank=same;
+% 	CMI -> FMI [ label="parsed to" ];
+% 	FMI -> SSI [ label="maps to 1..*" ];
+% 	}
+% }
+% }
+%   \caption{A diagram of the relationships between the conceptual model, CUDF*,\modelname and \modelimpl}
+%   \label{intro.relationships}
+% \end{center}
+% \end{figure}
+
 TODO DESCRIBE THE FOUND CONSEQUENCES I.E. How fast a system goes out of date when
 
 How well has this research goal been attained?
