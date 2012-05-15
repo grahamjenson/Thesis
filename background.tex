@@ -29,7 +29,7 @@ Another way to lower costs of the software evolution process is by creating syst
 A component system is created out of a set of components that are combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
 Composer's are also the ``evolvers'' of a system, as they have the power to alter the composition of components that make the system.
 Originally it was assumed that developers were the composers \citep{Parnas1972,PrietoDiaz1987}, where they would compose, verify, then release a system.
-However, recently the user has started to fill the composer role, where they compose their own systems to satisfy their requirements.
+However, recently the user has started to fill the composer role, where they compose and evolve systems to satisfy their requirements.
 
 The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
 It has been noted that the potential, and fragility, of component systems is increased with this user composition \citep{Szyperski2002}.
@@ -239,10 +239,10 @@ There are many aspects of component evolution left unexplored, including how the
 
 \subsection{Component System Evolution}
 A component system is evolved by the composer by continually altering the set of components contained within the component system.
-This is opposed to the evolution of individual component, where a developer alters an individual component.
+This is opposed to the evolution of individual component, where a developer alters a component internally.
 This architectural level view of evolution does not concern itself with the internals of the constituent components, only the relationships between the components.
 
-The core functions to evolve a component system are \textbf{install} and \textbf{remove}, these add or remove a component to or from the system.
+The core functions to evolve a component system are \textbf{install} and \textbf{remove} , these add or remove a component to or from the system.
 The additional function of \textbf{upgrade} can also be defined to remove then install a higher version of the same component. 
 This limited set of possible actions when changing a component system does not require much technical knowledge. 
 To evolve a single component requires programming, software development knowledge, as well as some technical knowledge of the component model.

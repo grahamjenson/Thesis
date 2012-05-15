@@ -408,6 +408,8 @@ $\langle  rank^L_{\alpha}, \leq_L \rangle$ is used to create the evolution optim
 This can be used to define the optimality orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
 
 \chapter{Full Criteria Mapping}
+In this appendix a mapping between the \modelname criteria and PB crtieria in table \ref{apx.crittable} is presented.
+
 \label{apx.critmapping}
 \begin{table}
 \begin{tabular}{c | c | c}
@@ -415,12 +417,91 @@ This can be used to define the optimality orders $\prec_{\alpha_{t_0}},\ldots, \
 \texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
-\texttt{-uptodatedistance} 	& $crit_{uptodatedistance} = \langle rank^{uptodatedistance}_{\alpha}, \leq \rangle$ & $\langle f_{uptodatedistance}, <, I_{uptodatedistance} \rangle$ \\
-\texttt{-stableversion(N)} 	& $crit_{stableversion} = \langle rank^{stableversion}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
+\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\texttt{-stableversion(N)} 	& $crit_{stableversion(N)} = \langle rank^{stableversion(N)}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
 \end{tabular}
 \caption{Mapping between these elements}
-\label{tablelabel}
+\label{apx.crittable}
 \end{table}
+
+Some utility functions are defined:
+
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
+\end{defs}
+
+\begin{defs}
+The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
+i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
+\end{defs}
+
+\begin{defs}
+The set of names $\mathcal{N}_t$ is the set of all names of components in $\mathbb{C}_t$.
+\end{defs}
+
+\section{-changed}
+
+The change criterion is defined:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+\begin{defs}
+Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
+such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
+This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
+\end{defs}
+That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
+
+\begin{defs}
+Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
+$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
+
+\section{-removed}
+
+The removed criterion is defined:
+\begin{defs}
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+\end{defs}
+
+\begin{defs}
+Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
+such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
+This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
+\end{defs}
+That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
+
+\begin{defs}
+Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
+$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
+
+\section{-new}
+%%%TODO
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+\end{defs}
+
+\section{-uptodatedistance}
+%%%TODO
+
+By creating a criterion with this measurement, the measurement of a system's up-to-dateness respects the two version criteria.
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
+	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
+\end{defs}
+
+\section{-stableversion(N)}
+
 
 
 \chapter{Glossary}

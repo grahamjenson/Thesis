@@ -2,87 +2,61 @@
 \label{introduction}
 \epigraph{E pluribus unum -- Latin for "Out of many, one"}
 {\textit{de facto motto of the United States 1782 - 1956}}
-Plutarch, a Greek philospher, in his biography \textit{Life of Theseus} 
+Plutarch, a Greek philosopher, in his work \textit{Life of Theseus} 
 proposed a paradox that in essence is the question:
 \begin{quote}
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
-This question deals with the themes of objects made of components, the change of the comopnent parts,
+This question deals with the themes of objects made of components, the change of the component parts,
 and how this change effects the object in question.
 These themes are at the center of this thesis.
 
-A software system can be constructed by composing together independent units called \textbf{software components} \citep{Szyperski2002}.
-In parrallel to Plutarch's question, this research asks "what happens to a comopnent system when it changes?".
-
-%%%The study of Software evolution is important
-Software evolution is the process through which software changes.
-Software evolves through the repeated change in order to maintain the system or satisfy new requirements.
-Software evolution is regularly cited as over 50\% the total cost of a project \citep{Grubb2003},
-and it is also a significant risk as any change to software may introduce new errors \citep{Brooks1975}.
-Software evolution is also necessary, as any sufficiently complex system will require change to remain satisfactory \citep{lehman1980}. 
-Studying the process of software evolution provides an understanding 
-that can be used to mitigate its risks and lower its costs.
-
-%%%Component systems
-When software is constructed from components,
-the process of software evolution is split into two different sub-processes:
-component evolution and component system evolution (CSE).
-Component evolution is the change of a component by a developer at the code level,
-e.g. adding functionality to a component then releasing a new version.  
-CSE is the change of a system by a composer (user) at the component level,
-e.g. removing an old version of a component from a system, then replacing it with a newer version.
-
-Evolving a comopnent system is risky as any change to the composition can introduce new errors.
-Similarily not changing the system is risky as old errors will remain in the system.
-Through studying the process of CSE, it is hoped that it will provide understanding that can be used to lower the risk.
+A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002}
+and the process by which software systems change over time is the study of \textbf{software evolution} \citep{lehman1980}.
+Therefore, \textbf{component system evolution} (CSE) is the study of how a component system changes over time.
+In parallel to Plutarch's question, this research attempts to answer "how does a component system change as it evolves?".
 
 \section{Objective}
-The objective of this research is to study the process of component system evolution using a developed simulation.
-This simulation can simulate a variety of users and illustrate the effect their choices have on their component systems.
-Answering questions like what is the average amount of components that are upgraded, if a user chooses to upgrade their system every day?
-Furthermore, the simulation can be used to study experimental approaches to evolve component systems, and then judge their effectiveness.
+The objective of this research is to study the process of component system evolution by using a developed simulation.
+This simulation is used to model a variety of users and illustrate the effect their choices have on their component systems as it evolves.
+The results of this can be used to answer questions like ``what is the average amount of components that are upgraded, if a user chooses to upgrade their system every day?''.
+Furthermore, the simulation can be used to analyse experimental approaches to evolve component systems, and then judge their effectiveness.
 
 \section{Contributions}
 As stated above, CSE is studied using a developed simulation.
 To create this simulation a variety of artifacts had to be developed.
-Each of these artifacts, as well as the simulation and the results from the simulation are seen as contributions from this research. 
+Each of these artifacts, as well as the simulation and its results are seen as contributions from this research. 
 The contributions from this research are:
 \begin{enumerate}
-  \item A formal model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) was developed to describes CSE. 
-  This model views component system evolution as a series of evolution steps, where each step tries to satisfy a user request and system constraints by changing the component system.
-  \item A syntax CUDF* was developed such that a CUDF* document could be parsed to an instance of \modelname. 
-  \item Although an instance of \modelname describes a component systems evolution, calculating the exact evolution may require some effort.
-  This calculation is known as resolving.
-  In order resolve a \modelname instance, each evolution step in the instance is mapped to a \modelimpl problem.
-  The novel lexicographic iterative strengthening algorithm was developed to solve \modelimpl problems efficiently, thus allowing the efficient resolving of a \modelname instance.
-  \item GJSolver was developed to implement the parsing from a CUDF* document to \modelname instance, and then the resolving using the lexicographic iterative strengthening algorithm.
-  GJSolver was verified through a third party competition, MISC.
-  \item A conceptual model of CSE was created based on the results of a user survey. 
-  This model is used to describe a realistic evolution of a component system as a CUDF* document. 
-  \item By creating instances of the conceptual model using data from collected user logs and the Ubuntu GNU/Linux operating system,
-  the evolution of a component systems can be simulated.
-  This simulation returns results that are used to answer questions about CSE, and explore experimental approaches to CSE.
+  \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
+  \item The \textbf{CUDF* syntax} that defined documents that can be parsed to an instance of \modelname.
+  \item The novel \textbf{lexicographic iterative strengthening algorithm} used to calculate the evolved component systems of a \modelname instance.
+  \item \textbf{GJSolver} is an implementation of the parsing from a CUDF* document to \modelname instance, and then the resolving using the lexicographic iterative strengthening algorithm.
+  \item A \textbf{conceptual model} of CSE based on the results of a user survey. 
+  \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
+  \item The results from simulations of the evolution Ubuntu systems to answer the question "how does a component system change as it evolves?".
 \end{enumerate}
 
-
 \section{Thesis Overview}
-%%%A list and breif explination of each of the chapters and how they relate to our Research Goals
-This thesis first describes the background of software evolution and component based systems in chapter \ref{background}.
-This chapter also attempts to give a suitable definition of what a software component is, and then examines different component models that fit such a definition.
-Other concepts such as users, software evolution, component evolution, and component system evolution are also explored in this chapter.
+This thesis follows the above order of contributions
+
+Chapter \ref{background} introduces the background of software evolution and component based systems.
+This background is presented to illustrate the context in which this research occurs.
+This chapter also attempts to give a suitable definition of what a software component is, and then examine different component models that fit such a definition.
 
 Chapter \ref{formal} describes the \modelname model, and the CUDF* syntax.
-A CUDF* document can be parsed to an instance of \modelname which describes the evolution of a component system.
+The process of parsing a CUDF* document to create a \modelname instance is given, where the full description is in appendix \ref{apx.cudf}.
 
 Chapter \ref{implementation} describes the resolving of a \modelname instance through mapping each evolution step to a \modelimpl problem.
-The lexicographic iterative strengthening algorithm is described as the method to find a solution to a \modelimpl problem.
-This chapter also describes the GJSolver implementation, which parses a CUDF* document to a \modelname instance, and resolves it using the lexicographic iterative strengthening algorithm.
-Also described is the verification of GJSolver.
+First the \modelimpl problem is defined, then a mapping from an evolution step in a \modelname instance to a \modelimpl problem is described.
+The lexicographic iterative strengthening algorithm to solve \modelimpl problems is then presented, and the use of this algorithm to resolve a \modelname instance is described.
+Finally, this chapter describes the GJSolver implementation and its verification.
 
-Chapter \ref{simulation} describes the process of creating the simulation using a method presented in \citep{Law2005}.
-A core element of the simulation is the conceptual model, which models the reality of CSE.
-Instances of this model are used to create realistic component system evolution problems, in order to be studied.
+Chapter \ref{simulation} describes the development of the CSE simulation.
+First the reason for using a simulation is discussed, then the methodology used to create the simulation is described.
+The user survey is then discussed (for full results see appendix \ref{apx.survey}) and used to create a conceptual model.
+This model is used to create CUDF* documents that describe evolutions of component systems. 
 
-Chapter \ref{ubunutsimulation} discusses the simulation using the Debian component model \citep{Barth2005} with Ubuntu \citep{Hill2006} components. 
+Chapter \ref{ubunutsimulation} discusses the simulation of the  the Debian component model \citep{Barth2005} with Ubuntu  components. 
 
 This thesis concludes in chapter (\ref{conclusion}) with a discusion of the contributions of this research, related work, and potential future research.

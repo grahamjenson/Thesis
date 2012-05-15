@@ -268,7 +268,7 @@ by mapping each constraint to a SAT clause or PB constraint:
 \end{enumerate}
 
 
-\subsubsection{Evolution Preference Order Mapping}
+\subsection{Evolution Preference Order Mapping}
 The evolution preference order $\prec_{\alpha_{t_{i-1}}}$ defined with a lexicographic composition of criteria $crit_{1} \oplus \ldots \oplus crit_{n}$ 
 can be mapped to a tuple of PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n\rangle$
 by mapping each criterion $crit_{i}$ to a PB criterion $\mathfrak{crit}_i$.
@@ -292,7 +292,7 @@ Therefore, the mapping from evolution preference orders to PB criteria is a part
 The partial mapping from \modelname criteria to PB criteria is not presented here.
 This is because many of the \modelname criteria that can be defined are not useful, 
 e.g. a criteria that maximises the number of components whose name starts with the letter \texttt{a}.
-Only specific criteria are mapped to PB criteria, these are presented in chapter \ref{strategies}. 
+Only specific criteria are mapped to PB criteria, these are presented in the next section. 
 
 To further illustrate the mapping from a \modelname criteria to a PB criteria, an example is presented.
 Consider two components $a$ and $b$, a criterion $\langle rank_{\alpha},< \rangle$ whose ranking function $rank_{\alpha}$ is defined as:
@@ -326,7 +326,112 @@ $\{ a,  b, x\}$                 & $\{a,b\}$                & 1                  
 \end{table}
 
 The above example describes how a \modelname criterion can be mapped to a PB criterion.
-In the following section, an algorithm that uses PB criteria to find optimal solutions to \modelimpl problems is presented. 
+In the following section, some specific criteria are presented and mapped.
+
+\section{Criteria}
+\label{impl.criteria}
+This section presents a selection of criteria and their mapping to between \modelname criteria, PB criteria, and MOF.
+They are presented in two general categories, minimising change to the system, and maximising the versions of components.
+The minimising change criteria were developed by Mancoosi and the criterion used to maximise versions was developed for Eclipse P2 solver \citep{leBerre2010}.
+
+\subsection{Change Criteria}
+Simple definitions of criteria to minimise change can often have negative effects during CSE.
+For example, the most direct measurement of change of a component system is the measurement of the total changed components.
+This is defined as a \modelname criterion:
+\begin{defs}
+	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
+	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
+\end{defs}
+That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
+This criterion's measurements are an inaccurate representation of the risks of changing a system.
+For example, a component being replaced by another version of itself is seen as less risky than it being replaced with an entirely different component.  
+Yet using the $crit_{changec}$ criterion, these would be seen as equivalent changes.
+
+To define a change criterion that takes into account changing between components of the same name, is less risky, a components name can be considered.
+For this purpose the function $V$ is defined as: 
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
+\end{defs}
+
+This function can be used to define a criterion that considers the name of a component:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+This criterion can be altered to also consider new and removed components:
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+\end{defs}
+
+\begin{defs}
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+\end{defs}
+
+The change, new and remove criteria were taken directly from the MISC competitions definition of criteria.
+
+The mapping between these criteria, PB criteria and MOF are presented in table \ref{impl.ccritmapping}.
+A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF name} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
+\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.ccritmapping}
+\end{table}
+
+\subsubsection{Version criteria}
+%%%Maximise version, just sum up all versions and maximise their value
+Defining how up-to-date a component system is, is a difficult task.
+The most common way is to use a components version.
+When using a components versions to measure how up-to-date a component system is, two properties of component versions must be considered:
+\begin{itemize}
+  \item A version of a component can only be compared to version of another component with the same name, 
+  i.e. given two components $\langle n,v \rangle$ and  $\langle n',v' \rangle$ comparing $v$ and $v'$ is only useful if $n = n'$.
+  \item The sum of versions is not a useful metric as two lesser versions will not be better than one greater version, 
+  e.g. given components $\langle n,2 \rangle$,  $\langle n,3 \rangle$ and  $\langle n,4 \rangle$,
+  a system with only $\langle n,2 \rangle$ and $\langle n,3 \rangle$ is not better than a system with just $\langle n,4 \rangle$. 
+\end{itemize}
+
+These problems can be seen in the simple criterion to maximise the versions in a system:
+\begin{defs}
+	The \textbf{maxversion} criterion is defined as $crit_{maxversion} = \langle rank^{maxversion}_{\alpha}, \geq \rangle$,
+	where $rank^{maxversion}_{\alpha}(\beta) = \sum_{c \in \beta} c.$\texttt{version}.
+\end{defs}
+This criteria does not consider either of a versions properties, it sums together versions of components with different names.
+
+A useful criterion has been defined in Eclipse P2 that minimises a measurement of the out-of-dateness of a component name, in a component system.
+This out-of-dateness measurement is a relative measurement of a component given what other components are available.
+It is defined as:
+\begin{defs}
+The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
+i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
+\end{defs}
+
+By creating a criterion with this measurement, the measurement of a system's up-to-dateness respects the two version criteria.
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
+	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
+\end{defs}
+That is, the measurement to be minimised is the number of components that have the same name and a greater version than a component that is currently installed. 
+
+The mapping between these elements is presented in table \ref{impl.ccritmapping}.
+A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.ccritmapping}
+\end{table}
+
 
 \section{Solving a \modelimpl problem}
 \label{impl.algorithms}
@@ -634,95 +739,6 @@ Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_
 Otherwise, $answer$ is a set of literals that can be mapped back to the component system $\alpha_{t_i}$.
 This algorithm, once completed, returns the set of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
 
-\section{Criteria}
-\label{impl.criteria}
-This section presents a selection of criteria and their mapping to between \modelname criteria, PB criteria, and MOF.
-They are presented in two general categories, minimising change to the system, and maximising the versions of components.
-The minimising change criteria were developed by Mancoosi and the versions criterion developed for Eclipse P2 solver \citep{leBerre2010}.
-For each category a discussion over the negative effects of using simple definitions of criteria is given.
-
-\subsection{Change Criteria}
-Simple definitions of criteria to minimise change can often have negative effects during CSE.
-For example, the most direct measurement of change of a component system is the measurement of the total changed components.
-This is defined as a \modelname criterion:
-\begin{defs}
-	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
-	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
-\end{defs}
-That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
-This criterion's measurements are an inaccurate representation of the risks of changing a system.
-For example, a component being replaced by another version of itself is seen as less risky than it being replaced with an entirely different component.  
-Yet using the $crit_{changec}$ criterion, these would be seen as equivalent changes.
-
-To define a change criterion that takes into account changing between components of the same name, is less risky, a components name can be considered.
-For this purpose the function $V$ is defined as: 
-\begin{defs}
-The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
-i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
-\end{defs}
-
-This function can be used to define a criterion that considers the name of a component:
-\begin{defs}
-	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
-	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
-\end{defs}
-
-This criterion can be altered to also consider new and removed components:
-\begin{defs}
-	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
-	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
-\end{defs}
-
-\begin{defs}
-	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
-	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
-\end{defs}
-
-The change, new and remove criteria were taken directly from the MISC competitions definition of criteria.
-
-The mapping between these elements is presented in table \ref{impl.critmapping}.
-A full description of the mapping is presented in appendix \ref{apx.critmapping}.
-\begin{table}
-\begin{tabular}{c | c | c}
-\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
-\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
-\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
-\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
-\end{tabular}
-\caption{Mapping between these elements}
-\label{impl.critmapping}
-\end{table}
-
-\subsubsection{Version criteria}
-%%%Maximise version, just sum up all versions and maximise their value
-Defining how up-to-date a component system is, is a difficult task. 
-This is due to two properties of component versions:
-\begin{itemize}
-  \item A version of a component can only be compared to another version of the same component, 
-  i.e. given two components $\langle n,v \rangle$ and  $\langle n',v' \rangle$ comparing $v$ and $v'$ is only useful if $n = n'$.
-  \item The sum of versions is not a useful as two lesser versions will not be greater than one greater version, e.g. given components $\langle n,2 \rangle$,  $\langle n,3 \rangle$ and  $\langle n,4 \rangle$,
-  a system with only $\langle n,2 \rangle$ and $\langle n,3 \rangle$ is not better than a system with just $\langle n,4 \rangle$. 
-\end{itemize}
-
-These problems can be seen in the simple criterion to maximise the versions in a system:
-\begin{defs}
-	The \textbf{maxversion} criterion is defined as $crit_{maxversion} = \langle rank^{maxversion}_{\alpha}, \geq \rangle$,
-	where $rank^{maxversion}_{\alpha}(\beta) = \sum_{c \in \beta} c.$\texttt{version}.
-\end{defs}
-Both properties are ignored in this criteria, thus creating a simple but ineffective criterion.
-
-A useful criterion has been defined in Eclipse P2 that minimises a measurement of the out-of-dateness of a component name, in a component system.
-This out-of-dateness measurement is defined as:
-\begin{defs}
-The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
-i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
-\end{defs}
-
-By creating a criterion with this measurement, the measurement of a system's up-to-dateness does not depend on the components version: 
-\begin{defs}
-	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
-	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
-\end{defs}
 
 \section{GJSolver}
 \label{impl.gjsolver}
