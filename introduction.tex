@@ -2,6 +2,7 @@
 \label{introduction}
 \epigraph{E pluribus unum -- Latin for "Out of many, one"}
 {\textit{de facto motto of the United States 1782 - 1956}}
+%%%Interesting AND answer WHAT CSE, WHY prediciting behaviour in order to reccommend actions, HOW Simulation!
 Plutarch, a Greek philosopher, in his work \textit{Life of Theseus} 
 proposed a paradox that in essence is the question:
 \begin{quote}
@@ -14,11 +15,20 @@ These themes are at the center of this thesis.
 A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002}
 and the process by which software systems change over time is the study of \textbf{software evolution} \citep{lehman1980}.
 Therefore, \textbf{component system evolution} (CSE) is the study of how a component system changes over time.
-In parallel to Plutarch's question, this research attempts to answer "how does a component system change as it evolves?".
+In parallel to Plutarch's question, this research attempts to answer "how does a component system change as it evolves?" by studying the CSE process.
 
+A popular component system is the Ubuntu GNU/Linux operating system.
+This system was recently estimated to have over 20 million users \footnote{http://www.computerworlduk.com/news/operating-systems/3310952/canonical-launches-ubuntu-1110-update/?page=0,0}.
+As each user's system is evolved through the CSE process understanding and predicting its behaviour is an important concern.
+Further, through understanding the process
+ 
 \section{Objective}
-The objective of this research is to study the process of component system evolution by using a developed simulation.
-This simulation is used to model a variety of users and illustrate the effect their choices have on their component systems as it evolves.
+%%%What
+The objective of this research is to study the process of component system evolution in order to better predict its behavior.
+%%Why
+This is done because the increasing amount of system that are built using software components 
+%%%How 
+CSE is studies through a developed simulation that uses a variety of users to illustrate the effect their choices have on their component systems as it evolves.
 The results of this can be used to answer questions like ``what is the average amount of components that are upgraded, if a user chooses to upgrade their system every day?''.
 Furthermore, the simulation can be used to analyse experimental approaches to evolve component systems, and then judge their effectiveness.
 
@@ -34,7 +44,7 @@ The contributions from this research are:
   \item \textbf{GJSolver} is an implementation of the parsing from a CUDF* document to \modelname instance, and then the resolving using the lexicographic iterative strengthening algorithm.
   \item A \textbf{conceptual model} of CSE based on the results of a user survey. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
-  \item The results from simulations of the evolution Ubuntu systems to answer the question "how does a component system change as it evolves?".
+  \item The results from simulations of the evolution Ubuntu systems
 \end{enumerate}
 
 \section{Thesis Overview}

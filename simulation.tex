@@ -6,20 +6,22 @@ A simulation brings a model to life and shows how a particular object or phenome
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
 In the previous chapters \modelname has been used to represent CSE.
-A problem 
-Given a goal of this thesis is to simulate CSE,
+A \modelname instance can represent any evolution of a component system.
+However, as a goal of this research is to simulate CSE, realistic component evolutions are necessary.
+This chapter presents a conceptual model that can be used to generate realistic component system evolutions.
 
-To study the CSE process is the main purpose of this thesis.
-This study could be in the form of either looking at real systems and users, studying a system in a controlled environment or simulating the environment in an abstract manner.
-Each of these options is discussed and weighed for their costs and benefits.
-The simulation method is selected as it has the best attributes required for this research.
+This chapter first describes the reason that a simulation has been chosen as the method to study CSE.
+Simulation is compared to other types of possible avenues of study, looking at real systems and users or using a controlled environment.
+Then the methodology outlined by \cite{Law2005} is described, 
+and its core artifact, the ``conceptual model'', is discussed.
 
-The methodology outlined by \cite{Law2005} is used to create a valid and credible simulation.
-The basic artifact of this methodology is a ``conceptual model'', which is a simplified abstraction of reality.
-A conceptual model can be used to create a CUDF* documents that can then be simulated to study the CSE process.
+A user survey is then presented.
+This survey was used to construct the conceptual model, by studying how a user evolves their componetn systems.
+This survey focused on users of package managers, to evolve GNU/Linux operating systems.
+
+Finally, this chapter describes the conceptual model, and how this model can be used to create CUDF* documents that describe realistic component system evolutions. 
+Such a CUDF* document can then be resolved by GJSolver, and the resulting systems studied.
 These relationships are described in figure \ref{sim.modeldiagram}.
-
-
 
 \begin{figure}[htp]
 \begin{center}
@@ -42,11 +44,9 @@ ConMI -> CMI [ label="creates"];
 \end{figure}
 
 
-
-\section{The study of Component System Evolution}
-To study the CSE process, one must examine and investigate how a component system evolves in response to a request to change. 
-This requires access to many component systems state before an after a change, and the requests that instigate the change.
-
+\section{The Study of Component System Evolution}
+To study the CSE process, many component systems change in response to requests must be studied.
+These evolutions consist of a series of component systems that are snapshots before and after a requested change.
 To obtain this information three methods could be used:
 \begin{enumerate}
   \item field data could be collected from real systems evolving ``in the wild''.
@@ -71,8 +71,8 @@ This approach  has significant drawbacks:
 
 \subsection{Users in a Controlled Environment}
 To increase the efficiency of collecting results and to eliminate privacy issues of users, a controlled environment may be created.
-This environment is a component system where the parameters of its evolution could be controlled and monitored.
-A user would then be asked to evolve the system to approximate their real actions, the resulting systems could then be studied.
+Such an environment could be created in a laboratory setting, and consist of a component system and a participant.
+This participant would then be asked to evolve the system to approximate their real actions, where the resulting systems could then be studied.
 
 Such a controlled environment could very quickly simulate  many interactions that would of occurred over a long period.  
 It also removes the necessity user trust as the user is altering a system that is not theirs.
@@ -213,29 +213,22 @@ This may reduce the validity of the end model, but these restrictions have been 
 and done so in a manner that attempts to minimise negative effects.
 
 
-
 \section{User Survey}
 \label{strat.usersurvey}
+To explore the users role in CSE and to construct a conceptual model, a survey was given to users.
 The previous chapters have left the role a user plays in the evolution of their component system unexplored.
-This chapter describes the motivations and strategies for users to evolve their component systems.
+This section describes the motivations and strategies for users to evolve their component systems.
 
 A strategy is the plan or pattern employed by a user to evolve a system.
 A fundamental influence on the user's strategy is their perception of risk.
 Each change to the system the user requests, and the criteria used to accomplish this change is effected by the risk of that change.
 For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
 
-To explore the users role in CSE a survey was given to users, the results are discussed in section \ref{strat.usersurvey}.
-This survey was conducted in order to illuminate general user strategies and discuss aspects like interactions while evolving component systems.
-The criteria a user judges solutions by are then discussed, the reasons and system objectives they fulfil are described.
-Each criteria is mapped to the pseudo-Boolean function to be either minimised or maximised as discussed in chapter \ref{implementation}.
-This chapter is finished with a brief discussion on how criteria can be composed to fulfil different user objectives. 
-
 %%%The survey used to validate and refine the model
-To describe and define the strategies that different users employ to evolve their component systems an online survey was conducted.
 This survey targeted users of GNU/Linux distributions (specifically Ubuntu), and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
 In this context the way in which component systems are evolved is through package managers, as described in chapter \ref{background}.
 It was completed by 59 users, who answered questions about themselves, the system they are evolving, and the way in which they evolve it.
-It also involved the submission of package manager log files, which through analysis can provide greater detail of their behaviours.
+It also optionally involved the submission of package manager log files, which through analysis can provide greater detail of user behaviours.
 These logs are not analysed here, but are used further discussed in chapter \ref{ubunutsimulation}.
 
 In this section a brief description of the survey and an analysis of responses is given.
@@ -269,7 +262,7 @@ The survey finished with the question:
   \item What other questions should I have asked?
 \end{itemize}
 This question tried to illicit comments and possible information that could of been gathered.
-It also provided a small verification of the survey, as to see if anything was missing that should of been asked.
+It also provided a minor verification of the survey, as to see if anything was missing that should of been asked.
 
 \subsection{Results}
 %%%The results are summarised as:
@@ -282,7 +275,7 @@ Other represented component models and package mangers include, Fedora with the 
 Slackware with pkgtools, and Gentoo with portage.
 
 The users mean experience was recorded as 3.9/5.
-This is of course a subjective measure but describes the confidence in which the participants answered the questions. 
+This is a subjective measure, but it describes the confidence in which the participants answered the questions. 
 
 The life cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
 
@@ -303,7 +296,7 @@ It shows that the vast majority of users when they create a system upgrade the s
 This also shows that most users upgrade their system daily, and if they will likely install a package weekly.
 
 The unusual scenarios which the user described using the package manager included 
-11 of the 59 users stating that they had installed a set of packages to fulfil a specific task only to remove them the next day.
+11 of the 59 users stating that they had installed a set of packages to fulfil a specific task only to remove them almost immediately.
 This is described by the users response 
 \begin{quote}
 ``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
@@ -324,16 +317,13 @@ One user even remarked to this question:
 \end{quote}
 
 \subsection{Progressive vs. Conservative Users}
-The main outcome of this survey was the identification of different user attitudes towards evolving a component system.
-These attitudes have been used to define user stereotypes, which are described as either \textbf{conservative} or \textbf{progressive}.
+The main outcome of this survey was the identification of different user strategies towards evolving a component system.
+These strategies have been used to defined into two user stereotypes, \textbf{conservative} and \textbf{progressive}.
 These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society,
 where progressivism promotes change and reform.
-These ideologies can be caused because of a conflicting perception of risk; the risk of change introducing new problems, and the risk of not changing having old problems persist.
+These strategies can be caused because of a conflicting perception of risk; the risk of change introducing new problems, and the risk of not changing having old problems persist.
 
-These ideologies are analogous to component system evolution where there is a force that wishes to reduce the risk to a system by not altering it,
-and one to reduce risk by installing new versions of components.
-The majority of users from the survey found some middle ground in which to mitigate both types of risk.
-
+Most users in the survey are between these two strategies. 
 For example, a users response that express a slight conservative attitude:
 \begin{quotation}
 In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).
@@ -346,7 +336,7 @@ I update my packages whenever I log in each day
 \end{quotation}
 Upgrading the system each day will ensure that no packages with fixed bugs will be installed, though may require significant change.
 
-Both of these ideologies have extremes though, where users who try to eliminate all of a risk.
+Both of these strategies have extremes though, where users who try to eliminate all of a risk.
 
 For example, a user's response in the survey with an extreme progressive attitude:
 \begin{quotation}
@@ -374,76 +364,78 @@ and also introduce more efficient or new functionality into the system.
 Where the conservative attitudes come from the wither the perceived risk that unknown bugs could be introduced into the system, the act of changing a system can cause faults,
 or the consumed resources (e.g. time, network traffic) are to expensive compared to the benefits.
 
-Both concerns are valid assessments of the risk of component system evolution, the user must decide with respect to the system objectives what they require. 
+Both concerns are valid assessments of the risk of component system evolution, the user must decide with respect to their system, what strategy to employ. 
 For example, a server administrator that is running a mission critical system will likely change the system begrudgingly as any fault could cause massive damage.
-However, a user running a desktop personal computer system may be more interested in new functionality than the up-time of the computer, so would change more readily.
+However, a user running a desktop personal computer system may be more interested in new functionality, so would change more readily.
 
 \section{Conceptual Model}
 In this section the ``conceptual model'' of the component system evolution process is presented.
-The c the conceptual model is defined to represent \textbf{realistic} component system evolutions.
+The conceptual model is defined to represent \textbf{realistic} component system evolutions.
 
 This relation to reality is the core difference between the conceptual model and the \modelname model.
 For example, \modelname could describe a situation where a user may requests to upgrade their system every minute for a year.
 This situation is clearly unrealistic, and not able to be represented by the conceptual model.
 
-In this section, the conceptual models of the user and repository are described.
-How an instance of the conceptual model can be used to create a realistic component system evolution, described by a CUDF* document, is also described.
+In this section, the conceptual models of the user and components are described.
+How an instance of the conceptual model can be used to create a realistic component system evolution, represented by a CUDF* document, is also described.
 
 \subsection{Conceptual User}
-The important aspects to the conceptual user are the initial component system, the user requests to be made to the system, and the times at which these requests are made. 
-
-Installing a component system is the first action a user takes during the CSE process.
-This initial system is represented in the conceptual model as a CUDF* document.
+The core aspect modeled by the conceptual user is what and when requests will made to change the system. 
 
 In CUDF* three different actions are defined that a user can request to alter their system; installing, removing or upgrading a component.
 However, as shown in the user survey presented in chapter \ref{strategies} the two main actions of users are the installation of a component, and the upgrading of the entire system.
-
-The times at which the user requests these changes is also important.
-For example, a user will typically not request to upgrade their system every minute of the day as this would be seen as superfluous.
-Reasonably, if an action occurs its max
+The daily level has been selected as the frequency of these actions, as this is a reasonable time period expressed often in the user survey. 
 
 %%%We have limited it to two actions, install and update, as they are the core actions a user executes
 The variables that make up the conceptual user are: 
 \begin{itemize}
-  \item the initial system as a CUDF* document
-  \item the probability a user selects to update the system per day
-  \item the probability a user selects to install a component per day
-  \item the probability a component is selected to be installed
-  \item the MOF criteria used to select an optimal system for an update request
-  \item the MOF criteria used to select an optimal system for an install request
-  \item The number of days they exist
+  \item $u$ is the probability a user requests to update the system per day.
+  \item $i$ is the probability a user requests to install per day.
+  \item $\mathbb{N}_p$ is a set of component names where for each name $n$, $n_p$ is the probability that a component with name $n$ will be requested to be installed.
+  The sum of all probabilities equals 1.
+  \item $U$ is the MOF criteria used to select an optimal system for an update request.
+  \item $I$ is the MOF criteria used to select an optimal system for an install request.
+  \item $d$ is the number of days requests are made.
 \end{itemize}
 
-The initial system the user installs is also modelled here, as this is the starting point of any evolution.
-
-\subsubsection{Install}
-A user typically requests to install a component to extend the functionality of their component system.
-How often does a user requests to install a package, and what packages is the user likely to request to install are interesting questions. 
-simulating, the information of what component a user will install and when will a user select to install it are needed. 
-
-%%%What probability a package will be selected to be installed
-Determining the probability a user will select any component to be installed is difficult given the enormous amount of factors this relies on.
-The users job, location, current tasks, previously installed software, favourite colour and numerous other aspects can determine what the user will select to install.
-Given that all this information is impractical to simulate, this problem is abstracted into the form of two questions;
+To illustrate the use of this model, consider the example where:
 \begin{itemize}
-  \item What components may a user select to install?
-  \item How likely would a user select to install any of these?
+  \item $u =.2$
+  \item $i =.2$
+  \item $\mathbb{N}_p = \{n,m\}$ and  $n_p = .25$ and $m_p = .75$
+  \item $U = $ \texttt{-removed,-new,-uptodatedistance}
+  \item $I = $ \texttt{-removed,-changed,-uptodatedistance}
+  \item $d = 20$
 \end{itemize}
-This is represented by a weighted list of components, where the weights represent popularity;
-e.g. component ``A'' has a 10\% chance of being selected as the component to install, or component ``B'' has a 5\% chance.
+The variables $u$ and $i$ equal $.2$, this means that on any day the user has a 20\% probability of requesting to upgrade and/or install a component.
+If a user requests to install a component, the component name $n$ has a 25\% probability of being selected, and the component name $m$ is 75\% likely. 
+When the system is selected to be upgraded, the most criteria used is $U$, whose most important criterion is to minimise the amount of removed components.
+The install criteria $I$ is similar to the update criteria, except that is minimises all change to the system.
+Finally $d$ describes how many days this user will potentially request for, which is $20$.
 
-%%%The core problem with this is correlation between packages and user
-The core problem with this weighting of components is that it ignores the correlation between probability a component will be installed. 
-Two or more components may complement their functionality, thus making their installation together more likely.
-This is impossible to represent with a weighted list, however this type of information is very difficult to calculate.
-It would require the analysis of a significant amount of systems, which would probably cost more than the benefits gained.
+Using this model it can be expected that there will be $4$ requests to upgrade the system and $4$ requests to install a component.
+Component names  are selected to be installed without replacement, i.e. the same component name cannot be selected twice to be installed.
+Therefore, only $2$ requests to install can be made, and it is expected that name $m$ will be selected first.
 
-The next question is what is the probability that a user will install a component, and how many components?
-This is represented by a probability for the amount of components that a user may install on a day,
-e.g. they have a 80\% chance of installing nothing, a 15\% chance of installing one component.
 
-\subsubsection{Initial System}
-%%%The initial system to start from is important, typically there are many to choose from
+\subsubsection{Discussion of Conceptual User}
+This section presents a brief discussion about the conceptual user compared to the users from the survey.
+
+The conceptual user does not model the initial requests made when the system is new, 
+or the discussed pattern of installing then removing packages.
+The reason for not including these elements in the model is to maintain the simplicity of this model.
+Including these actions into the user model would dramatically increase the complexity of the model, 
+which might overshadow the core element being modeled. 
+
+One request made by the user in reality may impact the occurrence of another action, so that they are correlated to happen together.
+For example, a user may select to always update before they install, or to select a component to be installed because of another installed component.
+The complexity that can be introduced by these correlations could make this simulation impractical.
+For the practicality of the simulation, and the simplicity of the presented models, the corrolation between requests is ignored.
+
+\subsection{Conceptual Components Model}
+The only item that is necessary in the conceptual component model is 
+a partial CUDF* document that includes the preamble, and package stanzas that can be parsed to create the initial system $\alpha_{t_0}$ and sets of components $C_{t_0},\ldots,C_{t_n}$.
+
 The starting system will effect how the system is evolved.
 Therefore, selecting an initial system to start evolving is an important issue.
 
@@ -458,43 +450,6 @@ Each of these also includes the choice of either amd64 or i386 chipsets.
 The selection of the initial system can depend on many aspects of the simulation, which should be considered when defining the questions to be asked.
 
 
-\subsection{Repository Model}
-The set of components that exist at a given time.
-
-\subsubsection{Time Range}
-%%%The range of time in which to look at
-The range of time over which the simulation is run will determine the repositories that are required.
-It is also important as it should be long enough to draw conclusions from,
-but as the simulation can take considerable resources to execute, too long and it may make it impractical to execute all the iterations necessary.
-Other external aspects such as policy changes in the way in which a repository is run, or release cycles of the component system, 
-must be considered when defining the time range.
-These may have an effect on the results therefore should be considered in the conclusions drawn.
-
-\subsubsection{Variables}
-
-%%%this model contains a record of packages in repository over time
-This model then contains one set of information:
-\begin{enumerate}
-  \item A daily record of components stored in the repository
-  \item A time frame, start and finish, over which the simulation is run
-\end{enumerate}
-
-\subsection{Configuration}
-The simulation configuration is a set of variables in which the simulation can be altered through.
-To treat these variables as a set of inputs, their format and constraints must be defined.
-
-The format for the initial system and criteria have been defined in previously chapters.
-The initial system and the repository information will be store in the CUDF format, as described in chapter \ref{background}. 
-The criteria to update and install will be defined in our modified MANCOOSI format defined in chapter \ref{criteria}.
-
-Some inputs are trivially defined;
-the update probability is a number between 0 and 1;
-the time frame is defined as the dates of the days (given in seconds since the epoch at Jan. 1st 1970) between a given start date and the number of days that the simulation should run for.
-
-These final inputs, the probability distributions of whether a component will be selected to be installed and how many components a user will select to install on a given day,
-are represented using a set of pairs, each pair containing the action and the probability the action will be taken.
-
-
 
 \subsection{Processes}
 These processes are attempts to abstract and simplify the reality of the component system evolution.
@@ -505,34 +460,6 @@ then passing it to the resolver with the appropriate criteria to find the result
 The results of this process is then a set of systems that are created through the user actions.
 These will be different along the dimensions of the configuration.
 
-
-
-\paragraph{Initialisation}
-%%%Initialize the algorithm
-The \verb+generateUserActions+ algorithm first initializes three variables, \verb+userActions+, \verb+keeps+ and \verb+days+.
-The \verb+userActions+ list is returned at the end of the algorithm.
-
-The variable \verb+keeps+ is an initially empty list, that is contains all the components the user has previously selected to install.
-This list is later translated into a ``keep: package'' property of the installed component with defined semantics in the CUDF specification.
-This ensures that after a component has been selected to be installed by a user a component is not later removed by an action, like an update.
-
-
-
-
-\paragraph{Differences to Reality}
-The core differences from this model of a user to a real user are life cycle actions and correlation between actions.
-
-A user when first installing a system will likely have components that they require that are not in the default system, and therefore when starting will install a lot of components.
-This type of reasoning leads to life cycle actions, actions that are caused by events in the life cycle of the system.
-Another example of this may be that at the end of each month a user decides to look through what they have installed and remove unneeded packages.
-These actions add an extra dimension to the user model and process and will clearly change some results.
-However, it has been opted out of the simulation as a precise set of possible actions and associated parameters are difficult to define.
-Also as stated in their name they occur infrequently, if at all, and therefore it has been decided that they may not be significant.  
-
-One action may also impact the occurrence of another action, so that they are correlated to happen together.
-For example, a user may select to always update before they install, or to only remove a component directly after it has been installed.
-The complexity that can be introduced by these correlations could make this simulation significantly more complex.
-As these values may be different for each type of user and is probably more related to the person than the strategy they employ these have been deemed 
 
 
 
