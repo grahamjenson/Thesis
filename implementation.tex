@@ -1,142 +1,82 @@
-\chapter{Component Dependency Resolution}
+\chapter{Resolving \modelname}
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
+The previous chapter presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
+Each step evolves the component system by satisfying a user request and system constraints with a new component system that is optimal with respect to some criteria.
+Calculating the resulting systems of these evolution steps is described as \textbf{resolving} a \modelname instance.
+Resolving a \modelname instance can require a significant effort due to the nature of the problem (as discussed in the previous chapter).
 
-%%%CDR Has been shown to be NP-Complete to find a solution and NP-Hard to find an optimial one.
-In chapter \ref{formal} the process of component system evolution was defined as the iterative application of the evolutionary step function.
-This evolutionary step function can be automated into a process called Component Dependency Resolution (CDR).
-CDR takes the evolution problem and tries to return an optimal solution given some criteria.
+This chapter turns its attention a way of resolving a \modelname instance by mapping each of its evolution steps to, then solving, a \modelimpl problem.
+\modelimpl uses lexicographically ordered pseudo-Boolean criteria 
+to find an optimal solution to a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
+These relationships are presented in figure \ref{impl.modelsatdiagram}.
 
-%%%Formally it resembles the SAT problem, which already has efficient implementations, and has been used to solve this problem
-In this chapter a novel CDR implementation, named GJSolver, is described.
-GJSolver maps evolution problems to Boolean Satisfiability Problems (SAT),
-and maps the criteria that define an optimal solution to lexicographically ordered pseudo-Boolean \citep{dixon2004automating} criteria. 
-Then through using the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine}
-and iterative strengthening \citep{calistri1994iterative, le2010sat4j} algorithms,
-GJSolver searches for an optimal solution to the evolution problem given the criteria.
+\begin{figure}[htp]
+\begin{center}
+\digraph[scale=0.5]{implsatgraph}{
+rankdir=BT;
+SAT [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">SAT problem</TD></TR></TABLE>> shape=none];
+PBCrit [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">PB criteria</TD></TR></TABLE>> shape=none];
+SATPB [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">SAT+PB problem</TD></TR></TABLE>> shape=none];
+SS [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelimplwx</TD></TR></TABLE>> shape=none];
+SSI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelimplwx</TD></TR></TABLE>> shape=none];
+\modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx</TD></TR></TABLE>> shape=none];
+FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none ];
+SS -> PBCrit [label=uses];
+SS -> SATPB [label=uses];
+SSI -> SS [label=instanciates];
+subgraph {
+rank=same
+	FMI -> SSI [ label="maps to 1..*" ];
+}
+SATPB -> SAT [label=extends];
+FMI -> \modelnamewx [ label = "instantiates"];
+}
+  \caption{A description of the relationships of \modelimpl and \modelname}
+  \label{impl.modelsatdiagram}
+\end{center}
+\end{figure}
 
-%%%In this chapter\ldots
-Firstly, in section \ref{impl.requirement}, the requirements and design decisions of GJSolver are discussed.
-In section \ref{impl.mapping}, the SAT problem and pseudo-Boolean functions are defined then mapped to the evolution problem and criteria defined in the chapter \ref{formal}.
-The algorithms used to find an optimal solution to an optimal solution to the SAT problem given the criteria are described in chapter \ref{impl.algorithms}
-The CDR implementation, called GJSolver, created through this research is then described in section \ref{impl.gjsolver}.
-The specific requirements that GJSolver was developed towards, the formal mapping, and the implementation decisions are described.
+The algorithm employed to solve \modelimpl problems is the novel lexicographic-iterative-strengthening algorithm.
+This algorithm uses the iterative strengthening \citep{calistri1994iterative, le2010sat4j} and Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithms.
 
-This chapter ends with a discussion of the process of verification of GJSolver through the Mancoosi International Solver Competition (MISC).  
+To create an instance of \modelname to be resolved, some criteria must be defined. 
+Some selected criteria are presented and defined, and their mapping from MOF criteria names, to \modelname criteria, and to PB criteria is presented. 
 
-\section{Requirements of GJSolver}
-\label{impl.requirement}
-Through the course of this research, the CDR implementation GJSolver grew out of the need to have a modifiable base to experiment with component dependency resolution.
+This chapter also describes the implementation GJSolver.
+GJSolver takes a CUDF* document parses it into a \modelname instance (as described in appendix \ref{apx.cudf}),
+and resolves it by following the process described further in this chapter.
+It will also be shown how GJSolver was verified through MISC.
 
-Given the context under which GJSolver was developed, the set of requirements that it was designed according to are listed here:
-\begin{enumerate}
-  \item \textbf{Mancoosi International Competition Ready}: The MISC gives a set of standards to solve CUDF problems with criteria defined using the Mancoosi optimisation format.
-  A goal of the GJSolver was to enter it in the MISC in order to be compared against other solvers.
-  This comparison would be the final step in the validation and verification of the implementation.
-  Following these standards ensures that the solver can be entered, and then competing can show the relative speed and correctness of the GJSolver implementation.
-  This will ensure that GJSolver is a valid and efficient implementation. 
-  \item \textbf{Anytime Algorithm}: Return a solution, even if it is not an optimal solution, within a predefined amount of time. 
-  CDR problems can be large and complex, finding the ``best'' solution can be difficult. 
-  This requirement ensures that the algorithm will return a solution, within a time frame.
-  \item \textbf{Easily Creatable Criteria}: The ability to quickly implement and test criteria in a manner that enables experimentation, will increase the speed of research.
-\end{enumerate}
+This chapter, in section \ref{impl.mapping} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
+In section \ref{impl.algorithms}, the algorithms used to solve a \modelimpl problem, and resolve a \modelname instance are described.
+Section \ref{impl.criteria} presents and defies the mapping of selected criteria.
+Finally, in section \ref{impl.gjsolver} GJSolver is discussed, followed by the description of its verification through MISC.
 
-\subsection{Mancoosi International Solver Competition}
-\label{impl.MISCDEF}
-Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
-How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects to the development of GJSolver.
-
-%%%They are executed on the command line
-The way in which the entered solvers are executed is standardised to allow the automation of the competition.
-This standard requires the entered solvers to be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
-These arguments are defined as:
-\begin{itemize}
-  \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
-  \item \verb+cudfout+: is a relative path to a non-existent file, which is created by the solver to output the solution.
-  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) description of the criteria to select an optimal solution. 
-\end{itemize}
-The format of the output file, located at the path defined with \verb+cudfout+ argument, is a sub set of CUDF.
-This output only requires package stanzas with the package name, version and installed properties.
-This lowers the size of the output file required to be written by the solver.
-
-%%%The environment POSIX, with 5minutes 1GB of memory
-The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of RAM.
-It contains a Java runtime environment, allowing the use of Java as a primary language.
-The time in which the solver is allowed to run is five minutes, after this time the solver will be forcibly executed.
-This time limit ensures that the competition can be run in an acceptable time frame.
-
-\subsection{Anytime Algorithm}
-The time required to find an optimal solution to a component evolution problem can be longer than the allowed time within the MISC environment.
-For this reason, GJSolver will be implemented with an anytime algorithm at its core.
-An anytime algorithm can return a valid solution to a problem if it is interrupted before it ends.
-This interruption could be from a user or some other stimuli.
-In the case of GJSolver, the interruption will be caused by an internal timer dedicated to ensure that the algorithm does not run in time exceeding the 5 minute deadline.
-
-Such anytime algorithms therefore create a trade-off between time and optimality, where the more time that is set aside for the algorithm to run the more optimal the solution. 
-They can also create inconsistent results, as any input may, on different runs, return many different possible solutions.
-This means that if it is necessary to interrupt the algorithm, it is possible to return non-optimal solutions.
-However, this is only if interruption is necessary, as GJSolver will encounter a wide range of difficult problems, 
-it is difficult, or impossible, to judge beforehand if a problem will require the algorithm to be interrupted. 
-
-\subsection{Expendable Criteria}
-The ability to test and experiment with a wide range of possible criteria to use in CDR is a goal of this research.
-To satisfy this requirement, GJSolver was developed in a modular manner, in which the criteria can be extended, modified, and tested when solving problems quickly.
-
-\subsection{Design}
-%%%TODO this section
-The first decision made about the design of GJSolver was to base it on another CDR implementation, Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010}.
-Basing the design on an existing implementation allowed the reuse of tools, and most importantly the reduction in risk that the implementation will not satisfy the requirements.
-Eclipse P2 satisfies two of the three requirements: being MISC ready as it has a MISC implementation, and using an anytime algorithm to find solutions. 
-
-The basis of GJSolver on Eclipse P2 lead to the following choices:
-\begin{itemize}
-  \item Java as the main implementation language
-  \item SAT4J as the core SAT and PB solver
-  \item Represents criteria as pseudo-Boolean function
-  \item Finds an optimal solution through iterative strengthening
-\end{itemize}
-
-The main aspects where GJSolver does not reuse, or replicate Eclipse P2 is because P2 is designed especially for the OSGi and Eclipse component model, where GJSolver is designed for CUDF.
-Som of the differences between Eclipse P2 and GJ Solver are:
-\begin{itemize}
-  \item No OSGi or Eclipse specific code in GJSolver
-  \item The internal representation of components is based on CUDF and not on OSGi
-  \item Not representing all criteria as a single pseudo-Boolean function
-\end{itemize}
-
-By starting with Eclipse P2 as a model, GJSolver was able to be efficiently implemented.
-
-\subsection{SAT4J}
-Given the use of SAT4J in GJSolver, a brief background of its development is presented here.
-
-MiniSAT presented in \citep{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
-It uses the DPLL based conflict driven algorithm as discussed above.
-This solver has become popular and is the basis of many other SAT solvers due to its open source distribution.
-This has also lead to a track in the 2011 SAT competitions\footnote{http://www.satcompetition.org/2011/ accessed 6/3/2012} that deals with only altering MiniSAT to increase performance.
-This means that MiniSAT has been repeatedly validated for performance by third parties across many difference SAT problems. 
-
-SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
-The extensions SAT4J makes to MniSAT include the ability to find resolve pseudo-Boolean constraints.
-SAT4J was developed in order to quickly test combinations of advancements in SAT solving technology.
-This goal has created an easily modifiable and transparent implementation, able to be adapted to be used in various domains.
-SAT4J in this right has been a success.
-
-\section{Formal Mapping}
+\section{\modelimpl}
 \label{impl.mapping}
-GJSolver will represent an evolution problem as a SAT problem, and the set of criteria which define optimality as a list of pseudo-Boolean functions.
-In this section, a SAT problem and pseudo-Boolean functions are defined and mapped to the the formal model presented in chapter \ref{formal}. 
+A \modelname instance may consist of many evolution steps.
+Each of these steps involves satisfying an evolution problem with an optimal solution defined using an evolution preference order.
+To resolve a \modelname instance each evolution step is mapped to a \modelimpl problem.
+A \modelimpl problem involves satisfying a SAT+PB problem with an optimal solution defined using lexicographically ordered PB criteria.
+By mapping each evolution problem to a SAT+PB problem, and each evolution preference order to lexicographically ordered PB criteria,
+a \modelname instance can be resolved.
 
-\subsection{Boolean Satisfiability Problem}
-Boolean satisfiability (SAT) is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
-SAT was the first identified NP-Complete problem, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
+This section describes the SAT problem and its extension to the SAT+PB problem by including pseudo-Boolean constraints.
+It also presents the \modelimpl problem as consisting of a SAT+PB problem with PB criteria. 
+The mapping from an evolution step of a \modelname instance to a \modelimpl problem is then described.
+
+\subsection{Boolean Satisfiability Problem (SAT)}
+Boolean satisfiability (SAT)  is the problem of determining if the variables in a Boolean equation can be assigned in such a way that the equation returns true.
+SAT was the first identified NP-Complete problem \cite{cook1971}, meaning there is no known algorithm that efficiently solves all instances of SAT problems.
 The fundamental difficulty of SAT problems, 
-combined with the ability to map many problems to SAT has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
+combined with the ability to map many problems to SAT, has spawned a community\footnote{http://www.satcompetition.org/ accessed 6/3/2012} 
 dedicated to creating, enhancing, and testing various SAT solver implementations. 
-Such SAT solvers have been used in various domains to tackle problems such as electronic design automation \citep{Marques-Silva2000}, 
-model verification \citep{dennis2006}, and, component system evolution \citep{leBerre2010}.
+SAT solvers have been used in various domains to address problems such as electronic design automation \citep{Marques-Silva2000}, 
+model verification \citep{dennis2006}, and component system evolution \citep{leBerre2010}.
 
-A common representation of a SAT equation is in Conjunctive Normal Form (CNF).
+A common representation of a SAT equation is in Conjunctive Normal Form (CNF) \cite{Moskewicz2001}.
 CNF is defined as a conjunction of clauses, 
 where each clause is a disjunction of literals, e.g. $(a \vee b) \wedge (\neg b \vee c)$.
 
@@ -151,24 +91,24 @@ A SAT problem in CNF is defined as:
     \item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
     \item A \textbf{clause} is a set of literals 
     \item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
-    \item An instance of a \textbf{SAT problem} is a set of variables $V$ and a formula $F$
+    \item A \textbf{SAT problem} is a set of variables $V$ and a formula $F$
     \item A set of literals is \textbf{consistent} if for any variable $v$, the set of literals does not contain both $v$ and its negation $\neg v$.
     \item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
     \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
     \item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
-    \item An instance of a SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
+    \item A SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
-Assume a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = {a,b}$ and $\mathcal{C}_2 = {\neg b, c}$.
+For example, consider a SAT problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2\}$, where clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$.
 A solution for this problem could be $\{a,\neg b,c\}$ as $a \in \mathcal{C}_1$ and $\neg b \in \mathcal{C}_2$.
 However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and $\{a, b, \neg c\}$ is not a solution because it does not contain a literal in $\mathcal{C}_2$.  
 
 
-\subsection{Pseudo-Boolean Extension of CNF}
-%%%Optimisation of SAT solvers is typically done through extending their possible constraints to include Psuedo Boolean inequalities
-A typical extension of the SAT problem is where a clause in a CNF formula can be a pseudo-Boolean (PB) constraint \citep{dixon2004automating}.
-PB constraints consist of a linear relation over Boolean variables.
+\subsubsection{Pseudo-Boolean Extension of SAT to SAT+PB}
+A typical extension of the SAT problem is the inclusion of pseudo-Boolean constraints \citep{dixon2004automating} into SAT formula.
+This extends the SAT problem to a SAT+PB problem.
+PB constraints are a linear relation over Boolean variables.
 
 A pseudo-Boolean function takes a set of Boolean literals and returns an integer, e.g. given a set of literals $P$, $f(P) = 4$.
 \begin{defs}
@@ -179,35 +119,35 @@ a \textbf{pseudo-Boolean function} takes a set of literals $P$, and returns an i
 $f(P) = \sum \limits_{i=0}^n f_i(P)$
 where $f_i(P) = \begin{cases} a_i & l_i \in P \\ 0 & l_i \not \in P \end{cases}$
 \end{defs}
-For example, the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$,
- $f(\{x_1,\neg x_2,x_3\})$ will equal $4$.
+For example, consider the pseudo-Boolean function $f$ defined with a tuple of literals $\langle x_1, \neg x_2\rangle$ and a tuple of integers $\langle 1,3\rangle$.
+The value of $f(\{x_1\})$ will equal $1$, $f(\{\neg x_2\})$ will equal $3$, and $f(\{x_1,\neg x_2\})$ equals $4$.
 
-A pseudo-Boolean constraint is a relation between a the function and a number, e.g. given a set of literals $P$, $f(P) \leq 3$.
+A pseudo-Boolean constraint is a relation between a PB function and an integer, e.g. given a set of literals $P$, $f(P) \leq 3$.
 \begin{defs}
 \label{impl.PBConstraint}
 A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relationship  $R$ in $\{\geq,>,\leq,<,=\}$, and an integer $k$, i.e. $\langle f,R,k\rangle$.
 \end{defs}
 
 \begin{defs}
-A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
+A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P)$ $R$ $k$.
 \end{defs}
-For example, the pseudo-Boolean $f$ described above, can be used to create the constraint $f(x) > 2$, described as 
-This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4 > 2$, but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1 \not > 2$.
+For example, the pseudo-Boolean function $f$ described in the above example can be combined with a relation $>$ and number $2$ to create the constraint $\langle f, >, 2 \rangle$.  
+This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2 \}$ as $f(P_1) = 4$ and $4 > 2$, 
+but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1$  and $ 1 \not > 2$.
 
-Pseudo-Boolean constraints can be included in the above defined SAT problem by modifying its definition.
-First by adding the definition of what a PB constraint is, and what satisfies a PB constraint:
-\begin{defs}
-{\ }
+A SAT problem can be extended to include pseudo-Boolean constraints by modifying definition \ref{impl.defSAT}.
+This extension is accomplished first by adding the definition of what a PB constraint is, and what satisfies a PB constraint:
+
+\textit{
 \begin{enumerate}
 \setcounter{enumi}{12}
   \item A \textbf{pseudo-Boolean constraint} is a tuple of a pseudo-Boolean function $f$, a relation $R$ in $\{\geq,>,\leq,<,=\}$, and a number $k$, i.e. $\langle f,R,k\rangle$.
-  \item A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P) R k$.
+  \item A pseudo-Boolean constraint $\langle f,R,k\rangle$ is \textbf{satisfied} by a set of literals $P$ iff $ f(P)$ $R$ $k$.
 \end{enumerate}
-\end{defs}
+}
 
-Second, by modifying the definition of what a formula can contain and what a solution to it is:
-\begin{defs}
-{\ }
+Secondly, by modifying the definition of what a formula can contain and what a solution to it is:
+\textit{
 \begin{enumerate}
 \setcounter{enumi}{5}
     \item A \textbf{formula} is a set of clauses and pseudo-Boolean constraints
@@ -217,153 +157,314 @@ Second, by modifying the definition of what a formula can contain and what a sol
     \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$,
     and for every pseudo-Boolean constraint $pb$ in $F$, $pb$ is satisfied by $P$. 
 \end{enumerate}
+}
+
+To illustrate how the modified definition from SAT to SAT+PB problem works, 
+consider a SAT+PB problem where $V = \{a,b,c\}$ and $F = \{\mathcal{C}_1,\mathcal{C}_2, \langle f, <, 2 \rangle\}$. 
+Clauses $\mathcal{C}_1 = \{a,b\}$ and $\mathcal{C}_2 = \{\neg b, c\}$, 
+and the function $f$ is defined with the tuple of literals $\langle a, b\rangle$ and a tuple of integers $\langle 1,3\rangle$.
+A solution for this problem could be $\{a,\neg b,\neg c\}$ as $a \in \mathcal{C}_1$, $\neg b \in \mathcal{C}_2$, and $f(\{a,\neg b,\neg c\}) < 2$.
+However, $\{\neg a, b, c\}$ is not a solution because $f(\{\neg a, b, c\}) \not < 2$. 
+
+Pseudo-Boolean constraints can be translated into CNF clauses.
+However, with the extension to include pseudo-Boolean constraints problems can be exponentially more concise, 
+and more quickly solved \citep{dixon2004automating}.
+Additionally, only minor amendments may be required to allow SAT solving algorithms (e.g. DPLL) to also solve SAT+PB problems.
+Some such amendments are described by \cite{Sheini2006}.
+
+\subsection{\modelimpl Problem}
+\label{impl.lexsatproblem}
+In order to create a \modelimpl problem, some criteria used to define what properties an optimal solution have are required.
+Pseudo-Boolean criteria use a PB function to define an optimal solution.
+
+\begin{defs}
+A \textbf{pseudo-Boolean criterion} $\mathfrak{crit}$ is a tuple consisting of a pseudo-Boolean function $f$,
+a relation over integers $R$ that is either $<$ or $>$, and a SAT+PB formula $I$,
+i.e. $\mathfrak{crit} = \langle f, R , I \rangle$.
+\end{defs}
+The formula $I$ is used to define the auxiliary variables that represent values within the problem, but do not alter the problem.
+Auxiliary variables have been used before in similar implementations \citep{argelich2010solving}.
+
+
+\modelimpl uses lexicographically ordered PB criteria to find an optimal solution.
+The lexicographic order is defined $(a,b) > (a',b')$ iff $a$ is greater than $a'$ or $(a$ equals $a'$ and $b$ is greater than $b')$.
+These terms are translated to the \modelimpl domain.
+\begin{defs}
+Given a SAT+PB formula $F$, a pseudo-Boolean criteria $\langle f,R, I \rangle$, and two sets of literals $P$ and $P'$, 
+$P$ and $P'$ are \textbf{equal} w.r.t. $\langle f,R, I \rangle$
+iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P) = f(P')$.
+\end{defs}
+Note that both $P$ and $P'$ must be solutions to the formula $F \cup I$, not just the formula $F$.
+This is done to ensure that the auxiliary variables required by the criteria are available.
+
+\begin{defs}
+Given a SAT+PB formula $F$, a pseudo-Boolean criteria $\langle f,R, I \rangle$, and two sets of literals $P$ and $P'$, 
+$P$ is \textbf{greater than}  $P'$ w.r.t. $\langle f,R, I \rangle$
+iff $P$ and $P'$ are solutions to $F \cup I$ and $f(P')$ $R$ $f(P)$.
 \end{defs}
 
-Pseudo-Boolean constraints, can be translated into CNF clauses, but the original pseudo-Boolean representation has been shown to be exponentially more concise \citep{dixon2004automating}.
-Given the proper amendments to algorithms that solve SAT problems (some of which are described in \citep{Sheini2006}), 
-it can be faster to find solutions to problems represented in pseudo-Boolean constraints rather than their translated SAT constraints \citep{dixon2004automating}.
-Both of these reasons give ample justification to use the pseudo-Boolean extension to DPLL when mapping the component evolution problem to a set of constraints. 
-
-\subsection{Mapping to Formal Model}
-An evolutionary step function is defined given a set of components $\mathbb{C}_t$, an evolution problem $\delta_{t_i} \cup \omega_{t_i}$,
-a component system $\alpha_{t_{i-1}}$, and an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$.
-These are mapped to the above defined SAT problem with PB extensions such that:
+These definitions are used to define the lexicographic order:
 \begin{defs}
-The set of components $\mathbb{C}_t$ is a subset of the variables, i.e $\mathbb{C}_t \subseteq V$.
+Given a formula $F$, lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$, and two sets of literals $P$ and $P'$,
+the $P$ is \textbf{lexicographically greater than}  $P'$ w.r.t. to $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
+iff there exists an $i$ between $1$ and $n$ where for all $j < i$, $P$ is equal to $P'$ w.r.t. to $\mathfrak{crit}_j$ and $P$ is greater than $P'$ w.r.t. $\mathfrak{crit}_i$.
 \end{defs}
-This means that all components are variables, though there can be auxiliary variables that are not components.
-A literal could represent some other aspect of the problem (as described below).
 
+This lexicographic order is then used to define an optimal solution:
 \begin{defs}
-{\ }
+Given a formula $F$ and lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
+an \textbf{optimal solution} is a solution $P$ to $F$ 
+where no other solution $P'$ to $F$ exists such that $P'$ is lexicographically greater than $P$ w.r.t. to $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$. 
+\end{defs}
+
+A \modelimpl problem consists of:
 \begin{itemize}
-  \item A component system $\alpha$ is mapped to a set of literals where $\alpha := \alpha \cup \{\neg x \mid x \in \mathbb{C}_t$ and $ x \not \in \alpha\}$.
-  \item A set of literals $P$ is mapped to a component system such that $P := \{x \mid x \in \mathbb{C}_t$ and $x \in P\}$
+  \item a tuple of lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
+  \item a SAT+PB formula $F$
 \end{itemize}
+A solution to \modelimpl problem is the optimal solution to $F$ w.r.t. to its PB criteria.
+
+\subsection{Mapping \modelname Instance to \modelimpl Problem}
+\label{impl.mapping}
+Following from the definition of \modelname in section \ref{formal.step}, 
+an instance of \modelname consists of a series of evolution steps at time $t_i$, where $i$ is from $1$ to $n$.
+Each step consists of:
+\begin{itemize}
+  \item a time $t_i$
+  \item the set of components $\mathbb{C}_{t_i}$ 
+  \item an evolution problem $\delta_{t_i} \cup \omega_{t_i}$
+  \item an evolution preference order $\prec_{\alpha_{t_{i-1}}}$
+  \item a previous system $\alpha_{t_{i-1}}$.
+\end{itemize}
+
+To resolve a \modelname instance each step is mapped to a \modelimpl problem which consists of a SAT+PB formula $F$ 
+and lexicographically ordered PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$.
+
+The set of components $\mathbb{C}_{t_i}$ are variables in the problem, i.e $\mathbb{C}_{t_i} \subseteq V_{t_i}$.
+
+\begin{defs}
+	A component system $\alpha_{t_{i-1}}$ is mapped to a set of literals where
+   $\alpha_{t_{i-1}} := \alpha_{t_{i-1}} \cup \{\neg c \mid c \in \mathbb{C}_{t_i}$ and $ c \not \in \alpha_{t_{i-1}}\}$.
 \end{defs}
-That is, a set of literals $P$ is mapped to a component system such that all components that are positive literals in $P$, are in the component system.
-A component system $\alpha$ is mapped to a set of literals that is the union of $\alpha$ and the set of negative literals of components not in $\alpha$.
-As every component has a literal, the mapping from literals to components is surjective, and the mapping from components to literals is injective.
+A component system $\alpha_{t_{i-1}}$ is mapped to a set of literals that is the union of $\alpha_{t_{i-1}}$ and the set of negative literals of components not in $\alpha_{t_{i-1}}$.
 
-For example, given a set of components $\mathbb{C}_t = \{a,b,c,d,e\}$, a set of literals $\{a,b,c,\neg d,\neg e,f\}$ is mapped to the component system $\{a,b,c\}$.
-Note, that $f$ is an auxiliary variable and does not represent a component, so although $f$ is positive in the set of literals, it is not in the resulting component system.
-A component system $\{a,b,c\}$ is mapped back to a set of literals results in $\{a,b,c,\neg d,\neg e\}$.
-Note, in the reverse mapping, $f$ is not included as the information of whether it was positive or not has been list.
+The reverse mapping, from a set of literals to a component system is:
+\begin{defs}
+A set of literals $P$ is mapped to a component system $\beta$ such that $\beta := \{c \mid c \in \mathbb{C}_t$ and $x \in P\}$
+\end{defs}
+A component system is the set of components that are not negative in the set of literals.  
+Note: the mapping from literals to components is surjective, and the mapping from components to literals is injective.
 
-The evolution problem has previously been defined as a set of constraints, limited to five different types.
-Each type of constraint in $\delta_{t_i} \cup \omega_{t_i}$ can be mapped to a SAT clause or PB constraint:
+
+The evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is mapped to the formula $F$
+by mapping each constraint to a SAT clause or PB constraint:
 \begin{enumerate}
   \item \textbf{Exclusion}: $\neg a := \{\neg a\}$
   \item \textbf{Conflict}: $a \rightarrow \neg c := \{\neg a, \neg c\}$ 
   \item \textbf{Inclusive Disjunction}: $a_1 \vee \ldots \vee a_n := \{a_1, \ldots,  a_n\}$ 
   \item \textbf{Dependence}: $a \rightarrow c_1 \vee \ldots \vee c_n := \{\neg a, c_1, \ldots, c_n\}$
-  \item \textbf{Exactly One}: $a_1 + \ldots + a_n = 1 := $ a pseudo-Boolean constraint $f(P) = 1$, 
-  where $f$ described with the tuple of literals $\langle a_1 ,\ldots , a_n\rangle$ and the tuple of natural numbers $\langle 1_1,\ldots,1_n \rangle$,
+  \item \textbf{Exactly One}: $a_1 + \ldots + a_n = 1 := $ a pseudo-Boolean constraint $\langle f,=, 1 \rangle$, 
+  where $f$ is defined with the tuple of literals $\langle a_1 ,\ldots , a_n\rangle$ and the tuple of natural numbers $\langle 1_1,\ldots,1_n \rangle$.
 \end{enumerate}
-By mapping each constraint in an evolution problem $\delta_{t_i} \cup \omega_{t_i}$ as defined above, the set of clauses and PB constraints will define the formula $F$.
 
-\subsubsection{Criteria Partial-Mapping}
-In this section the implementation criteria, called pseudo-Boolean criteria, are presented.
 
-\begin{defs}
-Given a component system $\alpha$, a \textbf{pseudo-Boolean criterion} $\mathfrak{crit}$ is a tuple consisting of a pseudo-Boolean function $f_{\alpha}$,
-relation over integers $R$ which is either $<$ or $>$, and a formula $I$ consisting of clauses and/or pseudo-Boolean constraints (as defined in \ref{impl.defSAT}),
-i.e. $\mathfrak{crit} = \langle f_{\alpha}, R , I \rangle$.
-\end{defs}
-The formula $I$ is used to define the auxiliary variables.
-These variables are used to represent values within the problem, but do not alter the problem.
-Auxiliary variables have been used before in CDR implementations \citep{argelich2010solving}.
+\subsection{Evolution Preference Order Mapping}
+The evolution preference order $\prec_{\alpha_{t_{i-1}}}$ defined with a lexicographic composition of criteria $crit_{1} \oplus \ldots \oplus crit_{n}$ 
+can be mapped to a tuple of PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n\rangle$
+by mapping each criterion $crit_{i}$ to a PB criterion $\mathfrak{crit}_i$.
 
-Some general restrictions of mapping a criterion $\langle rank_{\alpha},\leq \rangle$ to a pseudo-Boolean criterion, are:
+A criterion $\langle rank_{\alpha} ,\leq \rangle$ maps to a PB criteria $\langle f, R , I \rangle$ iff:
 \begin{itemize}
-  \item The range of $rank_{\alpha}$ $A$, must be the set of integers $\mathbb{Z}$, i.e. $A = \mathbb{Z}$.
-  \item $\leq$ must either be the ``greater than or equal to'' ($\geq$), or the ``less than or equal to'' ($\leq$) orders over integers.
+  \item $R$ equals the strict order of $\leq$.
+  \item given a solution $P$ to formula $I$, and $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$. 
 \end{itemize} 
 
-This leads to the mapping definition:
-\begin{defs}
-A ranking criteria $\langle rank_{\alpha},\leq \rangle$ maps to a pseudo-Boolean criterion  $\langle f_{\alpha}, < , I \rangle$ 
-(similarly, $\langle rank_{\alpha},\geq \rangle $ maps to $ \langle f_{\alpha}, > , I \rangle$) iff
-$f_{\alpha}(P) = rank_{\alpha}(\beta)$ where $\beta$ is the component system mapped from $P$. 
-\end{defs}
+To map an evolution preference order to the PB criteria,
+it must be defined with the lexicographically composed criteria.
+To map a criterion to a PB criterion, it must satisfy the above constraints.
+This means that:
+\begin{itemize}
+  \item not all evolution preference orders can be described with lexicographically ordered PB criteria
+  \item not all criteria can be mapped to PB criteria
+\end{itemize} 
+Therefore, the mapping from evolution preference orders to PB criteria is a partial mapping.
 
-The prior definition of a criterion, presented in chapter \ref{formal}, as a ranking function and a partial order over its range, is a broad definition of what a criterion can be.
-Many criteria that can be defined in this formalism can be only inefficiently represented using pseudo-Boolean criteria.
-Also, many of the  criteria are also not desirable or inane, e.g. maximising the number of components whose name starts with the letter \texttt{a}.
+The partial mapping from \modelname criteria to PB criteria is not presented here.
+This is because many of the \modelname criteria that can be defined are not useful, 
+e.g. a criteria that maximises the number of components whose name starts with the letter \texttt{a}.
+Only specific criteria are mapped to PB criteria, these are presented in the next section. 
 
-Creating a total mapping between criteria and pseudo-Boolean criteria may be a difficult and unrewarding challenge.
-Therefore, only a partial mapping from criteria to pseudo-Boolean criteria is given.
-Further, only the specific criteria that are used in GJSolver are mapped to pseudo-Boolean criteria,
-as mapping criteria that are not used is superfluous. 
-The set of mapped criteria is given in chapter \ref{strategies}.
-
-\paragraph{Example}
-Even simple mappings of a criteria to a pseudo-Boolean criteria can be complex.
-For example, given components $a$ and $b$, a criterion $\langle rank_{\alpha},\leq \rangle$, whose ranking function $rank_{\alpha}$ is defined:
+To further illustrate the mapping from a \modelname criteria to a PB criteria, an example is presented.
+Consider two components $a$ and $b$, a criterion $\langle rank_{\alpha},< \rangle$ whose ranking function $rank_{\alpha}$ is defined as:
 
 $rank_{\alpha}(\beta) = \begin{cases} 1 & a \in \beta \text{ or } b \in \beta\\ 0 & \text{otherwise} \end{cases}$
 
-This criteria expressed the preference of either components $a$ or $b$ (or both) in the system.
-There is no direct way to map the ranking function $rank_{\alpha}$ to a pseudo-Boolean function $f_{\alpha}$ in a pseudo-Boolean criterion $\langle f_{\alpha}, < , I \rangle$.
-However, if a variable $x$ (not a component) where true iff $a$ or $b$ were in $\beta$, i.e. $x \Leftrightarrow a \in \beta \vee b \in \beta$.
-A pseudo-Boolean function $f_{\alpha}$ described with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$,
-then satisfies the condition $f_{\alpha}(P) = rank_{\alpha}(\beta)$.
-This is shown in table \ref{impl.critmapexmp}.
+This criterion expresses the preference of having either components $a$ or $b$ (or both) in the system.
+
+Further consider the pseudo-Boolean criterion $\langle f, < , I \rangle$.
+The auxiliary variable $x$ is defined such that $x \Leftrightarrow a \in \beta \vee b \in \beta$.
+This variable must be  converted to the set of CNF clauses, and included in $I$,
+i.e. $I = \{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
+The PB function $f$ is defined with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$.
+
+The criterion $\langle rank_{\alpha}, \leq \rangle$ maps to $\langle f, < , I \rangle$,
+as the strict order $<$ from the criterion equals the order $<$ in the PB criterion.
+Given a solution $P$ to $I$, where $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$.
+This can is shown in table \ref{impl.critmapexmp}.
 \begin{table}[h!]
 \centering
 \begin{tabular}{| c | c | c | c |}
 \hline
-$P$                                &    $\beta$            & $rank_{\alpha}(\beta)$     & $f_{\alpha}(P)$\\ \hline    
+$P$                                &    $\beta$            & $rank_{\alpha}(\beta)$     & $f(P)$\\ \hline    
 $\{\neg a, \neg b, \neg x\}$     & $\{\}$                & 0                        & 0 \\
 $\{\neg a,  b, x\}$             & $\{b\}$                & 1                        & 1 \\
 $\{ a,  \neg b, x\}$             & $\{a\}$                & 1                        & 1 \\
 $\{ a,  b, x\}$                 & $\{a,b\}$                & 1                        & 1 \\ \hline
 \end{tabular}
-\caption{Values to show $f_{\alpha}$  maps to $rank_{\alpha}$}
+\caption{Values to show $f$  maps to $rank_{\alpha}$}
 \label{impl.critmapexmp}
 \end{table}
 
-To ensure the variable $x$ is assigned correctly, the constraint $x \Leftrightarrow a \vee b$ is mapped to the set of CNF clauses (as defined in \ref{impl.defSAT}),
-$\{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
-This set of clauses is the formula $I$ in the pseudo-Boolean criterion.
+The above example describes how a \modelname criterion can be mapped to a PB criterion.
+In the following section, some specific criteria are presented and mapped.
 
-\subsubsection{Lexicographic Criteria Mapping}
-Criteria that are lexicographically composed together are mapped to a tuple of pseudo-Boolean criteria. 
+\section{Criteria}
+\label{impl.criteria}
+This section presents a selection of criteria and their mapping to between \modelname criteria, PB criteria, and MOF.
+They are presented in two general categories, minimising change to the system, and maximising the versions of components.
+The minimising change criteria were developed by Mancoosi and the criterion used to maximise versions was developed for Eclipse P2 solver \citep{leBerre2010}.
+
+\subsection{Change Criteria}
+Simple definitions of criteria to minimise change can often have negative effects during CSE.
+For example, the most direct measurement of change of a component system is the measurement of the total changed components.
+This is defined as a \modelname criterion:
 \begin{defs}
-Lexicographically composed criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n\rangle$,
-where criterion $crit_i$ is mapped to a pseudo-Boolean criterion $\mathfrak{crit}_i$.
+	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
+	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
+\end{defs}
+That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
+This criterion's measurements are an inaccurate representation of the risks of changing a system.
+For example, a component being replaced by another version of itself is seen as less risky than it being replaced with an entirely different component.  
+Yet using the $crit_{changec}$ criterion, these would be seen as equivalent changes.
+
+To define a change criterion that takes into account changing between components of the same name, is less risky, a components name can be considered.
+For this purpose the function $V$ is defined as: 
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
 \end{defs}
 
-\section{Algorithms}
+This function can be used to define a criterion that considers the name of a component:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+This criterion can be altered to also consider new and removed components:
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+\end{defs}
+
+\begin{defs}
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+\end{defs}
+
+The change, new and remove criteria were taken directly from the MISC competitions definition of criteria.
+
+The mapping between these criteria, PB criteria and MOF are presented in table \ref{impl.ccritmapping}.
+A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF name} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
+\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.ccritmapping}
+\end{table}
+
+\subsubsection{Version criteria}
+%%%Maximise version, just sum up all versions and maximise their value
+Defining how up-to-date a component system is, is a difficult task.
+The most common way is to use a components version.
+When using a components versions to measure how up-to-date a component system is, two properties of component versions must be considered:
+\begin{itemize}
+  \item A version of a component can only be compared to version of another component with the same name, 
+  i.e. given two components $\langle n,v \rangle$ and  $\langle n',v' \rangle$ comparing $v$ and $v'$ is only useful if $n = n'$.
+  \item The sum of versions is not a useful metric as two lesser versions will not be better than one greater version, 
+  e.g. given components $\langle n,2 \rangle$,  $\langle n,3 \rangle$ and  $\langle n,4 \rangle$,
+  a system with only $\langle n,2 \rangle$ and $\langle n,3 \rangle$ is not better than a system with just $\langle n,4 \rangle$. 
+\end{itemize}
+
+These problems can be seen in the simple criterion to maximise the versions in a system:
+\begin{defs}
+	The \textbf{maxversion} criterion is defined as $crit_{maxversion} = \langle rank^{maxversion}_{\alpha}, \geq \rangle$,
+	where $rank^{maxversion}_{\alpha}(\beta) = \sum_{c \in \beta} c.$\texttt{version}.
+\end{defs}
+This criteria does not consider either of a versions properties, it sums together versions of components with different names.
+
+A useful criterion has been defined in Eclipse P2 that minimises a measurement of the out-of-dateness of a component name, in a component system.
+This out-of-dateness measurement is a relative measurement of a component given what other components are available.
+It is defined as:
+\begin{defs}
+The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
+i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
+\end{defs}
+
+By creating a criterion with this measurement, the measurement of a system's up-to-dateness respects the two version criteria.
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
+	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
+\end{defs}
+That is, the measurement to be minimised is the number of components that have the same name and a greater version than a component that is currently installed. 
+
+The mapping between these elements is presented in table \ref{impl.ccritmapping}.
+A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.ccritmapping}
+\end{table}
+
+
+\section{Solving a \modelimpl problem}
 \label{impl.algorithms}
-Above the formal model of an evolution problem is mapped to a SAT problem, 
-and the lexicographically composed criteria that describe the evolution preference order are mapped to a tuple of pseudo-Boolean criteria.
-In this section, a description is given of the algorithms used to find an optimal solution to a SAT problem given a tuple of pseudo-Boolean criteria. 
+Above a description is given how to map and instance of \modelname to \modelimpl problems.
+This section describes the novel lexicographic iterative strengthening algorithms to solve \modelimpl problems.
+This algorithm uses the DPLL algorithm \citep{Davis1960, davis1962machine} to find a solution to a SAT+PB formula,
+and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find an optimal solution to a SAT+PB problem given a  single PB criterion.
+This section also describes how a \modelname instance is resolved by mapping to \modelimpl problems.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
-The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} for solving SAT problems is a complete (meaning it will find a solution if one exists), 
-backtracking-based search algorithm for SAT problems represented in conjunctive normal form (CNF).
+The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is a complete (meaning it will find a solution if one exists), 
+backtracking-based search algorithm for solving SAT and SAT+PB problems.
 
-It is defined to take a formula $F$ and a set of literals $P$ (described as a partial assignment), and return \verb+SATISFIABLE+ if $P$ is a partial solution, 
+DPLL takes a formula $F$ and a set of literals $P$ (described as a partial assignment), and returns a solution to $F$ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
-When \texttt{DPLL} is called without a value $P$, $P$ is defaulted to equal the empty set $\emptyset$.
-By first calling \texttt{DPLL} with $P$ being the empty set, by adding literals to $P$, then recursively calling itself; 
-the DPLL function searches for whether a solution to the formula exists, 
-i.e the formula is satisfiable.
+When \texttt{DPLL} is called without a value $P$, $P$ is defaulted to equal the empty set .
+By first calling \texttt{DPLL} with $P$ as the empty set, then adding literals to $P$ and recursively calling itself; 
+the DPLL function searches for whether a solution to the formula is satisfiable.
 The DPLL algorithm in defined in figure \ref{impl.DPLL} (a slight modification of the algorithm presented in \citep{dixon2004automating}):
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
-function DPLL(\(F, P\))
-   P = unit-propagate(\(F, P\))
+function DPLL(\(F, P\)):
+   \(P\) = unit-propagate(\(F, P\))
    if \(P\) is not consistent:
        then return UNSATISIFABLE;
    if \(P\) is a solution to \(F\):
        then return \(P\);
    \(l\) = decide\((P)\);
-   if DPLL\((F, P \cup \{l\})\) != UNSATISIFABLE 
-       return DPLL\((F, P \cup \{l\})\)
+   \(answer\) = DPLL\((F, P \cup \{l\})\)
+   if answer != UNSATISIFABLE 
+       return answer
    else
        return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
@@ -372,13 +473,13 @@ function DPLL(\(F, P\))
 \end{center}
 \end{figure}
 
-The first function call to \texttt{unit-propagation} derives additional literals that are added to the partial assignment $P$ (this function is discussed later in section \ref{impl.unit}).
-The \verb+if+ branch returns \texttt{UNSATISIFABLE} if the partial assignment $P$ is inconsistent.
-The second \verb+if+ branch determines if the partial assignment $P$ is a solution to $F$, this would end the search by returning the solution $P$.
-The \texttt{decide} function returns a literal $l$ that is not in $P$, nor whose negation $\neg l$ is in $P$ (this function is discussed later in section \ref{impl.litorder}).
-The search is then continued by adding the literal $l$ to $P$ and checking if that is a partial solution using \texttt{DPLL}.
-If the partial assignment $P$ with $l$ is a is a partial solution, then \texttt{DPLL} does not equal \texttt{UNSATISIFABLE} and the found solution is returned.
-However, if $P$ with $l$ is not a partial solution, then $P$ with $\neg l$ is checked to be a partial solution.
+\texttt{DPLL} first calls the \texttt{unit-propagation} function (further described in section \ref{impl.unit}) which derives literals that must be in $P$ if it is a solution.
+Next DPLL checks whether $P$ is inconsistent, which means it is not a partial assignment.
+Then DPLL checks if $P$ is a solution to $F$, at which point $P$ is returned.
+The \texttt{decide} function (further discussed in section \ref{impl.litorder}) returns a literal $l$ that is not, nor whose negation is in $P$.
+The literal $l$ is added to $P$, which is then checked to be a partial solution by recursively calling \texttt{DPLL}.
+If $P$ with $l$ is a solution then the found solution is returned,
+otherwise the search continues by adding $\neg l$ to $P$ and checking if it is a partial solution by calling \texttt{DPLL}.
 
 \subsubsection{Unit Propagation}
 \label{impl.unit}
@@ -387,10 +488,7 @@ This function uses the clauses in the formula, and the partial assignment to ide
 
 \begin{defs}
 Given a partial assignment $P$, a clause $\mathcal{C}$ is called \textbf{unit} iff $\mathcal{C}$ is not satisfied by $P$, and $P$ contains all but one of the literals in $\neg \mathcal{C}$.
-\end{defs}
-
-\begin{defs}
-Given a partial assignment $P$, a literal $l$ is called a \textbf{unit literal} iff $l$ is in a unit clause $\mathcal{C}$, and $\neg l \not \in P$.  
+The literal whose negation is not in $P$ is called a \textbf{unit literal}. 
 \end{defs}
 
 For example, a clause $\{a,b,c\}$ is unit if the partial assignment contains $\neg b$ and $\neg c$ but neither $a$ or $\neg a$.
@@ -398,19 +496,20 @@ The literal $a$ is then a unit literal.
 
 For a formula to be satisfiable given partial assignment, each unit literal must be included in the partial assignment,
 because if their negation is included the clause is not satisfied by the partial assignment.
-For example, given a formula $\{c\}$, where $\mathcal{C} = \{a,b\}$;
+For example, given a formula $\{\mathcal{C}\}$, where $\mathcal{C} = \{a,b\}$;
 given the assignment $\{\neg a\}$ the clause $\mathcal{C}$ is unit and unit literal is $b$.
-If $\neg b$ where in the partial assignment, $\mathcal{C}$ would not be satisfied by the partial assignment,
-therefore $b$ must be in the partial assignment for it to be a partial solution.
+If $\neg b$ were in the partial assignment, $\mathcal{C}$ would not be satisfied by $P$.
+Therefore, $b$ must be in the $P$ for $\mathcal{C}$ to be satisfied.
 
 The process of unit propagation is defined in figure \ref{impl.propagation}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
 unit-propagate(\(F, P\)):
-  while P is consistent and there exists a \(\mathcal{C} \in F\) that given \(P\) is unit:
+  while \(P\) is consistent and there exists a \(\mathcal{C} \in F\) that given \(P\) is unit:
     \(l\) = unit literal in \(\mathcal{C}\)
     \(P\) = \(P \cup \{l\}\)
+  return \(P\)
 \end{alltt}
   \caption{Pseudo code of Unit Propagation}
   \label{impl.propagation}
@@ -419,23 +518,20 @@ unit-propagate(\(F, P\)):
 
 \subsubsection{Decide}
 \label{impl.litorder}
-The function \verb+decide+ returns a literal that is not in the partial assignment, nor whose negation is in the partial assignment.
+The function \verb+decide+ takes a partial assignmnet $P$ and returns a literal $l$ such that $l \not \in P$ and $\neg l \not \in P$.
 That is, if $l =$ \verb+decide+$(P)$, then $\{l\} \not \in P$ and $\{\neg l\} \not \in P$.
-This literal is then added to the partial assignment as an assumption that it might be in the final solution.
-This assumption is checked to be correct or not by recursively calling the \texttt{DPLL} function again with the new partial assignment.
+This literal is the point which the algorithm branches.
+The order in which the \verb+decide+ function selects literals to branch on is also known as the literal order.
+This order greatly impacts the efficiency of DPLL, as selecting literals that are in a solution (if one exists) would quickly return the result.
 
-The order in which the \verb+decide+ function selects literals is also known as the literal order.
-This order greatly impact the efficiency of the algorithm, as clearly selecting literals that are in a solution (if one exists) is the goal.
-
-\subsection{Advancements in SAT Solvers}
-Though the DPLL algorithm is the basis of most modern SAT solvers, the actual implementations have been significantly altered to increase efficiency.
+\subsection{DPLL Advancements}
+Though the DPLL algorithm is the basis of many modern SAT solvers, the actual implementations have been altered to increase efficiency.
 Some changes, including the use of conflict learning, backjumping, and watched literals, are briefly described here.
-This section should give a broad overview of the techniques used in current SAT solvers, 
-in order to show that their application to problems like component evolution is justified. 
+This section is aimed at giving a broad overview of techniques used in current solvers.
 
 \subsubsection{Conflict Learning and Backjumping}
 Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished by remembering what unit clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
+This is accomplished by remembering what clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
 This process works by identifying a variable both inferred to be true and false,
 then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
 This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
@@ -463,7 +559,7 @@ The higher up the tree the technique ``jumps'' to, the greater reduction of the 
 The level at which the algorithm backjumps is typically the point at which the learnt clause becomes unit. 
 
 More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \citep{sorensson2009}.
-This research describes search methods that use other reason clauses to find smaller more succinct learnt clauses.
+This research describes search methods that use other reason clauses to find smaller, more succinct learnt clauses.
 The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
 
 \subsubsection{Watched Literals}
@@ -472,19 +568,19 @@ Attempts to increase the efficiency of this task was initially to find better he
 These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
 
 It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
-The naive approach to unit propagation was to examine every clause, and then every literal in the clause to find if it is unit or not.
-A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of having the clauses examined, 
-the clauses maintain an index of the necessary literals and notify the algorithm when they become unit.
+The naive approach to unit propagation is to examine every clause, and then every literal in the clause to find if it is unit or not.
+A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of examining each clause, 
+the clauses maintain an index of all necessary literals and notify the algorithm when they become unit.
 This ``don't call us, we will call you'' concept makes the efficiency of the unit propagation function less dependent on the amount of clauses in the formula.
 
 Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
 Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
 
 \subsection{Iterative Strengthening}
-The iterative strengthening algorithm, presented in \citep{calistri1994iterative} and \citep{le2010sat4j}, 
-describes an anytime algorithm using constraint satisfaction that iteratively finds better solutions.
-This algorithm can be used to find optimal solutions to an evolution problem, where only one pseudo-Boolean criterion is optimised.
-This is done by first finding a solution, then iteratively adding constraints created from the criterion to ensure the next solution found will be better than the previous.
+The iterative strengthening algorithm  \citep{calistri1994iterative, le2010sat4j} 
+is an anytime algorithm using constraint satisfaction to iteratively find better solutions to a SAT+PB formula w.r.t. a PB criteria.
+This algorithm can be used to find optimal solutions to an evolution problem, given a pseudo-Boolean criterion.
+This is done by first finding a solution, then iteratively adding constraints (created using the criterion) to ensure the next solution found will be better than the previous solution.
 This is the strengthening process.
 Strengthening continues until either the strengthened formula is found to be unsatisfiable, or the algorithm is interrupted, at which point the best solution currently found is returned. 
 This algorithm is defined in figure \ref{impl.strength}.
@@ -510,11 +606,11 @@ iterative-strengthening(\(F\),\(\langle f\sb{\alpha}, R, I \rangle\)):
 \end{center}
 \end{figure}
 
-The first action in the \texttt{iterative-strengthening} is to initialise any auxiliary variables used by the criterion's pseudo-Boolean function.
-This is accomplished by adding the criterion's initial constraints $I$ to the formula $F$.
+The first action in the \texttt{iterative-strengthening} is to include the formula $I$ that defines auxiliary variables used by the criterion.
+This ensures that any solution returned by DPLL is also a solution to $I$.
 
 The next action is to check if the formula is satisfiable.
-This is accomplished by passing the formula to the \verb+DPLL+ function, and assigning its output to the variable $answer$.
+This is accomplished by passing the formula to the \texttt{DPLL} function, and assigning its output to the variable $answer$.
 If the output from \texttt{DPLL} is \texttt{UNSATISIFABLE}, then the algorithm stops and returns \texttt{UNSATISIFABLE}, as there are no solutions.
 
 The main loop of this algorithm is then defined.
@@ -529,25 +625,24 @@ The formula $J$ ensures that if \texttt{DPLL} is called with formula $F \cup J$,
 \end{itemize}
 
 \begin{defs}
-Given a set of literals $model$, and a criterion $\langle f_{\alpha}, R, I \rangle$,
-the function \texttt{strengthen} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R,f_{\alpha}(model) \rangle \}$.
+Given a set of literals $model$, and a criterion $\langle f, R, I \rangle$,
+the function \texttt{strengthen} returns a formula $J$ consisting of a single pseudo-Boolean constraint, i.e. $ J = \{ \langle f,R,f(model) \rangle \}$.
 \end{defs}
 That is, \texttt{strengthen} returns a formula $J$,
-that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f_{\alpha}(P)$ than the previously best solutions value of $f_{\alpha}(model)$.
+that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f(P)$ than the previously best solutions value of $f(model)$.
 
 The next steps are then to add the formula $J$ to $F$, then search for a new solution using \texttt{DPLL}.
 
 The main loop will end given the condition that either the \texttt{interrupted} function returns $true$, or the \texttt{DPLL} function returns \texttt{UNSATISIFABLE}.
 The \texttt{interrupted} method is typically defined to return false until some external input (like a user stopping the algorithm or a timer running out) is encountered.
-The \texttt{interrupted} method has the additional responsibility of stopping the \texttt{DPLL} function.
-That is, if at any point \texttt{interrupted} returns true the \texttt{DPLL} function immediately returns $\emptyset$.
+The \texttt{interrupted} method has the additional responsibility of stopping the \texttt{DPLL} function, 
+so that if at any point \texttt{interrupted} returns true the \texttt{DPLL} function immediately returns.
 When the main loop ends, currently best found solution $model$ is returned.
 
 \subsection{Lexicographic Optimisation}
 \label{impl.lexiterstre}
-%%%Basic iterative strengthing can be modified towards handling lexicographically ordered crtiera, and allowing this criteria to effect DPLL's efficiency
-The basic iterative strengthening algorithm, presented in figure \ref{impl.strength}, can be used find optimal solutions to lexicographically composed criteria.
-This can be accomplished by iteratively strengthening the each composed criteria in order of lexicographical composition.
+The iterative strengthening algorithm can be used find optimal solutions to lexicographically ordered criteria
+by iteratively strengthening the each criteria in order.
 This lexicographic iterative strengthening algorithm is presented in figure \ref{impl.lexstrength}.
 
 \begin{figure}[htp]
@@ -588,14 +683,13 @@ The formula $K$ ensures that if \texttt{DPLL} is called with $F \cup K$:
 \end{itemize}
 
 \begin{defs}
-Given a set of literals $model$, and a criterion $\langle f_{\alpha}, R, I \rangle$,
-the function \texttt{lock} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f_{\alpha},R',f_{\alpha}(model) \rangle \}$,
-where if $R = <$ then $R' = \leq$, else if $R = >$ then $R' = \geq$.
+Given a set of literals $model$, and a criterion $\langle f, R, I \rangle$,
+the function \texttt{lock} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f,=,f(model) \rangle \}$,
 \end{defs}
 That is, \texttt{lock} returns a formula $K$,
-that ensures any solution $P$, to the formula $F \cup K$, must not have a worse ( w.r.t. $R$) value of $f_{\alpha}(P)$ than the value $f_{\alpha}(model)$.
+that ensures any solution $P$, to the formula $F \cup K$, must have the best value of $f$ found so far.
 
-It is important to note that $K$ does not effect the satisfiability of $F$, as $model$ is still a valid solution to $F \cup K$.
+Note that $K$ does not effect the satisfiability of $F$, as $model$ is still a valid solution to $F \cup K$.
 
 The formula $K$ is then added to the formula $F$, i.e. $F = F \cup K$,
 then the \texttt{iterative-strengthening} algorithm is called to find an optimal solution to $F$ given the criterion $\mathfrak{crit}_i$.
@@ -609,87 +703,161 @@ When the loop ends, the currently best found solution $model$ will be returned.
 Some enhancements to the implementation of the lexicographic iterative strengthening algorithm can be made.
 For example, when the \texttt{iterative-strengthening} is called, it is known that $F$ is satisfiable. 
 Therefore, checking its satisfiability again within the \texttt{iterative-strengthening} function is not necessary.
-Such enhancements were made in GJSolver, to increase the efficiency of this algorithm. 
 
-\subsection{Drawbacks of this Optimisation approach}
-%%%There are a few drawbacks to this mapping;
-There are some drawbacks to using the lexicographic iterative strengthening algorithm (as described earlier) 
-as GJSolver's method of optimisation.
+The lexicographic iterative strengthening algorithm is an anytime algorithm.
+It has been designed to return a solution to a \modelimpl problem, even if it is interrupted.
+The reason for this anytime behaviour is that \modelimpl problems can take an impractical amount of time to solve.
+It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
+and interrupt it when this time limit is reached. 
 
-%%%The optimisation must be represented linearly
-GJSolver uses the SAT4J solver as its implementation of the DPLL function. 
-It has been noted in \citep{le_berre_dependency_2009} and \citep{leBerre2010} there is no easy method of extending a SAT solver to handle non-linear constraints.
-This means that many criteria that could be defined in the formalism, presented in chapter \ref{formal}, will either not be able to be represented as pseudo-Boolean criteria, 
-or they will be inefficient to use a SAT solver to find optimal solutions.  
-The trade-off for not including the ability to define more complex criteria is that GJSolver is relatively simple and efficient. 
+\subsection{Resolving a \modelname instance}
+Resolving a \modelname instance involves finding the series of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
+To do this, each evolution step starting at $t_1$ and ending at $t_n$ is mapped to an \modelimpl problem and solved using the lexicographic iterative strengthening algorithm.
+This resolver algorithm is presented in figure \ref{impl.resolver}.
+\begin{figure}[h!t!]
+\begin{center}
+\begin{alltt}
+resolver:  
+    for \(t\sb{i}\) in \(t\sb{1}\ldots,t\sb{n}\):
+        \(F\) and \(\langle{}\mathfrak{crit}\sb{1}, \ldots ,\mathfrak{crit}\sb{n}\rangle\) mapped from evolution step at \(t\sb{i}\)
+        \(answer\) = lexicographic-iterative-strengthening(\(F\),\(\langle{}\mathfrak{crit}\sb{1}, \ldots ,\mathfrak{crit}\sb{n}\rangle\))
+        if \(answer\) equals UNSATISFIABLE:
+            \(\alpha\sb{t\sb{i}}\) = \(\alpha\sb{t\sb{i-1}}\)
+        else:
+            \(\alpha\sb{t\sb{i}}\) mapped from \(answer\)
+    return \(\alpha\sb{t\sb{1}},\ldots,\alpha\sb{t\sb{n}}\) 
+\end{alltt}
+  \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
+  \label{impl.resolver}
+\end{center}
+\end{figure}
 
-%%%Real numbers must be truncated to fit the integer representation. 
-The pseudo-Boolean criteria can only be defined to use integers and not real numbers.
-This means that defining criteria that optimise real values, like percentages, a challenge.
-The practical solution used by GJSolver is to scale real numbers up, and truncate them to be an integer.
-Scaling these values may remove a small amount of resolution of the real value.
-Though this can be mitigated by allowing criteria to define their own scale value.
+In this algorithm, the systems are calculated starting at time $t_1$ and stopping at time $t_n$.
+For each evolution step at time $t_i$ is mapped to a SAT + PB formula $F$ and PB criteria $\langle \mathfrak{crit}_{1}, \ldots ,\mathfrak{crit}_{n} \rangle$.
+The algorithm \texttt{lexicographic-iterative-strengthening} is then used to find an optimal solution to $F$ with respect to the PB criteria, and return $answer$.
+Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_{t_i}$ is assigned as the previous system $\alpha_{t_{i-1}}$ (according to definition \ref{forml.stepdef}).
+Otherwise, $answer$ is a set of literals that can be mapped back to the component system $\alpha_{t_i}$.
+This algorithm, once completed, returns the set of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
+
 
 \section{GJSolver}
 \label{impl.gjsolver}
-Using the algorithms and mappings that have been presented,
-the GJSolver is implemented to complete one evolutionary step of a component system.
+GJSolver is the implementation of the process from a CUDF* document to a resolved \modelname instance.
+GJSolver grew through the course of this research to satisfy the need for an implementation to study CSE.
+This implementation takes a CUDF* document, parses it to an instance of \modelname, which is then resolved by \modelimpl.
 
-GJSolver takes as input (as described in \ref{impl.MISCDEF}):
+This process is described in figure \ref{impl.modelofgjsolver}.
+\begin{figure}[htp]
+\begin{center}
+\digraph[scale=0.5]{implgjsolver}{
+rankdir=LR;
+subgraph cluster_0 {
+label="GJSolver";
+style=filled;
+color=lightgrey;
+FMI [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none];
+\modelimplwx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelimplwx</TD></TR></TABLE>> shape=none]
+CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
+CMI -> FMI [ label="parsed to" ];
+FMI -> \modelimplwx [ label="mapped to" ];
+}
+}
+  \caption[labelInTOC]{GJSolver implementation description}
+  \label{impl.modelofgjsolver}
+\end{center}
+\end{figure}
+
+In this section the implementation and the validation of GJSolver are discussed.
+
+\subsection{GJSolver Implementation}
+\label{impl.gjsolverimpl}
+The first decision made about the design of GJSolver was to base it on another similar implementation, Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010}.
+Basing the design on an existing implementation allowed the reuse of tools, and most importantly the reduction in risks during implementation.
+The basis of GJSolver on Eclipse P2 lead to the following choices:
 \begin{itemize}
-  \item \verb+cudfin+: a relative path to a CUDF document.
-  \item \verb+cudfout+: a relative path to a non-existent file.
-  \item \verb+criteria+: is a string in MOF. 
+  \item Java as the main implementation language.
+  \item SAT4J as the core SAT+PB solver.
+  \item Optimisation using PB criteria.
 \end{itemize}
 
-As described in chapter \ref{formal}, these values are then mapped to the formal model:
+The main aspects where GJSolver does not reuse, or replicate Eclipse P2 is because P2 is designed especially for the OSGi and Eclipse component model, where GJSolver is designed for CUDF*.
+Some of the differences between Eclipse P2 and GJSolver are:
 \begin{itemize}
-  \item the CUDF file at \verb+cudfin+ is mapped to an evolution problem ($\delta_{t_i} \cup \omega_{t_i}$) and a component system ($\alpha_{t_{i-1}}$).
-  \item the MOF description \verb+criteria+ is mapped to a lexicographically ordered set of criteria ($crit_1 \oplus \ldots \oplus crit_n$), each w.r.t. $\alpha_{t_{i-1}}$.
+  \item No OSGi or Eclipse specific code in GJSolver.
+  \item The internal representation of components is not based on OSGi.
 \end{itemize}
 
-As described in section \ref{impl.mapping}, these values are mapped to a SAT problem and pseudo-Boolean criteria:
-\begin{itemize}
-  \item the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is mapped to a SAT formula ($F$).
-  \item the criteria $crit_1 \oplus \ldots \oplus crit_n$ are mapped to a tuple of pseudo-Boolean criteria ($\langle \mathfrak{crit}_1, \ldots ,\mathfrak{crit}_n \rangle$), each w.r.t. $\alpha_{t_{i-1}}$. 
-\end{itemize}
+Another important difference between Eclipse P2 and GJSolver is that Eclipse uses the iterative strengthening algorithm to optimise.
+Eclipse P2 does this by compressing the tuple of PB criteria into a single criteria to be optimised (further described by \cite{leBerre2010}).  
+How the optimisation approach used by GJSolver compares to the approach used by Eclipse P2 has not been explored in this research.
 
-Using the \texttt{lexicographic-iterative-strengthening} algorithm (described in section \ref{impl.lexiterstre}),
-with the input $F$ and $\langle \mathfrak{crit}_1, \ldots ,\mathfrak{crit}_n \rangle$, an optimal solution is searched for.
-This search is interrupted after five minutes has elapsed, this timeout value is used in the MISC competition.
-If the algorithm returns a solution as a set of literals, that solution is mapped to component system $\alpha_{t_i}$.
-If the algorithm returns \texttt{UNSATISIFABLE}, no solution to the evolution problem exists, and $\alpha_{t_i} = \alpha_{t_{i-1}}$ 
-(as defined in the evolutionary step definition \ref{formal.stepdef}).
+\subsubsection{SAT4J}
+Given the use of SAT4J in GJSolver, a brief background of its development is presented here.
 
-The component system $\alpha_{t_i}$ is then converted into CUDF, which is then written to a file at the location \verb+cudfout+.
+MiniSAT presented in \citep{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
+It uses the DPLL based conflict driven algorithm as discussed in section \ref{impl.DPLL}.
+This solver has become popular and is the basis of many other SAT solvers due to its open source distribution.
+This has also lead to a track in the 2011 SAT competitions\footnote{http://www.satcompetition.org/2011/ accessed 6/3/2012} that deals with only altering MiniSAT to increase performance.
+This means that MiniSAT has been repeatedly validated for performance by third parties across many different SAT problems. 
 
-\section{Verification of GJSolver}
+SAT4J \citep{le2010sat4j} is a Java re-implementation, and extension, of MiniSAT in the Java programming language.
+SAT4J has been extended to efficiently solve a variety of related problems to SAT, including SAT+PB problems.
+Due to the easily modifiable and transparent implementation of SAT4J, it has been able to be adapted to be used in various domains.
+
+\subsection{Verification of GJSolver}
 \label{impl.verif}
-%%%We entered this solver into two Mancoosi MISC competitions
-The GJSolver implementation was verified by entering it into the Mancoosi International Solver Competition, whose requirements are described above.
-This process was taken twice, firstly in a MISC Live event, which is an interim competition held during the year;
+The verification of GJSolver is through the MISC competition held in 2011, and organised by Mancoosi.
+This competition compares CUDF solvers by asking them to correctly parse and resolve hundreds of CUDF problems, and return optimal solutions with respect to various criteria.
+MISC was created to promote interest in the component system evolution problems.
+
+By viewing a CUDF problem as a single evolutionary step in a CUDF* problem, GJSolver has been modified to also solve CUDF problems.
+Using such a modification, GJSolver could then be entered into the Mancoosi International Solver Competition (MISC) competition.
+
+GJSolver was entered twice into MISC, firstly in a MISC Live event, which is an interim competition held during the year;
 secondly at the MISC 2011 event\footnote{The results for MISC 2011 were announced at the Workshop on Logics for Component Configuration\footnote{http://www.pps.jussieu.fr/~treinen/lococo/2011/ accessed 6/3/2012}.}, 
 which is the main competition. 
 
 The main difference to GJSolver as described above, and the GJSolver entered into the MISC competition occurs when the evolution problem is unsatisfiable.
-In the evolutionary step definition (\ref{formal.stepdef}) the component system $\alpha_{t_{i-1}}$ is returned if the evolution problem is unsatisfiable.
-However, in this case, MISC requires that a file with only the text \texttt{FAIL} is written to the location of the output CUDF file.
+In the evolution step definition (\ref{formal.stepdef}) the component system $\alpha_{t_{i-1}}$ is returned if the evolution problem is unsatisfiable.
+However, in this case, MISC requires that a file with only the text \texttt{FAIL} is written to state that no solution was found.
 This is to correctly score a solver returning an incorrect solution to an evolution problem, 
-and a solver finding an unsatisfiable problem.
+and a solver finding a problem unsatisfiable.
 
-\subsection{Tracks and Scoring}
+\subsubsection{Mancoosi International Solver Competition}
+\label{impl.MISCDEF}
+Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
+How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects.
+
+%%%They are executed on the command line
+The way in which the entered solvers are executed is standardised to allow the automation of the competition.
+This standard requires the entered solvers to be able to be executed on the command line with three arguments, \verb+cudfin+, \verb+cudfout+ and \verb+criteria+.
+These arguments are defined as:
+\begin{itemize}
+  \item \verb+cudfin+: is a relative path to a CUDF document (as specified in section \ref{formal.cudf}) that describes the problem to be solver.
+  \item \verb+cudfout+: is a relative path to a non-existent file, which is created by the solver to output the solution.
+  \item \verb+criteria+: is a Mancoosi optimisation format (as described in section \ref{formal.mancoosioptimisationformat}) description of the criteria to select an optimal solution. 
+\end{itemize}
+The format of the output file, located at the path defined with \verb+cudfout+ argument, is a list of packages serialised as a list of stanzas with package and version properties.
+
+%%%The environment POSIX, with 5minutes 1GB of memory
+The environment in which the solver is executed is a virtual machine running a GNU/Linux system in a x86 architecture with 1GB of RAM.
+It contains a Java runtime environment, allowing the use of Java as a primary language.
+The time in which the solver is allowed to run is five minutes, after this time the solver will be forcibly stopped.
+This time limit ensures that the competition can be run in an practical time frame.
+
+\subsubsection{Tracks and Scoring}
 Each MISC competition is broken down into three possible tracks, where each track is defined by the criteria used.
 The first basic track, is 'paranoid', the second more advanced track is 'trendy', and third track is 'user'.
-Both 'paranoid' and 'trendy' have pre-defined criteria defined in MOF.
-The 'user' track uses a set of pre-defined criteria, though does not express their relation in MOF, so the exact optimisation criteria is unknown before the competition.
+Both 'paranoid' and 'trendy' have pre-defined criteria defined in MOF, e.g. 'paranoid' tracks criteria in MOF is \texttt{-removed,-changed} (these are defined above).
+The 'user' track uses a set of pre-defined criteria, though the exact optimisation criteria is unknown before the competition.
 This means that 'paranoid' and 'trendy' can have solvers tailored to their specific criteria, where the 'user' track cannot.
-The exact criteria that is used in these tracks are defined in the next chapter.
+The exact criteria that is used for these tracks can be found on the MISC website\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 12/5/2012}.
 
 For each track, a set of solvers is entered.
 Each track has a set of evolution problems defined in CUDF.
 The solvers for each track are then called to return optimal solutions for all problems given the tracks criteria.
-As MISC competitions were created to compare various solvers, a scoring system was developed. 
 
+As MISC competitions were created to compare various solvers, a scoring system was developed. 
 When a solver is given a CUDF problem and some criteria, the returned solution falls into one of three classes:
 \begin{itemize}
   \item a \textbf{real solution} is any solution to the CUDF problem.
@@ -711,16 +879,14 @@ For a given track a solvers points are summed to give a final score.
 If more than one solver has the same amount of points at the end of a track, then the time it took for them to find each solution is summed.
 This total time value is used as the tie breaker.
 
-\subsection{MISC Live}
+\subsubsection{MISC Live}
 %%%In the first competition we had only partially implemented much of the functionality, so we did not expect great results.
-The MISC Live was entered without GJSolver being fully implemented.
+The MISC Live was entered when GJSolver was only partially implemented.
 Therefore, the only track that was possible to enter was the 'paranoid' track.
 The results for this track\footnote{http://mancoosi.org/misc-live/20101126/paranoid/ accessed 6/3/2012} where promising, though some improvements were necessary.
-Due to the competition openly distributing all problems in each track, all the solutions of all solvers for all tracks, 
-and the output from each solver;
-GJSolver's deficiencies were easily identified and corrected.
+Due to the competition openly distributing all competition data, GJSolver's deficiencies were identified and corrected.
 
-\subsection{MISC}
+\subsubsection{MISC}
 The main verification of GJSolver was through the MISC 2011 event.
 In this event GJSolver was entered into all tracks of this event.
 The 'paranoid' track had a total of 5 solvers, the 'trendy' track had a total of 6 solvers, 
@@ -743,25 +909,25 @@ user & 400 & (656 : 73,522) & (1392 : 87,956) & (1215 : 39,905) \\ \hline
 The winner for both 'paranoid' and 'trendy' tracks was the aspuncud solver.
 The winner for the 'user' track was GJSolver.
 
-\subsection{Analysis}
-The results from the MISC competition can be compared to the previously stated requirements.
-The requirements for GJSolver are to be \textbf{Mancoosi International Competition Ready}, should implement an \textbf{Anytime Algorithm} and should be \textbf{Easily Creatable Criteria}.
-
+\subsubsection{Analysis}
+The results from the MISC competition show:
 \begin{itemize}
-  \item The results from MISC show that GJSolver was ready for its entrance, during the competition it had very consistent results.
-These results allowed it to compete with the other solvers, and even win the 'user' track.
-\item The implementation of the anytime algorithm was shown through the many hard problems required to be solved.
-This can be seen in many of the problems in the 'trendy' track, these required a lengthy search and many required interruption of the algorithm to return the currently best found solution.
-Looking at many of these timed out problems, reveals that many of them returned optimal solutions regardless of the fact they were stopped before finishing the search.
-This leads to the presumption that the finding of the optimal solution is not necessarily the time consuming part of the search, but the proof that there are no better solution remaining.
-\item The criteria that were defined in to enter this competition were wide ranging, and will be specifically discussed in chapter \ref{strategies}.
-It may be said that the reason for GJSolvers win of the 'user' track could be put down to the easily defined and tuning criteria that allowed the quick testing of different heuristics.
+  \item During the competition GJSolver had very consistent results.
+These results allowed it to compete with the other solvers, and win the 'user' track.
+ \item No CUDF problem in the competition was incorrectly solved by GJSolver. 
+ This could be used to argue that the parsing of CUDF to \modelname, mapping to \modelimpl problems, and the implementations of the algorithms are correct.
+ \item When compared to the similar implementation of Eclipse P2, GJSolver produces similar results, in a similar time. 
+ As GJSolver was based on Eclipse P2, this is seen as a validation that the differences between the two are not detrimental, and possibly improvements. 
 \end{itemize}
 
+Given these reasons GJSolver is seen as a verified implementation.
+
 \section{Summary}
-In this chapter, the implementation and validation of GJSolver is described.
-First an evolution problem was mapped to a SAT problem, and the criteria where mapped to pseudo-Boolean criteria.
-The algorithms used to find an optimal solution to the SAT problem given lexicographically ordered pseudo-Boolean criteria, was described.
-These algorithms include, DPLL, iterative strengthening, and lexicographic iterative strengthening.
-The validation of GJSolver, through the MISC competitions was discussed, and analysed.
-This validation shows that GJSolver satisfies the original requirements of its design, and is capable of being used within this research. 
+This chapter described the \modelimpl problem and how it mapped to the evolution steps from a \modelname instance.
+The algorithms used to solve a \modelimpl problem where also discussed.
+The implementation GJSolver was also presented.
+GJSolver takes a CUDF* document, parses it to a \modelname instance, and resolves it by mapping it to \modelimpl problems and solving them.
+GJSolver was verified through the MISC competition, and was shown to perform well when compared against other solvers.
+
+The following chapter discusses the user, and their strategies for evolving component systems.
+It also describes various criteria, and their mappings between MOF, \modelname, and PB criteria in \modelimpl.

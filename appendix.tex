@@ -1,6 +1,510 @@
-\chapter{Appendix}
+\appendix{}
 
-\section{Glossary}
+\chapter{CUDF* Parsing to \modelname Instance}
+\label{apx.cudf}
+In this section, the parsing of a CUDF* document (presented in section \ref{formal.step}) to a \modelname instance is described.
+The package stanzas in the document define the sets of components $C_{t_0},\ldots,C_{t_n}$, the initial component system $\alpha_{t_0}$, 
+and the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
+
+The request stanzas are used to define a series of times $t_0,\ldots,t_n$, sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$,
+and the evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
+
+\subsection{CUDF* BNF Grammar}
+The CUDF* syntax is described in the EBNF grammar presented in figure \ref{formal.cudfBNFgrammar}.
+This is an extension of the CUDF EBNF grammar given by Mancoosi\footnote{http://www.mancoosi.org/cudf/ebnf/ visited 26/3/2012}
+combined with the MOF EBNF grammar.
+The notable differences between CUDF and CUDF* is that there can be multiple requests, where each request defines a time and a MOF criteria.
+Other differences are that the premable defines a time value,  
+and each component must also define a time value.
+
+\begin{figure}[htp] 
+\begin{center}
+\begin{alltt}
+(* Top Level Elements *)
+<cudf> ::= <preamble> <packagedescription>* <request>*
+<preamble> ::= "preamble:" <time> "\textbackslash{}n" <stanza>
+<packagedescription> ::= "package:" <name> "\textbackslash{}n" \\    "version:" <nat> "\textbackslash{}n" \\    "time:" <time> "\textbackslash{}n" <stanza>
+<request> ::= "request:" <time>, <criteria> "\textbackslash{}n" <stanza>
+
+(* Structure *)
+<stanza> ::= [<property> "\textbackslash{}n"]* "\textbackslash{}n"
+<property> ::= <key> ":" <value>
+<key> ::= <ident>
+<value> ::= <bool> | <int> | <nat> | <string> | <name> | <ident> \\    | <vpkgformula> | <vpkglist> | <veqpkglist> | <typedecls>
+
+(* Types of Package Formula *)
+<vpkgformula> ::= <orformula> ("," <orformula>)* | ""
+<orformula> ::= <vpkg> ("|" <vpkg>)*
+<vpkglist> ::= <vpkg> ("," <vpkg>)* | ""
+<vpkg> ::= <name> (<relop> <version>)?
+<relop> ::= "=" | "!=" | ">=" | ">" | "<=" | "<"
+
+<veqpkglist> ::= <veqpkg> ("," <veqpkg>)* | ""
+<veqpkg> ::= <name> ("=" <version>)?
+
+(* Preamble Type Declarations *)
+<typedecls> ::= <typedecl> ("," <typedecl>)*
+<typedecl> ::= ident ":" type ("=" "["<nat>"]")?
+<type> ::= "int"
+
+(* Bottom Level Types *)
+<name> ::= ["A"-"Z" | "a"-"z" | "0"-"9" | "-" \\    | "+" | "." | "/" | "@" | "(" ")" | "\%"]+
+<ident> ::= ["a"-"z"][""a"-"z" | "0"-"9"]+		
+<nat> ::= ["0"-"9"]+
+<bool> ::= "true" | "false"
+<int> ::= ("+"|"-")? ["0"-"9"]+
+<string> ::= [^"\textbackslash{}n"| ^"\textbackslash{}n"]* (*Unicode string with no CR or LF*)
+<time> ::= <nat>
+
+(* MOF *)
+<criteria> ::= <criterion> ("," <criterion>)*
+<criterion> ::= <string>
+\end{alltt}
+  \caption{CUDF BNF Grammar}
+  \label{formal.cudfBNFgrammar}
+\end{center}
+\end{figure}
+
+\subsection{Additional Stanza Constraints}
+In figure \ref{formal.cudfBNFgrammar}, a CUDF* document is described as a preamble, a list of package descriptions, and a list of requests.
+The preamble is a stanza started with the text \verb+preamble:+.
+A package description is a stanza started with the text \verb+package:+ followed by a package name, a package version, and a time.
+A request is a stanza started with the text \verb+request:+, followed by a time and a MOF criteria string.
+
+This grammar does not list all the constraints for each stanza, and each property.
+For example, the property with key \verb+installed+ can only be in a package description, and can only have a \verb+<bool>+ value.
+Each stanza type (preamble, package description or request) can consist of different properties, where each properties value can be of a different type.
+In tables \ref{formal.cudfpremableprops}, \ref{formal.cudfpdprops} and \ref{formal.cudfrequestprops}, 
+the allowed properties for the preamble, a package description, and the request are described respectively.
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|}
+\hline
+Property Name & Value Type & Default Value \\ \hline
+property & \verb+<typedecl>+ & \verb+""+ \\\hline
+\end{tabular}
+\caption{Preamble properties}
+\label{formal.cudfpremableprops}
+\end{table}
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|}
+\hline
+Property Name & Value Type & Default Value \\ \hline
+\texttt{depends} & \texttt{<vpkgformula>} & \verb+""+ \\
+\texttt{conflicts} & \texttt{<vpkglist>} & \verb+""+ \\ 
+\texttt{provides} & \texttt{<veqpkglist>} & \verb+""+ \\ 
+\texttt{installed} & \texttt{<bool>} & \verb+"false"+ \\ 
+\texttt{keep} & \texttt{<ident>} either \texttt{"version"}, \texttt{"package"}, or \texttt{"none"} & \texttt{"none"} \\ \hline
+\end{tabular}
+\caption{Package Description properties}
+\label{formal.cudfpdprops}
+\end{table}
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|}
+\hline
+Property Name & Value Type & Default Value \\ \hline
+\texttt{install} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\texttt{remove} & \verb+<vpkglist>+ & \verb+""+ \\ 
+\texttt{upgrade} & \verb+<vpkglist>+ & \verb+""+ \\ \hline
+\end{tabular}
+\caption{Request properties}
+\label{formal.cudfrequestprops}
+\end{table}
+
+In addition to the properties allowed in the package description, as presented in table \ref{formal.cudfpdprops}, extra properties can be defined in the preamble's \texttt{property} property.
+This is described in section \ref{cudf.preambledes}, and restricted to only defining new \texttt{<int>} typed properties.
+
+\subsection{Parsing}
+How a CUDF* represented and parsed to create the \modelname instance is described in this section.
+
+\begin{defs}
+A \textbf{CUDF* document} is a tuple containing a preamble stanza ($preamble$), a set of package description stanzas ($PD$), and set of request stanzas ($REQUESTS$), i.e. $\langle premable, PD, REQUESTS \rangle$.
+\end{defs}
+
+Each stanza can be seen as a function:
+\begin{defs}
+A stanza is a function that takes a key \texttt{key}, and returns a value \texttt{value}, $s($\texttt{key}$) = $\texttt{value}. 
+\end{defs}
+
+This function is abbreviated to use the infix notation \texttt{.}, i.e. $s$.\texttt{key}$ = $\texttt{value}.
+For a package description stanza $pd$, $pd$.\texttt{name} returns the \texttt{<name>} value,
+$pd$.\texttt{version} returns the \texttt{<nat>} value, and $pd$.\texttt{time} returns the \texttt{time} value.
+For a request stanza $r$, $r$.\texttt{time} returns the \texttt{time} value, and $r$.\texttt{criteria} returns the \texttt{criteria} value.
+For the preamble stanza $premable$, $premable$.\texttt{time} returns the \texttt{time} value.
+
+The set of times $T$ is the set of natural numbers $\mathbb{N}$, totally ordered under $\leq$.
+The set of names $\mathcal{N}$ is the set of strings that match the regular expressions of \texttt{<name>} in figure \ref{formal.cudfBNFgrammar}.
+The set of versions $\mathcal{V}$ is the set of natural numbers $\mathbb{N}$, totally ordered under $\leq$. 
+
+The first definition is to define the series of times.
+\begin{defs}
+Given a CUDF* document $\langle premable, PD, REQUESTS \rangle$, $t_0$ is defined as $premable$.\texttt{time},
+and $t_1,\ldots,t_n$ are defined as $r_1$.\texttt{time}$,\ldots,r_n$.\texttt{time} where $REQUESTS = \{r_1,\ldots,r_n\}$.
+\end{defs}
+
+
+\subsection{Components}
+The sets of components $C_{t_0},\ldots,C_{t_n}$, and component system $\alpha_{t_{0}}$ are defined given a CUDF* document.
+
+\begin{defs}
+The function $pd2c$ is defined to take a package description stanza $pd$, and return a component, $pd2c(pd) = \langle pd.$\texttt{name}, $pd.$\texttt{version} $\rangle$.
+\end{defs}
+
+The infix notation \texttt{.} can also be used to abbreviate component properties, e.g. for a package description $pd$, and component $c = vpd2c(pd)$, $pd$.\texttt{name} $=$ $c$.\texttt{name}.
+
+\begin{defs}
+Given a CUDF* document $\langle premable, PD, REQUESTS \rangle$, a set of components $\mathbb{C}_{t}$ is defined as the set of package descriptions mapped using the function $pd2c$,
+whose time value is less than or equal to $t$,
+i.e. $\mathbb{C}_{t} = \{pd2c(pd) \mid pd \in PD \text{ and } pd$.\texttt{time}$ \leq t\}$
+\end{defs}
+$\mathbb{C}_{t}$ is then a ``slice'' of the components that existed at time $t$.
+The sets of components $C_{t_0},\ldots,C_{t_n}$ are defined as slices of the set of components given the times $t_0,\ldots,t_n$.
+
+\begin{defs}
+Given a CUDF* document $\langle premable, PD, REQUESTS \rangle$, and set of components $\mathbb{C}_{t_0}$,
+the initial component system $\alpha_{t_0}$ is the set of components in $\mathbb{C}_{t_0}$ whose \texttt{installed} property equals \texttt{true},
+i.e. $\alpha_{t_{0}} = \{c \mid c \in \mathbb{C}_{t_0} $ and $ c.$\texttt{installed} $=$ \texttt{"true"} $\}$
+\end{defs}
+
+\subsection{Features}
+%%%Features or services
+CUDF* specifies an additional aspect to system constraints, that of a feature (this can also be described as a service, or a virtual package).
+Each component can provide a many features, more over, a component can provide many versions of a feature.
+Therefore, a component provides a set of features, where each feature has a name, and a set of versions.
+
+\begin{defs}
+A \textbf{feature} $f$ is a pair consisting of a name $n \in \mathcal{N}$ and a set of versions $V \subseteq \mathcal{V}$ , 
+i.e. $f = \langle n,V \rangle$
+\end{defs}
+
+The features provided by a component are defined in the property with key \verb+provides+, which is of the type \texttt{<veqpkglist>}.
+This type is a list of \texttt{<veqpkg>}, either of the form \verb+<name>+ or  \verb+<name>+ \texttt{"="} \verb+<version>+.
+\begin{itemize}
+  \item \verb+<name>+ $:=$ $($\verb+<name>+$,\mathcal{V})$
+  \item \verb+<name>+ = \verb+<version>+ $:=$ $($\verb+<fname>+$,\{$\verb+<version>+$\})$
+\end{itemize}
+That is, a \texttt{<veqpkg>} which does not define a version, is defined as a feature that provides all versions.
+A  \texttt{<veqpkg>} the defines a version, is defined as a feature that provides a singleton set of that version.
+
+\begin{defs}
+The function $providedFeatures$ is defined to take a component $c$, and return the set of features that component provides,
+$providedFeatures(c) =$ the set of features mapped from the $c$.\texttt{provides} value.
+\end{defs}
+
+For example, a component $a$ is defined such that $a.$\texttt{provides} $=$ \texttt{"n = 10, m"};
+the function $providedFeatures(a)$ returns the set of features $\{( \texttt{"n"},\{10\} ), ( \texttt{"m"},\mathcal{V})\}$.
+
+\subsection{Package formula}
+A package formula, of type \texttt{<vpkg>}, is a query for a set of components from a CUDF* document.
+This formula is the mechanism that defines all constraints and requests in the CUDF specification.
+
+Each \texttt{<vpkg>} is of the form ``\texttt{<name>}'' or  ``\texttt{<name> <relop> <version>}''.
+\begin{defs}
+A \textbf{package formula} $pf$ is a triple, name $n$, version $v$, and relation $r$, $pf = \langle n, v , r \rangle$.
+\end{defs}
+
+The syntax of \verb+<relop>+ is parsed to a mathematical relation with the function $relop$:  
+$relop = \{$ \verb+"="+ $\rightarrow$ $=$, \verb+"!="+ $\rightarrow \not =$, 
+\verb+">="+ $\rightarrow$ $\geq$, \verb+">"+ $\rightarrow$ $>$, \verb+"<="+ $\rightarrow$ $\leq$, \verb+"<"+ $\rightarrow$ $<$$\}$.
+
+\begin{itemize}
+  \item \texttt{<name>} $:=$ $\langle $\texttt{<name>}$, 0 , > \rangle$
+  \item \texttt{<name> <relop> <version>} $:=$ $\langle $\texttt{<name>}$,$ \texttt{<version>}$, relop($\texttt{<relop>}$) \rangle$
+\end{itemize}
+That is, a \texttt{<vpkg>} that does not define a relation or version, is defined as a package formula that is greater than zero.
+
+%%%Find all packages which satisfy the package formula
+\begin{defs}
+A component $c = \langle n,v \rangle$ \textbf{satisfies} a package formula $\langle m,w,r\rangle$ iff
+$(n = m$ and $v$ $r$ $w)$, or $(\exists (o,V) \in providedFeatures(c)$ where $o = n$ and $\exists x \in V$ such that $v$ $r$ $x)$. 
+\end{defs}
+That is, a component satisfies a package formula if it has the same name, and its version relates to the package formula version;
+or the component provides a feature with the same name that contains a version that relates to package formula version.
+
+\begin{defs}
+Given a set of components $\mathbb{C}_{t_i}$,
+the function $packagesThatSatisfy$ takes a package formula $pf$ and returns all components in  $\mathbb{C}_{t_i}$ that satisfy it, i.e. $packagesThatSatisfy(pf) = \{c \mid c \in \mathbb{C}_{t_i}$ and $ c$ satisfies $pf\}$
+\end{defs}
+
+\paragraph{Sets of Package Formula}
+The elements \texttt{<orformula>} and \texttt{<vpkglist>} are both lists of \texttt{<vpkg>}'s.
+The element \texttt{<vpkgformula>} is a list of \texttt{<orformula>}'s, therefore is a list of lists of \texttt{<vpkg>}'s.
+
+The mapping of these elements is trivial:
+\begin{itemize}
+  \item \texttt{<orformula>} $ := $ a set of package formula.
+  \item \texttt{<vpkglist>} $ := $ a set of package formula.
+  \item \texttt{<vpkgformula>} $ := $ a set of sets of package formula.
+\end{itemize}
+
+\begin{defs}
+Given a set of components $\mathbb{C}_{t_i}$,
+the function $allPackagesThatSatisfy$ takes a set of package formula $pkgflist$ and returns all components in $\mathbb{C}_{t_i}$ that satisfy any package formula in the set,
+i.e. $allPackagesThatSatisfy(pkgflist) = \bigcup \limits_{pf \in pkgflist} packagesThatSatisfy(pf)$ 
+\end{defs}
+
+\subsection{System Constraints}
+Given a CUDF* document, there are three sets of constraints that make up a set of system constraints $\omega_{t_i}$, each containing a different constraint type:
+\begin{itemize}
+  \item keep constraints $\omega_{t_i}^{keep}$ are extracted from the values of \verb+keep+ properties of components in $\alpha_{t_{i-1}}$.
+  \item dependency constraints $\omega_{t_i}^{dep}$ are extracted from the values of \verb+depends+ properties of components in $\mathbb{C}_{t_i}$.
+  \item conflict constraints $\omega_{t_i}^{con}$ are extracted from the \verb+conflicts+ properties of components in $\mathbb{C}_{t_i}$.
+\end{itemize}
+A set of system constraints $\omega_{t_i}$ is the union of these,
+$\omega_{t_i} =  \omega_{t_i}^{keep} \cup \omega_{t_i}^{dep} \cup \omega_{t_i}^{con}$.
+Therefore, the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$ can be defined from a CUDF* document.
+
+\paragraph{Keep Constraints}
+Given a CUDF* document, a set of keep constraints is $\omega_{t_i}^{keep}$.
+These constraints are extracted from the property with the key \texttt{keep} in the components in $\alpha_{t_{i-1}}$.
+
+The values of the property with key \texttt{keep} can be either \texttt{none}, \texttt{version}, or \texttt{package}.
+If the value is \texttt{none}, then no constraints are generated.
+\begin{defs}
+The function $keep$ takes a component $c$, and returns a set of keep constraints, such that
+\begin{itemize}
+	\item if $c$.\verb+keep+ equals \verb+"none"+: $keep(c) = \emptyset$
+	\item if $c$.\verb+keep+ equals \verb+"version"+: $keep(c) = \{c\}$
+	\item if $c$.\verb+keep+ equals \verb+"package"+: $keep(c) = \{a_1 \vee \ldots \vee a_n\}$ where $\{a_1,\ldots,a_n\} = \{b \mid b \in \mathbb{C}_{t_i}$ and $b.$\texttt{name} = $c.$\texttt{name} $\}$
+\end{itemize}
+
+\end{defs}
+That is, the function $keep$ takes a component $c$ and to return a set of keep constraints where
+\begin{itemize}
+  \item if the value of $c$.\verb+keep+ equals \verb+"none"+ then no constraints are required.
+  \item if the value of $c$.\verb+keep+ equals \verb+"version"+, the set of constraints ensures that the component $c$ will be kept in the system.
+  \item if the value of $c$.\verb+keep+ equals \verb+"package"+, the constraint ensures that at least one component with the same name as $c$ will be kept in the system.
+\end{itemize}
+
+The set of all keep constraints can be defined as:
+\begin{defs}
+Given the component system $\alpha_{t_{i-1}}$, $\omega_{t_i}^{keep} = \bigcup \limits_{c \in \alpha_{t_{i-1}}} keep(c)$.
+\end{defs}
+
+\paragraph{Dependency Constraint}
+Given a CUDF* document, the set of dependency constraints is $\omega_{t_i}^{dep}$.
+These constraints are extracted from the property \texttt{depends} in the components in the set $\mathbb{C}_{t_i}$.
+The value of the property with key \texttt{depends} is a \texttt{<vpkgformula>} which is mapped to a set of sets of package formula.
+
+\begin{defs}
+Given a CUDF* document, the function $dependsOn$ takes a component $a$ and a set of package formula $pkgflist$ and returns a set with a single dependency constraint,
+such that $dependsOn(a,pkgflist)$ returns $\{a \rightarrow c_1 \vee \ldots c_n\}$ where  $\{c_1,\ldots,c_n\} = allPackagesThatSatisfy(pkgflist)$.
+\end{defs}
+That is, $dependsOn(a,pkgflist)$ creates the dependency  constraint where $a$ depends on the disjunction of the union of all components that satisfy a package formula set. 
+
+\begin{defs}
+Given a CUDF* document, the function $depends$ takes a component $a$, and returns a set of dependency constraints,
+such that $depends(a)$ returns $\bigcup \limits_{pkgflst \in listpkgflist} dependsOn(a,pkgflst)$, where $listpkgflist$ is mapped from the value $a$.\texttt{depends}.
+\end{defs}
+That is, $depends$ returns the set of all dependency constraints for a component from its \verb+depends+ property.
+
+The set of all dependency constraints can be defined as:
+\begin{defs}
+Given the set of components $\mathbb{C}_{t_i}$, $\omega_{t_i}^{dep} = \bigcup \limits_{a \in \mathbb{C}_{t_i}} depends(a)$.
+\end{defs}
+
+\paragraph{Conflict Constraint}
+Given a CUDF* document, the set of conflict constraints is $\omega_{t_i}^{con}$.
+These constraints are extracted from the property \texttt{conflicts} in the components in the set $\mathbb{C}_{t_i}$.
+The value of the property with key \texttt{conflicts} is a \texttt{<vpkglist>} mapped to a set of package formula.
+
+\begin{defs}
+Given a CUDF* document, the function $conflicts$ takes a component $a$, and returns a set of conflict constraints,
+such that $conflicts(a)$ returns $\{a \rightarrow \neg c \mid c \in allPackagesThatSatisfy(pkgflist) \mbox { and } c \not = a \}$, where $pkgflist$ is mapped from the value $a$.\texttt{conflicts}.
+\end{defs}
+
+That is, the component $a$ conflicts with any component that satisfies a package formula in its \texttt{conflict} property,
+with the exception is that a component cannot conflict with itself.
+
+The set of all conflict constraints can be defined as:
+\begin{defs}
+Given the set of components $\mathbb{C}_{t_i}$,
+$\omega_{t_i}^{con} = \bigcup \limits_{a\in \mathbb{C}_{t_i}} conflicts(a)$.
+\end{defs} 
+
+\subsection{Request}
+\label{formal.cudf.request}
+Given a CUDF* document, there are three sets of constraints that make up a set of request constraints $\delta_{t_i}$, each containing a different user request type:
+\begin{itemize}
+  \item the set of installation request constraints $\delta_{t_i}^{ins}$ is extracted from value $r$.\texttt{install} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+  \item the set of remove request constraints  $\delta_{t_i}^{rem}$ is extracted from the value $r$.\texttt{remove} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+  \item the set of upgrade constraints $\delta_{t_i}^{upg}$ is extracted from the value $r$.\texttt{upgrade} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+\end{itemize}
+A set of user request constraints $\delta_{t_i}$ is the union of these,
+$\delta_{t_i} =  \delta_{t_i}^{ins} \cup \delta_{t_i}^{rem} \cup \delta_{t_i}^{upg}$.
+Therefore, the sets of requests $\delta_{t_1},\ldots,\delta_{t_n}$ can be defined from a CUDF* document.
+
+\paragraph{Install}
+Given a CUDF* document, $\delta_{t_i}^{ins}$ is extracted from value $r$.\texttt{install} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+The value $r$.\texttt{install} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
+\begin{defs}
+Given a CUDF* document, 
+the function $install$ takes a package formula $pf$ and returns a set containing one install request constraint, 
+such that $install(pf) = \{a_1 \vee \ldots \vee a_n\}$ where $\{a_1,\ldots,a_n\} = packagesThatSatisfy(pf)$.
+\end{defs}
+
+\begin{defs}
+Given a CUDF* document, a set of install request constraints $\delta_{t_i}^{ins} = \bigcup \limits_{pf \in pkgflist} install(pf)$, 
+where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{install} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+\end{defs}
+
+\paragraph{Remove}
+Given a CUDF* document, $\delta_{t_i}^{rem}$ is extracted from value $r$.\texttt{remove} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+The value of $r$.\texttt{remove} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
+\begin{defs}
+Given a CUDF* document, a set of remove request constraints $\delta_{t_i}^{rem}$ equals $\{ \neg a \mid a \in allPackagesThatSatisfy(pkgflist)\}$, 
+where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{remove} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+\end{defs}
+
+\paragraph{Upgrade}
+Given a CUDF* document, the set of upgrade requests $\delta_{t_i}^{upg}$ is extracted from the value \texttt{request}.\texttt{upgrade}.
+The value $r$.\texttt{upgrade} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
+
+Given a package formula, $\langle n, v, op \rangle$, an upgrade request contains two constraints:
+\begin{enumerate}
+  \item only one component with the name $n$ can be in the evolved system, this is constraint type \ref{formal.upgradeconstraint}.
+  \item the component with name $n$ should be have a greater than, or equal to, version than the component with name $n$ with the greatest version in $\alpha_{t_{i-1}}$.
+\end{enumerate}
+
+The first upgrade constraint:
+\begin{defs}
+Given a CUDF* document, the function  $upgrade_1$ takes a component name $n$ and returns an upgrade request constraint, 
+$upgrade_1(n) = a_1 + \ldots + a_i = 1$ where $\{a_1,\ldots,a_i\} = packagesThatSatisfy(\langle n,0,>\rangle)$. 
+\end{defs}
+That is, $upgrade_1$ returns the constraint that ensures exactly one version of a component with name $n$ will be in the evolved system.
+
+The utility function $maxversion$ is required:
+\begin{defs}
+Given a CUDF* document with component system $\alpha_{t_{i-1}}$, the function $maxversion$ takes a name $n$ and returns the highest version of a component in $\alpha_{t_{i-1}}$ with name $n$,
+$maxversion(n) = v  \mid \langle n,v \rangle \in \alpha_{t_{i-1}}$ and there is no other component $\langle n,v' \rangle \in \alpha_{t_{i-1}}$ where $v < v'$.
+\end{defs}
+
+The second upgrade constraint:
+\begin{defs}
+Given a CUDF* document, the function $upgrade_2$ takes a package formula and returns an upgrade constraint,
+$upgrade_2(n) = a_1 + \ldots + a_i = 1$ where $\{a_1,\ldots,a_i\} = packagesThatSatisfy(\langle n,maxversion(n),\geq\rangle)$. 
+\end{defs}
+That is, $upgrade_2$ returns the constraint that the version of the component with name $n$ in the evolved system, must be greater than the $maxversion$ can be in the evolved system.
+
+\begin{defs}
+Given a CUDF* document, a set of upgrade request constraints $\delta_{t_i}^{upg}$ equals $\bigcup \limits_{\langle n,v,op \rangle \in pkgflist} \{upgrade_1(n),upgrade_2(n)\}$, 
+where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{upgrade} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+\end{defs}
+
+\subsection{Criteria}
+Given a CUDF* document, an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$ is extracted from the value $r$.\texttt{criteria} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
+The value $r$.\texttt{criteria} is a list of \verb+criterion+ separated by the delimiter ``\verb+,+'' that can be mapped to a tuple of strings $\langle criterion_1, \ldots, criterion_n \rangle$.
+
+\begin{defs}
+A partial function $critmap$ is defined such that it takes a string $criterion_j$ and returns a criterion (from \modelname) $\langle rank^j_{\alpha}, \leq_j \rangle$, 
+i.e. $critmap(criterion_j) = \langle rank^j_{\alpha}, \leq_j \rangle$.
+\end{defs} 
+
+A single lexicographic criterion $\langle  rank^L_{\alpha}, \leq_L \rangle$ is defined using $\oplus$ as $critmap(criterion_1) \oplus \ldots \oplus critmap(criterion_n)$.
+$\langle  rank^L_{\alpha}, \leq_L \rangle$ is used to create the evolution optimality order $\prec_{\alpha_{t_{i-1}}}$ as described in definition \ref{formal.defcrittooptimal}.
+
+This can be used to define the optimality orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
+
+\chapter{Full Criteria Mapping}
+In this appendix a mapping between the \modelname criteria and PB crtieria in table \ref{apx.crittable} is presented.
+
+\label{apx.critmapping}
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
+\texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
+\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\texttt{-stableversion(N)} 	& $crit_{stableversion(N)} = \langle rank^{stableversion(N)}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{apx.crittable}
+\end{table}
+
+Some utility functions are defined:
+
+\begin{defs}
+The function $V: 2^{\mathbb{C}} \times \mathcal{N}$ takes a set of components $\alpha$ and a component name $n$, and returns a set of components with name $n$ that are in $\alpha$,
+i.e. $V(\alpha,n) = \{\langle n',v \rangle \mid \langle n',v \rangle \in \alpha $ and $ n' = n \}$
+\end{defs}
+
+\begin{defs}
+The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
+i.e. $uptodatedistance(\langle n, v \rangle,\mathbb{C}_t) = |\{\langle n, v' \rangle \mid \langle n, v' \rangle \in \mathbb{C}_t $ and $ v' > v \}|$
+\end{defs}
+
+\begin{defs}
+The set of names $\mathcal{N}_t$ is the set of all names of components in $\mathbb{C}_t$.
+\end{defs}
+
+\section{-changed}
+
+The change criterion is defined:
+\begin{defs}
+	The \textbf{change} criterion is defined as $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$,
+	where $rank^{change}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq V(\beta,n) \}|$.
+\end{defs}
+
+\begin{defs}
+Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
+such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
+This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
+\end{defs}
+That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
+
+\begin{defs}
+Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
+$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
+
+\section{-removed}
+
+The removed criterion is defined:
+\begin{defs}
+	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+\end{defs}
+
+\begin{defs}
+Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
+such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
+This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
+\end{defs}
+That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
+
+\begin{defs}
+Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
+$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
+
+\section{-new}
+%%%TODO
+\begin{defs}
+	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+\end{defs}
+
+\section{-uptodatedistance}
+%%%TODO
+
+By creating a criterion with this measurement, the measurement of a system's up-to-dateness respects the two version criteria.
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
+	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
+\end{defs}
+
+\section{-stableversion(N)}
+
+
+
+\chapter{Glossary}
 MISC
 CUDF
 Software Component
@@ -16,10 +520,8 @@ Composer: The user who creates or alters component systems (compositions)
 
 Versioning Model: A method to define and compare versions
 
-\section{Survey}
+\chapter{Survey}
 \label{apx.survey}
-
-\section{CUDF Examples}
 
 \section{Code Samples}
 \subsection{Scripts for Simulation}

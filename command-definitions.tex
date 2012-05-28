@@ -15,6 +15,12 @@
 \newtheorem{prof}{Proof}
 \newtheorem{prop}{Proposition}
 
+\newcommand {\modelnamewx}{CoSyE}
+\newcommand {\modelname}{\modelnamewx\xspace}
+\newcommand {\modelimplwx}{LexSAT}
+\newcommand {\modelimpl}{\modelimplwx\xspace}
+
+
 
 \newcommand*{\bfrac}[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
 
@@ -71,3 +77,26 @@
    \noindent \begin{quotation}
      \emph{#1}
    \end{quotation}}
+
+   
+\newcommand{\digraph}[3][scale=1]{ 
+   \newlinechar`\^^J
+  \newwrite\dotfile 
+  \immediate\openout\dotfile=tmp/#2.dot 
+  \immediate\write\dotfile{digraph #2 {#3}} 
+  \immediate\closeout\dotfile
+  \immediate\write18{bash -c "dot -Tps2 tmp/#2.dot | epstopdf --filter -o=tmp/#2.pdf"}  
+  \IfFileExists{tmp/#2.pdf}
+  % the pdf exists: include it 
+  { \includegraphics[#1]{tmp/#2} } 
+  % the pdf was not created - show a hint
+  { \fbox{ \begin{tabular}{l} 
+        The file \texttt{tmp/#2.pdf} hasn't been created from 
+        \texttt{tmp/#2.dot} yet. \\
+        We attempted to create it with:\\
+        `\texttt{dot -Tps2 tmp/#2.dot | epstopdf --filter -o=tmp/#2.pdf}' \\
+        but that seems not to have worked. You need to execute `\texttt{pdflatex}' with \\
+        the `\texttt{-shell-escape} option. You also need `\texttt{epstopdf}' from CTAN.
+      \end{tabular}} 
+  } 
+}

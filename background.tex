@@ -9,14 +9,12 @@ In order to agree to talk, we just have to agree we are talking about roughly th
 Software evolution \citep{lehman1980} is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
 This evolution process is necessary as the system must adapt to the changing software environment, accommodate new user requirements, 
 fix errors, and/or prevent errors from occurring in the future \citep{IsoIec2006}.
-Software maintenance and evolution are often used interchangeably \citep{Godfrey2008}, though some semantic differences exist.
+Software maintenance and evolution are often used interchangeably \citep{Godfrey2008}, though some differences exist.
 One difference is that maintenance has connotations of a planned activity, where evolution is the gradual refinement of a system \citep{lehman1980}.
 Throughout this thesis software maintenance is referred to as the range of activities through which software is changed; this is similar to the definition given in \citep{lehman1980}.
 
 The concept of software evolution has been discussed since the 1960's \citep{Lehman1969}, 
 however some still see it at a young field \citep{Godfrey2008} as many open questions remain to be answered.
-
-%%%Ways to mitigate evolution costs are
 One such open question is: \textit{how can software engineers lower the cost of software evolution?}
 The cost of evolving a system was estimated by \cite{Brooks1975} to be as high as 90\% of the total cost of the system.
 More empirical studies that explore the cost of software evolution are summarised by \cite{Grubb2003}, showing that the costs of software maintenance range from 49\% to 75\%, 
@@ -31,7 +29,7 @@ Another way to lower costs of the software evolution process is by creating syst
 A component system is created out of a set of components that are combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
 Composer's are also the ``evolvers'' of a system, as they have the power to alter the composition of components that make the system.
 Originally it was assumed that developers were the composers \citep{Parnas1972,PrietoDiaz1987}, where they would compose, verify, then release a system.
-However, recently the user has started to fill the composer role, where they compose their own systems to satisfy their requirements.
+However, recently the user has started to fill the composer role, where they compose and evolve systems to satisfy their requirements.
 
 The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
 It has been noted that the potential, and fragility, of component systems is increased with this user composition \citep{Szyperski2002}.
@@ -66,7 +64,7 @@ These component models may differ by functionality, platform, or their objective
 They may also have their own CDR implementations, created to assist in their component systems evolution. 
 
 %%%In this chapter\ldots
-In this chapter, the histories of software evolution and component-based software engineering are examined in section \ref{background.histories}, to illustrate the present day picture.
+This chapter illustrates the histories and the present day picture of software evolution and component-based software engineering are examined in section \ref{background.histories}.
 In the next section, component evolution and component system evolution are discussed.
 The definitions of software components and component models with respect to component system evolution are then presented in section \ref{background.components}.
 To conclude this chapter,  examples of various component models and CDR implementation are then given in section \ref{background.models}.
@@ -74,14 +72,14 @@ This includes an introduction to the Debian model, and CUDF model that are descr
 
 \section{Software Evolution and Component-Based Software Engineering}
 \label{background.histories}
-The foundations for software evolution, software components, and component systems can all be traced to the year 1969.
+The foundations for software evolution, software components, and component systems were laid in 1969.
 Software evolution, the process of changing a system to adapt the environment it exists in, 
 was first described by \cite{Lehman1969}.\footnote{though it was not referred to as evolution at that time}
 \cite{McIlroy1969} proposed his concept of software components that were created by a ``subindustry'' of suppliers.
 Furthermore, that year the operating system Unix \citep{raymond2003art} was developed, which at its core philosophy is a modular system.
 
-The domains of software engineering, software evolution and component-based software engineering, have gone through massive advancement since their inceptions.
-These advancements are briefly described in this section, building up to a discussion about component evolution, and component system evolution.
+The domains of software engineering, software evolution and component-based software engineering, have gone through many advancements since their inceptions.
+This section breifly describes these advancements, building up to a discussion about component evolution, and component system evolution.
 
 \subsection{Software Evolution}
 \cite{Brooks1975} states that over 90\% of the cost of a system occurs after deployment in the maintenance phase,
@@ -240,11 +238,11 @@ and empirically explored by \cite{vasa2007patterns}.
 There are many aspects of component evolution left unexplored, including how these evolutions effect the systems they are deployed in.
 
 \subsection{Component System Evolution}
-The evolution of a component system is accomplished by the composer through altering the set of components contained within the component system.
-This is opposed to the evolution of individual component, where a developer alters an individual component.
+A component system is evolved by the composer by continually altering the set of components contained within the component system.
+This is opposed to the evolution of individual component, where a developer alters a component internally.
 This architectural level view of evolution does not concern itself with the internals of the constituent components, only the relationships between the components.
 
-The core functions to evolve a component system are \textbf{install} and \textbf{remove}, these add or remove a component to or from the system.
+The core functions to evolve a component system are \textbf{install} and \textbf{remove} , these add or remove a component to or from the system.
 The additional function of \textbf{upgrade} can also be defined to remove then install a higher version of the same component. 
 This limited set of possible actions when changing a component system does not require much technical knowledge. 
 To evolve a single component requires programming, software development knowledge, as well as some technical knowledge of the component model.
