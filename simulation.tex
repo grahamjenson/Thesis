@@ -7,8 +7,8 @@ A simulation brings a model to life and shows how a particular object or phenome
 
 In the previous chapters \modelname has been used to represent CSE.
 A \modelname instance can represent any evolution of a component system.
-However, as a goal of this research is to simulate CSE, realistic component evolutions are necessary.
-This chapter presents a conceptual model that can be used to generate realistic component system evolutions.
+However, as a goal of this research is to simulate \textbf{realistic} component system evolution, one further model must be defined.
+This chapter presents the conceptual model of CSE that is used to create realistic component system evolutions to be simulated and studied.
 
 This chapter first describes the reason that a simulation has been chosen as the method to study CSE.
 Simulation is compared to other types of possible avenues of study, looking at real systems and users or using a controlled environment.
@@ -42,79 +42,6 @@ ConMI -> CMI [ label="creates"];
   \label{sim.modeldiagram}
 \end{center}
 \end{figure}
-
-
-\section{The Study of Component System Evolution}
-To study the CSE process, many component systems change in response to requests must be studied.
-These evolutions consist of a series of component systems that are snapshots before and after a requested change.
-To obtain this information three methods could be used:
-\begin{enumerate}
-  \item field data could be collected from real systems evolving ``in the wild''.
-  \item a controlled environment could be created, in which systems are monitored as users are asked to request changes.
-  \item a simulation of a systems evolution could be run, where variables of the simulation are altered to represent different environments and situations.
-\end{enumerate} 
-
-In this section the positive and negative aspects of each of these approaches are discussed,
-and the reasons for the selection of the simulation method for this research are presented.
-
-\subsection{Using Real Users and Systems}
-Studying real systems that are evolved by real users is one method of studying CSE.
-Users could participate by installing monitoring software in their component systems that collects data.
-This data could then be used to study the process by which their systems evolve.
-
-This approach  has significant drawbacks:
-\begin{itemize}
-  \item it will take long periods of time to find meaningful results.
-  \item the monitoring of user's actions is an invasion of their privacy, which may limit the pool of willing participants.
-  \item finding and convincing enough users to participate to generate useful results will require significant effort.
-\end{itemize}
-
-\subsection{Users in a Controlled Environment}
-To increase the efficiency of collecting results and to eliminate privacy issues of users, a controlled environment may be created.
-Such an environment could be created in a laboratory setting, and consist of a component system and a participant.
-This participant would then be asked to evolve the system to approximate their real actions, where the resulting systems could then be studied.
-
-Such a controlled environment could very quickly simulate  many interactions that would of occurred over a long period.  
-It also removes the necessity user trust as the user is altering a system that is not theirs.
-However, it will also produce less valid results, as it is still an approximation of a real system, and the users know this.
-Any controlled environment would alter how the user interacts with their controlled system, making the results less reliable.
-
-However, the largest problem with this method is the effort required to conduct the experiment on enough users to find significant results.
-The core difficulty with this method is finding and convincing enough users to participate, and then monitoring and supporting them while they are in the controlled environment.
-
-\subsection{Simulating the Problem}
-CSE can be studied by simulating the users actions and the component system using reasonable approximations.
-A simulation is a surrogate of the real system, 
-such that it represents the core aspects of the reality while simplifying and abstracting away unnecessary detail.
-The goal of a simulation is not to represent every aspect of the real world, 
-but to make a ``close enough'' approximation so that the conclusions drawn from it are valid while minimising complexity.
-
-When analysing the results and forming conclusions from a simulation, 
-the assumptions and abstractions made, must be taken into account.
-Therefore, the majority of the effort of creating a simulation is making sure the results from the simulation are valid.
-
-\subsection{Why Simulate?}
-The advantages of simulating are the speed at which ideas can be tested and evaluated;
-the cost to test and get results; and the control over variables and configuration of the environment.
-
-The core steps to generate new knowledge is the iterative process of creating a hypothesis, then testing its accuracy.
-As the speed of this process increases, the greater amount of knowledge and meaningful information that can be generated. 
-Using real users, or real systems, requires long periods of waiting and preparation where little or no progress is made.
-However, if the actions and environment can be modeled and executed computationally, these times of no progress are eliminated.
-
-%%%Cost
-The cost of testing a hypothesis can be measured in the amount of time it takes to define an experiment and to collect the results.
-Using real users requires significant amount of time to collect and convince users to participate.
-However, with a simulation the main effort is ensuring that the returned results are valid.
-Once the simulations validity is established, it takes very little time to test a hypothesis.
-
-%%%Control
-The control over the variables in a simulation allows for testing extreme and normal situations.
-It also allows for the sensitivity analysis of different variables, finding how important they are to the simulated system.
-
-%%%Final words on why we simulate
-A simulation of CSE is selected in this research as it has a cost/benefit ratio that is desirable,
-and provides an acceptable level of accuracy to draw meaningful conclusions.
 
 \section{Methodology}
 %%%We use the methodology from `` Build a Valid and Credible Simulation''

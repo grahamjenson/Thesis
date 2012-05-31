@@ -10,50 +10,101 @@ If an object has all its component parts replaced, is it the same object?
 The themes of this question involve objects made of components, the change of their component parts,
 and how this change effects the object in question.
 
+Like the object in Plutarch's question, a software system can be constructed from components and changed by altering its composition.
 A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002}
 and the process by which software systems change over time is \textbf{software evolution} \citep{lehman1980}.
 The focus of this thesis is \textbf{component system evolution} (CSE), which is the process by which component systems change over time.
-Similar to Plutarch's question, CSE asks questions about how component systems change, and what the effect that hange has.
-
-%%%What
-A component system is changed by altering its composition by adding or removing components.
-A component system evolves through repeated changes over time.
-An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}. 
-This system is constructed by components (called packages) that can be added and removed to the system by its users.
-By studying how such systems evolve, this thesis aims to develop an understanding to predict CSE behaviour,
-and provide information about consequences of a user's choices.
-
-
+A component system is changed by altering its composition of components and \textbf{evolved} through repeated changes.
+This research asks questions about CSE to find out how component systems change, and what the effect of that change is.
 
 \section{Objective}
-%%%What
+%%%What do I want to find out?
 The primary objective of this research is to study the process of component system evolution to better understand its behavior.
-Through this understanding information can be provided to user's about the consequences of their choices when changing a component systems. 
-From these objectives, recommendations to changing a component system to achieve desirable outcomes can be derived. 
+Through understanding the behaviour of CSE this research can inform users of the consequences of their choices when altering their component systems.
+Additionally, this understanding can be used to recommend adjustments to how component systems are currently changed in order to achieve better outcomes. 
 
-%%%How 
-CSE is studied by simulating the evolution of Ubuntu systems using developed models and algorithms.
-The results from these simulations illustrate the effect users' choices have on the evolution of their component systems.
-From such results recommendations can be derived in order to better inform users on the effect of their changes.
-Furthermore, by simulating can be used to analyse experimental approaches to evolve component systems, and then judge their effectiveness.
+\section{Motivation}
+%%%Why research this?
+An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}. 
+Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf  accessed 29/5/2012}.
+Ubuntu and Eclipse systems are constructed from components called packages and bundles respectively, 
+and can be changed by adding or removing components to and from their systems.
+By repeatedly changing an Eclipse or Ubuntu system, it is evolved through the CSE process.
+By finding the behaviour of CSE this research could potentially impact millions of users and their systems.
+
+\section{Method}
+%%%How are we going to study CSE?
+To study the evolution of a component system, all changes the system goes through over a period of time must be examined. 
+To gain a broad perspective of CSE behaviour, the evolution of many systems must be studied.
+To this end this research simulates the evolution of multiple Ubuntu component systems as they evolve over a year.
+The reason for selecting Ubuntu as the component system, and simulation as the method of study are described below.
+
+\subsection{Ubuntu}
+The Ubuntu operating system was selected as the component system to study CSE as:
+\begin{itemize}
+  \item it has significant size and complexity so the results will not be trivial.
+  \item it has open and accessible information that can be used for simulation.
+  \item it (and related systems) has a large user base to make this research's contributions impact.
+\end{itemize} 
+
+
+\subsection{Simulation}
+To study the CSE process, the evolution of many component systems must be studied.
+This study could be conducted by using:
+\begin{enumerate}
+  \item real users and systems by collecting field data from real component systems evolving ``in the wild''.
+  \item a controlled environment where users are asked to change systems which are monitored.
+  \item a simulation of CSE, where by assigning variables different environments and situations can be studied.
+\end{enumerate} 
+
+To compare these methods to study CSE their cost, in time and resources required to collect enough information,
+and the validity of their results collected are discussed.
+
+The cost of studying real users and systems would be exceptionally high.
+Finding enough willing users to participate to generate results will require significant effort.
+Additionally the evolution of their systems is in real time, i.e. it will take a year to study the evolution of a component system over a year
+The cost of this method is offset by the validity of its results, as real users and systems would create the unarguably valid results.
+
+By creating a controlled environment where real users could change components systems in a laboratory setting,
+the costs compared to the previous method can be reduced.
+Such a controlled environment could very quickly approximate the evolution of many component systems.  
+However, it will also produce less valid results, than studying real system, 
+and it would still take significant resources and time to conduct such a study.
+
+CSE can also be studied by modelling relevant aspects then simulating evolution using reasonable approximations.
+Such a simulation would represent only the core aspects of the reality while simplifying and abstracting away unnecessary detail.
+As the system nor the user are real, the results from such a simulation would have questionable validity.
+However, by actively putting effort into validating the simulation and its models,
+it is hoped the simulation will be a ``close enough'' approximation to ensure conclusions drawn from it are useful.
+
+Such a simulation has the additional benefit of having control over variables that impact CSE.
+This control easily allows for testing extreme and normal situations,
+and for the sensitivity analysis of different variables.
+Having control over variables also allows for the experimentation by altering how component systems change.
+This would allow for quickly testing new methods and seeing their impact on CSE.
+
+These methods then form a Pareto front, where using real systems with real users are the most costly and the most valid, 
+and simulation is the cheapest and least valid.
+The selection of simulation as the method for the study in this research is due to the speed at which ideas can be tested and analysed.
+However, due to this decision significant effort must be put into validating the simulation, and its results. 
 
 \section{Contributions}
-As stated above, CSE is studied using a developed simulation.
+As stated above, CSE is studied through simulating the evolution of Ubuntu systems.
 To create this simulation a variety of artifacts had to be developed.
-Each of these artifacts, as well as the simulation and its results are seen as contributions from this research. 
+Each of these artifacts, as well as the simulation and its results are contributions from this research. 
 The contributions from this research are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
-  \item The \textbf{CUDF* syntax} that defined documents that can be parsed to an instance of \modelname.
-  \item The novel \textbf{lexicographic iterative strengthening algorithm} used to calculate the evolved component systems of a \modelname instance.
-  \item \textbf{GJSolver} is an implementation of the parsing from a CUDF* document to \modelname instance, and then the resolving using the lexicographic iterative strengthening algorithm.
+  \item The \textbf{CUDF* syntax} that defines documents that describe the evolution of a component system.
+  \item The novel \textbf{lexicographic iterative strengthening algorithm} is used to calculate the changes made to component systems.
+  \item \textbf{GJSolver} is an implementation that is used to simulate the evolution of a component system.
   \item A \textbf{conceptual model} of CSE based on the results of a user survey. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
-  \item The results from simulations of the evolution Ubuntu systems
+  \item The results and analysis from simulations of the evolution Ubuntu systems.
 \end{enumerate}
 
 \section{Thesis Overview}
-This thesis follows the above order of contributions
+This thesis presents it's contributions in the above order.
 
 Chapter \ref{background} introduces the background of software evolution and component based systems.
 This background is presented to illustrate the context in which this research occurs.
@@ -68,10 +119,10 @@ The lexicographic iterative strengthening algorithm to solve \modelimpl problems
 Finally, this chapter describes the GJSolver implementation and its verification.
 
 Chapter \ref{simulation} describes the development of the CSE simulation.
-First the reason for using a simulation is discussed, then the methodology used to create the simulation is described.
+First the methodology used to create the simulation is described.
 The user survey is then discussed (for full results see appendix \ref{apx.survey}) and used to create a conceptual model.
 This model is used to create CUDF* documents that describe evolutions of component systems. 
 
 Chapter \ref{ubunutsimulation} discusses the simulation of the  the Debian component model \citep{Barth2005} with Ubuntu  components. 
 
-This thesis concludes in chapter (\ref{conclusion}) with a discusion of the contributions of this research, related work, and potential future research.
+This thesis concludes in chapter (\ref{conclusion}) with a discussion of the contributions of this research, related work, and potential future research.

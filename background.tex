@@ -6,51 +6,30 @@ In order to agree to talk, we just have to agree we are talking about roughly th
 {\textit{The Feynman Lectures on Physics, Motion, Richard Feynman, 1961.}}
 
 %%%What is Software Evolution
-Software evolution \citep{lehman1980} is the process of change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
+Software evolution \citep{lehman1980} is the process of repeated change made to a software system to maintain it, or to extend its functionality over the systems lifetime.
 This evolution process is necessary as the system must adapt to the changing software environment, accommodate new user requirements, 
 fix errors, and/or prevent errors from occurring in the future \citep{IsoIec2006}.
 Software maintenance and evolution are often used interchangeably \citep{Godfrey2008}, though some differences exist.
 One difference is that maintenance has connotations of a planned activity, where evolution is the gradual refinement of a system \citep{lehman1980}.
 Throughout this thesis software maintenance is referred to as the range of activities through which software is changed; this is similar to the definition given in \citep{lehman1980}.
 
-The concept of software evolution has been discussed since the 1960's \citep{Lehman1969}, 
-however some still see it at a young field \citep{Godfrey2008} as many open questions remain to be answered.
-One such open question is: \textit{how can software engineers lower the cost of software evolution?}
-The cost of evolving a system was estimated by \cite{Brooks1975} to be as high as 90\% of the total cost of the system.
-More empirical studies that explore the cost of software evolution are summarised by \cite{Grubb2003}, showing that the costs of software maintenance range from 49\% to 75\%, 
-and that these costs have not fallen since the 1970's. 
-
-To lower the cost of software evolution, various methods and tools have been proposed.
-For example, agile software development methodologies \citep{beck2001manifesto} are defined to encourage rapid and flexible responses to change,
-and refactoring tools \citep{fowler1999refactoring} have been developed to restructure code to decrease complexity and increase maintainability. 
-Another way to lower costs of the software evolution process is by creating systems from encapsulated units called \textit{software components} \citep{Szyperski2002}.
-
-%%%Composition
+%%%What is component system evolution
 A component system is created out of a set of components that are combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
-Composer's are also the ``evolvers'' of a system, as they have the power to alter the composition of components that make the system.
-Originally it was assumed that developers were the composers \citep{Parnas1972,PrietoDiaz1987}, where they would compose, verify, then release a system.
-However, recently the user has started to fill the composer role, where they compose and evolve systems to satisfy their requirements.
+Composer's are also the ``changers'' of a system, as they have the power to alter the composition of components that make the system.
+As the composer changes the component system, the component system is said to evolve.
+This relationship between component system change and CSE is a similar relationship between software maintenance and software evolution.
+The change of a component system is an activity performed by the composer, and CSE occurs over many such changes.  
 
+%%%User composition
+Originally it was assumed that developers were the composers \citep{Parnas1972,PrietoDiaz1987}, where they would compose, verify, then release a system.
+However, recently the user has started to fill the composer role, where they compose and change systems to satisfy their requirements.
 The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
 It has been noted that the potential, and fragility, of component systems is increased with this user composition \citep{Szyperski2002}.
 A system has more potential as the user can craft solutions without requiring expert assistance.
-A system is also more fragile, as the quality of a system cannot be verified by the user, as they do not have the tools or knowledge required.
-This means that the system is tested by the user running it. 
-
-The decoupling of the developer and composer roles also breaks the developer's control over the evolution of the component system.
-The developer is no longer in charge of evolving the deployed system.
-This means that a component can be composed into a system without prior testing to check if that specific system will work.
-This leaves the evolution of the component system in the hands of its user.
-
-If the user is to be the composer, and they are not a technical expert, then there must be guidance when composing or evolving a component system \citep{Szyperski2002}.
-The core technical knowledge required to compose a component system comes from the complex relationships between components.
-These relationships create constraints that must be satisfied in order for the systems components to be functional.
-The guidance to satisfy these constraints comes in the form of a process called Component Dependency Resolution (CDR) in this thesis.
-CDR takes a user's request to change the composition of their system, and attempts to create a functioning system 
-that satisfies all component relationship constraints and the users request.
+A system is also more fragile, as the quality of a system may not be verifiable by a potentially non-technical user.
 
 %%%Defining components
-How ``software component'' is defined will impact how component system evolution and CDR are represented.
+How ``software component'' is defined will impact how component system evolution is viewed.
 It is difficult to find a precise definition of what a software component is, as the intuitive concept may be quite different from any model or implementation \citep{Crnkovic2011}.
 Finding a definition that satisfies every party may be an impossible task.
 However, by defining a software component only with respect to component system evolution and CDR, 
@@ -128,6 +107,14 @@ Legacy software is functional software that is old and outdated, but it has not 
 A piece of software is described as ``legacy'' if it cannot be evolved  (due to its complexity or size) within an acceptable cost \citep{Bisbal1999}.
 As a legacy system cannot be evolved, new user and technical requirements cannot be fulfilled, and the satisfaction with the system will decrease over time.
 This has lead the problem of legacy software to be described as enduring \citep{Bennett2000}. 
+
+Software evolution is still seen at a young field \citep{Godfrey2008} as many open questions remain to be answered.
+Recent empirical studies that explore the cost of software evolution are summarised by \cite{Grubb2003}, 
+showing that the costs of software maintenance range from 49\% to 75\%, and that these costs have not fallen since the 1970's. 
+To lower the cost of software evolution, various methods and tools have been proposed.
+For example, agile software development methodologies \citep{beck2001manifesto} are defined to encourage rapid and flexible responses to change,
+and refactoring tools \citep{fowler1999refactoring} have been developed to restructure code to decrease complexity and increase maintainability. 
+Another way to lower costs of the software evolution process is by creating systems from encapsulated units called \textit{software components} \citep{Szyperski2002}.
 
 Current explorations of the history, and state-of-the-art, of software evolution are presented in \citep{Bennett2000}, \citep{Lehman2003}, and \citep{Godfrey2008}.
 In all these papers, the importance of software evolution is emphasised, and the need for more knowledge about the evolution process and its properties is discussed.
