@@ -161,18 +161,19 @@ Aligned with this philosophy, a distribution of GNU/Linux called Debian \citep{B
 This release came with the Debian Manifesto \citep{murdock1994brief} 
 that stated that Debian would be constructed from high quality components (or packages) which can be maintained by experts.
 
-Initially, a significant amount of technical expertise was required to change the composition of packages to in a Debian system.
-This was because the selection problem (as discussed above) had to be resolved by the person changing the system.
-If a user wanted to build or change a Debian system, they would have to find, select, then install all the packages they wanted in the system.
-The user would also have to make sure that all the constraints caused by the relationships between components were satisfied.
+Initially, a significant amount of technical expertise was required to change the composition of packages in a Debian system.
+This was because each package had a set of constraints describing compositions that it would be functional in,
+and satisfying these was a complex task.  
+Furthermore, satisfying these constraints was difficult because there was a selection problem (as discussed above), 
+where there could be many possible solutions to select from.
 
-With the release of the application \textit{apt-get} in the late 1990's, the necessary technical knowledge to compose a Debian system was significantly reduced.
+With the release of the application \textit{apt-get} in the late 1990's, the necessary technical knowledge to compose or change a Debian system was significantly reduced.
 A user could request apt-get to change their system, and it would find, select then change to a new composition that satisfies the request.
-This automated the search for a solution to the selection problem which had restricted the evolution Debian systems prior to apt-get's release.
+This automated the search for a satisfactory solution, solving the problem which had restricted the evolution Debian systems prior to apt-get's release.
 apt-get (and applications like it) have been called the ``single biggest advancement Linux has brought to the industry'' 
 \footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/} 
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
-This lowering of the technical knowledge required to become a composer of a component system by solving the selection problem has had other effects discussed in the next section.
+This lowering of the technical knowledge required to become a composer of a component system has had other effects discussed in the next section.
 
 \section{Component Evolution vs. Component System Evolution}
 \label{background.componentsystemevolution}
@@ -189,10 +190,10 @@ A system is also more fragile, as the quality of a system may not be verifiable 
 
 When the user is the composer of their system, it also breaks apart two important processes,
 component evolution and CSE.
-The developer, no longer the composer of the component system, is now solely in charge of evolution of the components they develop and maintain. 
+The developer, no longer the composer of the component system, is now solely in charge of evolution of the components they maintain. 
 With the user becoming the composer, the evolution of their component system is now their responsibility. 
 
-In this section, the differences between , and the impact of separating, component evolution and CSE are discussed.
+In this section, the differences between, and the impact of separating, component evolution and CSE are discussed.
 
 \subsection{Component Evolution}
 %%%The core differences between software evolution and component evolution.
@@ -228,72 +229,62 @@ Discussions on types of evolutionary changes with comparisons to other domains a
 and empirically explored by \cite{vasa2007patterns}.
 
 \subsection{Component System Evolution}
-%%%Up to Here TODO
-A component system is evolved by the composer by continually altering the set of components contained within the component system.
-This is opposed to the evolution of individual component, where a developer alters a component and its constraints.
-This architectural level view of evolution does not concern itself with the internals of the constituent components, only the relationships between the components.
+A component system is changed by the composer by altering the composition of components contained within their component system.
+The system evolves over time as these changes are made.
+As described above in \citep{IsoIec2006}, these changes could be adaptive, perfective, corrective or preventive.
+However, unlike the changes in software evolution or component evolution, CSE can only make architectural changes by adding or removing components that already exist.
+For example, a composer could not change the system to satisfy a requirement if no component has yet been developed to satisfy that requirement.
 
-The core functions to evolve a component system are \textbf{install} and \textbf{remove} , these add or remove a component to or from the system.
-The additional function of \textbf{upgrade} can also be defined to remove then install a higher version of the same component.
-If an application, like apt-get, is available these actions will not require much technical knowledge.
-This application can use the constraints described by the components to select a  valid system that satisfies a users request.
-For example, to upgrade the components in a Debian GNU/Linux component system, the command \texttt{apt-get upgrade} is all that is needed to be executed.
-To extend the system to install a component \texttt{comp} the command \texttt{apt-get install comp} can be executed.
-This simplicity gives the user the ability to be the composer of their own system.
+%%%CSE must satisfy constraints, for the user to be a composer CDR must be used
+Changing a component system is restricted by the constraints that components have on the composition. 
+It would be very difficult for a user to alter a composition without some helping functionality provided by applications like apt-get.
+In this research such functionality is called  \textbf{Component Dependency Resolution} (CDR).
+CDR takes requests to change a system from the composer and component constraints and searches for systems that satisfy both.
+Given some preferences, an appropriate component system is selected.
+For example, a user wants to install a new text-editor component into their system, and the selected text editor has a dependency on a spell-checker.
+This means a spell checker component must be installed for the text editor to be functional. 
+Therefore, CDR tries to find a system that has a text-editor and a spell-checker, and that is a preferable solution.
 
-A problem arises when trying to measure the evolved state of a component system.
-A component system is a set of components, where each component can different  versions.
-This may make a component system impossible to compare to another in a way in which versions allow component to be compared.
-For example, a system that has version $1$ of component $a$ and version $2$ of component $b$, is neither more or less evolved than a system with version $2$ of $a$ and version $1$ of $b$.
-This can get even more complicated when considering some component models allow multiple versions of a single component installed, e.g. 
-is a system with version $1$ and $2$ of $a$ installed less evolved that a system with only version $2$ of $a$ installed?
-
-This process of component system evolution is empirically studied by \cite{fortuna2011} 
-who look at the first ten releases of the Debian and compare it to the evolution within biology.
-Methods to evolve component systems are discussed in \citep{Ryan2005} and \citep{Luo2004},
-and the mitigation of the negative effects caused by such evolution is discussed in the paper \citep{Stuckenholz2007}.
-
-A formal definition of the component system evolution is given in chapter \ref{formal}.
-
-\subsection{Component Dependency Resolution}
-For a non-technical user to become the composer, many of the aspects of component composition must be automated.
-In this research the function that automates these aspects is called  \textbf{Component Dependency Resolution} (CDR).
-
-%%%The tedious nature of satisfying component dependencies during component system evolution can be automated into a function called Component Dependency Resolution.
-CDR takes requests to change a system from the composer and constraints created by the component relationships and searches for systems that satisfy both.
-For example, a user wants to install a new text editor component into their system, and the selected text editor has a dependency on a spell checker.
-This means a spell checker component must be installed for the text editor to be functional.
-As the spell checker can have its own relationships such as dependencies, the process of satisfying all constraints is a recursive problem. 
-Therefore, CDR tries to find a valid system that satisfies all constraints.
-
-For CDR to be usable, components must explicitly state their relationships.
-If they do not, then CDR cannot analyse the constraints that are needed to be satisfied and a solution cannot be searched for.
-This search is a selection problem, where CDR can select from many different possible systems that satisfy all constraints.
-To select an acceptable solution, CDR must consider the user's goals for the system.
-These goals are part of the user's strategy; the user's plan to evolve the system.
-
-In other areas CDR, or applications that contain CDR, can be referred to by various names; provisioning system or dependency management in Eclipse domain \citep{leBerre2010},
+CDR can be referred to by various names; provisioning system or dependency management in Eclipse domain \citep{leBerre2010},
 or package manager in the GNU/Linux \citep{Barth2005} domain.
-Many other component models use CDR to compose and evolve component systems.
 CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \citep{casey_better_2008}),
 at run time to evolve or extend a component-based system (as in Eclipse P2 \citep{leBerre2010}),
 or it can be used to build and restructure software product lines \citep{savolainen_analyzing_2007}.
 CDR is also used in package management systems, like apt-get \citep{Barth2005},
 for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com accessed 6/3/2012}. 
 
+%%%How can a user change their system with CDR
+The core functions that CDR provides to change component system are \textbf{install} and \textbf{remove}, these add or remove a component to or from the system.
+Furthermore, the function of \textbf{upgrade} is defined to remove then install a higher version of the same component.
+For example, to upgrade the components in a Debian GNU/Linux system, the command \texttt{apt-get upgrade} is all that is needed to be executed.
+To extend the system to install a component \texttt{comp} the command \texttt{apt-get install comp} can be executed.
+The simplicity that CDR provides enables users to become composers of their component systems.
+
+%%%Problem with versioning componenet systems
+A problem arises, during component system evolution when trying to measure the evolved state of a component system.
+A component system is a set of components, where each component can have different versions.
+This may make a component system impossible \textit{version}, in a way similar to how components are versioned.
+For example, a system that has version $1$ of component $a$ and version $2$ of component $b$, 
+is neither more or less evolved than a system with version $2$ of $a$ and version $1$ of $b$.
+This can get even more complicated when considering some component models allow multiple versions of a single component installed, e.g. 
+is a system with version $1$ and $2$ of $a$ installed less evolved that a system with only version $2$ of $a$ installed?
+
+This process of component system evolution is empirically studied by \cite{fortuna2011} 
+who look at the first ten releases of the Debian and compare it to the evolution within biology.
+Methods to change component systems are discussed in \citep{Ryan2005} and \citep{Luo2004},
+and the mitigation of the negative effects caused by such evolution is discussed in the paper \citep{Stuckenholz2007}.
+
+A formal definition of the component system evolution is given in chapter \ref{formal}.
 
 \section{What is a Software Component?}
 \label{background.components}
-As described above, software component ideals can be traced to \citep{McIlroy1969}.
 How ``software component'' is defined will impact how CSE is studied and discussed.
 It is difficult to find a precise definition of what a software component is, as the intuitive concept may be quite different from any model or implementation \citep{Crnkovic2011}.
-Finding a definition that satisfies every party may be an impossible task.
-However, by defining a software component only with respect to component system evolution and CDR, 
+Finding a definition that satisfies all parties may be an impossible task.
+However, by defining a software component with respect to component system evolution, 
 this process can be studied without the paralysis of finding a complete definition.
-In this thesis a software component is defined to have explicitly declared relationships and include mechanisms to automatically alter the components composition.
-These two attributes allow CDR to evolve a component system and component system evolution to be studied. 
-
-The discussion of the definition and nature of such software components is described in this section.
+In this thesis a software component is defined to have explicitly declared constraints and include mechanisms to automatically alter the a component composition.
+These two attributes are seen as sufficient to allow CDR to be used, and thus a user to be the composer and drive CSE. 
 
 %%%What is a component in a larger context
 A component is a natural concept that describes a part or element of a larger system or process.
@@ -368,20 +359,19 @@ This definition specifies the type of components and component models this resea
 In this research a software component is a unit of independent deployment, and third party composition,
 and a component model must:
 \begin{enumerate}
-  \item require the explicit definition of relationships between components
+  \item require the explicit definition of component constraints on compositions where they are valid 
   \item include mechanisms in which to programmatically compose or change a component system
 \end{enumerate}
 
-To automate the evolution of a system with CDR, as discussed above, the relationships between components must be explicitly defined and computer readable.
-This automation also requires an interface for CDR to evolve the system.
-This means that CDR should have the access to mechanisms to add, remove and replace components in a system.
-As CDR would evolve a system automatically, these actions must be able to be enacted either through a function call, or well defined command interface.
+To enable the user to become the composer by using CDR, the component constraints must be explicitly defined and computer readable,
+and an interface must be provided by the component system to be changed. 
+That is, CDR should be able to calculate a valid composition, and change the system to the calculated composition.
 
-This definition leaves undefined many aspects of a component model, as can be seen when compared to the classification from \citep{Crnkovic2011}.
+This definition leaves undefined many aspects of a software components, as can be seen when compared to the classification from \citep{Crnkovic2011}.
 Most aspects of a component model are ignored as they are superfluous to the core topic of this research.
-This makes the definition in this research broadly applicable, while also making it focused.
+This makes the definition in this research broadly applicable, while also being focused on CSE.
 
-This definition of software component will be examined through examples of different component models that conform to it.
+The next section explores this definition of software component by discussing different component models that conform to it.
 
 \section{Component Models}
 \label{background.models}
@@ -390,32 +380,34 @@ Given the definition of a software component for this research, some current com
 These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
 
 %%%Meta data of component models is discussed
-The typical mechanism in which components from these frameworks express their explicit relationships is through meta-data files.
+Firstly, for these component models to conform to the previously described definition, their components must describe their constraints.
+The typical mechanism in which components from these frameworks express their constraints is through meta-data files.
 These files contain what a component requires and provides, as well as other information like versions and provider details.
 These meta-data files are then a core element in the description of a component model.
 
 %%%How to change a system is discussed
-A component model must also provide a mechanism to alter the system of components.
-This is usually a low level interface, where the addition or removal of a component is an atomic step.
+As defined above, a component model must also provide a mechanism to alter the systems composition.
+This is usually a low level interface, where the addition or removal of a component is the core functionality.
 A CDR implementation can then use these interfaces to evolve a system.
 
 %%%Exisiting CDR implementations are discussed
-Some component models have a CDR implementation already available.
-These implementations are described and the possible user strategies that they allow will be discussed. 
+Some component models have a CDR implementation available.
+These implementations are also described as they are core to the evolution of the models component systems.
 
 To compare these component models, the example of a text editor component that depends on a spell checker component is used.
 It is hoped this simple situation will highlight the similarities and differences between the various component models.
 
 \subsection{OSGi}
+%%%TODO up to here!
 %%%What OSGi is? Bundle Service
 OSGi is a mature component model from the OSGi Alliance.
 It has implementation from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
 and the Apache foundation with their framework Felix\footnote{http://felix.apache.org/ accessed 6/3/2012}.
 
-OSGi components are refereed to as bundles, each contains a meta-data file describing the bundle's relationships, and a set of Java packages and classes as implementation.
+OSGi components are refereed to as bundles, each contains a meta-data file describing the bundle's constraints, and a set of Java packages and classes as implementation.
 A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit, the service.
 These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
-This service layer can also have explicit relationship through frameworks like Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
+This service layer can also describe constraints through frameworks like Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
 Under the definition of component in this research, this makes both the bundle layer and the service layer software component models.
 
 \subsubsection{Bundle Layer}
@@ -448,10 +440,10 @@ The \texttt{Import-Package} key expresses the dependence on a package provided b
 
 \subsubsection{Service Layer}
 This bundle meta-data only contains information necessary for the execution of a component.
-However, for the component to be functional the service layer relationships must be considered.
+However, for the component to be functional the service layer constraints must be considered.
 
 This service layer is defined in the core OSGi specification \citep{osgicore2007}, however it does not describe declarative support with meta-data.
-Therefore, a number of frameworks have emerged that define service relationships, e.g
+Therefore, a number of frameworks have emerged that define service constraints, e.g
 Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
 OSGi's compendium specification \citep{osgicompendium2007} also defines service layer meta-data format called Declarative Services(DS).
 An example of a DS component's description file is given in figure \ref{dsmetadata}.
@@ -479,7 +471,7 @@ An example of a DS component's description file is given in figure \ref{dsmetada
 \end{figure}
 
 This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
-These relationships can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programmatic features.
+These constraints can have cardinalities, e.g. a text editor can use multiple spell checkers, and other programmatic features.
 The \texttt{service} tag describes the services provided, and the \texttt{reference} tag expresses a dependence on another services.
 
 %%%DS provides no versioning
@@ -596,7 +588,7 @@ An example of the meta-data describing a plugin is given in figure \ref{eclipsep
 
 This plugin defines the name, version and provider of the plugin, and using the tags \texttt{requires} defines the requirements of this plugin to function.
 The \texttt{extension-point} tag defines not only what the plugin provides, but also the required information in order to provide it, described in a schema.
-This is a special feature of the Eclipse plugin framework, as other component models generally do not specify these parameters on this type of relationship. 
+This is a special feature of the Eclipse plugin framework, as other component models generally do not specify these parameters on this type of constraint. 
 
 The schema of an extension point, as shown in figure \ref{eclipseextensionschema}, describes the elements to use an extension.
 
@@ -639,7 +631,7 @@ The methods used to add and remove these are:
 \end{itemize}
 
 The Eclipse plugin system is a component system in this study, 
-as it contains explicit relationships, and the programmatic evolution requirements necessary for CDR to be used.
+as it contains explicit constraints, and the programmatic evolution requirements necessary for CDR to be used.
 
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
@@ -689,7 +681,7 @@ An example of meta-data to define a Fractal component is given in figure \ref{fr
 \end{center}
 \end{figure}
 
-This meta-data describes the relationship between components as a metaphor between a client and a server.
+This meta-data describes the component constraints as a metaphor between a client and a server.
 The interface tag with the role attribute assigned to ``server'', defines the provided functionality of the component.
 The interface tag with the role attribute assigned to ``client'' then defines the required functionality of the component.  
 
@@ -729,7 +721,7 @@ An example of the definition of a recursive component can be seen in figure \ref
 \end{center}
 \end{figure}
 
-This description of a recursive component structure defines both the text editor and spell checker components, as well as their relationships.
+This description of a recursive component structure defines both the text editor and spell checker components, as well as their constraints.
 The tag \texttt{definition} is then used to define a composition of components that provides a service of \texttt{textEditorWithSpellChecker}.
 To provide this the spell checker must be bound (described in the tag \texttt{binding}) to the text editor,
 and the text editors provided interface bound to the output interface. 
@@ -753,7 +745,7 @@ Therefore, not only would a CDR algorithm require to select a set of components 
 The simplest solution to this problem is to ignore the recursive nature of this component model,
 and use a CDR algorithm to create exactly one composite with all components in it.
 More difficult solutions could be created by reusing user composites,
-or analyzing the graph structure to extract relationship by using algorithms like the one presented in \citep{dietrich2008cluster}.
+or analyzing the graph structure to extract relationships by using algorithms like the one presented in \citep{dietrich2008cluster}.
 
 Another aspect of Fractal that will make the automatic evolution of systems difficult will be the lack of versioning information.
 Like DS, this component model does not explicitly require the version of the component and the interfaces they provide.
@@ -782,7 +774,7 @@ A system is defined using a Project Object Model (POM) file, an example given in
     <dependency>
       <groupId>nz.geek</groupId>
       <artifactId>spellChecker</artifactId>
-      <version>[0.0.1,1.0.0)</version>
+      <version>\squarebracket0.0.1,1.0.0)</version>
       <type>jar</type>
      </dependency>
   </dependencies>
@@ -799,7 +791,7 @@ where it states that it depends on the artifact \texttt{spellChecker} from versi
 
 \subsubsection{Maven Evolution}
 The use of Maven primarily during development does not exclude it from the definition of being a component model in this study.
-Maven both explicitly declares relationships and provides an interface to evolve its component systems. 
+Maven both explicitly declares constraints and provides an interface to evolve its component systems. 
 This unique characteristic of Maven does mean that evolving a component system is done in two stages where first it is altered, then it is recompiled and replaced.
 The evolution of a Maven based systems are therefore done simply by selecting the projects to build, and using Maven to compile them into a system. 
 
@@ -810,7 +802,7 @@ though this means it goes against component principles like dependency on interf
 
 \subsection{Debian Packages}
 Debian is a GNU/Linux based operating system provided by the Debian Project \citep{Barth2005}.
-This operating system most prominent feature is that it is composed of packages, a unit of deployment with explicit relationships.
+This operating system most prominent feature is that it is composed of packages, a unit of deployment with explicit constraints.
 
 Each package is defined using a control file, an examples presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
 
@@ -850,7 +842,7 @@ The semantics of these control files is further described in the chapter \ref{ub
 One aspect that differentiates the Debian package model from the many other models, is that it does not specify the rules of composition between components.
 That is, there is no formal specification of the semantics of the communication and relationships between packages.
 For instance, OSGi bundles exist in a very constrained environment that manages their interactions, depending on another bundle has run-time implications.
-For Debian, the dependence has no prescribed run-time effects, only whether the package is functional or not.
+For Debian, the dependence of one package on another has no prescribed run-time effects, other than the assumption that without satisfying the dependence the package will not be functional.
 The way in which a package, uses or communicates with a depended upon package is then defined between the packages and not in the component model.
 
 \subsubsection{Debian Evolution}
@@ -912,7 +904,7 @@ An example definition of a frame is given in figure \ref{SOFAmetadata}.
 \end{figure}
 
 This meta-data describes two components, a text editor and a spell checker, using the tag \texttt{frame}.
-The sub elements \texttt{requires} and \texttt{provides} describes their relationship through an externally defined interface with the name-space \texttt{sofatype://nz.geek.spellChecker}.
+The sub elements \texttt{requires} and \texttt{provides} describes the component constraints through an externally defined interface with the name-space \texttt{sofatype://nz.geek.spellChecker}.
 This interface is defined using an Architecture Definition Language (ADL) and added to a repository to be re-used. 
 
 
@@ -992,16 +984,16 @@ In the study the solver first minimised the amount of packages removed from the 
 Further discussion of these criteria and how they are combined is discussed in chapter \ref{strategies}. 
 
 \subsection{Comparison}
-Each of these component models provide an explicit description of their components relationships, and a mechanism to alter a component systems composition.
-These relationships fall into three groups:
+Each of these component models provide an explicit description of their components constraints, and a mechanism to alter a component systems composition.
+These constraints fall into two groups:
 \begin{enumerate}
   \item dependencies, where one component requires what another component or what it provides.
   \item conflicts, where one component conflicts with another component or what it provides. 
 \end{enumerate} 
 
-Typically these relationships are between pre-defined types in the component model, e.g. a service or a package.
-OBR, Maven, and SOFA allowed the definition of the dependencies type, typically as a string.
-This allowed these component models to have multiple types of dependencies and express them in their meta-data. 
+Typically these constraints are between pre-defined types in the component model, e.g. a service or a package.
+OBR, Maven, and SOFA allowed the definition of a type of dependency 
+that allowed them to express additional information about constraints. 
 
 The representation of the relationships between components in meta data is defined in many different files, though the only two formats are either XML of a set of key/value pairs.
 
@@ -1021,14 +1013,14 @@ Debian					& Package			& Virtual-Package 			& Provide/Depends\\
 SOFA 2.0				& Frame				& \textit{typed} 			& Provide/Require\\
 CUDF					& Package			& Package 					& Provides/Depends\\\hline
 \end{tabular}
-\caption{Summary of presented component models' relationships. Note: \textit{typed} refers the ability to type a requirement.}
+\caption{Summary of presented component models' constraints. Note: \textit{typed} refers the ability to type a requirement.}
 \label{background.comparisonrel}
 \end{table}
 
 
 \begin{table}
 \begin{tabular}{|l || c | c | c | }
-\hline \textbf{Component Model}& \textbf{Relationship Description File} & \textbf{Format}	\\\hline
+\hline \textbf{Component Model}& \textbf{Constraint Description File} & \textbf{Format}	\\\hline
 
 OSGi					& Meta-Data				& Key/Value pairs 					\\
 Declarative Services	& Component Description	& XML 								\\
@@ -1040,7 +1032,7 @@ Debian					& control				& Key/Value pairs							\\
 SOFA 2.0				& ADL					& XML 							\\
 CUDF					& CUDF					& Key/Value pairs									\\\hline
 \end{tabular}
-\caption{Summary of presented component models' relationship description formats}
+\caption{Summary of presented component models' constraints description formats}
 \label{background.comparisonmeta}
 \end{table}
 
