@@ -3,13 +3,15 @@
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
 The previous chapter presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
-Each step evolves the component system by satisfying a user request and system constraints with a new component system that is optimal with respect to some criteria.
-Calculating the resulting systems of these evolution steps is described as \textbf{resolving} a \modelname instance.
-Resolving a \modelname instance can require a significant effort due to the nature of the problem (as discussed in the previous chapter).
+Each evolution step alters the component system to satisfy a user's request to change it.
+Calculating all the alterations that occur during evolution is described as \textbf{resolving} a \modelname instance.
 
-This chapter turns its attention a way of resolving a \modelname instance by mapping each of its evolution steps to, then solving, a \modelimpl problem.
-\modelimpl uses lexicographically ordered pseudo-Boolean criteria 
-to find an optimal solution to a Boolean satisfiability (SAT) problem extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
+Resolving a \modelname instance can require significant computational effort due to the complexity of the problem.
+Therefore, an efficient problem representation and algorithm are required.
+To resolve a \modelname instance each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \cite{marque2011blex}.
+\modelimpl is an optimisation problem
+where the variables are Boolean, the constraints are a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating},
+and optimisation criteria are lexicographic and defined with PB functions.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
 
 \begin{figure}[htp]
@@ -38,12 +40,14 @@ FMI -> \modelnamewx [ label = "instantiates"];
 \end{center}
 \end{figure}
 
-The algorithm employed to solve \modelimpl problems is the novel lexicographic-iterative-strengthening algorithm.
-This algorithm uses the iterative strengthening \citep{calistri1994iterative, le2010sat4j} and Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithms.
+The algorithm employed to solve \modelimpl problems is the lexicographic-iterative-strengthening (LIS) algorithm.
+This algorithm uses the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithm to find solutions to SAT+PB problems,
+and the iterative strengthening \citep{calistri1994iterative, le2010sat4j} algorithm to optimise finding a solution.
+This algorithm is similar to the ``iterative pseudo-Boolean solving'' algorithm presented by \cite{marque2011blex}.
 
-To create an instance of \modelname to be resolved, some criteria must be defined. 
-Some selected criteria are presented and defined, and their mapping from MOF criteria names, to \modelname criteria, and to PB criteria is presented. 
-
+Some criteria used by the LIS algorithm to resolve \modelname instance are also presented in this chapter. 
+These criteria are given MOF strings, and mapped to \modelname criteria.
+ 
 This chapter also describes the implementation GJSolver.
 GJSolver takes a CUDF* document parses it into a \modelname instance (as described in appendix \ref{apx.cudf}),
 and resolves it by following the process described further in this chapter.
@@ -87,8 +91,8 @@ A SAT problem in CNF is defined as:
 \begin{enumerate}
     \item Let $V$ be a set of variables
     \item A \textbf{literal} is a variable $v$ or its negation $\neg v$.
-    \item A literal $\neg \neg v \equiv v$
-    \item Given a set of literals $P$, $\neg P \equiv \{\neg v \mid v \in P\}$
+    \item Given a set of literals $P$, $\neg P := \{\neg v \mid v \in P\}$
+    \item A literal $\neg \neg v := v$
     \item A \textbf{clause} is a set of literals 
     \item A \textbf{formula} is a set of clauses \label{impl.whatisaformula}
     \item A \textbf{SAT problem} is a set of variables $V$ and a formula $F$
@@ -436,7 +440,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \section{Solving a \modelimpl problem}
 \label{impl.algorithms}
 Above a description is given how to map and instance of \modelname to \modelimpl problems.
-This section describes the novel lexicographic iterative strengthening algorithms to solve \modelimpl problems.
+This section describes the lexicographic iterative strengthening algorithms to solve \modelimpl problems.
 This algorithm uses the DPLL algorithm \citep{Davis1960, davis1962machine} to find a solution to a SAT+PB formula,
 and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find an optimal solution to a SAT+PB problem given a  single PB criterion.
 This section also describes how a \modelname instance is resolved by mapping to \modelimpl problems.
@@ -524,61 +528,19 @@ This literal is the point which the algorithm branches.
 The order in which the \verb+decide+ function selects literals to branch on is also known as the literal order.
 This order greatly impacts the efficiency of DPLL, as selecting literals that are in a solution (if one exists) would quickly return the result.
 
-\subsection{DPLL Advancements}
+\subsubsection{DPLL Advancements}
 Though the DPLL algorithm is the basis of many modern SAT solvers, the actual implementations have been altered to increase efficiency.
-Some changes, including the use of conflict learning, backjumping, and watched literals, are briefly described here.
-This section is aimed at giving a broad overview of techniques used in current solvers.
-
-\subsubsection{Conflict Learning and Backjumping}
-Conflict learning \citep{stallman1976} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
-This is accomplished by remembering what clauses, also known as reasons, caused literals to be added to the partial assignment through unit-propagation. 
-This process works by identifying a variable both inferred to be true and false,
-then creating a new clause, known as the learnt clause, which stops that inconsistency being reached again.
-This learnt clause is derived by disjoining the two reason clauses after removing both the references to the inconsistent variable.
-This process is shown in figure \ref{impl.clauselearning}. 
-
-\begin{figure}[htp]
-\begin{center}
-$\begin{array}{c}
-\{a_1,\ldots,a_k, l\} \\
- \{b_1,\ldots,b_m,\neg l\}\\
-\hline
-\{a_1,\ldots,a_k, b_1,\ldots,b_m \}
-\end{array}$
-  \caption{Clause Learning. Where $\{a_1,\ldots,a_k, l\}$ is the reason for $l$, and $\{b_1,\ldots,b_m,\neg l\}$ is the reason for $\neg l$
-   are used to create the learnt clause $\{a_1,\ldots,a_k, b_1,\ldots,b_m \}$.}
-  \label{impl.clauselearning}
-\end{center}
-\end{figure}
-
-For example, if the reason for the inferred literal $a$ is clause $\{a, b\}$, and the reason for $\neg a$ is clause $\{\neg a, c\}$,
-then the learnt clause derived is $\{b,c\}$, and added to the formula.
-
-Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack when a conflict is found.
+\begin{itemize}
+  \item Conflict learning \citep{stallman1976,sorensson2009} is a technique to cache previously tried sets of assignments in order to stop re-solving the same sub-problems.
+	\item Backjumping \citep{Gaschnig1979} is the technique which determines how far to up the search tree to backtrack when a conflict is found.
 The higher up the tree the technique ``jumps'' to, the greater reduction of the search space.
-The level at which the algorithm backjumps is typically the point at which the learnt clause becomes unit. 
-
-More advanced methods of conflict learning occur by minimising the size of the learnt clauses, as presented in \citep{sorensson2009}.
-This research describes search methods that use other reason clauses to find smaller, more succinct learnt clauses.
-The smaller the clause, the more of the search tree is pruned and the more levels are backjumped through the search.
-
-\subsubsection{Watched Literals}
-As noted by studies into the efficiency of DPLL-based SAT solvers \citep{dixon2004automating}, unit propagation is where the bulk of the computation in DPLL occurs.
-Attempts to increase the efficiency of this task was initially to find better heuristics \citep{JamesMCrawford1996} for the literal order, to encourage cascades of unit propagation.
-These attempts were shown to work well on random SAT problems but be less efficient for large structured problems \citep{dixon2004automating}.
-
-It was noted that within unit propagation most of the time was spent on identifying the unit clauses.
-The naive approach to unit propagation is to examine every clause, and then every literal in the clause to find if it is unit or not.
-A more efficient approach was proposed using watched literals \citep{Madigan2001}, where instead of examining each clause, 
-the clauses maintain an index of all necessary literals and notify the algorithm when they become unit.
-This ``don't call us, we will call you'' concept makes the efficiency of the unit propagation function less dependent on the amount of clauses in the formula.
-
-Advances on watched literals have occurred through algorithms to maintain the index of literals, like that presented in \citep{Moskewicz2001}.
-Such algorithms enable larger formulae to be solved without necessarily increasing the time to solve them.
+\item  More efficient unit-propagation through watched literals \citep{Madigan2001,Moskewicz2001}.
+\end{itemize}
+These advancements make current SAT solvers very efficient.
 
 \subsection{Iterative Strengthening}
 The iterative strengthening algorithm  \citep{calistri1994iterative, le2010sat4j} 
-is an anytime algorithm using constraint satisfaction to iteratively find better solutions to a SAT+PB formula w.r.t. a PB criteria.
+is an anytime algorithm using constraint satisfaction to iteratively find better solutions to a SAT+PB formula w.r.t. a PB criterion.
 This algorithm can be used to find optimal solutions to an evolution problem, given a pseudo-Boolean criterion.
 This is done by first finding a solution, then iteratively adding constraints (created using the criterion) to ensure the next solution found will be better than the previous solution.
 This is the strengthening process.

@@ -97,7 +97,6 @@ The contributions from this research are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
   \item The \textbf{CUDF* syntax} that defines documents that describe the evolution of a component system.
-  \item The novel \textbf{lexicographic iterative strengthening algorithm} is used to calculate the changes made to component systems.
   \item \textbf{GJSolver} is an implementation that is used to simulate the evolution of a component system.
   \item A \textbf{conceptual model} of CSE based on the results of a user survey. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
@@ -114,10 +113,11 @@ This chapter also attempts to give a suitable definition of what a software comp
 Chapter \ref{formal} describes the \modelname model, and the CUDF* syntax.
 The process of parsing a CUDF* document to create a \modelname instance is given, where the full description is in appendix \ref{apx.cudf}.
 
-Chapter \ref{implementation} describes the resolving of a \modelname instance through mapping each evolution step to a \modelimpl problem.
+Chapter \ref{implementation} describes the resolving of a \modelname instance through mapping each evolution step to a Boolean Lexicographic Optimization (\modelimpl) problem.
 First the \modelimpl problem is defined, then a mapping from an evolution step in a \modelname instance to a \modelimpl problem is described.
-The lexicographic iterative strengthening algorithm to solve \modelimpl problems is then presented, and the use of this algorithm to resolve a \modelname instance is described.
-Finally, this chapter describes the GJSolver implementation and its verification.
+The lexicographic iterative strengthening algorithm to solve \modelimpl problems is then presented.
+The use of this algorithm to resolve a \modelname instance is then described.
+Finally, this chapter describes the GJSolver implementation that is used to resolve \modelname instances.
 
 Chapter \ref{simulation} describes the development of the CSE simulation.
 First the methodology used to create the simulation is described.
