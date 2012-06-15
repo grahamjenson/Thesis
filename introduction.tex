@@ -20,15 +20,15 @@ This research asks questions about CSE to find out how component systems change,
 \section{Objective}
 %%%What do I want to find out?
 The primary objective of this research is to study the process of component system evolution to better understand its behavior.
-The specific behaviours of CSE that are focused on is the amount of change made to systems, and how up-to-date the systems are during evolution.
+The specific behaviours of CSE that are focused on is the amount of change made to systems, and how out of to date the systems are during evolution.
 Through understanding the behaviour of CSE this research can inform users of the consequences of their choices when altering their component systems.
-Additionally, this understanding can be used to recommend adjustments to how component systems are currently changed in order to achieve better outcomes. 
+Additionally, this understanding can be used to recommend adjustments to how component systems are currently changed in order to achieve better outcomes for users. 
 
 \section{Motivation}
 %%%Why research this?
 An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}. 
 Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf  accessed 29/5/2012}.
-Ubuntu and Eclipse systems are constructed from components called packages and bundles respectively, 
+Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
 and can be changed by adding or removing components to and from their systems.
 By repeatedly changing an Eclipse or Ubuntu system, it is evolved through the CSE process.
 By finding the behaviour of CSE this research could potentially impact millions of users and their systems.
@@ -100,30 +100,46 @@ The contributions from this research are:
   \item \textbf{GJSolver} is an implementation that is used to simulate the evolution of a component system.
   \item A \textbf{conceptual model} of CSE based on the results of a user survey. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
-  \item The results and analysis from simulations of the evolution Ubuntu systems.
+  \item The results, analysis and conclusions from simulations of the evolution Ubuntu systems.
 \end{enumerate}
 
 \section{Thesis Overview}
 This thesis presents it's contributions in the above order.
 
-Chapter \ref{background} introduces the background of software evolution and component based systems.
+Chapter \ref{background} introduces the backgrounds of software evolution and component based systems that leads to a discussion about CSE.
 This background is presented to illustrate the context in which this research occurs.
-This chapter also attempts to give a suitable definition of what a software component is, and then examine different component models that fit such a definition.
+This chapter also attempts to give a suitable definition of what a software component with respect to CSE.
+Finally, various component models are examined and the evolution of their systems described.
 
-Chapter \ref{formal} describes the \modelname model, and the CUDF* syntax.
-The process of parsing a CUDF* document to create a \modelname instance is given, where the full description is in appendix \ref{apx.cudf}.
+Chapter \ref{formal} presents the \modelname model and the CUDF* syntax used to describe the CSE process.
+A \modelname instance describes the evolution of a component system as a series of user requested changes made to the system.
+A CUDF* document is used to serialise a \modelname instance.
 
-Chapter \ref{implementation} describes the resolving of a \modelname instance through mapping each evolution step to a Boolean Lexicographic Optimization (\modelimpl) problem.
-First the \modelimpl problem is defined, then a mapping from an evolution step in a \modelname instance to a \modelimpl problem is described.
-The lexicographic iterative strengthening algorithm to solve \modelimpl problems is then presented.
-The use of this algorithm to resolve a \modelname instance is then described.
-Finally, this chapter describes the GJSolver implementation that is used to resolve \modelname instances.
+Chapter \ref{implementation} describes the process of taking a \modelname instance and calculating the resulting systems.
+This process is called resolving a \modelname instance.
+Resolving a \modelname instance may require significant computational effort,
+therefore the algorithms and implementation used are an important aspect of research.
+Resolving is accomplished by mapping a \modelname instance to a series of Boolean Lexicographic Optimization (\modelimpl) problems \cite{marque2011blex}.
+Each \modelimpl problem optimises a set of Boolean variables subject to constraints, where the criteria optimised is lexicographic.
+To solve the \modelimpl problems the lexicographic iterative strengthening algorithm is used.
+Finally, this chapter describes the implementation and verification of GJSolver that is used to resolve \modelname instances.
 
 Chapter \ref{simulation} describes the development of the CSE simulation.
-First the methodology used to create the simulation is described.
-The user survey is then discussed (for full results see appendix \ref{apx.survey}) and used to create a conceptual model.
-This model is used to create CUDF* documents that describe evolutions of component systems. 
+The core artifact of the simulation is the conceptual model. 
+This model restricts the previous models to the reality of how an Ubuntu system evolves.
+For example, a \modelname instance could describe a situation where a user installs the same component every second of every day;
+this is not a realistic way the user would change the system.
+To create the conceptual model a user survey was conducted, and the results were used to define variables and ranges that represent the reality of CSE.
+Some variables that are described in the conceptual mode are ``the probability the user update the system per day'' and ``the probability a user installs a certain package''.
+An instance of a the conceptual model is called a simulation configuration.
+Each configuration can be used to simulate the evolution of a component system by creating and resolving one or many \modelname instances.
 
-Chapter \ref{ubunutsimulation} discusses the simulation of the  the Debian component model \citep{Barth2005} with Ubuntu  components. 
+Chapter \ref{ubunutsimulation} describes the simulations conducted of Ubuntu systems evolving.
+These simulations are used to explore how different users affect their component systems during CSE.
+Each simulation looks at an Ubuntu system evolving between April 2009 to April 2010.
+The different effects that the linear variables in the conceptual model have on CSE are explored by altering their values and measuring the results.
+This includes the variables that control the frequency of a user updating and the frequency a user installs a component. 
+Additionally some novel ideas for altering the change of Ubuntu are proposed and simulated to measure their effects.
+Finally, by creating conceptual model configurations from users submitted logs of system change, ``real'' users can be simulated.
 
 This thesis concludes in chapter (\ref{conclusion}) with a discussion of the contributions of this research, related work, and potential future research.

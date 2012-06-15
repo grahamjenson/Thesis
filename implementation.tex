@@ -4,14 +4,17 @@
 {\textit{Richard Feynman, 1988}}
 The previous chapter presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
 Each evolution step alters the component system to satisfy a user's request to change it.
-Calculating all the alterations that occur during evolution is described as \textbf{resolving} a \modelname instance.
+Calculating all the component systems that occur because of these request is described as \textbf{resolving} a \modelname instance.
 
-Resolving a \modelname instance can require significant computational effort due to the complexity of the problem.
+Resolving a \modelname instance can require significant computational effort due to the complexity of satisfying each request.
 Therefore, an efficient problem representation and algorithm are required.
 To resolve a \modelname instance each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \cite{marque2011blex}.
-\modelimpl is an optimisation problem
-where the variables are Boolean, the constraints are a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating},
-and optimisation criteria are lexicographic and defined with PB functions.
+\modelimpl problems consists of finding an optimal assignment to Boolean variables,
+where assignments must satisfy a set of clauses and linear inequalities,
+and the optimisation criteria are lexicographic.
+The clauses and linear inequalities are defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating},
+and the criteria are defined to either maximise or minimise PB functions.
+
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
 
 \begin{figure}[htp]
