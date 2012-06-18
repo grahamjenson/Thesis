@@ -1,18 +1,19 @@
-\chapter{Simulation Configuration}
+\chapter{Conceptual Model}
 \label{simulation}
 \epigraph{A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. 
 A simulation is the implementation of a model over time. 
 A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
-In the previous chapters the model \modelname was defined to represent CSE.
-However, \modelname can be used to describe improbable evolutions of component systems, 
+In the previous chapter the \modelname model was defined to represent CSE.
+A \modelname instance can be used to describe improbable CSE situations, 
 e.g. a user requesting to install the same component, every second for a century.
 As goal of this research is to \textit{realistically} simulate the evolution of component systems, 
 a model must be developed that links \modelname to the reality of CSE.
 This chapter presents the \textbf{conceptual model} of CSE.
-This model was developed by studying the results of a survey, that was conducted on a set of users, about how they change their component systems.
-An instance of this model (called a \textbf{configuration}) is used to create a CUDF* document that realistically describes the evolution of a component system.
+This model was developed using the results of a survey that was conducted on a set of users to determine how they change their component systems.
+An instance of this model (called a \textbf{configuration}) contains all the necessary variables to simulate CSE.
+These variables are used to create a CUDF* document that realistically describes the evolution of a component system.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
 \begin{figure}[htp]
@@ -30,141 +31,32 @@ CMI -> CMS [ label="instantiates"];
 ConMI -> ConM [ label="instantiates"];
 ConMI -> CMI [ label="creates"];
 }
-  \caption[labelInTOC]{figureCaption}
+  \caption{Diagram of the Conceptual models relationships}
   \label{sim.modeldiagram}
 \end{center}
 \end{figure}
 
-This chapter first describes the methodology outlined by \cite{Law2005} that was used to create and validate the conceptual model and simulation.
-A user survey is then presented, and the results are discussed.
-Conceptual model is described, and how this can be used to create realistic component system evolutions as CUDF* documents.
-The creation of a configuration of the simulation for the simulation of the evolution of Ubuntu systems is described.
-Finally, a discussion about the validation of the simulation is presented.
-
-
-\section{Methodology}
-%%%We use the methodology from `` Build a Valid and Credible Simulation''
-The core hurdle in creating a simulation is validating the returned results are similar to reality.
-To create a valid and credible simulation the methodology that \citep{Law2005} outlines is followed.
-This methodology is a guideline for defining the study, collecting information, creating and validating models, and running the simulation.
-In this section the methodology is described and aligned to this research's objectives. 
-
-\subsection{Validation and Credibility}
-%%%Why do we use this methodology and how is it relevant?
-This methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
-That is even if validation was attempted, it may only occurred if there was money and time left at the end of the project.
-However, such simulations, that are not validated, can produce erroneous information that leads to bad, possibly costly decisions being made.
-This reduces the credibility of the simulation to be used in future as a tool.
-
-A simulation is an abstraction and simplification of reality, often created as using an actual system can be disruptive, not cost-effective, or simply impossible.
-In this context,
-
-\begin{quotation}
-``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.'' \citep{Law2005}
-\end{quotation}
-
-The latter part is an important aspect of validation, as the accuracy of the simulation is directly dependent on the problem and questions the study addresses.
-Therefore, the definition of the problem will directly lead to the modelling and scope of the simulation.
-
-%%%What is credible
-A simulation, and by extension its results, have \textit{credibility} if key stakeholders accept them as ``correct''.
-A credible model is not necessarily valid, and vice-versa, as it involves the input of a person who decides if the goals of the simulation have been obtained.
-Credibility of a simulation is then only attainable if the key personale from the project understand and are involved directly with the project.
-
-The simulation produced by this study to identify the effect of different strategies on the evolution of component systems must be validated to produce meaningful results,
-and must be credible for these results to be trusted.
-
-\subsection{Seven Step Method}
-The methodology presented in \citep{Law2005} has a seven step approach to creating a valid and credible simulation.
-These steps are; formulating the problem; collecting information and data to construct a conceptual model; validating the conceptual model;
-implementing (programming) the model; validating the programmed model; designing, conducting and analysing experiments; and documenting and presenting the simulation results.
-
-\subsubsection{Step 1: Formulate the problem}
-The first step is to formulate the problem as clearly as possible, this is usually done with core stakeholders in a ``kick-off meeting''.
-The core artifacts from this step are the overall objectives of the study, specific questions wanting to be answered, scope of the study,
- and different configurations of the simulation with the measures used to evaluate their performance. 
-
-\subsubsection{Step 2: Collect information and data to construct conceptual model}
-The conceptual model is a description of how the simulation and system work relative to the problems earlier defined.
-It is the most important artifact of the simulation.
-It should be high level enough to be understood by the core stakeholders but detailed enough to be reused in future simulations.
-It is created through interviews with subject matter experts and collecting relevant data like results from similar exiting systems.
-Problems like the data not being representative of the model, not being in the appropriate format or type, and containing errors must be handled before use.
-
-The conceptual model also contains all of the variables that can be configured including their documented assumptions. 
-It is defined to the level of detail with respect to project objectives, performance measures, data availability, computer constraints, and resource constraints.
-
-\subsubsection{Step 3: Conceptual model validation}
-The conceptual model is the most important aspect of the simulation, thus its validation must be thorough.
-The core method used to validate this model, is to discuss it with core-stakeholders and subject matter experts.
-This provides feedback as to the direction of the conceptual model, ensuring that it will answer the questions posed in the study.
-
-\subsubsection{Step 4: Implement the conceptual model}
-The implementation of the conceptual model must also be executed and documented in a way that allows others to replicate and repeat the process.
-The artifacts created during this process must be verified to work correctly, this can be accomplished through test-cases and debugging \citep{Pressman1992}.
-
-\subsubsection{Step 5: Validate implementation}
-There is no completely definitive approach to validating the simulation,
-however, the most definitive test of a simulations validity is established by closely looking at the outputted results compared to that from an actual system \citep{Law2005}.
-
-This is done through:
-\begin{itemize}
-  \item \textbf{Results validation: } a comparable system is used to create results and compared with the results from the simulation for validation.
-  \item \textbf{Face Validation: } experts are given output of the simulation model and checked to see if it is consistent with how they perceive the system should operate.
-\end{itemize}
-
-Further validation of the implementation can be accomplished with sensitivity analysis,
-which is performed on the simulation to find the factors with the greatest impact on the performance and results.
-
-\subsubsection{Step 6: Design, conduct and analyse experiments}
-For each of the experiments that are run, the time and number of independent runs must be defined.
-If the results are inconclusive, or other aspects of interest have arisen, it may be necessary to run additional experiments.
-
-\subsubsection{Step 7: Document and present results}
-This step involves the presentation of the conceptual model, simulation, and results to the core-stakeholders.
-This presentation is critical for the future re-use of the model, as it should promote credibility through describing the validation process.
-
-\subsection{Differences in methodology}
-A core goal of creating this simulation study is to produce valid and credible results.
-However, this specific methodology has been created for large scale industrial projects with substantial resources.
-As this study is smaller in scale and resources some of the procedures recommended in this methodology have been restricted and some removed.
-
-The most significant difference between this study and the described methodology is the clear definition between decision-maker and simulation designer.
-In larger projects a simulation designer is contracted by a decision-maker who has a problem to solve or question to answer.
-In this project both these people are the same person, therefore meetings between them are not required.
-
-Other people in the project including subject-matter experts, core-stakeholders, simulation analysts consist of survey participants and project supervisors.
-This is because the limits of the projects resources excludes the employment of experts for validation.
-This may reduce the validity of the end model, but these restrictions have been made only when necessary,
-and done so in a manner that attempts to minimise negative effects.
-
+This chapter first describes the user survey that explores how component systems are changed by their users.
+The conceptual model is then presented, by describing the different variables and how a configuration is used to create a CUDF* document.
+The resources where data was collected from, and the processes to convert it to a format usable by the conceptual model are then described.
+Finally, a discussion about the validation of the conceptual model is presented.
 
 \section{User Survey}
 \label{strat.usersurvey}
 To explore the users' role in CSE and to construct a conceptual model, a survey was given to users.
-The previous chapters have left the role a user plays in the evolution of their component system unexplored.
-This section describes the motivations and strategies for users to evolve their component systems.
-
-A strategy is the plan or pattern employed by a user to evolve a system.
-A fundamental influence on the user's strategy is their perception of risk.
-Each change to the system the user requests, and the criteria used to accomplish this change is effected by the risk of that change.
-For example, upgrading a system may introduce new bugs and problems, yet not upgrading may let old vulnerabilities compromise the system.
-
-%%%The survey used to validate and refine the model
 This survey targeted users of GNU/Linux distributions (specifically Ubuntu), and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
-In this context the way in which component systems are evolved is through package managers, as described in chapter \ref{background}.
-It was completed by 59 users, who answered questions about themselves, the system they are evolving, and the way in which they evolve it.
-It also optionally involved the submission of package manager log files, which through analysis can provide greater detail of user behaviours.
-These logs are not analysed here, but are used further discussed in chapter \ref{ubunutsimulation}.
+It was completed by 59 users, who answered questions about themselves, their systems, also how and why they change their component systems.
+In this context the way in which component systems are changed is through interaction with package manager applications, 
+so the questions primarily about this interaction.
 
-In this section a brief description of the survey and an analysis of responses is given.
-The full set of questions in the survey is presented in section \ref{apx.survey}. 
+In this section a brief description of the survey and an analysis of responses are given.
+The results from this survey are used to describe and categorise the motivations and behaviours of users when changing their component systems.
+The full set of questions in the survey is presented in appendix \ref{apx.survey}. 
 
 \subsection{Questions}
 %%%The goals of the survey:
-There are two types of questions in the survey; a set to identify the type of user, and a set to describe their interactions with package managers.
-
-A set of questions used to identify the user are:
+There are two types of questions in the survey; questions to identify the type of user, and questions to describe their interactions with package managers.
+The set of questions used to identify the user are:
 \begin{itemize}
   \item How experienced with package managers are you? 
   \item What system are you using?
@@ -173,41 +65,39 @@ A set of questions used to identify the user are:
 These can be used to categorise the type of user and put into context the answers that they give.
 They can also be used to weigh their answers for credibility and potentially exclude results from novice or inexperienced users. 
 
-A set of questions asked about their use of package mangers are:
+The set of questions asked about their use of package mangers are:
 \begin{itemize}
-  \item Describe your initial interaction with the package manager.
-  \item Describe your day to day interactions with the package manager.
-  \item What usage life cycle do you have with the package manager?
-  \item Describe an unusual scenario in which the package manager was used.
+  \item After you install a new system, what are your first interactions with the package manager?
+  \item Describe your day to day interactions with the package manager?
+  \item At what frequency are your typical interactions with the package manager?
+  \item Describe an unusual scenario in which the package manager was used?
 \end{itemize}
-The main focus of these questions is to identify the life-cycle of interactions that the user has when evolving a system.
-The responses will provide reasons for these actions to occur, and illuminates the users objectives and strategies.
+The main focus of these questions is to identify the life-cycle of interactions that the user has with the package manager.
+The responses will provide reasons for these actions to occur, and illuminates the users motivations to change the system.
 
 The survey finished with the question:
 \begin{itemize}
-  \item What other questions should I have asked?
+  \item What other questions should have been asked?
 \end{itemize}
-This question tried to illicit comments and possible information that could of been gathered.
-It also provided a minor verification of the survey, as to see if anything was missing that should of been asked.
+This question tried to illicit comments and possible information that could have been gathered.
+It also provided a validation that the survey was complete, i.e. it could be used to see if any other questions should have been asked.
 
 \subsection{Results}
 %%%The results are summarised as:
-The type of user that submitted the survey is important to be able to put in context their replies.
-Most users (29/59) used the dpkg component model, either in Debian or Ubuntu systems.
+The type of user to complete the survey will put in context the remaining results.
+Most users (29/59) used Debian based operating systems, e.g. Ubuntu.
 The majority of these users used apt-get as their package manager.
-The next largest component model used was ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012} (13/59),
-all using the package manager pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012}.
-Other represented component models and package mangers include, Fedora with the rpm component model and the yum package manger,
-Slackware with pkgtools, and Gentoo with portage.
+13/59  users used ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012},
+and all these used pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012} as their package manager.
+Other systems and package managers represented in this survey include Fedora with the yum package manger,
+Slackware with the pkgtools package manager, and Gentoo with the portage package manager.
+The submitted users' mean experience was 3.9/5.
+This is a subjective measure, but it shows that he users answered these questions with a high confidence. 
 
-The users mean experience was recorded as 3.9/5.
-This is a subjective measure, but it describes the confidence in which the participants answered the questions. 
-
-The life cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
-
+The life-cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
 \begin{table}[htp]
 \begin{tabular}{l | c | c | c | c |}
-Request & Init. & Daily & Weekly & Monthly \\
+Request & First & Daily & Weekly & Monthly \\
 Upgrade  & 45 & 27 & 16 & 0 \\
 Install & 49 & 6 & 17 & 3 \\
 Remove & 6 & 4 & 1 & 0\\
@@ -216,24 +106,24 @@ Remove & 6 & 4 & 1 & 0\\
 \label{strat.tblaction}
 \end{table}
 
-This table shows the amount of users from the survey who perform the actions of upgrading their system, installing or removing a package 
-initially (when the system is first created), daily, weekly or monthly.
-It shows that the vast majority of users when they create a system upgrade the system and install required packages.
-This also shows that most users upgrade their system daily, and if they will likely install a package weekly.
+This table is a summary of the amount of users who perform the actions of upgrading their system, installing or removing a package 
+when the system is first created, daily, weekly or monthly.
+The vast majority of users when they create a system upgrade the system and install required packages.
+This also shows that most users upgrade their system daily, and many install packages weekly.
+An important result shows that users do not often remove packages, and if they do it is likely only when they install a new system.
 
-The unusual scenarios which the user described using the package manager included 
-11 of the 59 users stating that they had installed a set of packages to fulfil a specific task only to remove them almost immediately.
-This is described by the users response 
+The unusual scenarios which the users describe using the package manager included
+3 of the users describing the process of fixing a broken system through using the package manager. 
+The most common task answered was 11 of the 59 users stating that they had installed packages to accomplish a specific task, only to remove them soon after.
+This situation is summarised by a user: 
 \begin{quote}
 ``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
 \end{quote}
 
-Also, 3 of the users stated that the package manager broke their system at some point, which then required to be fixed through the package manager.
-
 In the final question asked if there is any more questions the general themes of responses include:
 \begin{itemize}
   \item the mitigation of failed actions
-  \item installing multiple versions of packages
+  \item installing multiple versions of packages (not allowed in Debian based systems)
   \item using a graphical user interface v.s. console based package manager
 \end{itemize} 
 The majority (37/59) users did not fill out this option in the survey, a potential indicator that the survey was complete.
@@ -243,108 +133,105 @@ One user even remarked to this question:
 \end{quote}
 
 \subsection{Progressive vs. Conservative Users}
-The main outcome of this survey was the identification of different user strategies towards evolving a component system.
-These strategies have been used to defined into two user stereotypes, \textbf{conservative} and \textbf{progressive}.
+The main outcome of this survey was the identification that a users behaviour when changing their system is in motivation to one of two types of risk:
+\begin{itemize}
+  \item the potential risk of changing the system and introducing new problems.
+  \item the potential risk of becoming out-of-date and having old problems persist.
+\end{itemize}
+The behaviours of these users can be described with two user stereotypes, \textbf{conservative} and \textbf{progressive}.
 These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society,
 where progressivism promotes change and reform.
-These strategies can be caused because of a conflicting perception of risk; the risk of change introducing new problems, and the risk of not changing having old problems persist.
 
-Most users in the survey are between these two strategies. 
-For example, a users response that express a slight conservative attitude:
+Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
 \begin{quotation}
 In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).
 \end{quotation}
-That is they are more likely not to change the system, even though it may be beneficial as it may lead to a fault. 
+That is they are more likely not to change the system, even though it may be beneficial as it may lead to a fault in their system. 
 
 Another example of a users response expressing a slight progressive attitude:
 \begin{quotation}
 I update my packages whenever I log in each day
 \end{quotation}
-Upgrading the system each day will ensure that no packages with fixed bugs will be installed, though may require significant change.
+Upgrading the system each day will ensure that packages do not become out-of-date, though this may require significant change.
 
-Both of these strategies have extremes though, where users who try to eliminate all of a risk.
-
-For example, a user's response in the survey with an extreme progressive attitude:
+Both of these stereotypes have extremes though, where users try to eliminate all of a risk.
+For example, a user responded in the survey with an extreme progressive attitude:
 \begin{quotation}
 I do run an unstable system all the time, I help mitigate this with some redundancy in my most frequently used components, 
 using packages which perform the same function, but have different dependencies, since it's less likely to have multiple packages break at the same time. 
 If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.
 \end{quotation}
-This user has components in their system that are so new as to not be fully tested, which are described as unstable packages.
-To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system to ensure that it can be used.
-This users system will almost certainly be completely up to date, as any new component versions will be immediately integrated into their system.
+This user has new components in their system that are not fully tested, which are described as unstable packages.
+To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system to ensure that problems will not be too severe.
+This users system will never be out-of-date, but will be changed frequently.
 
-An example of an extremely conservative user's response when asked about the frequency with which they interact with the package manager:
+An example of user's extremely conservative response when asked about the frequency with which they interact with the package manager:
 \begin{quotation}
 As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
 Following the configuration and construction, only the occasional upgrade is necessary. 
 Unless, of course, I receive a security notice about something.
 \end{quotation}
-So after the setting up of a system, this user will not evolve the system unless there is a direct security risk.
-This lack of change will result in the system quickly becoming out of date.
+So after the setting up of a system, this user will not change their system, unless there is a direct security risk.
+This lack of change will result in this user's system quickly becoming out of date, though it will almost never be changed.
 
-%%%The reasons for keeping a system up-to-date; the fixing of bugs security, the adding of functionality, 
-The reasons for these progressive attitudes of users is that maintaining an up-to-date system will eliminate known security exploits against the system,
-and also introduce more efficient or new functionality into the system.
-%%%The reasons for minimal change; through change unknown bugs could be introduced, the act of changing can create bugs, the effort of changing can consume resources  (e.g. network traffic).
-Where the conservative attitudes come from the wither the perceived risk that unknown bugs could be introduced into the system, the act of changing a system can cause faults,
-or the consumed resources (e.g. time, network traffic) are to expensive compared to the benefits.
-
-Both concerns are valid assessments of the risk of component system evolution, the user must decide with respect to their system, what strategy to employ. 
-For example, a server administrator that is running a mission critical system will likely change the system begrudgingly as any fault could cause massive damage.
+The progressive behaviours of users will minimise the out-of-dateness of the system, but increase the necessary change.
+Where the conservative behaviours will let the system go out-of-date, to reduce the change to the system.
+The behaviour of a user will be with respect to the goals of their system.
+For example, a server administrator that is running a mission critical system will likely change the system begrudgingly as any fault could cause damage.
 However, a user running a desktop personal computer system may be more interested in new functionality, so would change more readily.
 
 \section{Conceptual Model}
-In this section the ``conceptual model'' of the component system evolution process is presented.
-The conceptual model is defined to represent \textbf{realistic} component system evolutions.
+In this section the conceptual model of CSE is presented.
+The conceptual model consists of a set of variables that describe the user's behaviour, 
+and a CUDF* document used as a template to create realistic evolution scenarios.
+This section describes the variables of the conceptual model, as extracted from the user survey.
+Additionally, it describes how an instance of this model is used to create CUDF* documents.
 
-This relation to reality is the core difference between the conceptual model and the \modelname model.
-For example, \modelname could describe a situation where a user may requests to upgrade their system every minute for a year.
-This situation is clearly unrealistic, and not able to be represented by the conceptual model.
+\subsection{Variables and Template}
+In the previous chapter CUDF* allowed the user to request different changes, such as 
+installing a component, removing a component, and upgrading all installed components.
+The results of user survey have shown that the request to remove a component is not often used, and is therefore not to be included in the conceptual model.
 
-In this section, the conceptual models of the user and components are described.
-How an instance of the conceptual model can be used to create a realistic component system evolution, represented by a CUDF* document, is also described.
+In the survey the typical time scale employed by the users to describe the changes they made to their systems was daily.
+Therefore, the variables used to describe user actions will be ``per day''. 
 
-\subsection{Conceptual User}
-The core aspect modeled by the conceptual user is when and what requests will made to change the system. 
-
-In CUDF* three different actions are defined that a user can request to alter their system; installing, removing or upgrading a component.
-However, as shown in the user survey presented in chapter \ref{strategies} the two main actions of users are the installation of a component, and the upgrading of the entire system.
-The daily level has been selected as the frequency of these actions, as this is a reasonable time period expressed often in the user survey. 
-
-%%%We have limited it to two actions, install and update, as they are the core actions a user executes
 The variables that make up the conceptual user are: 
 \begin{itemize}
   \item $u$ is the probability a user requests to update the system per day.
   \item $i$ is the probability a user requests to install per day.
-  \item $\mathbb{N}_p$ is a set of component names where for each name $n$, $n_p$ is the probability that a component with name $n$ will be requested to be installed.
-  The sum of all probabilities equals 1.
+  \item $IP$ is a set of component names with the probability that a component will be requested to be installed, i.e. $IP \subseteq \mathcal{N} \times \mathbb{R}$.
   \item $U$ is the MOF criteria used to select an optimal system for an update request.
   \item $I$ is the MOF criteria used to select an optimal system for an install request.
-  \item $d$ is the number of days requests are made.
+  \item $d$ is the number of days the simulation runs for.
 \end{itemize}
 
-To illustrate the use of this model, consider the example where:
-\begin{itemize}
-  \item $u =.2$
-  \item $i =.2$
-  \item $\mathbb{N}_p = \{n,m\}$ and  $n_p = .25$ and $m_p = .75$
-  \item $U = $ \texttt{-removed,-new,-uptodatedistance}
-  \item $I = $ \texttt{-removed,-changed,-uptodatedistance}
-  \item $d = 20$
-\end{itemize}
-The variables $u$ and $i$ equal $.2$, this means that on any day the user has a 20\% probability of requesting to upgrade and/or install a component.
-If a user requests to install a component, the component name $n$ has a 25\% probability of being selected, and the component name $m$ is 75\% likely. 
-When the system is selected to be upgraded, the most criteria used is $U$, whose most important criterion is to minimise the amount of removed components.
-The install criteria $I$ is similar to the update criteria, except that is minimises all change to the system.
-Finally $d$ describes how many days this user will potentially request for, which is $20$.
+The remaining element required to create CUDF* documents, is the initial system $\alpha_{t_0}$ for evolution, 
+and the sets of components that exist at the times between $t_0$ and $t_0$ plus $d$ days.
+Both these can be described in a single CUDF* document.
+This document is complete, except for that it contains no user requests.
 
-Using this model it can be expected that there will be $4$ requests to upgrade the system and $4$ requests to install a component.
-Component names  are selected to be installed without replacement, i.e. the same component name cannot be selected twice to be installed.
-Therefore, only $2$ requests to install can be made, and it is expected that name $m$ will be selected first.
+\begin{figure}[h]
+\begin{center}
+\begin{alltt}
+for day in 1 to \(d\):
+   if randomprob() \(< u\):
+       template.addline("request: " + (day + \(t\sb{0}\) + ", " + \(U\))
+       template.addline("update: *")  system request to CUDF* template at time day \(+ t_0\)
+   if randomprob() \(< i\)   
+
+\end{alltt}
+  \caption{Create CUDF* document to describe the evolution of a component system}
+  \label{sim.CUDF*}
+\end{center}
+\end{figure}
 
 
-\subsubsection{Discussion of Conceptual User}
+\subsection{CUDF* Document Creation}
+Given an instance of the conceptual model, CUDF* documents can be created that describe the evolution of a component system.
+These documents 
+
+
+\subsection{Conceptual Model Discussion}
 This section presents a brief discussion about the conceptual user compared to the users from the survey.
 
 The conceptual user does not model the initial requests made when the system is new, 
@@ -360,17 +247,31 @@ For the practicality of the simulation, and the simplicity of the presented mode
 
 \subsection{Conceptual Components Model}
 The only item that is necessary in the conceptual component model is 
-a partial CUDF* document that includes the preamble, and package stanzas that can be parsed to create the time $t_0$, the initial system $\alpha_{t_0}$ and the set of components $C_{t_0},\ldots,C_{t_n}$.
+a partial CUDF* document that includes the preamble, and package stanzas that can be parsed to create the time $t_0$, the initial system .
 This document is complete with the exception of the user requests that will be generated using the conceptual user model.
 
 
-\subsection{CUDF* Document Creation}
-The main goal of the conceptual model is to create realistic component system evolutions represented by CUDF* document.
-This section presents the process to generate a CUDF* document from an instance of the conceptual model. 
-A CUDF* document generated by this process can then be used to 
+\subsection{Example}
+To illustrate the use of the conceptual model, consider the example where:
+\begin{itemize}
+  \item $u = 0.2$
+  \item $i = 0.2$
+  \item $IP = \{$(\texttt{n}$, 0.25),($\texttt{m}$,0.75)\}$
+  \item $U = $ \texttt{-removed,-new}
+  \item $I = $ \texttt{-removed,-changed}
+  \item $d = 20$
+\end{itemize}
+The variables $u$ and $i$ equal $.2$, this means that on any day the user has a 20\% probability of requesting to upgrade and/or install a component.
+If a user requests to install a component, the component name $n$ has a 25\% probability of being selected, and the component name $m$ is 75\% likely. 
+When the system is selected to be upgraded, the most criteria used is $U$, whose most important criterion is to minimise the amount of removed components.
+The install criteria $I$ is similar to the update criteria, except that is minimises all change to the system.
+Finally $d$ describes how many days this user will potentially request for, which is $20$.
 
+Using this model it can be expected that there will be $4$ requests to upgrade the system and $4$ requests to install a component.
+Component names  are selected to be installed without replacement, i.e. the same component name cannot be selected twice to be installed.
+Therefore, only $2$ requests to install can be made, and it is expected that name $m$ will be selected first.
 
-\section{Simulation Validation}
+\section{Conceptual Model Validation}
 %%%Validation of this simulation, what needs to be validated/why it should be validated
 The conceptual model presented is a simplified abstraction of the reality in which users evolve component systems.
 It describes the variables that effect component system evolution as a configuration,
@@ -421,8 +322,9 @@ However, this is not a concern when validating the conceptual model, or the abst
 Further discussion of the validation of the assignment of the configuration variables is in chapter \ref{ubunutsimulation}.
 
 
-\section{Simulation Configuration}
-In order to implement the simulation, the assignment of the variables used to configure the simulation, must be defined.
+\section{Configuration Data Collection and Conversion}
+In order to assign variables to a conceptual model configuration, data from the Ubuntu domain must be collected and converted.
+The 
 These variables are broken into two groups; the context variables, which do not change over simulation executions; 
 and variables which are changed to answer specific questions.
 The implementation of the simulation processes are then described, with the necessary practical alterations made. 
@@ -601,196 +503,6 @@ The package ``build-essential'' which contains tools to build Debian packages, i
 This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 
-\subsection{Variables}
-How the configuration variables of the simulation is altered each time will help answer the necessary questions of this research.
-These variables include the criteria the resolver updates and installs packages with,
-the probability a users will update the system and the probability a user will install a package.
-These variables are selected as the focus of this study is on the strategy the user employs to evolve their system,
-and these are user and strategy dependent.
-
-%%%The criterias impact and how we assign it
-The criteria the resolver optimises for when updating the system or installing a new components will have a major impact on the system.
-Many current approaches have been discussed in chapter \ref{strategies}, these will be compared with extreme and novel criteria.
-
-%%%The update and instal
-The probability a user will update the system depends on the type of user they are.
-If they are a server administrator they may update infrequently, where a desktop user may update often.
-The two ways in which this value can be set is either a range between the extremes of updating every day or never updating.
-This is a form of sensitivity analysis, to see how this simulation performs under these conditions.
-The value could also be extracted from the user submitted logs from the survey (described in section \ref{strat.usersurvey}), to bootstrap real users values.
-
-%%%The probability of how many components a user selects to install
-The probability of how many components a user selects to install can be measured in two different dimensions, how many components per install, and how often they select to install.
-A user could install few to many packages, either infrequently or frequently.
-The minimum of these value is to never install any number of components, however there maximum is unbounded.
-This makes these variable difficult to assign a fake value, therefore the majority of assignments of this variable are from real user values extracted from the user submitted logs.
-
-\subsubsection{Extracting Information from the User Submitted Logs}
-These variables of update probability and user install distribution can be extracted from the user submitted logs from the survey.
-Initially, 31 logs where submitted, these logs were filtered to be APT logs, of more than 15 days long.
-This resulted in 19 logs of between 23 and 277 days long to be processed.
-
-An extract from one of these logs is shown in figure \ref{aptlog}.
-
-\begin{figure}[htp]
-\begin{center}
-\begin{alltt}
-\ldots
-Start-Date: 2010-12-21 11:32:28
-Install: libnet-daemon-perl (0.43-1), libhtml-template-perl (2.9-1), libdbi-perl (1.609-1build1), mysql-client-core-5.1 (5.1.41-3ubuntu12.8), libdbd-mysql-perl (4.012-1ubuntu1), mysql-server-5.1 (5.1.41-3ubuntu12.8), mysql-client-5.1 (5.1.41-3ubuntu12.8), libmysqlclient-dev (5.1.41-3ubuntu12.8), libplrpc-perl (0.2020-2), mysql-server-core-5.1 (5.1.41-3ubuntu12.8), mysql-server (5.1.41-3ubuntu12.8), libmysqlclient16-dev (5.1.41-3ubuntu12.8)
-Upgrade: mysql-common (5.1.41-3ubuntu12.6, 5.1.41-3ubuntu12.8), libmysqlclient16 (5.1.41-3ubuntu12.6, 5.1.41-3ubuntu12.8)
-End-Date: 2010-12-21 11:33:03
-\ldots
-\end{alltt}
-\caption[APT log extract]{An extract of an APT log file}
-\label{aptlog}
-\end{center}
-\end{figure}
-
-In this log file a set of packages where installed and a few upgraded on the date 2010-12-21 11:32:28. 
-
-These logs mainly describe the changes made to the system by APT, not necessarily what the user requested.
-This is because APT may be used through another application, like semantic, to install or update the system.
-As the criteria of APT is known, some information about the action the user requested can be inferred.
-
-Given APT will never install or remove a component if the system is updated; 
-if a package is upgraded but none are removed or installed then the user probably selected to update.
-Also, if a package is installed, then the user requested a single package to be installed.
-This second rule is assuming that only one package was selected, and not two at the same time.
-
-Using these rules, each log is processed, and the variables of update probability and install distribution are measured.
-These results are presented in table \ref{userlogvariables}.
-
-As can be seen the lowest update probability is 0.05 or updating once every 20 days, and the highest was .96 so updating nearly every day.
-The user who installs the least has a 95\% probability of installing nothing on a given day, where the most active user doesn't install anything on 32\% of days.
-
-Some users have a probabilities of installing large amounts of packages in a single day, e.g. user 13.
-This is due to some users have large amounts of activity installing, separated by low activity.
-
-The correlation of these values is not explored in this relationship, here though the user who updates the least also installs the least,
-and the user who updates the most, is the most likely to install one package on a given day.
-
-These values can be assigned to their configuration variables in order to represent typical users and to answer different questions.
-
-
-\subsubsection{Execute Simulation}
-The scripts to generate the CUDF problem and execute the simulation, described in the chapter \ref{simulation}, 
-are used to take a set of user interactions and criteria for update and install and simulate a solvers evolution.
-These process are implemented in the scripts based directly off of their described processes. 
-However, some practical changes were made in order to decrease the resources consumed when the scripts are executed and make the scripts easier to use.
-
-%%%Executing multiple users in a row
-As many different sets of user actions require to be generated, executing one set at a time is a tedious task.
-Using multiple user files to execute the run simulation algorithm in series increased the usability of the script.
-This is simply done by iterating over a set of user files inputting one at a time into the process. 
-
-%%%The addition of the timeout
-One additional input is required, the timeout variable which allows the system to stop the process of the resolver and return the best solution currently found.
-This timeout variable is simply an integer representing the number of seconds that the solver is allowed to run for.
-The resulting impact of the time out remains to be seen, having it is just to ensure that the simulation operates within a upper bound of time.
-It may effect certain criteria and strategies more than others, this may have an impact on the results and the decision between different strategies.
-
-\subsection{Verification}
-%%%How we tested and made sure that the output was what it should be
-The way in which this simulation is implemented is abstracted from the configuration that is provided.
-This means that it is possible to create a ``mock'' configuration to test how the simulation responds.
-This testing was simplified because of the separation between the processes of generating the user actions, generating the CUDF problem, and executing the simulation.
-The resolver was tested and thoroughly verified to work through the MISC, and its individual criteria where tested as well for correctness.
-
-%%%Generate User Actions
-The generation of the user actions was tested by first inputting various configuration and taking what actions where generated and ensuring that they conformed to the input.
-For instance, by stating a user will update 50\% of the time, creating a set of user actions and ensuring that it is correct, it can be assumed that function is correct.
-This was also done for the install distribution and the weighted packages input.
-
-%%%Generate CUDF
-This testing of the generation of the CUDF problem was tested through giving the script a configuration and user action, and ensuring that it generated the problem correctly. 
-For instance, giving the script a user action to install package ``a'' and keep package ``b'', then looking at the output problem for correctness.
-
-%%%Execute Simulation 
-The testing of the execute simulation script was done through extensively logging the process and ensuring the individual functions where correct.
-As this script is a simple iteration the main task is to ensure that all the functions occur in the proper order and that no exceptions occur.
-This can be done through passing it various inputs and ensuring that they are properly processed.
-The individual functions of \verb+FAIL+ and \verb+executeSolver+ can be verified through this process as well.
-
-
-%%%The resolver validation though MISC
-The resolver is the most complex code in this simulation, the verification of this has been described in chapter \ref{implementation}.
-This was done through testing and the entrance into two MISC competitions, which ensured third party verification of the core resolver.
-
-%%%The criteria validated through checking for correct constraints and estimates
-This process verified the resolvers implementation and some of the criteria defined.
-However, there are many criteria used in this simulation that where not verified through this process.
-The criteria used in this simulation where verified through firstly ensuring the correct constraints where being generated, 
-and ensuring the output solution conforms to the constraints.
-Although a criterion can be correct, it may be slow and requires adjustment through some heuristics.
-This was accomplished by running multiple large CUDF problems from the MISC to determine their speed and iteratively adjusting their heuristics to minimise time. 
-
-\section{Simulation Validation}
-%%%This is validated to measure the difference to reality to find if the error is tolerable
-The validation of the implementation of the simulation is an important step in the use of this simulation.
-As no simulation exactly describes reality, this step is mostly an exploration of the differences between the simulation and the reality of component system evolution.
-Therefore, this not only highlights the similarities to real component evolution, but also the differences.
-The identification of differences is important, as the assumptions made will lead to errors, these can be measured to find if the simulation is within tolerable error. 
-
-%%%This is done by ensuring the 
-This simulation is validated though looking at the results outputted from the simulation and ensuring they conform to expectations, 
-then compare them to the output of an actual system.
-
-%%%Face Validation
-Face validation is the process by which output of the simulation checked in order to find if it behaves as it should.
-The core output from this simulation is the resulting systems created during execution of the simulation.
-Looking at this output alone is difficult to state that it is correct, only that it looks correct.
-This process was iteratively done throughout development, as the core stakeholder is also the simulation developer.
-
-\subsection{Validation via Recorded System}
-%%%Controlled Environment
-To attempt to validate this simulation a controlled system was created that updates every day over a time frame of November 1st to 30th in 2011.
-A computer had Ubuntu 11.10 (Oneiric Ocelot) installed on it, every day a script that used APT to update the system, and then saved the repository and the system state.
-
-To validate the simulation, first we can look at the series of repositories, to find how different the assumption that the user uses all repositories is different from the default real user.
-Secondly the evolution of the system can be looked at and compared to a similar evolution within the simulation.
-
-\subsubsection{Comparing Repositories}
-%%%Look at the repositories, amount of components \ldots amount of versions\ldots 
-A core assumption with this simulation is that a user uses all components in the repository, 
-this was caused by the fact that the usual meat-repository data files are not stored at the required resolution.
-How significant the impact of this assumption can be measured through looking at the metrics and change of the repositories saved through this controlled system.
-
-%%%TODO Complete this validation
-
-\subsubsection{Comparing Systems}
-%%%Compare this output to the output from the simulation
-The output of this controlled system can be compared to the simulations output when setting the update criteria to mimic the APT criteria.
-The simulated evolution of the system can metrics can be compared, like the rate at which the system goes out of date, and the amount of change that occurs.
-These can be used as a broad measure of validity, as they are symptoms of the evolution they will be similar but not exact.
-
-%%%TODO Complete this validation
-
-\subsection{Validation via User Logs}
-%%%Real User Log
-To further validate this simulation, the submitted user logs were compared with the output of the simulation, over a month.
-Some of the user logs fall within the dates of the simulation, this means that by generating custom user action sets these users actions can be directly simulated.
-Their update probabilities and install distributions can also be extracted and used to create similar simulated users, to validate the creating of user action sets.
-
-\subsubsection{Directly comparing User Logs}
-%%%Creating custom user action sets to validate that the simulation returns about the right results
-From these logs a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
-The update and install criteria that used by the APT application, and the rest are the default contexts.  
-
-%%%TODO Complete this validation
-
-\subsubsection{Validating Generating User Actions Sets}
-%%%Creating generated users, from the simulated versions to validate the generating of the users returns about the right results.
-The entire simulation depends on being able to generate users that abstract from real users.
-As discussed in this, and the previous, chapter this is a very difficult challenge.
-Through comparing generated user action sets with the real users that are meant to abstract them, the difference can be determined.
-Then by simulating these generated users, and comparing the results of the actions to the real system log the error that is caused by the generation can be measured.  
-
-%%%Comparing the user action sets to the logs
-
-%%%Comparing multiple generated users to the real thing
-
-%%%TODO Actually complete this validation
 
 
 \section{Summary}

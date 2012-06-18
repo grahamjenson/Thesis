@@ -575,6 +575,7 @@ The keys and values are:
   For example, \verb+upgrade: n+ means to remove all packages of name \verb+n+ and install one package of equal or greater versions to that of the maximum version of \verb+m+ currently installed. 
 \end{itemize}
 
+
 \begin{figure}[htp] 
 \begin{center}
 \begin{alltt}
@@ -593,7 +594,7 @@ In this example, a component of name \verb+n+ and with version greater than 2 is
 and components of name \verb+o+ are requested to be upgraded.
 
 %%%Upgrading with multiple packages
-The CUDF request to upgrade a component is the most complex request due to the following requirements:
+The CUDF* request to upgrade a component is the most complex request due to the following requirements:
 \begin{enumerate}
   \item exactly one component can be installed with  the selected name can be installed.
   \item exactly one component's version must be greater than, or equal to, the currently installed greatest version of a component with that name.
@@ -601,6 +602,9 @@ The CUDF request to upgrade a component is the most complex request due to the f
 For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$.
 Component $a_1$ must be removed, and either $a_2$ can remain, or $a_2$ can be removed and a higher version of a component with name $n$ can be installed.
 
+A common request that is made by the user is to upgrade all components that are currently installed in the system.
+In CUDF*, this request is simplified to \texttt{upgrade: *}.
+The use of this request also means that it is not necessary to know what components are installed in the system, in order to upgrade them.
 
 \subsection{CUDF Example}
 \label{formal.example}

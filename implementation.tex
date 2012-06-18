@@ -2,9 +2,9 @@
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
-The previous chapter presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
+The previous chapters presented the \modelname model that describes the evolution of a component system as a series of evolution steps.
 Each evolution step alters the component system to satisfy a user's request to change it.
-Calculating all the component systems that occur because of these request is described as \textbf{resolving} a \modelname instance.
+Calculating all the component systems that occur because of these requests is described as \textbf{resolving} a \modelname instance.
 
 Resolving a \modelname instance can require significant computational effort due to the complexity of satisfying each request.
 Therefore, an efficient problem representation and algorithm are required.
@@ -874,6 +874,76 @@ These results allowed it to compete with the other solvers, and win the 'user' t
 \end{itemize}
 
 Given these reasons GJSolver is seen as a verified implementation and will be used in this research's simulation.
+
+
+\section{Simulation Validation}
+%%%This is validated to measure the difference to reality to find if the error is tolerable
+The validation of the implementation of the simulation is an important step in the use of this simulation.
+As no simulation exactly describes reality, this step is mostly an exploration of the differences between the simulation and the reality of component system evolution.
+Therefore, this not only highlights the similarities to real component evolution, but also the differences.
+The identification of differences is important, as the assumptions made will lead to errors, these can be measured to find if the simulation is within tolerable error. 
+
+%%%This is done by ensuring the 
+This simulation is validated though looking at the results outputted from the simulation and ensuring they conform to expectations, 
+then compare them to the output of an actual system.
+
+%%%Face Validation
+Face validation is the process by which output of the simulation checked in order to find if it behaves as it should.
+The core output from this simulation is the resulting systems created during execution of the simulation.
+Looking at this output alone is difficult to state that it is correct, only that it looks correct.
+This process was iteratively done throughout development, as the core stakeholder is also the simulation developer.
+
+\subsection{Validation via Recorded System}
+%%%Controlled Environment
+To attempt to validate this simulation a controlled system was created that updates every day over a time frame of November 1st to 30th in 2011.
+A computer had Ubuntu 11.10 (Oneiric Ocelot) installed on it, every day a script that used APT to update the system, and then saved the repository and the system state.
+
+To validate the simulation, first we can look at the series of repositories, to find how different the assumption that the user uses all repositories is different from the default real user.
+Secondly the evolution of the system can be looked at and compared to a similar evolution within the simulation.
+
+\subsubsection{Comparing Repositories}
+%%%Look at the repositories, amount of components \ldots amount of versions\ldots 
+A core assumption with this simulation is that a user uses all components in the repository, 
+this was caused by the fact that the usual meat-repository data files are not stored at the required resolution.
+How significant the impact of this assumption can be measured through looking at the metrics and change of the repositories saved through this controlled system.
+
+%%%TODO Complete this validation
+
+\subsubsection{Comparing Systems}
+%%%Compare this output to the output from the simulation
+The output of this controlled system can be compared to the simulations output when setting the update criteria to mimic the APT criteria.
+The simulated evolution of the system can metrics can be compared, like the rate at which the system goes out of date, and the amount of change that occurs.
+These can be used as a broad measure of validity, as they are symptoms of the evolution they will be similar but not exact.
+
+%%%TODO Complete this validation
+
+\subsection{Validation via User Logs}
+%%%Real User Log
+To further validate this simulation, the submitted user logs were compared with the output of the simulation, over a month.
+Some of the user logs fall within the dates of the simulation, this means that by generating custom user action sets these users actions can be directly simulated.
+Their update probabilities and install distributions can also be extracted and used to create similar simulated users, to validate the creating of user action sets.
+
+\subsubsection{Directly comparing User Logs}
+%%%Creating custom user action sets to validate that the simulation returns about the right results
+From these logs a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
+The update and install criteria that used by the APT application, and the rest are the default contexts.  
+
+%%%TODO Complete this validation
+
+\subsubsection{Validating Generating User Actions Sets}
+%%%Creating generated users, from the simulated versions to validate the generating of the users returns about the right results.
+The entire simulation depends on being able to generate users that abstract from real users.
+As discussed in this, and the previous, chapter this is a very difficult challenge.
+Through comparing generated user action sets with the real users that are meant to abstract them, the difference can be determined.
+Then by simulating these generated users, and comparing the results of the actions to the real system log the error that is caused by the generation can be measured.  
+
+%%%Comparing the user action sets to the logs
+
+%%%Comparing multiple generated users to the real thing
+
+%%%TODO Actually complete this validation
+
+
 
 \section{Summary}
 This chapter described the \modelimpl problem and how it mapped to the evolution steps from a \modelname instance.

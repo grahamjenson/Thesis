@@ -107,7 +107,7 @@ Property Name & Value Type & Default Value \\ \hline
 Property Name & Value Type & Default Value \\ \hline
 \texttt{install} & \verb+<vpkglist>+ & \verb+""+ \\ 
 \texttt{remove} & \verb+<vpkglist>+ & \verb+""+ \\ 
-\texttt{upgrade} & \verb+<vpkglist>+ & \verb+""+ \\ \hline
+\texttt{upgrade} & \verb+<vpkglist> | "*"+ & \verb+""+ \\ \hline
 \end{tabular}
 \caption{Request properties}
 \label{formal.cudfrequestprops}
@@ -360,7 +360,9 @@ where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{rem
 
 \paragraph{Upgrade}
 Given a CUDF* document, the set of upgrade requests $\delta_{t_i}^{upg}$ is extracted from the value \texttt{request}.\texttt{upgrade}.
-The value $r$.\texttt{upgrade} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
+If the value $r$.\texttt{upgrade} is of type \texttt{<vpkglist>}, it can be mapped to a set of package formula.
+If the value of $r$.\texttt{upgrade} is equal to \texttt{*}, it can be mapped to a set of package formula where $\{\langle n, 0, > \rangle \mid \langle n,v \rangle \in \alpha_{t_{i-1}} \}$.
+That is, if the upgrade is requested to upgrade \texttt{*}, then the request is to upgrade all packages currently installed.
 
 Given a package formula, $\langle n, v, op \rangle$, an upgrade request contains two constraints:
 \begin{enumerate}
