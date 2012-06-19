@@ -30,7 +30,7 @@ An example of a popular component system is the Ubuntu GNU/Linux operating syste
 Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf  accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
 and can be changed by adding or removing components to and from their systems.
-Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve, which in the context of this thesis is called the CSE process.
+Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve, which in the context of this thesis is the CSE process.
 By studying the behaviour of CSE and providing recommendations, this research has the potential to impact millions of users and their systems.
 
 \section{Research Approach}
@@ -51,27 +51,21 @@ The Ubuntu operating system was selected as the component system to study CSE fo
 
 \subsection{Why Simulate?}
 To study the CSE process, the evolution of many component systems must be studied.
-The method selected for this study was to modelling the relevant aspects of CSE, then simulating it using reasonable approximations.
-Such a simulation is accomplished by representing only the core aspects of CSE, while removing unnecessary detail.
-As simulation CSE requires approximations, the results from such a simulation can be of questionable validity.
-However, by putting effort into validating the simulation and its models,
-it is hoped the simulation will create reliable results that ensure conclusions drawn from it are valid.
-
-Such a simulation has an additional benefit of having control over variables that impact CSE.
+The method selected for this study was to model the relevant aspects of CSE, then simulate it using collected data and reasonable approximations.
+Using a simulation provides the benefit of having control over variables that impact CSE.
 This control allows for testing extreme as well as normal situations.
 It also allows for the quick experimentation with novel or proposed techniques.
 Therefore, the time to gather results is decreased, which allows a wide range of testing of new methods.
 
-\subsection{Methodology}
-%%%We use the methodology from `` Build a Valid and Credible Simulation''
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid.
 In this context:
 \begin{quotation}
 ``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.'' \citep{Law2005}
 \end{quotation}
 
-To create a valid simulation, the methodology that \cite{Law2005} outlines was selected.
-This methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
+The methodology that \cite{Law2005} outlines was selected to create such a valid simulation.
+This methodology was selected because it gave practical guidance to creating and using a simulation.
+The methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
 Also observed was that simulations that are not validated can produce erroneous information that leads to bad, possibly costly decisions being made.
 
 This methodology has a seven step approach to creating a valid simulation:
@@ -96,14 +90,13 @@ This methodology has a seven step approach to creating a valid simulation:
 \end{itemize}
 
 The above described methodology was created for large scale industrial projects with a substantial amount of resources available.
-In this methodology, employment of experts for validation and other expenses are recommended. %%%TODO find expences
-In this project, the resources available are significantly less than 
-Therefore, some of the steps have been reduced in scope.
+It describes the employment and use of experts for validation and simulation analysts to ensure validity.
+The available resources for this project is less than such projects, therefore some of the steps have been decreased in scope.
 This may reduce the validity of the end model, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
 \section{Contributions}
-As stated above, CSE is studied through simulating the evolution of Ubuntu systems using the methodology outlined by \cite{Law2005}.
+As stated above, CSE is studied through simulating the evolution of Ubuntu systems guided by the methodology outlined by \cite{Law2005}.
 To create this simulation, a variety of artifacts had to be developed.
 Each of these artifacts, as well as the simulation and its results are contributions of this research. 
 These contributions are:

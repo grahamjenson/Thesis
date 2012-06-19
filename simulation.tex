@@ -8,12 +8,16 @@ A simulation brings a model to life and shows how a particular object or phenome
 In the previous chapter the \modelname model was defined to represent CSE.
 A \modelname instance can be used to describe improbable CSE situations, 
 e.g. a user requesting to install the same component, every second for a century.
-As goal of this research is to \textit{realistically} simulate the evolution of component systems, 
-a model must be developed that links \modelname to the reality of CSE.
+As goal of this research is study the evolution of real systems, 
+it is necessary to create \textit{realistic} instances of \modelname.
+
 This chapter presents the \textbf{conceptual model} of CSE.
+This model is used to create realistic descriptions of the evolution of component systems.
+These systems can then be simulated to study CSE.
+
 This model was developed using the results of a survey that was conducted on a set of users to determine how they change their component systems.
-An instance of this model (called a \textbf{configuration}) contains all the necessary variables to simulate CSE.
-These variables are used to create a CUDF* document that realistically describes the evolution of a component system.
+An instance of this model (called a \textbf{configuration}) contains all the necessary variables to describe a realistic scenario of CSE.
+These variables are used to create a CUDF* document that can then be simulated.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
 \begin{figure}[htp]
@@ -38,12 +42,12 @@ ConMI -> CMI [ label="creates"];
 
 This chapter first describes the user survey that explores how component systems are changed by their users.
 The conceptual model is then presented, by describing the different variables and how a configuration is used to create a CUDF* document.
-The resources where data was collected from, and the processes to convert it to a format usable by the conceptual model are then described.
-Finally, a discussion about the validation of the conceptual model is presented.
+The data that was collected to be assigned to the variables, and the processes to convert the data to a format usable by the conceptual model are then described.
+Finally, a discussion about the validity of the conceptual model is presented.
 
 \section{User Survey}
 \label{strat.usersurvey}
-To explore the users' role in CSE and to construct a conceptual model, a survey was given to users.
+To explore the users' role in CSE and to construct a conceptual model, a survey conducted on users of component systems.
 This survey targeted users of GNU/Linux distributions (specifically Ubuntu), and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
 It was completed by 59 users, who answered questions about themselves, their systems, also how and why they change their component systems.
 In this context the way in which component systems are changed is through interaction with package manager applications, 
@@ -97,7 +101,7 @@ This is a subjective measure, but it shows that he users answered these question
 The life-cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
 \begin{table}[htp]
 \begin{tabular}{l | c | c | c | c |}
-Request & First & Daily & Weekly & Monthly \\
+Request & Set-up & Daily & Weekly & Monthly \\
 Upgrade  & 45 & 27 & 16 & 0 \\
 Install & 49 & 6 & 17 & 3 \\
 Remove & 6 & 4 & 1 & 0\\
@@ -107,7 +111,7 @@ Remove & 6 & 4 & 1 & 0\\
 \end{table}
 
 This table is a summary of the amount of users who perform the actions of upgrading their system, installing or removing a package 
-when the system is first created, daily, weekly or monthly.
+when the system is first set-up, daily, weekly or monthly.
 The vast majority of users when they create a system upgrade the system and install required packages.
 This also shows that most users upgrade their system daily, and many install packages weekly.
 An important result shows that users do not often remove packages, and if they do it is likely only when they install a new system.
@@ -181,116 +185,103 @@ For example, a server administrator that is running a mission critical system wi
 However, a user running a desktop personal computer system may be more interested in new functionality, so would change more readily.
 
 \section{Conceptual Model}
-In this section the conceptual model of CSE is presented.
-The conceptual model consists of a set of variables that describe the user's behaviour, 
-and a CUDF* document used as a template to create realistic evolution scenarios.
-This section describes the variables of the conceptual model, as extracted from the user survey.
-Additionally, it describes how an instance of this model is used to create CUDF* documents.
-
-\subsection{Variables and Template}
-In the previous chapter CUDF* allowed the user to request different changes, such as 
-installing a component, removing a component, and upgrading all installed components.
-The results of user survey have shown that the request to remove a component is not often used, and is therefore not to be included in the conceptual model.
-
-In the survey the typical time scale employed by the users to describe the changes they made to their systems was daily.
-Therefore, the variables used to describe user actions will be ``per day''. 
-
+The conceptual model consists of a set of variables that describe the user's behaviour when changing their component system.
+An assignment to these variables is an instance of the conceptual model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
 The variables that make up the conceptual user are: 
 \begin{itemize}
   \item $u$ is the probability a user requests to update the system per day.
   \item $i$ is the probability a user requests to install per day.
-  \item $IP$ is a set of component names with the probability that a component will be requested to be installed, i.e. $IP \subseteq \mathcal{N} \times \mathbb{R}$.
   \item $U$ is the MOF criteria used to select an optimal system for an update request.
   \item $I$ is the MOF criteria used to select an optimal system for an install request.
-  \item $d$ is the number of days the simulation runs for.
 \end{itemize}
 
-The remaining element required to create CUDF* documents, is the initial system $\alpha_{t_0}$ for evolution, 
-and the sets of components that exist at the times between $t_0$ and $t_0$ plus $d$ days.
-Both these can be described in a single CUDF* document.
-This document is complete, except for that it contains no user requests.
+The variable $u$ is the probability per day that a user will update their system, and the variable $i$ is the probability a user will request to install a component.
+The reason for selecting the ``per day'' resolution came from the user survey responses, where the most frequent these requests typically occurred was daily.
 
+The $I$ and $U$ criteria to install and update a component represented in MOF can be altered to represent current systems criteria like apt-get,
+or experiment with novel criteria.
+
+\subsection{Static Properties}
+The simulation created to study CSE for this research has some static properties:
+\begin{itemize}
+  \item The starting time of the evolution $t_0$, which is October 30th 2009.
+  \item The initial component system $\alpha_{t_0}$, which is Ubuntu version 9.10 released October 29th 2009.
+  \item The number of days the simulation runs, 365 days.
+  \item The available components to the evolving system, which are located at the central Ubuntu repository.
+  \item The probability a package name is selected to be installed is $IP$, it a set of names paired with probabilities i.e. $IP \subseteq \mathcal{N} \times \mathbb{R}$.
+\end{itemize}
+
+The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
+The length of a year was selected to be simulated as 30/59 of users in our user survey responded that their systems are less than or about one year old.
+The Ubuntu system has 6 monthly releases one, one in October and then one in April.
+This means that in the middle of this simulation, April 2010, the effects of this release will impact the simulation.
+
+The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
+Using this as the set of packages because it is the default choice on Ubuntu systems.
+
+A user will not select to install any package into thdescribed in the results from the survey, eir system, e.g. they will probably not request to install any library packages.
+Additionally, a user will more likely select to install some packages over others, e.g. they are more likely to install a popular Internet browser over another.
+The value $IP$ is a weighted pool of package names that are used to express these facts about the users.
+How this value is defined is described in section \ref{sim.collection}.
+
+\subsection{CUDF* Document Creation}
+The process to create a CUDF* document from a configuration and the static properties is described here.
+The first part of this process is to represent the initial system Ubuntu 9.10, and the Ubuntu repository as a CUDF* document template.
+This document is complete, except for that it contains no user requests.
+By adding requests to this template the evolution of a component system can be described.
+How an Ubuntu 9.10 system and the Ubuntu repository are used to create the CUDF* template document is described in section \ref{sim.collection}.
+
+Given this template and a configuration the process in described in figure \ref{sim.CUDF*}.
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
-for day in 1 to \(d\):
-   if randomprob() \(< u\):
-       template.addline("request: " + (day + \(t\sb{0}\) + ", " + \(U\))
-       template.addline("update: *")  system request to CUDF* template at time day \(+ t_0\)
-   if randomprob() \(< i\)   
-
+createCUDF*(template, \(< u\), \(< i\), \(< U\), \(< I\)):
+  for day in 1 to 365:
+    if random-probability() \(< u\):
+      add request to update the system at time day + \(t\sb{0}\) with criteria \(U\)
+    if random-probability() \(< i\):  
+      component = weighted selection from \(IP\) without replacement 
+      add request to install component at time day + \(t\sb{0}\) + 10 minutes, with criteria \(I\)
 \end{alltt}
   \caption{Create CUDF* document to describe the evolution of a component system}
   \label{sim.CUDF*}
 \end{center}
 \end{figure}
 
-
-\subsection{CUDF* Document Creation}
-Given an instance of the conceptual model, CUDF* documents can be created that describe the evolution of a component system.
-These documents 
-
+The inputs to this method are the template and the configuration variables.
+The main loop, loops over all the days in which the simulation occurs, this is 365 days.
+The function is \texttt{random-probability()} is called, which returns a random value between 0 and 1.
+This function is used to check whether a user will request to either update their system or install a component on a given day, using the variables $u$ and $i$. 
 
 \subsection{Conceptual Model Discussion}
-This section presents a brief discussion about the conceptual user compared to the users from the survey.
+The conceptual model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
+the removal of packages, and the initial set-up by the user of their system.
 
-The conceptual user does not model the initial requests made when the system is new, 
-or the discussed pattern of installing then removing packages.
-The reason for not including these elements in the model is to maintain the simplicity of this model.
-Including these actions into the user model would dramatically increase the complexity of the model, 
-which might overshadow the core element being modeled. 
+In the \modelname model and in CUDF* a user may select to remove a component from their system.
+What package to remove, and when is difficult to represent in a conceptual model and simulation.
+Additionally, users responded in the survey with a very low frequency of package removal
+For these reasons, this simulation does not include the possibility the user may request to remove a package.
 
-One request made by the user in reality may impact the occurrence of another action, so that they are correlated to happen together.
-For example, a user may select to always update before they install, or to select a component to be installed because of another installed component.
-The complexity that can be introduced by these correlations could make this simulation impractical.
-For the practicality of the simulation, and the simplicity of the presented models, the corrolation between requests is ignored.
+As described in the results from the survey, almost all users upgraded the system, and installed new packages when first setting up their system.
+This set-up is not included in the conceptual model because it is seen to introduce to much complexity to the user.
+Additionally, as the initial system used, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
 
-\subsection{Conceptual Components Model}
-The only item that is necessary in the conceptual component model is 
-a partial CUDF* document that includes the preamble, and package stanzas that can be parsed to create the time $t_0$, the initial system .
-This document is complete with the exception of the user requests that will be generated using the conceptual user model.
+The last aspect that is of note in this conceptual model is the lack of correlation between requests.
+That is, in the conceptual model a users action will not impact any other action. 
+For example, it is not possible to describe a user that always updates before installing. 
+It is also not possible to describe a situation where installing one package impacts the probability another package is installed.
+For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
+Defining such correlations would dramatically increase the complexity of defining the conceptual model, and creating configurations.
+Therefore, for the practicality of the simulation, and the simplicity of the presented models, the correlation between requests is ignored.
 
+\subsection{Conceptual Model Validation}
+The two main methods of validation of this model is discussions with projecct supervisors, and referencing the user survey. 
 
-\subsection{Example}
-To illustrate the use of the conceptual model, consider the example where:
-\begin{itemize}
-  \item $u = 0.2$
-  \item $i = 0.2$
-  \item $IP = \{$(\texttt{n}$, 0.25),($\texttt{m}$,0.75)\}$
-  \item $U = $ \texttt{-removed,-new}
-  \item $I = $ \texttt{-removed,-changed}
-  \item $d = 20$
-\end{itemize}
-The variables $u$ and $i$ equal $.2$, this means that on any day the user has a 20\% probability of requesting to upgrade and/or install a component.
-If a user requests to install a component, the component name $n$ has a 25\% probability of being selected, and the component name $m$ is 75\% likely. 
-When the system is selected to be upgraded, the most criteria used is $U$, whose most important criterion is to minimise the amount of removed components.
-The install criteria $I$ is similar to the update criteria, except that is minimises all change to the system.
-Finally $d$ describes how many days this user will potentially request for, which is $20$.
-
-Using this model it can be expected that there will be $4$ requests to upgrade the system and $4$ requests to install a component.
-Component names  are selected to be installed without replacement, i.e. the same component name cannot be selected twice to be installed.
-Therefore, only $2$ requests to install can be made, and it is expected that name $m$ will be selected first.
-
-\section{Conceptual Model Validation}
-%%%Validation of this simulation, what needs to be validated/why it should be validated
-The conceptual model presented is a simplified abstraction of the reality in which users evolve component systems.
-It describes the variables that effect component system evolution as a configuration,
-and the processors used to execute the simulation given a configuration.
-
-%%%What if it is wrong
-If some significant aspect of the system was missed, or if some aspect was incorrectly defined, the simulation may produce results that are incomprehensible,
-or worse, misunderstood.
-Therefore, the validation of these artifacts is essential to move forward. 
-This validation was accomplished though regular stakeholder meetings, and an online survey with subject matter experts (as described in chapter \ref{strategies}).
-
-\subsection{Stakeholder Meetings}
-%%%Weekly meetings with stakeholders (i.e. supervisors)
 As described in the methodology; one effort to validate these artifacts is done through meetings and a structured walk-through with the core stakeholders.
 In this simulation the core stakeholders are the project researcher and supervisors.
 These are the people who are asking the questions and are also impacted by the outcome, therefore they are directly effected by the validity of the results.
 Meetings where held at regular intervals to ensure the projects progress and direction where correct.
 
-\subsection{Subject Matter Expert Survey}
 %%%Results from what else should be asked, install stuff not from repository, installs break
 The survey described in chapter \ref{strategies}, 
 was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
@@ -298,31 +289,10 @@ The questions asked in this survey helped gauge the necessity and frequency of u
 so that only the most important aspects of the problem can be selected to be simulated.
 It also filled in gaps of what was missing from the survey and model, giving direction for exploration.
 
-\subsubsection{Frequency of User Actions}
-%%%How often do users do these actions
-The more frequently a user selects an action to evolve their system, the more important it is to the evolution of their system.
-The information gained from the survey provides confidence that not including the action to remove a component and abstract the requirement multiple repositories, 
-would not damage the validity of the results.
-It also helped us define and represent the update and install actions in the configuration.
-
-The remove action can be ignored as it seemed many of the users do not use this frequently.
-When they do select to remove a component it is usually directly after installing it, if the selection to install a component was seen as a mistake.
-Although it is clearly an important function to be included when evolving a system, the assumption is made that it is unnecessary for this simulation.
-
-This survey also clearly shows that the main actions of a user is to update their system,
-with the installation of a component the second most used action.
-This survey also showed that the update occurs at more regular intervals than the install components.
-Therefore, only the update and install user actions were included in this simulation and it also defined their representation. 
-
-
-\subsection{Further Validation}
-The assignment of the configuration variables is a different stage in the validation of this simulation.
-Clearly if you create a configuration that is completely unrealistic, the saying ``garbage in, garbage out'' applies to the results.
-However, this is not a concern when validating the conceptual model, or the abstract processes.
-Further discussion of the validation of the assignment of the configuration variables is in chapter \ref{ubunutsimulation}.
 
 
 \section{Configuration Data Collection and Conversion}
+\label{sim.collection}
 In order to assign variables to a conceptual model configuration, data from the Ubuntu domain must be collected and converted.
 The 
 These variables are broken into two groups; the context variables, which do not change over simulation executions; 
@@ -336,24 +306,13 @@ They are static because they are assumed to be universal for Ubuntu users, like 
 or they are assumed to be independent of component evolution, like the time frame and the initial system.
 
 %%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
-The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
-Specifically the simulation is run from October 21st 2009 for 365 days.
-The date was selected as it is recent and just after the major release of an Ubuntu version.
-The length of a year was selected as the overwhelming majority of users in our user survey (from section \ref{strat.usersurvey}) responded that their system was a year or less old.
-Ubuntu has 6 monthly releases one, in April and one in October, the syntax of the version of each release is first the year,
-then the month in which it was released, e.g. 10.04 is the release in April 2010.
-Therefore, this time frame occurs over an intimidate release of version 10.04 in April 2010, which allows for experimentation involving the release date.
+
 
 %%%This time frame implies the initial system which is Ubuntu 10.09
 The time frame start was selected to coincide with the release of the Ubuntu version 9.10.
 This version was then selected to be used as the initial system, as if the user just installed a new Operating System onto their system.
 Specifically the desktop i386 distribution was selected as it is the most popular among the users of Ubuntu.
 
-\subsection{Repository function}
-%%%Repository function created through downloading the Ubuntu repository
-For any day in the time frame, the repository function must return the components in the repository as a CUDF file.
-This involves two distinct steps; collecting the Ubuntu packages with information at a resolution necessary for this simulation;
-mapping these packages to the CUDF specification used by this simulation.
 
 \subsubsection{Collecting the Packages}
 The information gathering must be accomplished with great care, as the resolution and detail must be precise.
@@ -372,7 +331,7 @@ To collect these packages and information from the repository, this process was 
 
 This process creates a set of control files $C$ each tagged with the date it was uploaded to the repository.
 
-\subsubsection{dpkg to CUDF mapping}
+\subsubsection{dpkg to CUDF* mapping}
 \label{ubuntusimulation.debtocudf}
 The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta-data is very similar.
 This similarity is due to the Mancoosi organisation goals basing CUDF on FOSS systems like Debian.  
@@ -428,7 +387,7 @@ the mapped CUDF component $c$ would have the property \verb+date+ would equal $1
 Another important property in the dpkg format is the architecture of the package.
 This describes the necessary CPU/hardware for the package to be functional.
 The architecture of a dpkg package is directly mapped to the architecture of the CUDF property \verb+architecture+, through using CUDF's extensible syntax.
-For example, is the archicteure expressed in the dpkg control file is \verb+i386+ then the mapped CUDF package $c$ has property $c$.\verb+architecture+ $=$ \verb+i386+.
+For example, is the archicteure expressed in the dpkg control file is \verb+i386+ or \verb+all+ then the mapped CUDF package $c$ has property $c$.\verb+architecture+ $=$ \verb+i386+.
 
 \paragraph{Mapping}
 The function $Rep(d)$ takes a date $d$ and returns a CUDF file that contains all packages that exist in the repository on that date.
@@ -463,7 +422,7 @@ therefore it is expected to have little impact on the results of the simulation.
 As this difference may effect the validity of the simulation however, during the simulation the effects will be measures and noted, and if the effects are significant discussed.
 
 
-\subsubsection{Probability a component will be selected}
+\subsection{Probability a component will be selected}
 %%%The probability a component will be selected
 Different users will be more likely to select different packages to install.
 However, as discussed to simulate this probability is impractical, and is likely impossible.
