@@ -8,7 +8,7 @@ Calculating all the component systems that occur because of these requests is de
 
 Resolving a \modelname instance can require significant computational effort due to the complexity of satisfying each request.
 Therefore, an efficient problem representation and algorithm are required.
-To resolve a \modelname instance each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \cite{marque2011blex}.
+To resolve a \modelname instance each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \citep{marque2011blex}.
 \modelimpl problems consists of finding an optimal assignment to Boolean variables,
 where assignments must satisfy a set of clauses and linear inequalities,
 and the optimisation criteria are lexicographic.
@@ -46,8 +46,8 @@ FMI -> \modelnamewx [ label = "instantiates"];
 The algorithm employed to solve \modelimpl problems is the lexicographic-iterative-strengthening (LIS) algorithm.
 This algorithm uses the Davis-Putnam-Logemann-Loveland (DPLL) \citep{Davis1960, davis1962machine} algorithm to find solutions to SAT+PB problems,
 and the iterative strengthening \citep{calistri1994iterative, le2010sat4j} algorithm to optimise finding a solution.
-This algorithm is similar to the ``iterative pseudo-Boolean solving'' algorithm presented by \cite{marque2011blex}.
-However, LIS directly depends on the iterative-strengthening algorithm, where the ``iterative pseudo-Boolean solving'' does not specify such specific details. 
+This algorithm is similar to the ``iterative pseudo-Boolean solving'' algorithm presented by \cite{marque2011blex},
+except LIS specifies implementation details like using the iterative-strengthening algorithm.
 
 Some criteria that can be used by the LIS algorithm are also presented in this chapter. 
 These criteria are mapped to MOF strings, and \modelname criteria as they are useful for CSE.

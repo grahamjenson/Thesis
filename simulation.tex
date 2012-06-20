@@ -1,22 +1,21 @@
-\chapter{Conceptual Model}
+\chapter{Simulation Model}
 \label{simulation}
 \epigraph{A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. 
 A simulation is the implementation of a model over time. 
 A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
-In the previous chapter the \modelname model was defined to represent CSE.
-A \modelname instance can be used to describe improbable CSE situations, 
-e.g. a user requesting to install the same component, every second for a century.
-As goal of this research is study the evolution of real systems, 
-it is necessary to create \textit{realistic} instances of \modelname.
+In the previous chapter, the \modelname model was defined to represent CSE.
+While a \modelname instance can be used to describe improbable CSE situations, 
+e.g. a user requesting to install the same component every second for a century,
+a goal of this research is study the evolution of \textit{real} systems. 
+Therefore, it is necessary to create \textit{realistic} instances of \modelname. 
+For this purpose the simulation \textbf{simulation model} of CSE was developed.
+This model can be used to create realistic descriptions of the evolution of component systems that can be later simulated.
 
-This chapter presents the \textbf{conceptual model} of CSE.
-This model is used to create realistic descriptions of the evolution of component systems.
-These systems can then be simulated to study CSE.
-
-This model was developed using the results of a survey that was conducted on a set of users to determine how they change their component systems.
-An instance of this model (called a \textbf{configuration}) contains all the necessary variables to describe a realistic scenario of CSE.
+This model was developed using the results of a survey conducted to determine how users change their component systems.
+An instance of this model (called a \textbf{configuration}) contains variables to create a realistic scenario of CSE.
+An example of such a variable is the probability a user will update their system per day.
 These variables are used to create a CUDF* document that can then be simulated.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
@@ -30,76 +29,66 @@ subgraph {
 	CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
 	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:Configuration</TD></TR></TABLE>> shape=none];
 }
-ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">Conceptual Model</TD></TR></TABLE>> shape=none];
+ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">Simulation Model</TD></TR></TABLE>> shape=none];
 CMI -> CMS [ label="instantiates"];
 ConMI -> ConM [ label="instantiates"];
 ConMI -> CMI [ label="creates"];
 }
-  \caption{Diagram of the Conceptual models relationships}
+  \caption{Diagram of the Simulation models relationships}
   \label{sim.modeldiagram}
 \end{center}
 \end{figure}
 
 This chapter first describes the user survey that explores how component systems are changed by their users.
-The conceptual model is then presented, by describing the different variables and how a configuration is used to create a CUDF* document.
-The data that was collected to be assigned to the variables, and the processes to convert the data to a format usable by the conceptual model are then described.
-Finally, a discussion about the validity of the conceptual model is presented.
+The simulation model is then presented by describing the different variables and how a configuration is used to create a CUDF* document.
+The data that was collected and the processes to convert the data into a useful format usable by the simulation model are then described.
 
 \section{User Survey}
 \label{strat.usersurvey}
-To explore the users' role in CSE and to construct a conceptual model, a survey conducted on users of component systems.
-This survey targeted users of GNU/Linux distributions (specifically Ubuntu), and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
-It was completed by 59 users, who answered questions about themselves, their systems, also how and why they change their component systems.
-In this context the way in which component systems are changed is through interaction with package manager applications, 
-so the questions primarily about this interaction.
+To explore the user role in CSE and to construct a simulation model, a survey was conducted on users of component systems.
+This survey targeted users of GNU/Linux distributions (specifically Ubuntu) and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
+It was completed by 59 users, who answered questions about their background, systems they use, and the ways they change their component systems.
+In this context, the way in which component systems are changed is through interaction with package manager applications. 
+Therefore, the questions were primarily about this interaction.
 
-In this section a brief description of the survey and an analysis of responses are given.
+In this section, a brief description of the survey and an analysis of responses are given.
 The results from this survey are used to describe and categorise the motivations and behaviours of users when changing their component systems.
-The full set of questions in the survey is presented in appendix \ref{apx.survey}. 
+A detailed descriptions of questions in the survey can be found in appendix \ref{apx.survey}. 
 
 \subsection{Questions}
 %%%The goals of the survey:
-There are two types of questions in the survey; questions to identify the type of user, and questions to describe their interactions with package managers.
-The set of questions used to identify the user are:
+The survey consisted of two groups of questions: questions that identified the type of user and questions that described their interactions with package managers.
+The set of questions used to identify the user were:
 \begin{itemize}
-  \item How experienced with package managers are you? 
+  \item How experienced with package managers are you (based on scale of 1 to 5 where 1 is no experience and 5 is highly experienced)? 
   \item What system are you using?
   \item What package manager are you using?
 \end{itemize}
-These can be used to categorise the type of user and put into context the answers that they give.
-They can also be used to weigh their answers for credibility and potentially exclude results from novice or inexperienced users. 
+These can be used to categorise the type of user and weigh their answers for credibility based on their self rated experience.
 
-The set of questions asked about their use of package mangers are:
+The set of questions that asked about the use of package mangers were:
 \begin{itemize}
   \item After you install a new system, what are your first interactions with the package manager?
   \item Describe your day to day interactions with the package manager?
   \item At what frequency are your typical interactions with the package manager?
-  \item Describe an unusual scenario in which the package manager was used?
 \end{itemize}
-The main focus of these questions is to identify the life-cycle of interactions that the user has with the package manager.
-The responses will provide reasons for these actions to occur, and illuminates the users motivations to change the system.
-
-The survey finished with the question:
-\begin{itemize}
-  \item What other questions should have been asked?
-\end{itemize}
-This question tried to illicit comments and possible information that could have been gathered.
-It also provided a validation that the survey was complete, i.e. it could be used to see if any other questions should have been asked.
+These questions were focused on identifying the life-cycle of interactions that users have.
 
 \subsection{Results}
 %%%The results are summarised as:
-The type of user to complete the survey will put in context the remaining results.
-Most users (29/59) used Debian based operating systems, e.g. Ubuntu.
-The majority of these users used apt-get as their package manager.
-13/59  users used ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012},
-and all these used pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012} as their package manager.
+As was already mentioned earlier, the survey was completed by 59 respondents.
+The majority of these (29) were Debian based operating systems users.
+Among these users apt-get was the most popular package manager.
+Thirteen respondents used ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012} with pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012} as the package manager.
 Other systems and package managers represented in this survey include Fedora with the yum package manger,
 Slackware with the pkgtools package manager, and Gentoo with the portage package manager.
-The submitted users' mean experience was 3.9/5.
-This is a subjective measure, but it shows that he users answered these questions with a high confidence. 
 
-The life-cycle questions have been summarised into the frequency of each action in table \ref{strat.tblaction}.
+The mean of the respondents self ranked experience was 3.9/5.
+While this can be considered a subjective measure, it is expected that the respondents were confident in their answers. 
+
+The life-cycle questions have been summarised into the frequency of each request in table \ref{strat.tblaction}.
 \begin{table}[htp]
+\centering
 \begin{tabular}{l | c | c | c | c |}
 Request & Set-up & Daily & Weekly & Monthly \\
 Upgrade  & 45 & 27 & 16 & 0 \\
@@ -110,84 +99,62 @@ Remove & 6 & 4 & 1 & 0\\
 \label{strat.tblaction}
 \end{table}
 
-This table is a summary of the amount of users who perform the actions of upgrading their system, installing or removing a package 
-when the system is first set-up, daily, weekly or monthly.
-The vast majority of users when they create a system upgrade the system and install required packages.
+Based on this table, the vast majority of respondents upgrade and install new components when they first set-up their system.
 This also shows that most users upgrade their system daily, and many install packages weekly.
-An important result shows that users do not often remove packages, and if they do it is likely only when they install a new system.
-
-The unusual scenarios which the users describe using the package manager included
-3 of the users describing the process of fixing a broken system through using the package manager. 
-The most common task answered was 11 of the 59 users stating that they had installed packages to accomplish a specific task, only to remove them soon after.
-This situation is summarised by a user: 
-\begin{quote}
-``I sometimes install lots of packages very quickly as I need to accomplish a task, then remove them once that task has finished.''
-\end{quote}
-
-In the final question asked if there is any more questions the general themes of responses include:
-\begin{itemize}
-  \item the mitigation of failed actions
-  \item installing multiple versions of packages (not allowed in Debian based systems)
-  \item using a graphical user interface v.s. console based package manager
-\end{itemize} 
-The majority (37/59) users did not fill out this option in the survey, a potential indicator that the survey was complete.
-One user even remarked to this question:
-\begin{quote}
-``Quite an all encompassing survey!''
-\end{quote}
+Additionally, this shows that users do not often remove packages. 
 
 \subsection{Progressive vs. Conservative Users}
-The main outcome of this survey was the identification that a users behaviour when changing their system is in motivation to one of two types of risk:
+One goal of this survey was to identify user behaviours.
+Based on responses, it can be concluded that users attitudes towards changing their systems are affected by the following risks:
 \begin{itemize}
   \item the potential risk of changing the system and introducing new problems.
   \item the potential risk of becoming out-of-date and having old problems persist.
 \end{itemize}
 The behaviours of these users can be described with two user stereotypes, \textbf{conservative} and \textbf{progressive}.
-These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society,
-where progressivism promotes change and reform.
+These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society. %TODO ref
+This philosophy is contrasted by progressivism that promotes change and reform. %TODO ref
 
 Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
 \begin{quotation}
-In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).
+``In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
-That is they are more likely not to change the system, even though it may be beneficial as it may lead to a fault in their system. 
+The previous quote shows that this respondent less likely to change their system, even though it may be beneficial, as it may lead to a fault. 
 
-Another example of a users response expressing a slight progressive attitude:
+Another example of a user response expresses a progressive attitude:
 \begin{quotation}
-I update my packages whenever I log in each day
+``I update my packages whenever I log in each day''
 \end{quotation}
-Upgrading the system each day will ensure that packages do not become out-of-date, though this may require significant change.
+The reason this user upgrades their system every day is likely to ensure that packages do not become out-of-date.
+This behaviour may require significant change.
 
-Both of these stereotypes have extremes though, where users try to eliminate all of a risk.
+Both of these stereotypes have extremes.
+One such extreme is when a user tries to eliminate all of the risks associated with being out-of-date.
 For example, a user responded in the survey with an extreme progressive attitude:
 \begin{quotation}
-I do run an unstable system all the time, I help mitigate this with some redundancy in my most frequently used components, 
+``I do run an unstable system all the time, I help mitigate this with some redundancy in my most frequently used components, 
 using packages which perform the same function, but have different dependencies, since it's less likely to have multiple packages break at the same time. 
-If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.
+If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.''
 \end{quotation}
-This user has new components in their system that are not fully tested, which are described as unstable packages.
-To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system to ensure that problems will not be too severe.
-This users system will never be out-of-date, but will be changed frequently.
+This user has not fully tested components in their system (described as unstable packages).
+To lower the risk that such packages have on the function of the system, this user has redundant functionality installed in their system.
+This way the user tries to ensure that potential problems will not be too severe.
+The system of this user will never be out-of-date, but will be changed frequently.
 
-An example of user's extremely conservative response when asked about the frequency with which they interact with the package manager:
+An example of user's extremely conservative response on the frequency with which they interact with the package manager:
 \begin{quotation}
-As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
+``As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
 Following the configuration and construction, only the occasional upgrade is necessary. 
-Unless, of course, I receive a security notice about something.
+Unless, of course, I receive a security notice about something.''
 \end{quotation}
-So after the setting up of a system, this user will not change their system, unless there is a direct security risk.
-This lack of change will result in this user's system quickly becoming out of date, though it will almost never be changed.
+After the setting up of a system, this user will not change it unless there is a direct security risk.
+This lack of change will result in the system quickly becoming out of date, though lowers the risks associated with change.
 
-The progressive behaviours of users will minimise the out-of-dateness of the system, but increase the necessary change.
-Where the conservative behaviours will let the system go out-of-date, to reduce the change to the system.
-The behaviour of a user will be with respect to the goals of their system.
-For example, a server administrator that is running a mission critical system will likely change the system begrudgingly as any fault could cause damage.
-However, a user running a desktop personal computer system may be more interested in new functionality, so would change more readily.
+The risks associated with change and being out-of-date drive the users behaviours towards changing the system. 
 
-\section{Conceptual Model}
-The conceptual model consists of a set of variables that describe the user's behaviour when changing their component system.
-An assignment to these variables is an instance of the conceptual model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
-The variables that make up the conceptual user are: 
+\section{Simulation Model}
+The simulation model consists of a set of variables that describe the user's behaviour when changing their component system.
+An assignment to these variables is an instance of the simulation model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
+The variables that make up the simulation user are: 
 \begin{itemize}
   \item $u$ is the probability a user requests to update the system per day.
   \item $i$ is the probability a user requests to install per day.
@@ -219,7 +186,7 @@ This means that in the middle of this simulation, April 2010, the effects of thi
 The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
 Using this as the set of packages because it is the default choice on Ubuntu systems.
 
-A user will not select to install any package into thdescribed in the results from the survey, eir system, e.g. they will probably not request to install any library packages.
+A user will not select to install any package into their system, e.g. they will probably not request to install any library packages.
 Additionally, a user will more likely select to install some packages over others, e.g. they are more likely to install a popular Internet browser over another.
 The value $IP$ is a weighted pool of package names that are used to express these facts about the users.
 How this value is defined is described in section \ref{sim.collection}.
@@ -236,46 +203,74 @@ Given this template and a configuration the process in described in figure \ref{
 \begin{center}
 \begin{alltt}
 createCUDF*(template, \(< u\), \(< i\), \(< U\), \(< I\)):
-  for day in 1 to 365:
+  for \(day\) in 1 to 365:
     if random-probability() \(< u\):
-      add request to update the system at time day + \(t\sb{0}\) with criteria \(U\)
+      add request to upgrade the system at time \(day + t\sb{0}\) with criteria \(U\)
     if random-probability() \(< i\):  
       component = weighted selection from \(IP\) without replacement 
-      add request to install component at time day + \(t\sb{0}\) + 10 minutes, with criteria \(I\)
+      add request to install component at time \(day + t\sb{0} + 10 minutes\), with criteria \(I\)
 \end{alltt}
   \caption{Create CUDF* document to describe the evolution of a component system}
   \label{sim.CUDF*}
 \end{center}
 \end{figure}
 
+This process takes the CUDF* template and adds requests to it, to describe how a user changes their component systems over time.
 The inputs to this method are the template and the configuration variables.
-The main loop, loops over all the days in which the simulation occurs, this is 365 days.
-The function is \texttt{random-probability()} is called, which returns a random value between 0 and 1.
-This function is used to check whether a user will request to either update their system or install a component on a given day, using the variables $u$ and $i$. 
+The main loop, loops over the 365 days in which the simulation occurs.
+Each day the ``user'' randomly selects to upgrade their system, or install a component.
+The function \texttt{random-probability()}, which returns a random value between 0 and 1, is used to decide what requests the user will make on a day.
 
-\subsection{Conceptual Model Discussion}
-The conceptual model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
+If a user requests to upgrade their system on a day, the request is added to the template CUDF.
+If the user requests to install a component, first the component to be installed is selected from the set $IP$.
+This selection is: 
+\begin{itemize}
+  \item \textit{After the upgrade request}: the preference of users in the survey has shown that typically they will upgrrade before installing.  
+  \item \textit{weighted}: so components that are more likely to be installed are more likely selected
+  \item \textit{without replacement}: so that the user cannot select to install the same component more than once
+\end{itemize} 
+
+
+\subsection{Simulation Model Discussion}
+The simulation model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
 the removal of packages, and the initial set-up by the user of their system.
 
-In the \modelname model and in CUDF* a user may select to remove a component from their system.
-What package to remove, and when is difficult to represent in a conceptual model and simulation.
-Additionally, users responded in the survey with a very low frequency of package removal
+In the \modelname model, and in CUDF*, a user may select to remove a component from their system.
+The simulation model presented does not allow the user to make such a request.
+This exclusion is due to:
+\begin{itemize}
+  \item The users in the survey requested to remove components infrequently.
+  \item Selecting a package to remove during evolution can easily create unsatisfiable evolution problems.
+  \item It would make the simulation model overly complex. 
+\end{itemize}
 For these reasons, this simulation does not include the possibility the user may request to remove a package.
 
-As described in the results from the survey, almost all users upgraded the system, and installed new packages when first setting up their system.
-This set-up is not included in the conceptual model because it is seen to introduce to much complexity to the user.
-Additionally, as the initial system used, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
+As described in the results from the survey, almost all users upgraded the system and installed new packages when first setting up their system.
+This initial change is not included in the simulation model as it creates a different initial system for each user,
+making the their comparison difficult.
+Additionally, as the initial system, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
 
-The last aspect that is of note in this conceptual model is the lack of correlation between requests.
-That is, in the conceptual model a users action will not impact any other action. 
-For example, it is not possible to describe a user that always updates before installing. 
-It is also not possible to describe a situation where installing one package impacts the probability another package is installed.
+Two additional points that should be discussed is the lack of correlation between the user's requests,
+and the randomness in this model.
+
+In the presented simulation model a user's request will not impact any future request.
+This type correlation between requests could be in the form of user behaviours.
+For example, a user that always upgrades before installing. 
+Another type of correlation is where installing one package impacts the probability another package is installed.
 For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
-Defining such correlations would dramatically increase the complexity of defining the conceptual model, and creating configurations.
-Therefore, for the practicality of the simulation, and the simplicity of the presented models, the correlation between requests is ignored.
+The only exception to this, is that a user cannot request to install the same component multiple times.
+Defining such correlations would dramatically increase the complexity of the simulation model.
+It would also require significant data-collection and analysis to ensure to model.
+Therefore, for the practicality of the simulation and the simplicity of the presented models, the correlation between requests is ignored.
 
-\subsection{Conceptual Model Validation}
-The two main methods of validation of this model is discussions with projecct supervisors, and referencing the user survey. 
+The randomness between users that are created from the same configuration occurs in three places;
+when they upgrade, when they install, and what they install.
+A configuration that defines a user that always updates (where $u = 1$) and never installs ($i = 0$) will not have any randomness.
+However, a configuration that defines a user that never updates ($u = 0$) and always installs ($i = 1$) will still be selecting to install random components.
+
+
+\subsection{Simulation Model Validation}
+The two main methods of validation of this model is discussions with project supervisors, and referencing the user survey. 
 
 As described in the methodology; one effort to validate these artifacts is done through meetings and a structured walk-through with the core stakeholders.
 In this simulation the core stakeholders are the project researcher and supervisors.
@@ -284,7 +279,7 @@ Meetings where held at regular intervals to ensure the projects progress and dir
 
 %%%Results from what else should be asked, install stuff not from repository, installs break
 The survey described in chapter \ref{strategies}, 
-was conducted at a point in the project when the conceptual model was just being developed, so had considerable impact on these artifacts.
+was conducted at a point in the project when the simulation model was just being developed, so had considerable impact on these artifacts.
 The questions asked in this survey helped gauge the necessity and frequency of user actions,
 so that only the most important aspects of the problem can be selected to be simulated.
 It also filled in gaps of what was missing from the survey and model, giving direction for exploration.
@@ -293,7 +288,7 @@ It also filled in gaps of what was missing from the survey and model, giving dir
 
 \section{Configuration Data Collection and Conversion}
 \label{sim.collection}
-In order to assign variables to a conceptual model configuration, data from the Ubuntu domain must be collected and converted.
+In order to assign variables to a simulation model configuration, data from the Ubuntu domain must be collected and converted.
 The 
 These variables are broken into two groups; the context variables, which do not change over simulation executions; 
 and variables which are changed to answer specific questions.
@@ -467,6 +462,6 @@ It is an extremely difficult problem to solve, and any solution will also dramat
 \section{Summary}
 {}In this chapter possible options were discussed for studying various strategies employed when evolving component systems.
 {}Simulation, through the methodology \citep{Law2005} describes, was selected, and the steps involved were described.
-{}The central artifact of this methodology, the conceptual model, was broken down into models of the user, repository and solver, and the processes of simulation.
+{}The central artifact of this methodology, the simulation model, was broken down into models of the user, repository and solver, and the processes of simulation.
 {}These models were validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
 {}In the next chapter the configuration of the simulation is further defined, and the questions about component system evolution are attempted to be answered.
