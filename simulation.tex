@@ -1,4 +1,4 @@
-\chapter{Simulation Model}
+\chapter{User Model}
 \label{simulation}
 \epigraph{A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. 
 A simulation is the implementation of a model over time. 
@@ -6,16 +6,16 @@ A simulation brings a model to life and shows how a particular object or phenome
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
 In the previous chapter, the \modelname model was defined to represent CSE.
-While a \modelname instance can be used to describe improbable CSE situations, 
+While a \modelname instance can be used to describe unlikely requests made by a user, 
 e.g. a user requesting to install the same component every second for a century,
-a goal of this research is study the evolution of \textit{real} systems. 
-Therefore, it is necessary to create \textit{realistic} instances of \modelname. 
-For this purpose the simulation \textbf{simulation model} of CSE was developed.
-This model can be used to create realistic descriptions of the evolution of component systems that can be later simulated.
+a goal of this research is study the evolution of \textit{realistic} systems. 
+Therefore, it is necessary to create realistic instances of \modelname. 
+For this purpose the simulation \usermodel (Simulated User) model was developed.
+This model is used to represent how a user would realistically change their component system
+and can be used to create descriptions their systems evolution.
 
-This model was developed using the results of a survey conducted to determine how users change their component systems.
-An instance of this model (called a \textbf{configuration}) contains variables to create a realistic scenario of CSE.
-An example of such a variable is the probability a user will update their system per day.
+This model was developed in part using the results of a survey conducted to determine how users change their component systems.
+An instance of this model contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will update their system on a given day.
 These variables are used to create a CUDF* document that can then be simulated.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
@@ -27,9 +27,9 @@ CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">
 subgraph {
 	rank=same;
 	CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
-	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:Configuration</TD></TR></TABLE>> shape=none];
+	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\usermodelwx</TD></TR></TABLE>> shape=none];
 }
-ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">Simulation Model</TD></TR></TABLE>> shape=none];
+ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\usermodelwx</TD></TR></TABLE>> shape=none];
 CMI -> CMS [ label="instantiates"];
 ConMI -> ConM [ label="instantiates"];
 ConMI -> CMI [ label="creates"];
@@ -268,49 +268,19 @@ when they upgrade, when they install, and what they install.
 A configuration that defines a user that always updates (where $u = 1$) and never installs ($i = 0$) will not have any randomness.
 However, a configuration that defines a user that never updates ($u = 0$) and always installs ($i = 1$) will still be selecting to install random components.
 
-
-\subsection{Simulation Model Validation}
-The two main methods of validation of this model is discussions with project supervisors, and referencing the user survey. 
-
-As described in the methodology; one effort to validate these artifacts is done through meetings and a structured walk-through with the core stakeholders.
-In this simulation the core stakeholders are the project researcher and supervisors.
-These are the people who are asking the questions and are also impacted by the outcome, therefore they are directly effected by the validity of the results.
-Meetings where held at regular intervals to ensure the projects progress and direction where correct.
-
-%%%Results from what else should be asked, install stuff not from repository, installs break
-The survey described in chapter \ref{strategies}, 
-was conducted at a point in the project when the simulation model was just being developed, so had considerable impact on these artifacts.
-The questions asked in this survey helped gauge the necessity and frequency of user actions,
-so that only the most important aspects of the problem can be selected to be simulated.
-It also filled in gaps of what was missing from the survey and model, giving direction for exploration.
-
-
-
 \section{Configuration Data Collection and Conversion}
 \label{sim.collection}
 In order to assign variables to a simulation model configuration, data from the Ubuntu domain must be collected and converted.
-The 
-These variables are broken into two groups; the context variables, which do not change over simulation executions; 
-and variables which are changed to answer specific questions.
-The implementation of the simulation processes are then described, with the necessary practical alterations made. 
+There were three sets of data that were necessary to collect:
+\begin{enumerate}
+  \item the sets of Ubuntu packages and the times they became available from the Ubuntu repository.
+  \item the initial component system, Ubuntu 9.10.
+  \item the probabilities different components will be selected to be installed, from the \texttt{app-install-data} package and weighted using the Ubuntu popularity contest.
+\end{enumerate}
 
-\subsection{Context Variables in the Configuration}
-%%%Context variables are common attributes
-Some variables form the context of the simulation, these are static points that stay at a default assignment across simulation runs.
-They are static because they are assumed to be universal for Ubuntu users, like the repository function and the probability a package will be installed by a user;
-or they are assumed to be independent of component evolution, like the time frame and the initial system.
+This section describes the data and how it was converted into a usable format.
 
-%%%Time frame between the two releases 10.2009-10.2010, specifically from 2009,10,31 for 365 days
-
-
-%%%This time frame implies the initial system which is Ubuntu 10.09
-The time frame start was selected to coincide with the release of the Ubuntu version 9.10.
-This version was then selected to be used as the initial system, as if the user just installed a new Operating System onto their system.
-Specifically the desktop i386 distribution was selected as it is the most popular among the users of Ubuntu.
-
-
-\subsubsection{Collecting the Packages}
-The information gathering must be accomplished with great care, as the resolution and detail must be precise.
+\subsection{Collecting the Components}
 The Ubuntu repository located at http://archive.ubuntu.com/ has accessible data of the necessary detail to be used.
 It contains all packages that have ever been in the repository, and the information to the minute of when the package was added.
 
@@ -457,7 +427,11 @@ The package ``build-essential'' which contains tools to build Debian packages, i
 This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 
+\subsection{Simulation Model Validation}
+The main method of validation of this model is discussions with project supervisors and other stakeholders. 
+Meetings with both these parties where held at regular intervals to ensure the projects progress and direction where correct.
 
+%%%TODO validate the input,
 
 \section{Summary}
 {}In this chapter possible options were discussed for studying various strategies employed when evolving component systems.

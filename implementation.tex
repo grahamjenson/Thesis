@@ -877,21 +877,14 @@ Given these reasons GJSolver is seen as a verified implementation and will be us
 
 
 \section{Simulation Validation}
-%%%This is validated to measure the difference to reality to find if the error is tolerable
-The validation of the implementation of the simulation is an important step in the use of this simulation.
-As no simulation exactly describes reality, this step is mostly an exploration of the differences between the simulation and the reality of component system evolution.
-Therefore, this not only highlights the similarities to real component evolution, but also the differences.
-The identification of differences is important, as the assumptions made will lead to errors, these can be measured to find if the simulation is within tolerable error. 
+The use of GJSolver to simulate CSE must be validated.
+This validation is accomplished in two stages by looking at the input, and then the output of the simulation.
+This section's goal is to describe the differences between the simulation and the reality of CSE.
+The identification of differences is important to determine whether the simulation is within tolerable error. 
 
-%%%This is done by ensuring the 
-This simulation is validated though looking at the results outputted from the simulation and ensuring they conform to expectations, 
-then compare them to the output of an actual system.
+Two resources are used in this section; a system that evolved in a controlled environment,
+ and logs outputted from \texttt{apt-get} that were submitted by the respondents of the survey (section \ref{strat.usersurvey}).
 
-%%%Face Validation
-Face validation is the process by which output of the simulation checked in order to find if it behaves as it should.
-The core output from this simulation is the resulting systems created during execution of the simulation.
-Looking at this output alone is difficult to state that it is correct, only that it looks correct.
-This process was iteratively done throughout development, as the core stakeholder is also the simulation developer.
 
 \subsection{Validation via Recorded System}
 %%%Controlled Environment
