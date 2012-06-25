@@ -5,18 +5,14 @@ A simulation is the implementation of a model over time.
 A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
-In the previous chapter, the \modelname model was defined to represent CSE.
-While a \modelname instance can be used to describe unlikely requests made by a user, 
-e.g. a user requesting to install the same component every second for a century,
-a goal of this research is study the evolution of \textit{realistic} systems. 
-Therefore, it is necessary to create realistic instances of \modelname. 
-For this purpose the simulation \usermodel (Simulated User) model was developed.
-This model is used to represent how a user would realistically change their component system
-and can be used to create descriptions their systems evolution.
-
-This model was developed in part using the results of a survey conducted to determine how users change their component systems.
-An instance of this model contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will update their system on a given day.
-These variables are used to create a CUDF* document that can then be simulated.
+In the previous chapter, CUDF* documents were defined to describe the evolution of component systems.
+However, such a document can be used to describe improbable situations,
+e.g. a user requesting to install the same component every second for a century.
+Given that a goal of this research is study the evolution of \textit{realistic} systems,
+it is necessary to create realistic CUDF* documents. 
+For this purpose the \usermodel (Simulated User) model was developed.
+This model describes how a user would realistically change their component system
+and its instances are used to create descriptions of their system evolving as CUDF* documents.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
 \begin{figure}[htp]
@@ -26,7 +22,7 @@ rankdir=BT;
 CMS[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">CUDF*</TD></TR></TABLE>> shape=none];
 subgraph {
 	rank=same;
-	CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF*</TD></TR></TABLE>> shape=none];
+	CMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:CUDF* Document</TD></TR></TABLE>> shape=none];
 	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\usermodelwx</TD></TR></TABLE>> shape=none];
 }
 ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\usermodelwx</TD></TR></TABLE>> shape=none];
@@ -34,18 +30,22 @@ CMI -> CMS [ label="instantiates"];
 ConMI -> ConM [ label="instantiates"];
 ConMI -> CMI [ label="creates"];
 }
-  \caption{Diagram of the Simulation models relationships}
+  \caption{Diagram of the \usermodel models relationships}
   \label{sim.modeldiagram}
 \end{center}
 \end{figure}
 
+The \usermodel model was developed in part using the results of a survey conducted to determine how users change their component systems.
+\usermodel contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will update their system on a given day.
+It also contains assumptions about the simulation, e.g. the components used and the dates the system is simulated.
+
 This chapter first describes the user survey that explores how component systems are changed by their users.
-The simulation model is then presented by describing the different variables and how a configuration is used to create a CUDF* document.
-The data that was collected and the processes to convert the data into a useful format usable by the simulation model are then described.
+The \usermodel model is then presented by describing the different variables and how a configuration is used to create a CUDF* document.
+The data that was collected and the processes to convert the data into a useful format usable by the \usermodel model are then described.
 
 \section{User Survey}
 \label{strat.usersurvey}
-To explore the user role in CSE and to construct a simulation model, a survey was conducted on users of component systems.
+To explore the user's role in CSE and to construct \usermodel model, a survey was conducted on users of component systems.
 This survey targeted users of GNU/Linux distributions (specifically Ubuntu) and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
 It was completed by 59 users, who answered questions about their background, systems they use, and the ways they change their component systems.
 In this context, the way in which component systems are changed is through interaction with package manager applications. 
@@ -53,7 +53,6 @@ Therefore, the questions were primarily about this interaction.
 
 In this section, a brief description of the survey and an analysis of responses are given.
 The results from this survey are used to describe and categorise the motivations and behaviours of users when changing their component systems.
-A detailed descriptions of questions in the survey can be found in appendix \ref{apx.survey}. 
 
 \subsection{Questions}
 %%%The goals of the survey:
@@ -108,24 +107,24 @@ One goal of this survey was to identify user behaviours.
 Based on responses, it can be concluded that users attitudes towards changing their systems are affected by the following risks:
 \begin{itemize}
   \item the potential risk of changing the system and introducing new problems.
-  \item the potential risk of becoming out-of-date and having old problems persist.
+  \item the potential risk of becoming out-of-date and having less functionality and old problems persist.
 \end{itemize}
 The behaviours of these users can be described with two user stereotypes, \textbf{conservative} and \textbf{progressive}.
-These terms come from the domain of politics where conservatism is the philosophy that emphasises minimal and gradual change in society. %TODO ref
-This philosophy is contrasted by progressivism that promotes change and reform. %TODO ref
+These terms come from the domain of politics where conservatism philosophy that emphasises minimal and gradual change in society,
+which is is contrasted by progressivism philosophy that promotes change and reform \citep{oed2010}.
 
 Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
 \begin{quotation}
 ``In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
-The previous quote shows that this respondent less likely to change their system, even though it may be beneficial, as it may lead to a fault. 
+The previous quote shows that this respondent less likely to change their system, even though it may be beneficial. 
 
-Another example of a user response expresses a progressive attitude:
+Another example of a user's response that expresses a progressive attitude:
 \begin{quotation}
 ``I update my packages whenever I log in each day''
 \end{quotation}
 The reason this user upgrades their system every day is likely to ensure that packages do not become out-of-date.
-This behaviour may require significant change.
+This behaviour may increase the functionality of their system and tries to fix packages with bugs, at the cost that it may also require significant change.
 
 Both of these stereotypes have extremes.
 One such extreme is when a user tries to eliminate all of the risks associated with being out-of-date.
@@ -151,9 +150,9 @@ This lack of change will result in the system quickly becoming out of date, thou
 
 The risks associated with change and being out-of-date drive the users behaviours towards changing the system. 
 
-\section{Simulation Model}
-The simulation model consists of a set of variables that describe the user's behaviour when changing their component system.
-An assignment to these variables is an instance of the simulation model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
+\section{\usermodel model}
+The \usermodel model consists of a set of variables that describe the user's behaviour when changing their component system.
+An assignment to these variables is an instance of the \usermodel model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
 The variables that make up the simulation user are: 
 \begin{itemize}
   \item $u$ is the probability a user requests to update the system per day.
@@ -231,35 +230,35 @@ This selection is:
 \end{itemize} 
 
 
-\subsection{Simulation Model Discussion}
-The simulation model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
+\subsection{\usermodel model Discussion}
+The \usermodel model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
 the removal of packages, and the initial set-up by the user of their system.
 
 In the \modelname model, and in CUDF*, a user may select to remove a component from their system.
-The simulation model presented does not allow the user to make such a request.
+The \usermodel model presented does not allow the user to make such a request.
 This exclusion is due to:
 \begin{itemize}
   \item The users in the survey requested to remove components infrequently.
   \item Selecting a package to remove during evolution can easily create unsatisfiable evolution problems.
-  \item It would make the simulation model overly complex. 
+  \item It would make the \usermodel model overly complex. 
 \end{itemize}
 For these reasons, this simulation does not include the possibility the user may request to remove a package.
 
 As described in the results from the survey, almost all users upgraded the system and installed new packages when first setting up their system.
-This initial change is not included in the simulation model as it creates a different initial system for each user,
+This initial change is not included in the \usermodel model as it creates a different initial system for each user,
 making the their comparison difficult.
 Additionally, as the initial system, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
 
 Two additional points that should be discussed is the lack of correlation between the user's requests,
 and the randomness in this model.
 
-In the presented simulation model a user's request will not impact any future request.
+In the presented \usermodel model a user's request will not impact any future request.
 This type correlation between requests could be in the form of user behaviours.
 For example, a user that always upgrades before installing. 
 Another type of correlation is where installing one package impacts the probability another package is installed.
 For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
 The only exception to this, is that a user cannot request to install the same component multiple times.
-Defining such correlations would dramatically increase the complexity of the simulation model.
+Defining such correlations would dramatically increase the complexity of the \usermodel model.
 It would also require significant data-collection and analysis to ensure to model.
 Therefore, for the practicality of the simulation and the simplicity of the presented models, the correlation between requests is ignored.
 
@@ -270,7 +269,7 @@ However, a configuration that defines a user that never updates ($u = 0$) and al
 
 \section{Configuration Data Collection and Conversion}
 \label{sim.collection}
-In order to assign variables to a simulation model configuration, data from the Ubuntu domain must be collected and converted.
+In order to assign variables to a \usermodel model configuration, data from the Ubuntu domain must be collected and converted.
 There were three sets of data that were necessary to collect:
 \begin{enumerate}
   \item the sets of Ubuntu packages and the times they became available from the Ubuntu repository.
@@ -390,8 +389,9 @@ As this difference may effect the validity of the simulation however, during the
 \subsection{Probability a component will be selected}
 %%%The probability a component will be selected
 Different users will be more likely to select different packages to install.
-However, as discussed to simulate this probability is impractical, and is likely impossible.
-Therefore, one simulated user probability will be created, this assumes that all users have the same likely hood of selecting packages.
+For example, a user who is a graphic designer will more likely select graphics editor tools to be installed, and less likely select programming tools.
+However, simulating the type of each user and their individual preferences of what they would install is impractical.
+For this simulation therefore, each package's probability to be installed will be the same for all simulated users.
 
 To define the probability a user will select a package to install, the problem can be broken into two questions:
 \begin{enumerate}
@@ -427,7 +427,7 @@ The package ``build-essential'' which contains tools to build Debian packages, i
 This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 
-\subsection{Simulation Model Validation}
+\subsection{\usermodel model Validation}
 The main method of validation of this model is discussions with project supervisors and other stakeholders. 
 Meetings with both these parties where held at regular intervals to ensure the projects progress and direction where correct.
 
@@ -436,6 +436,6 @@ Meetings with both these parties where held at regular intervals to ensure the p
 \section{Summary}
 {}In this chapter possible options were discussed for studying various strategies employed when evolving component systems.
 {}Simulation, through the methodology \citep{Law2005} describes, was selected, and the steps involved were described.
-{}The central artifact of this methodology, the simulation model, was broken down into models of the user, repository and solver, and the processes of simulation.
+{}The central artifact of this methodology, the \usermodel model, was broken down into models of the user, repository and solver, and the processes of simulation.
 {}These models were validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
 {}In the next chapter the configuration of the simulation is further defined, and the questions about component system evolution are attempted to be answered.
