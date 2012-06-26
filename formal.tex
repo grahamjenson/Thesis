@@ -100,6 +100,7 @@ In \modelname, only certain types of constraints are required to be able to desc
 Therefore, only certain types of constraint are considered in this model.
 These types are:
 \begin{enumerate}
+  \label{formal.constrainttypes}
   \item \textbf{Exclusion}: $\neg a := \{\alpha \in 2^{\mathbb{C}} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}.
   \item \textbf{Conflict}: $a \rightarrow \neg c := \{\alpha \in 2^{\mathbb{C}} \mid \mbox{if } a \in \alpha \mbox{ then } c \not \in \alpha\}$ \label{formal.conflictconstraint}.
   \item \textbf{Inclusive Disjunction}: $a_1 \vee \ldots \vee a_n := \{\alpha \in 2^{\mathbb{C}} \mid a_1 \in \alpha \mbox{ or }\ldots \mbox{ or } a_n \in \alpha\}$ \label{formal.keepconstraint}.
