@@ -5,14 +5,14 @@ A simulation is the implementation of a model over time.
 A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
 {\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
 
-In the previous chapter, CUDF* documents were defined to describe the evolution of component systems.
-However, such a document can be used to describe improbable situations,
+In the previous chapter, CUDF* documents were used to describe the evolution of component systems through repeated user requests to change.
+However, such a document can be used to describe unlikely user's,
 e.g. a user requesting to install the same component every second for a century.
 Given that a goal of this research is study the evolution of \textit{realistic} systems,
-it is necessary to create realistic CUDF* documents. 
+it is necessary to model realistic users. 
 For this purpose the \usermodel (Simulated User) model was developed.
-This model describes how a user would realistically change their component system
-and its instances are used to create descriptions of their system evolving as CUDF* documents.
+This model describes how a user would realistically change their component system,
+and it can be used to create realistic CUDF* documents.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
 \begin{figure}[htp]
@@ -36,12 +36,18 @@ ConMI -> CMI [ label="creates"];
 \end{figure}
 
 The \usermodel model was developed in part using the results of a survey conducted to determine how users change their component systems.
-\usermodel contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will update their system on a given day.
-It also contains assumptions about the simulation, e.g. the components used and the dates the system is simulated.
+This survey is described in section \ref{strat.usersurvey}.
 
-This chapter first describes the user survey that explores how component systems are changed by their users.
-The \usermodel model is then presented by describing the different variables and how a configuration is used to create a CUDF* document.
-The data that was collected and the processes to convert the data into a useful format usable by the \usermodel model are then described.
+\usermodel contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will update their system on a given day.
+In addition it contains information (e.g. the dates the simulation takes place) and assumptions (e.g. the probability a package will be selected to be installed) about the simulation.
+\usermodel is presented in section \ref{sim.usermodel} and teh variables, information, and assumptions for the simulation are discussed.
+
+To use \usermodel, data was collected and converted into usable formats.
+The sources this data was collected from and the methods used to convert it are described in section \ref{sim.collection}.
+
+This chapter concludes in section \ref{sim.modelvalidation} with a discussion over the validity of this \usermodel.
+This section describes the differences between the reality of CSE and \usermodel.
+These differences are important to explore, as they may reduce the validity of the results from the simulation.
 
 \section{User Survey}
 \label{strat.usersurvey}
@@ -51,7 +57,7 @@ It was completed by 59 users, who answered questions about their background, sys
 In this context, the way in which component systems are changed is through interaction with package manager applications. 
 Therefore, the questions were primarily about this interaction.
 
-In this section, a brief description of the survey and an analysis of responses are given.
+In this section, a description of the survey and an analysis of responses are given.
 The results from this survey are used to describe and categorise the motivations and behaviours of users when changing their component systems.
 
 \subsection{Questions}
@@ -151,9 +157,16 @@ This lack of change will result in the system quickly becoming out of date, thou
 The risks associated with change and being out-of-date drive the users behaviours towards changing the system. 
 
 \section{\usermodel model}
-The \usermodel model consists of a set of variables that describe the user's behaviour when changing their component system.
-An assignment to these variables is an instance of the \usermodel model, also called a configuration, is used to create a CUDF* document that describes a component system's evolution.
-The variables that make up the simulation user are: 
+\label{sim.usermodel}
+The \usermodel model consists of: 
+\begin{itemize}
+  \item a set of variables that describe the user's behaviour when changing their component system.
+  \item a set of assumptions used by the simulation.
+\end{itemize}
+This section presents the variables and assumptions of \usermodel, and how an instance of this model can be used to create a CUDF* document.
+
+\subsection{Variables and Assumptions}
+The variables that make up the \usermodel are: 
 \begin{itemize}
   \item $u$ is the probability a user requests to update the system per day.
   \item $i$ is the probability a user requests to install per day.
@@ -163,18 +176,16 @@ The variables that make up the simulation user are:
 
 The variable $u$ is the probability per day that a user will update their system, and the variable $i$ is the probability a user will request to install a component.
 The reason for selecting the ``per day'' resolution came from the user survey responses, where the most frequent these requests typically occurred was daily.
-
 The $I$ and $U$ criteria to install and update a component represented in MOF can be altered to represent current systems criteria like apt-get,
 or experiment with novel criteria.
 
-\subsection{Static Properties}
-The simulation created to study CSE for this research has some static properties:
+The assumptions made in the \usermodel are:
 \begin{itemize}
-  \item The starting time of the evolution $t_0$, which is October 30th 2009.
-  \item The initial component system $\alpha_{t_0}$, which is Ubuntu version 9.10 released October 29th 2009.
-  \item The number of days the simulation runs, 365 days.
-  \item The available components to the evolving system, which are located at the central Ubuntu repository.
-  \item The probability a package name is selected to be installed is $IP$, it a set of names paired with probabilities i.e. $IP \subseteq \mathcal{N} \times \mathbb{R}$.
+  \item The starting time of the evolution $t_0$ is October 30th 2009.
+  \item The initial component system $\alpha_{t_0}$ is Ubuntu version 9.10 released October 29th 2009.
+  \item The simulation runs for 365 days.
+  \item The available components to the evolving system are located at the central Ubuntu repository.
+  \item Each package name has a probability that a user will select to install it. 
 \end{itemize}
 
 The time frame was selected to be over the year between the Ubuntu releases of system in 9.10 and 10.10 occurring between October 2009 to 2010.
@@ -185,10 +196,16 @@ This means that in the middle of this simulation, April 2010, the effects of thi
 The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
 Using this as the set of packages because it is the default choice on Ubuntu systems.
 
-A user will not select to install any package into their system, e.g. they will probably not request to install any library packages.
-Additionally, a user will more likely select to install some packages over others, e.g. they are more likely to install a popular Internet browser over another.
-The value $IP$ is a weighted pool of package names that are used to express these facts about the users.
-How this value is defined is described in section \ref{sim.collection}.
+A user would not realistically select to install any package into their system.
+They would select packages for a purpose, to fulfil some requirement of their system.
+Therefore, it is assumed that a user would more likely select some packages over others to be installed into their systems.
+Further implied assumptions of this are:
+\begin{enumerate}
+  \item A user will select a package name, not a specific version to be installed.
+  \item All users have the same probability to select a package name to be installed. 
+\end{enumerate}
+These assumptions are not realistic as each user is likely to prefer different packages and could select to install a specific version of a package. 
+These differences to reality are further discussed in section \ref{sim.modelvalidation}.
 
 \subsection{CUDF* Document Creation}
 The process to create a CUDF* document from a configuration and the static properties is described here.
@@ -197,7 +214,7 @@ This document is complete, except for that it contains no user requests.
 By adding requests to this template the evolution of a component system can be described.
 How an Ubuntu 9.10 system and the Ubuntu repository are used to create the CUDF* template document is described in section \ref{sim.collection}.
 
-Given this template and a configuration the process in described in figure \ref{sim.CUDF*}.
+Given this template and \usermodel variables the process to create a CUDF* document is described in figure \ref{sim.CUDF*}.
 \begin{figure}[h]
 \begin{center}
 \begin{alltt}
@@ -206,7 +223,7 @@ createCUDF*(template, \(< u\), \(< i\), \(< U\), \(< I\)):
     if random-probability() \(< u\):
       add request to upgrade the system at time \(day + t\sb{0}\) with criteria \(U\)
     if random-probability() \(< i\):  
-      component = weighted selection from \(IP\) without replacement 
+      component = weighted selection from packages without replacement 
       add request to install component at time \(day + t\sb{0} + 10 minutes\), with criteria \(I\)
 \end{alltt}
   \caption{Create CUDF* document to describe the evolution of a component system}
@@ -221,51 +238,16 @@ Each day the ``user'' randomly selects to upgrade their system, or install a com
 The function \texttt{random-probability()}, which returns a random value between 0 and 1, is used to decide what requests the user will make on a day.
 
 If a user requests to upgrade their system on a day, the request is added to the template CUDF.
-If the user requests to install a component, first the component to be installed is selected from the set $IP$.
+If the user requests to install a component, first the component to be installed is selected the set of all packages.
 This selection is: 
 \begin{itemize}
-  \item \textit{After the upgrade request}: the preference of users in the survey has shown that typically they will upgrrade before installing.  
-  \item \textit{weighted}: so components that are more likely to be installed are more likely selected
-  \item \textit{without replacement}: so that the user cannot select to install the same component more than once
+  \item \textit{After the upgrade request}: the preference of users in the survey has shown that typically they will upgrade before installing.  
+  \item \textit{weighted}: components that are more likely to be installed are more likely selected
+  \item \textit{without replacement}: a user cannot select to install the same component more than once
 \end{itemize} 
 
-
-\subsection{\usermodel model Discussion}
-The \usermodel model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
-the removal of packages, and the initial set-up by the user of their system.
-
-In the \modelname model, and in CUDF*, a user may select to remove a component from their system.
-The \usermodel model presented does not allow the user to make such a request.
-This exclusion is due to:
-\begin{itemize}
-  \item The users in the survey requested to remove components infrequently.
-  \item Selecting a package to remove during evolution can easily create unsatisfiable evolution problems.
-  \item It would make the \usermodel model overly complex. 
-\end{itemize}
-For these reasons, this simulation does not include the possibility the user may request to remove a package.
-
-As described in the results from the survey, almost all users upgraded the system and installed new packages when first setting up their system.
-This initial change is not included in the \usermodel model as it creates a different initial system for each user,
-making the their comparison difficult.
-Additionally, as the initial system, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
-
-Two additional points that should be discussed is the lack of correlation between the user's requests,
-and the randomness in this model.
-
-In the presented \usermodel model a user's request will not impact any future request.
-This type correlation between requests could be in the form of user behaviours.
-For example, a user that always upgrades before installing. 
-Another type of correlation is where installing one package impacts the probability another package is installed.
-For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
-The only exception to this, is that a user cannot request to install the same component multiple times.
-Defining such correlations would dramatically increase the complexity of the \usermodel model.
-It would also require significant data-collection and analysis to ensure to model.
-Therefore, for the practicality of the simulation and the simplicity of the presented models, the correlation between requests is ignored.
-
-The randomness between users that are created from the same configuration occurs in three places;
-when they upgrade, when they install, and what they install.
-A configuration that defines a user that always updates (where $u = 1$) and never installs ($i = 0$) will not have any randomness.
-However, a configuration that defines a user that never updates ($u = 0$) and always installs ($i = 1$) will still be selecting to install random components.
+Using this process a CUDF* document can be created that is a description of the evolution of a component system.
+The discussion over how realistic the results from this process are is presented in section \ref{sim.modelvalidation}.
 
 \section{Configuration Data Collection and Conversion}
 \label{sim.collection}
@@ -428,8 +410,46 @@ This is a problem that was briefly described in chapter \ref{simulation}, where 
 It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 
 \subsection{\usermodel model Validation}
+\label{sim.modelvalidation}
 The main method of validation of this model is discussions with project supervisors and other stakeholders. 
 Meetings with both these parties where held at regular intervals to ensure the projects progress and direction where correct.
+
+\subsection{Differences To Survey}
+The \usermodel model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
+the removal of packages, and the initial set-up by the user of their system.
+
+In the \modelname model, and in CUDF*, a user may select to remove a component from their system.
+The \usermodel model presented does not allow the user to make such a request.
+This exclusion is due to:
+\begin{itemize}
+  \item The users in the survey requested to remove components infrequently.
+  \item Selecting a package to remove during evolution can easily create unsatisfiable evolution problems.
+  \item It would make the \usermodel model overly complex. 
+\end{itemize}
+For these reasons, this simulation does not include the possibility the user may request to remove a package.
+
+As described in the results from the survey, almost all users upgraded the system and installed new packages when first setting up their system.
+This initial change is not included in the \usermodel model as it creates a different initial system for each user,
+making the their comparison difficult.
+Additionally, as the initial system, Ubuntu 9.10, is only one day old when the simulation starts, an initial upgrade is unnecessary.
+
+Two additional points that should be discussed is the lack of correlation between the user's requests,
+and the randomness in this model.
+
+In the presented \usermodel model a user's request will not impact any future request.
+This type correlation between requests could be in the form of user behaviours.
+For example, a user that always upgrades before installing. 
+Another type of correlation is where installing one package impacts the probability another package is installed.
+For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
+The only exception to this, is that a user cannot request to install the same component multiple times.
+Defining such correlations would dramatically increase the complexity of the \usermodel model.
+It would also require significant data-collection and analysis to ensure to model.
+Therefore, for the practicality of the simulation and the simplicity of the presented models, the correlation between requests is ignored.
+
+The randomness between users that are created from the same configuration occurs in three places;
+when they upgrade, when they install, and what they install.
+A configuration that defines a user that always updates (where $u = 1$) and never installs ($i = 0$) will not have any randomness.
+However, a configuration that defines a user that never updates ($u = 0$) and always installs ($i = 1$) will still be selecting to install random components.
 
 %%%TODO validate the input,
 
