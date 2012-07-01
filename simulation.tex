@@ -209,8 +209,8 @@ These differences to reality are further discussed in section \ref{sim.modelvali
 
 \subsection{CUDF* Document Creation}
 The process to create a CUDF* document from a configuration and the static properties is described here.
-The first part of this process is to represent the initial system Ubuntu 9.10, and the Ubuntu repository as a CUDF* document template.
-This document is complete, except for that it contains no user requests.
+The first part of this process is to represent the initial system Ubuntu 9.10 and the Ubuntu repository as a CUDF* document template.
+This document is a complete CUDF* document with the exception that it contains no user requests.
 By adding requests to this template the evolution of a component system can be described.
 How an Ubuntu 9.10 system and the Ubuntu repository are used to create the CUDF* template document is described in section \ref{sim.collection}.
 
@@ -221,61 +221,62 @@ Given this template and \usermodel variables the process to create a CUDF* docum
 createCUDF*(template, \(< u\), \(< i\), \(< U\), \(< I\)):
   for \(day\) in 1 to 365:
     if random-probability() \(< u\):
-      add request to upgrade the system at time \(day + t\sb{0}\) with criteria \(U\)
+      add upgrade request to template at time \(t\sb{0}+day\) with criteria \(U\)
     if random-probability() \(< i\):  
       component = weighted selection from packages without replacement 
-      add request to install component at time \(day + t\sb{0} + 10 minutes\), with criteria \(I\)
+      add request to install component at time \(t\sb{0}+day+10 minutes\) 
+                                                      with criteria \(I\)
 \end{alltt}
-  \caption{Create CUDF* document to describe the evolution of a component system}
+  \caption{Process to create a CUDF* document that realistically describes the evolution of a component system}
   \label{sim.CUDF*}
 \end{center}
 \end{figure}
 
-This process takes the CUDF* template and adds requests to it, to describe how a user changes their component systems over time.
-The inputs to this method are the template and the configuration variables.
-The main loop, loops over the 365 days in which the simulation occurs.
-Each day the ``user'' randomly selects to upgrade their system, or install a component.
-The function \texttt{random-probability()}, which returns a random value between 0 and 1, is used to decide what requests the user will make on a day.
+This process takes the CUDF* template and the variables from a user model instance and adds requests to the template to  create a complete CUDF* document.
+Such a document describes the realistic evolution of an Ubuntu system.
 
-If a user requests to upgrade their system on a day, the request is added to the template CUDF.
-If the user requests to install a component, first the component to be installed is selected the set of all packages.
+The main loop iterates over the 365 days in which the simulation occurs.
+Each day the ``user'' randomly selects to upgrade their system and/or install a component.
+
+The function \texttt{random-probability()} is defined to return a random value between 0 and 1.
+This function is used to decide what requests the user will make on a given day.
+
+If a user requests to upgrade their system, the upgrade request is added to the template CUDF at time initial time $t_0$ plus the number of elapsed days, using the criteria $U$.
+If the user requests to install a component, first the component to be installed is selected.
 This selection is: 
 \begin{itemize}
-  \item \textit{After the upgrade request}: the preference of users in the survey has shown that typically they will upgrade before installing.  
-  \item \textit{weighted}: components that are more likely to be installed are more likely selected
-  \item \textit{without replacement}: a user cannot select to install the same component more than once
+  \item \textit{Weighted}: components that are more likely to be installed are more likely selected
+  \item \textit{Without replacement}: a user cannot select to install the same component more than once
 \end{itemize} 
+The request to install the selected component is then added to the template ten minutes after the initial time $t_0$ plus the number of elapsed dates.
+By adding ten minutes it ensures if the user requests to upgrade as well, this will always be prior to the install request.
+The install request will use the criteria $I$ from the user model.
 
-Using this process a CUDF* document can be created that is a description of the evolution of a component system.
-The discussion over how realistic the results from this process are is presented in section \ref{sim.modelvalidation}.
-
+The discussion over how realistic the resulting CUDF* documents are is presented in section \ref{sim.modelvalidation}.
 \section{Configuration Data Collection and Conversion}
 \label{sim.collection}
-In order to assign variables to a \usermodel model configuration, data from the Ubuntu domain must be collected and converted.
-There were three sets of data that were necessary to collect:
+In order to use the above presented process, data from the Ubuntu domain must be collected and converted into useful formats.
+The collected data and their sources are:
 \begin{enumerate}
-  \item the sets of Ubuntu packages and the times they became available from the Ubuntu repository.
-  \item the initial component system, Ubuntu 9.10.
+  \item the set of Ubuntu packages and the times they became available, collected from the Ubuntu repository.
+  \item the initial component system Ubuntu 9.10 collected from a virtual install.
   \item the probabilities different components will be selected to be installed, from the \texttt{app-install-data} package and weighted using the Ubuntu popularity contest.
 \end{enumerate}
 
 This section describes the data and how it was converted into a usable format.
 
 \subsection{Collecting the Components}
-The Ubuntu repository located at http://archive.ubuntu.com/ has accessible data of the necessary detail to be used.
-It contains all packages that have ever been in the repository, and the information to the minute of when the package was added.
+The Ubuntu repository located at http://archive.ubuntu.com/ is the default location that Ubuntu packages are distributed from.
+This repository contains a history of all packages that have ever been included with the minute that the package was uploaded.
 
-%%%These are the steps that are taken to create the repository function
-To collect these packages and information from the repository, this process was followed:
-\begin{enumerate}
-  \item the repositories web site was recursively scrapped to create a set of pairs $P$ 
-  such that each pair contains a download link to a package and the date that package was uploaded to the repository
-  \item Each package in the set $P$ was then downloaded and the file tagged with its upload date
-  \item A dpkg package is a compressed set of files, 
-  which include the meta-data control file of the package; all packages are extracted and the control file is tagged with the upload date of its package 
-\end{enumerate}
+To collect these packages and information from the repository first the repositories web site was parsed and all the packages were downloaded.
+These Debian/Ubuntu packages are compressed with meta-information, code and binary files.
+Second, each package was decompressed and the main meta-data file, the \textit{control} file, was extracted.
+This control file was tagged with the upload date of the package to the Ubuntu Repository.
 
-This process creates a set of control files $C$ each tagged with the date it was uploaded to the repository.
+The control files are a very similar format to the CUDF format, as CUDF was largely based on this format.
+An example of these files can be seen in section \ref{background.debianPackages}.
+The conversion between Debian and CUDF is documented 
 
 \subsubsection{dpkg to CUDF* mapping}
 \label{ubuntusimulation.debtocudf}
