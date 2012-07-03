@@ -45,7 +45,7 @@ In addition it contains information (e.g. the dates the simulation takes place) 
 To use \usermodel, data was collected and converted into usable formats.
 The sources this data was collected from and the methods used to convert it are described in section \ref{sim.collection}.
 
-This chapter concludes in section \ref{sim.modelvalidation} with a discussion over the validity of this \usermodel.
+This chapter concludes in section \ref{sim.modelvalidation} with a (or ) discussion over the validity of this \usermodel.
 This section describes the differences between the reality of CSE and \usermodel.
 These differences are important to explore, as they may reduce the validity of the results from the simulation.
 
@@ -182,7 +182,7 @@ or experiment with novel criteria.
 The assumptions made in the \usermodel are:
 \begin{itemize}
   \item The starting time of the evolution $t_0$ is October 30th 2009.
-  \item The initial component system $\alpha_{t_0}$ is Ubuntu version 9.10 released October 29th 2009.
+  \item The initial component system $\alpha_{t_0}$ is Ubuntu 9.10 (i386) released October 29th 2009.
   \item The simulation runs for 365 days.
   \item The available components to the evolving system are located at the central Ubuntu repository.
   \item Each package name has a probability that a user will select to install it. 
@@ -248,7 +248,7 @@ This selection is:
   \item \textit{Weighted}: components that are more likely to be installed are more likely selected
   \item \textit{Without replacement}: a user cannot select to install the same component more than once
 \end{itemize} 
-The request to install the selected component is then added to the template ten minutes after the initial time $t_0$ plus the number of elapsed dates.
+The request to install the selected component is then added to the template ten minutes after the initial time $t_0$ plus the number of elapsed days.
 By adding ten minutes it ensures if the user requests to upgrade as well, this will always be prior to the install request.
 The install request will use the criteria $I$ from the user model.
 
@@ -271,149 +271,121 @@ This repository contains a history of all packages that have ever been included 
 
 To collect these packages and information from the repository first the repositories web site was parsed and all the packages were downloaded.
 These Debian/Ubuntu packages are compressed with meta-information, code and binary files.
+
 Second, each package was decompressed and the main meta-data file, the \textit{control} file, was extracted.
-This control file was tagged with the upload date of the package to the Ubuntu Repository.
+This control file was tagged with the upload time of the package to the Ubuntu Repository.
 
+Third, all control files that did not have the key \verb+architecture+  include the value \verb+i386+ or \verb+all+ where removed.
+This removes any package that would not work on the simulated Ubuntu system die to architecture incompatibility.
+
+Fourth, the control files are converted into a single CUDF* template.
 The control files are a very similar format to the CUDF format, as CUDF was largely based on this format.
-An example of these files can be seen in section \ref{background.debianPackages}.
-The conversion between Debian and CUDF is documented 
-
-\subsubsection{dpkg to CUDF* mapping}
-\label{ubuntusimulation.debtocudf}
-The mapping of the Debian dpkg component meta-data to CUDF is mostly a direct process as the meta-data is very similar.
-This similarity is due to the Mancoosi organisation goals basing CUDF on FOSS systems like Debian.  
-There are a few differences however, these differences require some explaining when converting dpkg format to CUDF.
-In this section, firstly these problems will be described and their solutions explained, 
-then the process by which the set of control files is taken and the function $Rep(d)$ is created to return a CUDF file for a given date $d$.
-
-%%%Versioning problem
-\paragraph{Version Models}
-The first complication when mapping dpkg to CUDF is that the versioning models are incompatible.
-Debian uses a version mode \verb+[epoch:]upstream_version[-debian_revision]+,
-where \verb+epoch+ is an unsigned integer and \verb+upstream_version+ and \verb+debian_revision+ are strings.
-A Debian version is greater than another if its \verb+epoch+ is greater; 
-if their \verb+epoch+'s are equal then its \verb+upstream_version+ is lexically greater; 
-if their \verb+epoch+'s and \verb+upstream_version+'s are equal then its \verb+debian_revision+ is lexically greater.
-This lexical comparison (further explained in \citep{Barth2005}) differs greatly and is far more complicated than the CUDF integer based version model.
-
-To map a dpkg version to an integer then cannot be done without knowledge of all component versions refereed to in the repository.
-Therefore, the most straight forward solution is to extract all refereed versions (not only package versions but those in package formulae as well),
-and then sort them into a list such that their CUDF version is their index in the list.
-
-\paragraph{Virtual Packages}
-%%%Virtual Packages must be handeled, there are some specific debian semantics that are particularly important
-Debian has a package type called a virtual package, this is an abstracted package, one that can be provided and depended upon but does not exist.
-These packages provide an interface to some common functionality that can be provided by multiple packages.
-For example any package providing the virtual package \verb+dhcp-client+ must include dhcp client functionality. 
-Unlike other component models where this interface is defined in a verifiable manner like code or an ADL,
-Debian defines virtual packages in documentation, a list of which is provided on the Debian site\footnote{http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt/ accessed 6/3/2012}.
-
-The main aspect that requires consideration when mapping from dpkg to CUDF is that only dependencies where no version is specified can be fulfilled by a virtual package.
-For example, a dependency on \verb+foo+ can be satisfied by a package providing a \verb+foo+ virtual package, 
-however a dependency on \verb+foo >= 1+ cannot be satisfied by the same virtual package. 
-The solution to this difference is to change the name of all virtual packages to include the prefix \verb+virtual--+ and 
-alter dependencies that do not include version information to include an addition disjunction of the virtual package.
-For example, the line \verb+provides: foo+ is altered to be \verb+provides: virtual--foo+, 
-and the dependency \verb+depends: foo+ is altered to \verb+depends: virtual--foo | foo+.
-
-\paragraph{Priority}
-In the meta-data of the dpkg format there is a mechanism in which to state how important a package is to the system, this is called the package priority.
-This tag can be set to \verb+extra+, \verb+optional+, \verb+standard+, \verb+important+, and \verb+required+, where the last value expresses the necessity to have this package in a Debian system.
-The priority of a package is an optimisation problem, where selecting between components can take this into account, 
-except for the final value which expressly states that the package must be installed.
-Therefore, the mapping from the dpkg priority value to CUDF, is only done when the value is \verb+required+ and it sets the mapped CUDF packages \verb+keep+ value to \verb+package+.
-
-\paragraph{Date}
-As CUDF has an extensible syntax, the date the package was uploaded to the repository can be described as a key/value pair in the packages CUDF description.
-As described above the control file which describes gives the dpkg description of the package has been tagged with the date of upload.
-This date is extracted and converted to seconds since the Unix epoch (midnight, Jan. 1st 1970) and mapped to the integer property \verb+date+ in the pacakges CUDF file.
-For example, if a Debian package was uploaded on the date of 13 Feb 2009, at exactly 23:31:30, 
-the mapped CUDF component $c$ would have the property \verb+date+ would equal $1234567890$, i.e $c$.\verb+date+ $= 1234567890$.
-
-\paragraph{Architecture}
-Another important property in the dpkg format is the architecture of the package.
-This describes the necessary CPU/hardware for the package to be functional.
-The architecture of a dpkg package is directly mapped to the architecture of the CUDF property \verb+architecture+, through using CUDF's extensible syntax.
-For example, is the archicteure expressed in the dpkg control file is \verb+i386+ or \verb+all+ then the mapped CUDF package $c$ has property $c$.\verb+architecture+ $=$ \verb+i386+.
-
-\paragraph{Mapping}
-The function $Rep(d)$ takes a date $d$ and returns a CUDF file that contains all packages that exist in the repository on that date.
-After mapping all the individual dpkg control files to individual CUDF files, where one package exists per CUDF file,
-all the CUDF files are merged into one large file such, where $\mathbb{C}$ equals all CUDF components.
-The process to create the function $Rep$ is described below:
-\begin{enumerate}
-  \item Given the assumption the system that is evolved in the simulation is of the architecture i386, 
-  any component $c$ in $\mathbb{C}$ where $c$.\verb+architecture+ does not equal \verb+i386+ or \verb+all+ is removed.
-  \item The function $Rep(d)$ then simply returns the set of components whose upload date is less than $d$, i.e. $C_d = [c \mid c$.\verb+date+ $ \leq d]$
-\end{enumerate}
-
-\paragraph{Differences}
-%%%The main different is is that the entire repository is used here, where typically only a sub set is used
-The one significant difference between a real repository and this simulated repository function,
-is that a real Ubuntu user would likely use only a subset of the repository where this function uses all packages. 
-Also, the conversion from the dpkg format to CUDF allows multiple package versions installed in the same system where this is expressly forbidden in the Debian semantics. 
-
-Through the use of meta-data files which list subsets of packages inside the Ubuntu repository, a user can select portions of the repository to use.
-These meta-data files are used for different life cycle reasons (e.g. separating unstable from stable) and separating core packages from third party software.
-Creating a single repository out of all files was necessary as the states of the individual repositories are not stored,
-so finding what is included on a given date is impossible.
-To map a real user to this simulated user, the real user would select all meta-data files to use the entire repository of packages. 
-
-%%%We allow multiple versions of the same package to be installed, this is different from the debian
-Debian for the most part, does not allow multiple versions of the same package to be installed in a system simultaneously.
-However, in some instances Debian allows multiple packages to be installed on the system, as long as two such packages are not ``configured'' at the same time.
-If a package is not configured, then it's dependencies do not require to be satisfied and therefore differs from the CUDF model.
-In this simulation, this specific semantic of Debian is ignore, and multiple versions of a package are allowed to be installed into a system.
-Many of the criteria described in chapter \ref{strategies} discourage the inclusion of multiple version,
-therefore it is expected to have little impact on the results of the simulation.
-As this difference may effect the validity of the simulation however, during the simulation the effects will be measures and noted, and if the effects are significant discussed.
-
+An example of both these formats is presented in section \ref{background.models}.
+The conversion from Debian control files to a CUDF document is described by \cite{abatetrenen2010}.
+This report describes the handling of virtual packages and the conversion of versions. 
+This process is mostly followed to create the CUDF* template.
+The exceptions between the described process and the one used are:
+\begin{itemize}
+  \item The apt-pinning priorities are ignored
+  \item If a package has the value \texttt{require} for key \texttt{priority}, the CUDF package is given the property \texttt{keep: package}, to ensure the package remains between requests.
+  \item In the \texttt{preamble} the time $t_0$ is added.
+  \item Each CUDF package has the key \texttt{time} added with the tagged time of the control file.
+  \item A self conflict is not added to each package to simulate the restraint that only one version of each package is allowed to be installed.
+\end{itemize} 
+The final difference is significant as it differs from how real Ubuntu systems evolve and could invalidate the simulations results.
+However, the restriction for these systems to only allow one version to be installed is an interesting point of study.
+By allowing multiple packages to be installed means that this specific constraint can be studied.
+For example, questions like ``how often does an install request require the installation of multiple packages?'' 
+or ``how much does does this restriction effect the evolution of Ubuntu systems?'' can be answered by not enforcing this restriction.
+It is still preferable for a user to not have multiple versions of a pacakage.
+Therefore, this restriction can be ``softly'' enforced through using a criterion to minimise the number of packages with multiple versions.
+Such a criterion is discussed in section \ref{impl.ipp}.
 
 \subsection{Probability a component will be selected}
 %%%The probability a component will be selected
-Different users will be more likely to select different packages to install.
+Different users will likely select different packages to install.
 For example, a user who is a graphic designer will more likely select graphics editor tools to be installed, and less likely select programming tools.
 However, simulating the type of each user and their individual preferences of what they would install is impractical.
-For this simulation therefore, each package's probability to be installed will be the same for all simulated users.
+For this simulation each package's probability to be installed will be the same for all simulated users.
 
-To define the probability a user will select a package to install, the problem can be broken into two questions:
+To define the probability a user will select a package to install, the problem is broken into two questions:
 \begin{enumerate}
   \item What packages would a user select to install?
-  \item How many systems have a package installed?
+  \item How often are these packages selected to be installed?
 \end{enumerate}
-These questions are answered using the set of packages listed in the package app-install-package with the Ubuntu popularity contest.
-
-%%%What packages may a user select to install? We can determine this by looking at applications that are listed in the app-install-data package
 Most packages in the repository a user would not likely directly select to install.
-These packages provide libraries, background daemons, interfaces between services; they are usually installed because other packages depend on them.
-Finding a set of packages that a typical user may select to install is difficult.
+Packages that provide libraries, background daemons, interfaces between services are usually installed because other packages depend on them, not because the user selected to install them.
+By answering the first question a set of packages can be found that a user may install.
+Further, by looking at current systems and what packages they have installed, the probability that these packages are selected to be installed can be calculated.
+These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest.
 
-The package app-install-data contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
-This data is used by other applications, like the Ubuntu Software Center, to provide a mechanism for a user to find a package they may wish to install.
-Some of these a are already installed in the initial system, and some are not available in the core repository.
-After filtering such packages out, the list has 2087 packages that the user can select to install from. 
+The package \texttt{app-install-package} contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
+This data is used by other applications, like the Ubuntu Software Center, to provide a list of packages the user may wish to install.
+Some of these packages are installed by default in Ubuntu systems, and some are not available in the Ubuntu repository.
+After filtering such packages from the provided list there remain 2087 packages that the user may select to install in their system. 
 
 %%%PopCon
-The probability a package from app-install-data may be selected by the user for installation, must still be weighted.
-For this task the data set available from the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012} is used.
-The Ubuntu popularity contest is an excellent, accurate and broad data-set of information of the popularity of Ubuntu packages.
-Each week this automated survey is submitted by nearly two million users, that contains information on what packages a user has installed and uses.
-The packages that are most popular are not the ones users most install, but packages that are most depended upon.
-
-Through weighting the list from the app-install-data package with the number of systems that package is installed on,
-the probability a package is selected to be installed can be measured.
-
-%%%The core problem with this list is that not all packages that can be installed are listed, i.e. experienced users may install packages that are not applications, build-essential
-Although a user will more likely install packages from the app-install-data list, it is not a complete list of packages that a user may install. 
-For example, more experienced users may select to install packages that are libraries or development tools, that are not listed.
-The package ``build-essential'' which contains tools to build Debian packages, is not included in the list, though is regularly installed.
-This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
-It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
+The probability a package from the \texttt{app-install-package} list is actually selected to be installed can be calculated using the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}.
+The Ubuntu popularity contest is a broad data-set of information of the popularity of Ubuntu packages.
+Each week an automated survey is submitted by nearly two million users, that contains information on what packages a user has installed and uses.
+The results from this survey are processed and the number of systems that have a package installed is presented in the Ubuntu popularity contest.
+Through finding the number of systems each package from the \texttt{app-install-data} packages is installed in then dividing by the total survey respondents, 
+the probability a package is selected to be installed is estimated.
 
 \subsection{\usermodel model Validation}
 \label{sim.modelvalidation}
-The main method of validation of this model is discussions with project supervisors and other stakeholders. 
-Meetings with both these parties where held at regular intervals to ensure the projects progress and direction where correct.
+The \usermodel validation has been accomplished by:
+\begin{itemize}
+  \item discussions with project supervisors and other stakeholders.
+  \item comparing \usermodel to the responses from the user survey.
+  \item compare generated CUDF* documents with \texttt{apt-get} logs collected from 19 respondents of the survey.
+  \item creating a virtual Ubuntu 11.10 system to study its perspective of the Ubuntu repository changing over the month of November,2011.
+\end{itemize}
+
+Using these methods differences between the simulation and the reality of CSE can be identified and discussed.
+These differences largely come from the randomness in \usermodel, e.g. randomly selecting packages to install.
+Other significant differences come from the limitations of the model, e.g. the limited amount of types of request.
+
+
+\subsection{Randomness of \usermodel}
+When generating a CUDF* document, each simulated day there are three points of randomness in \usermodel:
+\begin{enumerate}
+  \item the probability a user requests upgrade their system, the $u$ variable
+  \item the probability a user requests to install a component, the $i$ variable
+  \item  if the user requests to install, what package is selected to be installed
+\end{enumerate}
+Each of these creates a difference from reality.
+
+The variables $u$ and $i$ may introduce randomness that does not exist in reality.
+For example, a user who upgrades their system each work day (Monday to Friday) would have a probability to upgrade their system as $5/7$.
+Describing such a user with \usermodel and then generating a CUDF* document may create a situation where they will upgrade their system on a Saturday.
+This is because users will not randomly select days to request changes, they have constraints (like the work week) and preferences that are not expressed in this model.
+To represent these aspects of a user was deemed to make \usermodel too complicated and difficult to understand. 
+
+The most randomness in \usermodel comes from the selection of a random components to be installed.
+This randomness causes many differences to the reality of CSE:
+\begin{itemize}
+  \item A real user would typically not randomly select a component to be installed, e.g. a user may read reviews of a component before deciding to install.
+  \item Each user would have different preferences of which components to install, e.g. a software developer will install different components than a graphics designer.
+  \item Installing one package may change the preference of installing another, e.g. installing of browser \texttt{firefox} would decrease the probability to install another browser such as \texttt{chromium}.
+\end{itemize}
+To address these issues would require a more data to be collected (or created) and the modifications would make \usermodel significantly more complex.
+The reduced effort and cost during data collection and the simplicity of the model was decided to take priority in this matter.
+
+There exist two assignments to the variables $u$ and $i$ that result in users that are not random:
+\begin{enumerate}
+  \item \textbf{Control User}: $u = 0$ and $i = 0$
+  \item \textbf{Always Update User}: $u = 1$ and $i = 0$
+\end{enumerate}
+The control user requests nothing will have minimal change and maximum out-of-dateness, 
+where the user that always updates will have significant change and minimum out-of-dateness (w.r.t. $U$).
+These two users are discussed in chapter \ref{experiments}.
+
+\subsection{Limitations of \usermodel}
+%%%TODO up to here
+%other requests including remove ignored -- not often done
+%setting up the system initially -- introduces to much initial diversity making it difficult to compare 
+%Randomness of requests -- not corrolated -- package installs\ldots
 
 \subsection{Differences To Survey}
 The \usermodel model and its use to create CUDF* documents ignores two key points mentioned in the user's survey,
@@ -437,22 +409,15 @@ Additionally, as the initial system, Ubuntu 9.10, is only one day old when the s
 Two additional points that should be discussed is the lack of correlation between the user's requests,
 and the randomness in this model.
 
-In the presented \usermodel model a user's request will not impact any future request.
-This type correlation between requests could be in the form of user behaviours.
-For example, a user that always upgrades before installing. 
-Another type of correlation is where installing one package impacts the probability another package is installed.
-For example, if a user selects to install a image manipulation package, another package that can view images may be installed as well.
-The only exception to this, is that a user cannot request to install the same component multiple times.
-Defining such correlations would dramatically increase the complexity of the \usermodel model.
-It would also require significant data-collection and analysis to ensure to model.
-Therefore, for the practicality of the simulation and the simplicity of the presented models, the correlation between requests is ignored.
-
-The randomness between users that are created from the same configuration occurs in three places;
-when they upgrade, when they install, and what they install.
-A configuration that defines a user that always updates (where $u = 1$) and never installs ($i = 0$) will not have any randomness.
-However, a configuration that defines a user that never updates ($u = 0$) and always installs ($i = 1$) will still be selecting to install random components.
-
 %%%TODO validate the input,
+
+
+%%%The core problem with this list is that not all packages that can be installed are listed, i.e. experienced users may install packages that are not applications, build-essential
+Although a user will more likely install packages from the app-install-data list, it is not a complete list of packages that a user may install. 
+For example, more experienced users may select to install packages that are libraries or development tools, that are not listed.
+The package ``build-essential'' which contains tools to build Debian packages, is not included in the list, though is regularly installed.
+This is a problem that was briefly described in chapter \ref{simulation}, where different types of user are likely to install different things.
+It is an extremely difficult problem to solve, and any solution will also dramatically increase the complexity of the simulation.
 
 \section{Summary}
 {}In this chapter possible options were discussed for studying various strategies employed when evolving component systems.

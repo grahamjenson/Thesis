@@ -410,7 +410,7 @@ $\langle  rank^L_{\alpha}, \leq_L \rangle$ is used to create the evolution optim
 This can be used to define the optimality orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
 
 \chapter{Full Criteria Mapping}
-In this appendix a mapping between the \modelname criteria and PB crtieria in table \ref{apx.crittable} is presented.
+In this appendix a mapping between the \modelname criteria and PB criteria in table \ref{apx.crittable} is presented.
 
 \label{apx.critmapping}
 \begin{table}
@@ -420,6 +420,7 @@ In this appendix a mapping between the \modelname criteria and PB crtieria in ta
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
 \texttt{-stableversion(N)} 	& $crit_{stableversion(N)} = \langle rank^{stableversion(N)}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
 \end{tabular}
 \caption{Mapping between these elements}
@@ -502,8 +503,11 @@ By creating a criterion with this measurement, the measurement of a system's up-
 	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
 \end{defs}
 
-\section{-stableversion(N)}
+\section{-ovpp}
+%%%TODO
 
+\section{-stableversion(N)}
+%%%TDO
 
 
 \chapter{Glossary}

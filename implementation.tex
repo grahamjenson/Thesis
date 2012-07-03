@@ -342,8 +342,8 @@ In the following section, some specific criteria are presented and mapped.
 \section{Criteria}
 \label{impl.criteria}
 This section presents a selection of  \modelname criteria and given the mapping to PB criteria and MOF (for a full description see appendix \ref{apx.critmapping}).
-These criteria are presented in two categories, minimising change to the system and minimising the out-of-dateness of the system.
-The minimising change criteria were developed by Mancoosi for MISC\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012} 
+These criteria are presented in three categories, minimising change to the system, minimising the out-of-dateness of the system and minimising the number of versions of packages installed.
+The minimising change criteria were developed by Mancoosi for MISC\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}
 and the criterion used to minimise the out-of-dateness was developed for Eclipse P2 solver \citep{leBerre2010}.
 
 \subsection{Change Criteria}
@@ -394,7 +394,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
 \end{tabular}
-\caption{Mapping between these elements}
+\caption{Mapping between the chang }
 \label{impl.ccritmapping}
 \end{table}
 
@@ -430,17 +430,36 @@ If a component is not maintained, and versions are never released, the component
 Conversely, if a components developer releases versions very quickly, the component will become quickly out-of-date.
 These problems can be solved through community effort to maintain components, as is attempted for Debian systems \citep{Barth2005}.
 
-The mapping between these elements is presented in table \ref{impl.ccritmapping}.
-A full description of the mapping is presented in appendix \ref{apx.critmapping}.
+The mapping between this criterion, MOF and the PB criteria is presented in table \ref{impl.ucritmapping}, with a full description in appendix \ref{apx.critmapping}.
 \begin{table}
 \begin{tabular}{c | c | c}
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
 \end{tabular}
 \caption{Mapping between these elements}
-\label{impl.ccritmapping}
+\label{impl.ucritmapping}
 \end{table}
 
+\subsubsection{One Version per Package Criteria}
+\label{impl.ipp}
+As discussed in the previous chapter, the restriction that Ubuntu systems must have only one version of each package installed is not enforced by the component constraints.
+This restriction can however be encouraged by defining a criterion that minimises the amount of packages with multiple versions.
+
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{One Version per Package} criterion is defined as $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$,
+	where $rank^{ovpp}_{\alpha}(\beta) = \sum_{n \in \mathcal{N}} |V(\beta,n)| > 1$.
+\end{defs}
+That is, this criteria minimises the number of package names that have more than one version installed.
+
+The mapping between this criterion, MOF and the PB criteria is presented in table \ref{impl.mcritmapping} with a full description in appendix \ref{apx.critmapping}.
+\begin{table}
+\begin{tabular}{c | c | c}
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
+\texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
+\end{tabular}
+\caption{Mapping between these elements}
+\label{impl.mcritmapping}
+\end{table}
 
 \section{Solving a \modelimpl problem}
 \label{impl.algorithms}
