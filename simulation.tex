@@ -332,7 +332,7 @@ The results from this survey are processed and the number of systems that have a
 Through finding the number of systems each package from the \texttt{app-install-data} packages is installed in then dividing by the total survey respondents, 
 the probability a package is selected to be installed is estimated.
 
-\subsection{\usermodel model Validation}
+\section{\usermodel model Validation}
 \label{sim.modelvalidation}
 The \usermodel validation has been accomplished through:
 \begin{itemize}
@@ -453,8 +453,15 @@ that saved the set of packages that could be viewed in the Ubuntu repository at 
 This lack of data lead to the decision that all components should be used.
 
 \section{Summary}
-In this chapter possible options were discussed for studying various strategies employed when evolving component systems.
-Simulation, through the methodology \citep{Law2005} describes, was selected, and the steps involved were described.
-The central artifact of this methodology, the \usermodel model, was broken down into models of the user, repository and solver, and the processes of simulation.
-These models were validated through regular meetings with the core stakeholders, and a survey conducted on subject matter experts.
-In the next chapter the configuration of the simulation is further defined, and the questions about component system evolution are attempted to be answered.
+This chapter presented the \usermodel model which is used to describe how a realistic user requests changes to their system.
+This model was partially created from a survey, whose results where presented and discussed.
+The variables that make up the \usermodel, and the process used to create a CUDF* document that describes the evolution of a component system were then described.
+The data that was used to create the \usermodel was then described with the processes to collect and convert it.
+This description of the validation of \usermodel was then described, and the differences to the reality of CSE discussed.
+By exploring the differences to the reality of CSE the results from a simulation can be more accurately interpreted.
+
+Although the \usermodel can be used to create a description of the evolution of a component system, it may require significant calculation to find how exactly the component system evolves.
+The constraints of each request must be satisfied, and the optimal system w.r.t. the evolution preference order must be found.
+The following chapter presents the mapping an instance of \modelname to a series of \modelimpl problems and the algorithms to solve such problems.
+The implementation of these algorithms is the final piece in the full description of the simulation of CSE.
+
