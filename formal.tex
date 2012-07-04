@@ -893,9 +893,10 @@ $\{syslib_1\}$, to $\{syslib_2, textEditor_1, spellChecker_1\}$, then to $\{sysl
 Based on this example it can be concluded that CUDF* documents can be used to describe component system evolution. 
 
 \section{Summary}
-This chapter described the model \modelname and the syntax CUDF*, both are used to represent component system evolution.
-Through a detailed example it was shown how a CUDF* document can be parsed to to create an instance of \modelname.
+This chapter described the model \modelname was presented to describe CSE as a series of alterations to a system in response to repeated requests from the user to change.
+The syntax CUDF* was then presented, 
+and through a detailed example it was shown how a CUDF* document could be parsed to a \modelname instance.
+These artifacts can be used to describe the evolution of component systems, however neither of them describe the user's that drive the evolution of a system.
+To simulate the evolution of a system, the following chapter explores and models how a user would realistically request a system to be changed.
+This user model together with \modelname and CUDF* can be used to realistically describe situations of CSE that can then be simulated. 
 
-Although a \modelname instance describes the evolution of a component system, it may require significant calculation to find the evolved component systems.
-To calculate these systems, the following chapter presents the mapping an instance of \modelname to a problem that can be efficiently solved.
-Then it describes the process of finding a solution to that problem.

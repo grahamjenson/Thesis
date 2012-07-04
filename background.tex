@@ -11,7 +11,7 @@ This evolution process is necessary as any system must adapt to the changing sof
 fix errors, and/or prevent errors from occurring in the future \citep{IsoIec2006}.
 Software maintenance and evolution are often used interchangeably \citep{Godfrey2008}, however some differences exist.
 One difference is that maintenance has connotations of a planned activity, where evolution is the gradual refinement of a system \citep{lehman1980}.
-That is software maintenance is a range of activities through which software is changed, and software evolution is the process of repeatedly changing the system.
+That is software maintenance is a range of activities through which software is changed, and software evolution occurs as the system is repeatedly changed.
 This is similar to the definition given in \citep{lehman1980}.
 
 %%%What is component system evolution
@@ -334,15 +334,16 @@ This diversity has inspired a classification approach from \citep{Crnkovic2011},
 This effort highlights the difficulty in creating an exact definition of a software component. 
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
-These problems with exactly defining a software component may stem from the fact that ``component'' is a natural concept.
+The problems encountered when trying to exactly define a software component may stem from the fact that ``component'' is a natural concept.
 The problem, as observed from the area of formal concept analysis \citep{Ganter1999} by \citep{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
-``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.'' 
+``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.''
 \end{quotation}
 
 %%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
-However, a definition can be found, not by feature enumeration but through stating the intention for the concept and exploring the technically inevitable consequences \citep{Szyperski2002}. 
+However, a definition can be found, not by feature enumeration but through stating the intention for the concept
+and exploring the technically inevitable consequences \citep{Szyperski2002}. 
 As the intention of this study is to investigate component system evolution,
 the definition of software component will be with respect to this process.
 
@@ -856,7 +857,7 @@ The commands to modify a Debian package system are:
 These commands define the atomic actions to change a Debian system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
-\subsubsection{Apt-get}
+\subsubsection{apt-get}
 The dpkg application can only remove and add a single component at a time, it does not resolve the dependencies of the component.
 There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the ``apt-get'' application.
 This tool is built on top of dpkg, to provide an interface to simplify and extend its functionality.
@@ -869,17 +870,14 @@ Apt-get follows some basic criteria when altering the system, for example when u
 \end{itemize}
 Note: apt-get defines removing a package as removing all packages with the same name, e.g. replacing a package named \texttt{text-editor} with a higher version is not ``removed'' as apt-get defines.
 
-Another application that extends APT further is Aptitude \citep{Burrows2005}.
-This application adds a basic user interface to APT and also increases functionality in aspects like locating and removing redundant packages.
+Another application that extends \texttt{apt-get}'s functionality is \texttt{aptitude} \citep{Burrows2005}.
+This application adds a basic user interface to \texttt{apt-get} and also extends functionality in aspects like locating and removing redundant packages.
 Aptitude allows some of its criteria to be user defined, for example when the flag \verb+--safe-resolver+ is used:
 \begin{itemize}
   \item it attempts to preserve as many of your choices as possible.
   \item it will never remove a package
   \item it will never install a version of a package other than the package's default candidate version.
-\end{itemize}e to many different domains. 
-
-\section{Summary}
-In this chapter, first the evolution of software was discussed, and the natu
+\end{itemize}
 
 \subsection{SOFA 2.0}
 Software Appliance (SOFA) is a component model developed at Charles University in Prague.
@@ -1071,12 +1069,11 @@ The presented comparison of these models shows that although they are aimed at d
 This similarity motivates the research into CSE, as results may contribute to many different domains. 
 
 \section{Summary}
-In this chapter, first the evolution of software was discussed, and the nature and laws of this process described.
-Component evolution and component system evolution are then described and compared as separate software evolution processes.
-Automating the evolution of component systems is then defined through the function component dependency resolution.
-The strategies that a user employs to evolve a system is then discussed, and the forces that are considered in the strategy.
-Software components are defined with respect to the objectives of this research as having explicit relationships and an interface to evolve a component system.
-Various component models that conform to this definition are then discussed and their properties explored.
-
-In the next chapter concepts such as component system evolution are formalised and further discussed.  
+In this chapter, first software evolution, CBSE and the use of component systems were discussed and the history and connections between these domains were described.
+The evolution of individual components and the evolution of component systems were then described and compared.
+As this research centers around software components, it is necessary to discuss their definition.
+The difficulty in giving an accurate and agreeable definition to ``software component'' was discussed. 
+A definition of ``software component'' with respect to CSE is then presented as an incomplete definition that is sufficient for the purposes of this research.
+Various component models that conform to this definition are then presented and discussed, and their properties explored and compared.
+In the next chapter the concepts discussed in this chapter, such as software component, are formally defined as the first step to creating a simulation of CSE.
 
