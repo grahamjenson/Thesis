@@ -907,69 +907,91 @@ These results allowed it to compete with the other solvers, and win the 'user' t
 Given these reasons GJSolver is seen as a verified implementation that can accurately resolve CUDF* documents.
 
 \section{Simulation Validation}
-A \usermodel instance can be used to generate CUDF* documents that GJSolver can then resolve.
+\usermodel can be used to generate CUDF* documents that GJSolver can then resolve.
 The result of this resolution is a series of systems that completely describe the evolution of a component system.
-To validate this process, the
-%TODO
-This validation is accomplished in two stages by looking at the input, and then the output of the simulation.
-This section's goal is to describe the differences between the simulation and the reality of CSE.
-The identification of differences is important to determine whether the simulation is within tolerable error. 
+This process, from \usermodel to resolved component systems, is used to simulate CSE.
 
-Two resources are used in this section; a system that evolved in a controlled environment,
- and logs outputted from \texttt{apt-get} that were submitted by the respondents of the survey (section \ref{strat.usersurvey}).
+Above, GJSolver was verified to show that it correctly returns component systems.
+However, it is unsure that these component systems accurately describe the CSE process.
+This section discusses the validation of the simulation comparing its output to:
+\begin{itemize}
+  \item the \texttt{apt-get} logs collected from 19 respondents of the survey.
+  \item a virtual Ubuntu 11.10 system that upgrades everyday over the month of November 2011.
+\end{itemize}
+Both of these comparisons are against systems that use \texttt{apt-get} to alter their systems.
+To accurately compare the evolution these systems to the simulated systems, the criteria used by \texttt{apt-get} to upgrade and install systems must be defined in MOF.
 
+To upgrade a system the \texttt{apt-get} manual\footnote{http://linux.die.net/man/8/apt-get} states:
+\begin{quotation}
+upgrade is used to install the newest versions of all packages currently installed on the system 
+[\ldots] 
+under no circumstances are currently installed packages removed, or packages not already installed retrieved and installed.
+\end{quotation}
+To represent the \texttt{apt-get} upgrade criteria in MOF 
+\texttt{-removed,-new,-uptodatedistance}\footnote{the criterion \texttt{-ovpp} is not necessary in the upgrade criteria 
+as only allowing one package to be installed is a hard constraint of the upgrade request} 
+is used.
+The hard constraints in \texttt{apt-get} to never remove or install new packages are softened when using this criteria.
+However, they have been made more important in the lexicographical order to encourage the GJSolver to not remove of add packages.
 
-\subsection{Validation via Recorded System}
-%%%Controlled Environment
-To attempt to validate this simulation a controlled system was created that updates every day over a time frame of November 1st to 30th in 2011.
-A computer had Ubuntu 11.10 (Oneiric Ocelot) installed on it, every day a script that used APT to update the system, and then saved the repository and the system state.
+When installing a package it is assumed that \texttt{apt-get} will try to select the most recent version component while minimising change.
+This has lead to using the MOF criteria \texttt{-ovpp,-removed,-changed,-uptodatedistance} to represent the \texttt{apt-get} criteria for installing a component.
+The first criterion \texttt{-ovpp} minimises the number of package with more than one package installed.
+\texttt{-removed} is the second criterion, as removing a package from a system is seen as more risky than installing a new package.
+The final two criteria describe that minimising change to the system is more important that installing a more recent version of a component.
 
-To validate the simulation, first we can look at the series of repositories, to find how different the assumption that the user uses all repositories is different from the default real user.
-Secondly the evolution of the system can be looked at and compared to a similar evolution within the simulation.
-
-\subsubsection{Comparing Repositories}
-%%%Look at the repositories, amount of components \ldots amount of versions\ldots 
-A core assumption with this simulation is that a user uses all components in the repository, 
-this was caused by the fact that the usual meat-repository data files are not stored at the required resolution.
-How significant the impact of this assumption can be measured through looking at the metrics and change of the repositories saved through this controlled system.
-
-%%%TODO Complete this validation
-
-\subsubsection{Comparing Systems}
-%%%Compare this output to the output from the simulation
-The output of this controlled system can be compared to the simulations output when setting the update criteria to mimic the APT criteria.
-The simulated evolution of the system can metrics can be compared, like the rate at which the system goes out of date, and the amount of change that occurs.
-These can be used as a broad measure of validity, as they are symptoms of the evolution they will be similar but not exact.
-
-%%%TODO Complete this validation
-
-\subsection{Validation via User Logs}
+\subsection{Comparison to \texttt{apt-get} Logs}
 %%%Real User Log
-To further validate this simulation, the submitted user logs were compared with the output of the simulation, over a month.
-Some of the user logs fall within the dates of the simulation, this means that by generating custom user action sets these users actions can be directly simulated.
-Their update probabilities and install distributions can also be extracted and used to create similar simulated users, to validate the creating of user action sets.
+The respondents to the user survey (as discussed in chapter \ref{simulation}) submitted 19 logs that record their use of \texttt{apt-get}.
+These logs were parsed and the requests the users made to install components where studied.
+Particularly the change that each request to install had on their system.
+These results were compared to the simulation by selecting the 200 most likely packages to be installed, and installing them on the first day of the simulation.
+The results are presented in table \ref{implementation.validlogs}.
 
-\subsubsection{Directly comparing User Logs}
-%%%Creating custom user action sets to validate that the simulation returns about the right results
-From these logs a configuration is generated; the update probability, the install distribution and the range of dates are extracted from the log.
-The update and install criteria that used by the APT application, and the rest are the default contexts.  
+\begin{table}[htp]
+\begin{center}
+\begin{tabular}{| l | c | c | c | c |}
+\hline
+& Total Requests & \% of 1 IP & Mean IP & STD. IP \\ \hline
+Simulated Installs				& 200 	& 11\% 		 	& 7.31 	& 9.41 \\
+\texttt{apt-get logs} 	& 1519 	& 35.3\% 	 	& 9.04 	& 23.33 \\ \hline
+\end{tabular}
+\end{center}
+\caption{A comparison of the installed packages (IP) between the install requests from the collected \texttt{apt-get} logs and the 200 most likely packages to be installed in the simulation}
+\label{implementation.validlogs}
+\end{table}
+The submitted \texttt{apt-get} logs have 1519 requests for installation to be analysed, compared to the 200 from the simulation.
+These results show that although they both have a similar mean amount of new packages installed into their systems, 
+the requests from the logs are much more varied than that from the simulation.
+Over a third of the installs from the logs only required the installation of one package, presumably the package to be installed.
+Additionally, the standard deviation is much higher in the logs, showing the users install packages that cause much greater change as well.
+For example, one log recorded the request to install \texttt{kubuntu-desktop} that required over 100 new packages to be installed.
 
-%%%TODO Complete this validation
+This much greater variation in the possible packages that users can install was described in section \ref{sim.modelvalidation}.
+This variation must be taken into account when drawing conclusions from the simulations results.
 
-\subsubsection{Validating Generating User Actions Sets}
-%%%Creating generated users, from the simulated versions to validate the generating of the users returns about the right results.
-The entire simulation depends on being able to generate users that abstract from real users.
-As discussed in this, and the previous, chapter this is a very difficult challenge.
-Through comparing generated user action sets with the real users that are meant to abstract them, the difference can be determined.
-Then by simulating these generated users, and comparing the results of the actions to the real system log the error that is caused by the generation can be measured.  
+\subsection{Comparison to Virtual System}
+%%%Controlled Environment
+To compare the simulations upgrade requests to that from the a real system, a virtual Ubuntu 11.10 system that upgrades everyday over the month of November 2011 was created.
+The results from this system were compared to the simulation of a user that upgrades everyday over the first month (November 2009) of the simulation.
+The results of these are presented in table \ref{implementation.validvirtual}.
+\begin{table}[htp]
+\begin{center}
+\begin{tabular}{| l | c |  c | c | c |}
+\hline
+System Size & 0 UP & Mean UP & STD. UP \\ \hline
+Simulated System			& 1270 	& 12	 	& 4.2 		 	& 7.3 	\\
+Virtual Ubuntu System 		& 1338 	& 12 		& 5.8 	 		& 9.7 	\\ \hline
+\end{tabular}
+\end{center}
+\caption{A comparison of the upgraded packages (UP) between the upgrade requests from the virtual Ubuntu system and the simulation}
+\label{implementation.validvirtual}
+\end{table}
 
-%%%Comparing the user action sets to the logs
-
-%%%Comparing multiple generated users to the real thing
-
-%%%TODO Actually complete this validation
-
-
+The virtual Ubuntu System and the simulated system have very similar amount of updated packages,
+for example both systems had 12 days where their upgrade requests where not necessary.
+The virtual system has slightly more updated packages over the month,
+this could be attributed to the increased size of the system, or the increase in popularity of Ubuntu from 2009 to 2011. 
 
 \section{Summary}
 This chapter described the \modelimpl problem and how it mapped to the evolution steps from a \modelname instance.
