@@ -332,9 +332,9 @@ The results from this survey are processed and the number of systems that have a
 Through finding the number of systems each package from the \texttt{app-install-data} packages is installed in then dividing by the total survey respondents, 
 the probability a package is selected to be installed is estimated.
 
-\section{\usermodel model Validation}
+\section{\usermodel Validation}
 \label{sim.modelvalidation}
-The \usermodel validation has been accomplished through:
+The validation of \usermodel has been accomplished through:
 \begin{itemize}
   \item discussions with project supervisors and other stakeholders.
   \item comparing \usermodel to the responses from the user survey.
@@ -357,7 +357,7 @@ When generating a CUDF* document, each simulated day there are three points of r
 \end{enumerate}
 In reality, a user's request to upgrade the system or install a component are not random.
 These requests are reasoned about using gathered information, preferences and external constraints.
-Even the most insignificant aspect of a user may impact requests, e.g. the favourite colour of a user may impact the choice of which component to install.
+Even the most insignificant aspect of a user may impact requests, e.g. the favourite colour of a user may impact their choices of components to install.
 To model a user completely would be difficult, if not impossible, and would require significant effort.
 \usermodel instead simulates the user with random behaviour.
 The impact on validity of the randomness of these behaviours is discussed here.
@@ -367,11 +367,11 @@ For example, a user who upgrades their system each work day (Monday to Friday) w
 Describing such a user with \usermodel and then generating a CUDF* document may create a situation where they will upgrade their system on a Saturday.
 This is because users will not randomly select days to request changes, they have constraints (like the work week) and preferences that are not expressed in this model.
 
-The most randomness in \usermodel comes from the selection of a random components to be installed.
+The most significant randomness in \usermodel comes from the selection of a components to be installed.
 This randomness causes many differences to the reality of CSE:
 \begin{itemize}
-  \item A real user would typically not randomly select a component to be installed, e.g. a user may read reviews of a component before deciding to install.
-  \item Each user would have different preferences of which components to install, e.g. a software developer will install different components than a graphics designer.
+  \item A real user would typically not randomly select a component to be installed. a user would likely research a component before deciding to install.
+  \item Each user would have different preferences of which components to install, e.g. a software developer will prefer components to aid in software development.
   \item Installing one package may change the preference of installing another, e.g. installing of browser \texttt{firefox} would decrease the probability to install another browser such as \texttt{chromium}.
 \end{itemize}
 To address these issues would require a more data to be collected (or created) and the modifications would make \usermodel significantly more complex.
@@ -379,74 +379,71 @@ The reduced effort and cost during data collection and the simplicity of the mod
 
 To mitigate the randomness in \usermodel many CUDF* documents will be created from a single \usermodel instance, then simulated.
 The results from these simulations can then be aggregated and analysed.
-Additionally, any conclusions derived from the results will be tempered by being aware of the randomness in the instance of \usermodel being simulated.
+Additionally, any conclusions derived from the results will be tempered by being aware of the randomness in \usermodel.
 
-There exist two assignments to the variables $u$ and $i$ that result in users that are not random:
+An important caveat to note is that there exist two assignments to the variables $u$ and $i$ that result in users that are not at all random:
 \begin{enumerate}
   \item \textbf{Control} user: $u = 0$ and $i = 0$
   \item \textbf{Always Update} user: $u = 1$ and $i = 0$
 \end{enumerate}
-The ``Control'' user never requests to change their system, therefore will have minimal change and maximum out-of-dateness. 
-The ``Always Upgrade" user will update every day, therefore have significant change and a minimum out-of-dateness (w.r.t. $U$).
-These two users are further discussed in chapter \ref{experiments}.
+The ``Control'' user never requests to change their system, therefore their system will always be the initial system and never evolve.
+The ``Always Upgrade" user will update every day, and two users who have the same upgrade criteria $U$ will generate the same CUDF* document.
+These effects of these two users are further discussed in chapter \ref{experiments}.
 
 \subsection{Limitations of \usermodel}
 The limitations that \usermodel has are:
 \begin{itemize}
-  \item The initial set-up of the system (as described in the user survey) is not included
-  \item Some types of requests are not included, e.g. remove requests
+  \item The initial set-up of the system by the user (as described in the user survey) is not included.
+  \item Some types of requests are not included, notably remove requests.
   \item Cannot request to install many components on the same day, or at the same time.
   \item The list of packages that can be installed (from \texttt{app-install-data}) does not include many commonly installed packages.
 \end{itemize}
 Each of these points will be addressed in order.
 
 The initial set-up of a system, which is performed by many respondents of the user survey, is not included in \usermodel.
-This set-up includes upgrading their system and installing new components.
-The initial upgrade is ignored because the initial system is already uptodate and an upgrade would be superfluous.
-The initial installation of components is ignored as it introduces to much randomness into the system, making comparison between users more difficult.
+This set-up includes upgrading their system, installing and removing components.
+The initial upgrade is superfluous in the simulation as the initial system is already uptodate.
+The initial installation and removal of components is not simulated as it will create different starting systems for different users,
+making comparison between users more difficult.
 
-In a real Ubuntu system, a user may request many different types of action.
-Such actions include \texttt{remove}, which respondents stated they used in the survey and was also shown to be used in the user logs with such requests as \texttt{apt-get remove tig}.
-Although a request to remove a component is possible, both the survey and the logs show that it is rarely used.
+In a real Ubuntu system, a user may request many different types of action, e.g. the \texttt{remove} component request.
+Respondents to the user survey stated they request to remove a component infrequently, this is supported by the data in the user logs.
 This is the justification for the exclusion from the \usermodel.
- 
-A user may want to install many components with a single request, or many components with multiple requests in a single day.
-Both these situations that commonly occur in the submitted logs.
+
+A user may want to install many components during a single day.
+This can be accomplished with one request to install many components or many requests to install single components.
+Both these situations commonly occur in the submitted user logs.
 For example, \texttt{apt-get install ia32-libs ia32-libs-gtk libqt4-core libqt4-gui} is a single request to install multiple components,
 and  \texttt{apt-get install autoconf} and \texttt{apt-get install checkinstall} are two requests performed within ten minutes of each other on the same day.
 Given the significant randomness in selecting a component to be installed, introducing either of these situations into \usermodel would only make results less valid.
-For this reason, these situations are not able to be simulated with \usermodel.
+For this reason, a user requesting to install many components on a single day is not simulated.
 
-In reality, a users often request to install packages that are not included in the list from the \texttt{app-install-data} package. 
-For example, the package \texttt{build-essential}\footnote{\texttt{build-essential} contains tools to build Debian packages}
-cannot be requests to be installed with \usermodel even though it is regularly requested to be installed in the submitted logs.
-Much effort in creating \usermodel was directed at finding a list of the most commonly installed packages.
-However, the core problem was that there exists very little information on what packages users commonly request to be installed.
-This problem is seen as a possible future research, and potential solutions are described in chapter \ref{conclusion}. 
+In reality, a user often requests to install packages that are not included in the list from the \texttt{app-install-data} package. 
+An example of this extracted from the user logs is \texttt{apt-get install build-essential}\footnote{\texttt{build-essential} contains tools to build Debian packages},
+this package cannot be installed during the simulation as it is no int the list from  \texttt{app-install-data}.
+Much effort that went into creating \usermodel was directed at finding a list of the most commonly installed packages.
+However, the core problem is that there exists very little information on what packages users commonly request to be installed.
+This problem is seen as a possible future research that is described in chapter \ref{conclusion}. 
 
 \subsection{Ubuntu Repository of \usermodel}
-In a real Ubuntu system, the only a subset of the packages in the Ubuntu repository is visible.
+In a real Ubuntu system only a subset of the packages in the Ubuntu repository is visible.
 This ``view'' of the repository is the set of packages considered when resolving a request.
 This is different to \modelname and \usermodel, 
 where every request can consider all components that exist at the time of the request. 
 
-To study this effect a virtual Ubuntu 11.10 system was created, 
-and each day in the month of November 2011 the subset of components that it could view in the Ubuntu repository was saved.
+To study the difference this view of the repository has to the simulation a virtual Ubuntu 11.10 system was created, 
+and each day in the month of November 2011 the subset of components in its view of Ubuntu repository was stored.
 This system used only the default ``view'' of the Ubuntu repository.
 This ``view'' is compared to the changes in the repository of components over the month November 2009 in the \usermodel repository.
 
 The \usermodel repository contains about 90,000 different package names, where the virtual ``view'' contained only about 40,000.
 This difference is made up mostly of deprecated packages, i.e. packages that are no longer actively maintained.
-It is also made up of packages that are have not yet been validated and put into the main ``view'', i.e. like experimental packages. 
-This means that the amount of packages that have a new version added to the repository is much higher in the \usermodel repository,
+It is also made up of packages that are have not yet been validated and put into the main ``view'', e.g. experimental packages. 
+This causes the mean amount of packages that have a new version added to the repository to be much higher in the \usermodel repository,
 126 packages per day compared to the virtual systems view of 37 packages per day.
-The most dramatic difference though is the amount of removed packages from the ``view'' which is 8, because the \usermodel repository never removes a package. 
-
-Another difference was noticed in the virtual Ubuntu system, different components can have the same name and the same version.
-This is a incompatibility with the \modelname model, which states that components are defined by a unique name and version pair.
-Two components could have the same name and version in the virtual system 
-if they were compiled for different hardware architectures or if they are the source code of the package.
-This is not a problem in \usermodel, as all source packages and packages that are not \texttt{i386} architecture were filtered out.
+The most dramatic difference though is the amount of removed packages from the ``view'' which is 8, where the \usermodel repository never removes a package.
+This removal of packages reduces the complexity of the problem, 
+though it also means that a real Ubuntu system may not have all information available when satisfying user requests. 
 
 The reason a ``view'' of the repository was not used in the simulation is due to the fact that no data-source could be found 
 that saved the set of packages that could be viewed in the Ubuntu repository at a particular time.
@@ -455,13 +452,13 @@ This lack of data lead to the decision that all components should be used.
 \section{Summary}
 This chapter presented the \usermodel model which is used to describe how a realistic user requests changes to their system.
 This model was partially created from a survey, whose results where presented and discussed.
-The variables that make up the \usermodel, and the process used to create a CUDF* document that describes the evolution of a component system were then described.
+The variables that make up the \usermodel and the process used to create CUDF* documents were then described.
 The data that was used to create the \usermodel was then described with the processes to collect and convert it.
 This description of the validation of \usermodel was then described, and the differences to the reality of CSE discussed.
 By exploring the differences to the reality of CSE the results from a simulation can be more accurately interpreted.
 
 Although the \usermodel can be used to create a description of the evolution of a component system, it may require significant calculation to find how exactly the component system evolves.
 The constraints of each request must be satisfied, and the optimal system w.r.t. the evolution preference order must be found.
-The following chapter presents the mapping an instance of \modelname to a series of \modelimpl problems and the algorithms to solve such problems.
+The following chapter presents the mapping an instance of \modelname to a series of problems and the algorithms to solve such problems.
 The implementation of these algorithms is the final piece in the full description of the simulation of CSE.
 
