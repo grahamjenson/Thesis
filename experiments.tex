@@ -33,16 +33,16 @@ The criteria to install $I$ and upgrade $U$ are defaulted to the ones used by \t
 The first experiments assign values to the variables in \usermodel that describe the boundary cases for $i$ and $u$:
 \begin{table}[h!]
 \centering
-\begin{tabular}{|l | c | c | c }
+\begin{tabular}{|l | c | c | c |}
 \hline
 User Name 				 	& \# generated 	& $u$ 		& $i$ 			\\ \hline
 Always Upgrade				& 1 			&1			& 0				 \\
 Control						& 1 			& 0			& 0				\\
 Always Install 				& 30 			& 0			& 1				 \\
-Always Upgrade\&Install 	& 30 			&1			& 1				\\
+Always Upgrade\&Install 	& 30 			&1			& 1				\\ \hline
 \end{tabular}
 \caption{Users that are the boundary cases in the simulation.}
-\label{exp.extremeusers}
+\label{exp.tblextremeusers}
 \end{table}
 This table also states the number of simulations that were run for each user, i.e. the ``Always Install'' user had 30 CUDF* documents created and resolved.
 The number of simulations run for a user is a trade-off between time to complete the simulations and accuracy of results.
@@ -65,13 +65,18 @@ The UTTDpC of each simulated system is presented in figure \ref{exp.q1auttdpc}.
 \end{center}
 \end{figure}
 
-This figure shows that all systems slowly become out-of-date.
-However, users that do not upgrade, the ``Control'' and ``Always Install'' users, become nearly three times more out-of-date than ones that upgrade every day.
+This figure shows that all systems eventually become out-of-date likely due to the \texttt{apt-get} upgrade criteria and constraints in core components restricting change.
+The \texttt{apt-get} criteria minimises new components installed into the system before minimising the UTTD.
+Therefore, if a newer version of a component require a new component to be installed, this component will not be upgraded when using this criteria.
+Section \ref{exp.prouttdsection} presents experiments where changing this criteria removes this barrier to new components. 
+
+
+This figure also shows that users which do not upgrade, the ``Control'' and ``Always Install'' users, become nearly three times more out-of-date than users that upgrade.
 The speed at which systems become out-of-date increases over the months between March and May 2010.
 The reason for this is likely due to the increased development effort because of the Ubuntu 10.04 release in April 2010.
 The users that upgrade are less affected by this release as they are continually upgrading to the new component versions.
 
-This figure also shows the effect of the normalisation, where the install variable $i$ has little effect on the UTTDpC of a component system.
+The effect of the normalisation can also be seen in this figure, where the install variable $i$ has little effect on the UTTDpC of a component system.
 
 Second, how much change each simulated system went through during evolution is measured.
 To measure change the ``change'' function as described in section \ref{impl.criteria} is used.
@@ -84,8 +89,8 @@ The total change, i.e. the sum of all change a system has to a date, is presente
 \end{center}
 \end{figure}
 
-As is expected, this figure shows that if a user upgrades their system changes more during the release of Ubuntu 10.04.
-During the months March, April and May of 2010 had a mean of 266 changes per month for the ``Always Upgrade'' user.
+As was predicted above, this figure shows that there is an increase in change during the release of Ubuntu 10.04 for users that upgrade their systems.
+During the months of March, April and May of 2010 had a mean of 266 changes per month for the ``Always Upgrade'' user.
 All other months had had a mean of 105 changes per month, showing a more than 250\% increase in change over the release months.
 This is likely because the increased development of components leads to an increased release of versions that have to be upgraded.
 This increased change cannot be seen in the ``Always Install'' users as they will not change in response to newer versions.
@@ -140,7 +145,7 @@ This leads to the conclusion that soft-failures occur because of the increased c
 The effect of these soft failures can be seen in figure \ref{exp.q1achange} 
 where the standard deviation of change for both ``Always Install'' and ``Always Upgrade\&Install'' users increases after the Ubuntu 10.04 release.
 Given that only 8 soft failures occurred of all the requests, this problem is seen as minor.
-Although, in future experiments the detection of soft failures may lead to more accurate analysis. 
+Although, in future experiments if soft failures are detected they will be mentioned and mitigated. 
 
 %%%The multi component fialure
 An interesting failure occurred when the situation arose that installing the package \texttt{chromium-browser} required two versions of the package \texttt{libc6} to be installed. 
@@ -151,19 +156,80 @@ can restrict the user.
 %%%Disclaimer
 All these failures are directly caused by, or are a result of an install request.
 Given the selection of components is the most random part of the simulation, the failures and/or the rates they occur may directly be a product of this randomness.
-This was discussed in section \ref{sim.modelvalidation}.
+This was previously discussed in section \ref{sim.modelvalidation}.
 
 
-\section{Decreased Out-of-dateness During Evolution}
-In the previous section the criteria used during evolution were the criteria used by \texttt{apt-get}.
-In this section, this criteria is altered to attempt to reduce the out-of-dateness of the system during evolution.
+\subsection{Upgrade Probability Effects}
+By altering only the probability a user upgrades their system, while leaving other variables static, the effect of the user upgrading can be measured.
+The users for simulated are:
+%TODO redone experiments, recalc numbers in this section
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | c |}
+\hline
+User Name 				& \# generated 	& $u$ 		& $i$ 			\\ \hline
+Upgrade once a month	& 10 			& 0.03 (1/30)			& 0				 \\
+Upgrade twice a month	& 10 			& 0.06 (1/15)		& 0				\\
+Upgrade once a week		& 10 			& 0.14 (1/7)		& 0				 \\
+Upgrade twice a week 	& 10 			& 0.29 (1/3.5)		& 0				\\ \hline
+\end{tabular}
+\caption{Users with different upgrade probabilities.}
+\label{exp.tblextremeusers}
+\end{table}
+These users are compared to the ``Always Upgrade'' user described in table \ref{exp.tblextremeusers}.
 
+The up-to-date distance per component for these users is compared in figure \ref{exp.q1buttdperc}.
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/q1buttdperc}
+  \caption{The Up-to-date distance per Component (UTTDpC) of the simulated systems.}
+  \label{exp.q1buttdperc}
+\end{center}
+\end{figure}
 
-\section{Reduction of Change During Evolution}
+This figure shows that upgrading less frequently has it's greatest effect over the release of the Ubuntu 10.04.
+This is most noticeable in the ``Upgrade once a month'' users.
+This is likely because the increased release of new versions during the April release.
+If the user does not upgrade often during this time their system will become quickly out of date.
 
-\subsection{Stable Version}
-%%%Here is a real example of this happening
-An example of this described situation is show in figures \ref{apachelog} and \ref{apachebug}.
+Another result from this experiment is showing the correlation between UTTDpC and the reciprocal of the upgrade probability.
+This can be seen in figure \ref{exp.q1bcorrolationuttdpc} that compares the mean UTTDpC to $1/u$.
+
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/q1bcorrolationuttdpc}
+  \caption{The mean up-to-date distance per component (UTTDpC) plotted against of the reciprocal of the users update probability ($u$)}
+  \label{exp.q1bcorrolationuttdpc}
+\end{center}
+\end{figure}
+
+The figure shows the mean UTTDpC of ``Always Upgrade'' is 0.258 and the ``Upgrade twice a week'' users mean is 0.263.
+This is a difference of 0.005 UTTDpC.
+This difference can be illustrated in an example where given a system has 1000 components, 
+if a user upgraded twice a week they will have on average 5 components more out-of-date than if they upgraded every day. 
+This is compared to ``Upgrade once a week'' user that has a mean UTTDpC of 0.274, a difference from ``Upgrade twice a week'' of 0.011.
+This shows a diminishing return when increasing the amount a user upgrades.
+
+The total change of these users is presented in figure \ref{exp.q1bchange}.
+
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/q1bchange}
+  \caption{The mean total change plotted against of the simulated users.}
+  \label{exp.q1bchange}
+\end{center}
+\end{figure}
+
+This figure shows that upgrading less frequently requires less change. 
+This is in part due to the fact that updating once a month means that the majority of the month there is no change.
+
+Another phenomena was noticed that reduced change of the users that upgraded less frequently.
+This is where many versions of a component may be released in quick succession, making upgrading to each interim version not required.
+For example, if over a week a user upgrades their system every day and upgrades 5 different components twice (a total of 10 change), 
+then they will upgrade twice as much as a user that only upgraded at the end of the week.
+This is because the user that upgrades every day changes to all versions of the components, where the other only changes to the final version.
+
+An example of this rapid release of components happening in the Ubuntu repository is given in figures \ref{exp.apachelog} and \ref{exp.apachebug}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -184,7 +250,7 @@ apache2 (2.2.19-2) unstable; urgency=high
  -- Stefan Fritsch <sf@debian.org>  Mon, 29 Aug 2011 17:08:17 +0200
 \end{alltt}
 \caption[Apache Changelog]{An extract from the apache changelog located on http://changelogs.ubuntu.com/}
-\label{apachelog}
+\label{exp.apachelog}
 \end{center}
 \end{figure}
 
@@ -206,17 +272,42 @@ Yesterday evenings update broke our Apache server setup,
 \ldots
 \end{alltt}
 \caption[Apache Bug Report]{Extract from the bug report \#639825, filed with Debian}
-\label{apachebug}
+\label{exp.apachebug}
 \end{center}
 \end{figure}
 
 A summary of these events are:
 \begin{enumerate}
-  \item Apache developer Stefan Fritsch released a new version of their server, apache2/2.2.19-2, on 29 Aug 2011.
+  \item Apache developer Stefan Fritsch released a new version of their server, \texttt{apache2}/2.2.19-2, on 29 Aug 2011.
   \item Takis Issaris upgraded to this version which broke his system on 29 Aug 2011.
-  \item Takis Issaris submits a bug report on 30 Aug 2011, where he and Stefan Fritsch discuss the causes.
-  \item On 04 Sep 2011 (5 days after the initial ug report) Stefan Fritsch releases a new version 2.2.20-1 that fixes this bug.
+  \item Takis Issaris submited a bug report on 30 Aug 2011, where he and Stefan Fritsch discuss the causes.
+  \item On 04 Sep 2011 (5 days after the initial bug report) Stefan Fritsch releases a new version 2.2.20-1 that fixes this bug.
 \end{enumerate}
+In this example, the maintenance of the component \texttt{apache2} caused the release of two versions within a week of one another.
+
+By looking at the components that the ``Always Upgrade'' user upgrades, the number of instances of this occurring can be measured.
+The ``Always Upgrade'' user upgrades the same component within a week on 23 different occasions, and within a month on 68 difference occasions.
+By updating less frequently these instances may be avoided.
+This may not seem like a significant amount of change, especially since the ``Always Upgrade'' user changes over 1500 components during the simulated year.
+However, these changes may introduce bugs, as with the above example, and are an unnecessary risk to the users system.
+In section \ref{exp.stable} a criteria is created to explicitly take advantage of this phenomena to reduce change.
+
+
+\subsection{Install Probability Effects}
+%TODO q1c
+
+\section{Decreased Out-of-dateness During Evolution}
+\label{exp.prouttdsection}
+In the previous section the criteria used during evolution were the criteria used by \texttt{apt-get}.
+This criteria can be altered to attempt to reduce the out-of-dateness of the system during evolution.
+
+
+\section{Reduction of Change During Evolution}
+\label{exp.stable}
+%%%Here is a real example of this happening
+An example of this described situation is show in figures \ref{apachelog} and \ref{apachebug}.
+
+
 
 
 \section{Real Evolution}
