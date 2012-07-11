@@ -3,3 +3,11 @@ tmp
 *.dot
 *.tex~
 plots
+document.glo
+document.ist
+document.xdy
+documentprev.aux
+documentprev.lof
+documentprev.lot
+documentprev.out
+documentprev.toc
