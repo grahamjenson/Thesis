@@ -117,7 +117,7 @@ For this reason, these simulations were chosen to be closely inspected for vario
 Three types of failure were observed in the results of these simulations:
 \begin{enumerate}
   \item \textbf{Hard Failure}: Where a request has no satisfactory solution, therefore no change is made to the system.
-  \item \textbf{Soft Failure}: To satisfy an install request a significant amount of components must be removed.
+  \item \textbf{Soft Failure}: The request is satisfied, however the search was interrupted and the best solution found at that time was returned.
   \item \textbf{Multi-component Failure}: A type of hard failure where multiple components must be installed to satisfy a request. 
   This causes the next upgrade request to fail and the next install request to remove the offending components.
 \end{enumerate}
@@ -134,32 +134,36 @@ Due to the difficultly of finding the constraints that caused these failures \ci
 and the rarity of these failures, the specific reasons for hard failures are not further explored.
 
 %%%Soft Failure TODO
-Soft failures are called ``soft'' because the request that causes them succeeds, however does so at the detriment to the system.
-They are defined to cause more than 100 components in the system to be removed in order to satisfy the install request.
-Eight soft failures were observed in eight different ``Always Install'' and ``Always Upgrade\&Install'' users.
-There are three interesting points that were observed with these failures:
+Soft failures are called ``soft'' because the request that causes them succeeds, however the search failed to finish.
+This does not mean that the returned solution is not optimal\footnote{In MISC GJSolver was interrupted many times and most times returned the optimal solution},
+it just means that it is uncertain that it is optimal.
+Of the 33215 requests during the simulation of the users defined in table \ref{exp.tblextremeusers} only 900 requests were interrupted.
+This is less than 3\%.
+After looking at the results returned by the 900 requests only 8 were determined to be detrimental to the simulation.
+Each of these 8 requests caused more than 100 components in the system to be removed in order to be satisfied.
+This is due to the criterion \texttt{-removed} not being fully optimised before being interrupted.
+There are three interesting points that were observed with these 8 requests:
 \begin{enumerate}
-  \item seven of the soft failures occurred during the Ubuntu 10.04 release month of April 2010.
-  \item the component that caused the soft failure is removed five times in the following days.
-  \item Each request reached the time limit allowed by GJSolver, and was interrupted. 
+  \item seven of them occurred during the Ubuntu 10.04 release month of April 2010, where the remainder of the soft failures are evenly distributed.
+  \item five times the component that was requested to be installed was removed by the following requests.
 \end{enumerate}
-This leads to the conclusion that soft-failures occur because of the increased component evolution caused by the Ubuntu release cycle which creates difficult to optimise problems.
-The effect of these soft failures can be seen in figure \ref{exp.q1achange} 
+The first point implies that these detrimental soft-failures occur because of the increased release of components during the Ubuntu release.
+The second point implies that the components themselves are over constrained and thus removed in future systems.
+The effect of these detrimental soft failures can be seen in figure \ref{exp.q1achange} 
 where the standard deviation of change for both ``Always Install'' and ``Always Upgrade\&Install'' users increases after the Ubuntu 10.04 release.
-Given that only 8 soft failures occurred of all the requests, this problem is seen as minor.
-Although, in future experiments if soft failures are detected they will be mentioned and mitigated. 
+Given that only 8 such failures occurred, this is seen as a minor impact on the validity of the simulation..
+Although, in future experiments if soft failures are detected they will be mentioned. 
+These failures may be reduced or removed by increasing the time before the algorithm is interrupted, or by using more powerful hardware to perform the simulations.
 
 %%%The multi component fialure
 An interesting failure occurred when the situation arose that installing the package \texttt{chromium-browser} required two versions of the package \texttt{libc6} to be installed. 
-This lead to the following upgrade request to fail, and the following install request to remove \texttt{chromium-browser} and upgrade to the newest version of \texttt{libc6}.
-This instance, although rare, shows the case that at some points the hard constraint that Debian has to have only one version of each component installed,
+This lead to the following upgrade request to be unsatisfiable, and the following install request to remove \texttt{chromium-browser} and upgrade to the newest version of \texttt{libc6}.
+This instance, although rare, shows the case that at some points the hard constraint that Debian enforces to have only one version of each component installed,
 can restrict the user.
 
 %%%Disclaimer
 All these failures are directly caused by, or are a result of an install request.
-Given the selection of components is the most random part of the simulation, the failures and/or the rates they occur may directly be a product of this randomness.
-This was previously discussed in section \ref{sim.modelvalidation}.
-
+The failures and/or the rates they occur may directly be a product of the selection of components being the least valid part of the simulation (discussed in section \ref{sim.modelvalidation}).
 
 \subsection{Upgrade Probability Effects}
 By altering only the probability a user upgrades their system, while leaving other variables static, the effect of the user upgrading can be measured.
@@ -379,17 +383,25 @@ The phenomenon where components are rapidly released causes unnecessary change w
 This change can be reduced by changing the criterion UTTD criterion to a new criterion called \textit{stable version}.
 To define this criteria first the $stable$ function must be defined:
 \begin{defs}
-The function $unstable$ takes a component $c$ an integer $d$ and a set of components $\mathbb{C}_t$ and returns a true 
-iff a version with the name of component $c$ has been released within $d$ days before time $t$.
+The function $stable$ takes a component $c$ an integer $d$ and a set of components $\mathbb{C}_t$ and returns a true iff:
+%boolean sincerelease = (releasetime + this.timespan) < this.currentdate ;
+%boolean versionrelease = (releasetime + this.timespan) < nextrelease;
+%boolean stupidrepo = releasetime > nextrelease;
+\begin{enumerate}
+  \item  the component was released within $d$ days of time $t$.
+  \item there exists no component with the same name, a greater version, that was released within $d$ days after the release of it. 
+\end{enumerate}
 \end{defs}
-This function is used to determine if the a version of a component has been released within $d$ days, that is the component is unstable. 
+This function takes a component and a $d$ and attempts to determine if the component has not been changed in $d$ days.
+The first part of the definition ensures that the function waits $d$ days before stating a component is stable.
+The second part ensures that if a better version is released within $d$ days, the component is stated to be unstable.
 
 A criterion using this measurement can then be defined:
 \begin{defs}
 	Given the set of components $\mathbb{C}_t$ and number of days $d$, the \textbf{stable version} criterion is defined as $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$,
-	where \\$rank^{sv}_{\alpha}(\beta) = \sum_{c \in \beta} \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& unstable(c,d,\mathbb{C}_t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
+	where \\$rank^{sv}_{\alpha}(\beta) = \sum_{c \in \beta} \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& not stable(c,d,\mathbb{C}_t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
 \end{defs}
-That is the ranking function $rank^{sv}_{\alpha}(\beta)$ returns the UTTD of the component if it has not had a version released within $d$ days,
+That is the ranking function $rank^{sv}_{\alpha}(\beta)$ returns the UTTD of the component if it is stable,
 else it returns 1000 added to the UTTD.
 This extra weight of 1000 that is added if the component is seen as unstable will encourage the system to wait $d$ days to upgrade this component.
 
