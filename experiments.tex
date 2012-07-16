@@ -290,9 +290,8 @@ A summary of these events are:
 In this example, the maintenance of the component \texttt{apache2} caused the release of two versions within a week of one another.
 
 The amount of change this effect causes can be found out by looking at the ``Always Upgrade'' user.
-The ``Always Upgrade'' user upgrades the same component within a week on 23 different occasions, and within a month on 68 difference occasions.
-By updating less frequently these instances may be avoided.
-This may not seem like an insignificant amount of change, especially since the ``Always Upgrade'' user changes over 1500 components during the simulated year.
+This user upgraded the same component within seven days on 23 different occasions.
+This may not seem like an insignificant amount of change, especially since the ``Always Upgrade'' user changes over 1500 components during the year.
 However, these changes may introduce bugs (as with the above example) and are an unnecessary risk to the users system.
 Additionally, as a user installs more components these situations will likely increase.
 
@@ -361,7 +360,7 @@ Figure \ref{exp.q4auttdperc} presents the UTTDpC of these users.
 \end{figure}
 
 This figure shows that the progressive criteria reduces the out-of-dateness of the systems.
-The final UTTDpC for the ``Always Upgrade'' user 0.72 compared to the final UTTDpC for the ``Progressive Always Upgrade'' user 0.48
+The final UTTDpC for the ``Always Upgrade'' user 0.72 compared to the final UTTDpC for the ``Progressive Always Upgrade'' user 0.48.
 That is, a user who upgrades with the progressive criteira will have a system that is 24\% less out-of-date.
 
 The UTTDpC of these systems is most differentiated during the release of Ubuntu 10.04.
@@ -380,30 +379,28 @@ This criteria is further simulated in section \ref{exp.realuserssim}.
 \section{Reduction of Change During Evolution}
 \label{exp.stable}
 The phenomenon where components are rapidly released causes unnecessary change when upgrading.
-This change can be reduced by changing the criterion UTTD criterion to a new criterion called \textit{stable version}.
-To define this criteria first the $stable$ function must be defined:
+This change can be reduced by creating a criterion that does not upgrade to a package until it has become \text{stable}.
+This criterion is called \textit{stable version}.
+To check exactly when a package is stable the $stable$ function is used.
 \begin{defs}
-The function $stable$ takes a component $c$ an integer $d$ and a set of components $\mathbb{C}_t$ and returns a true iff:
-%boolean sincerelease = (releasetime + this.timespan) < this.currentdate ;
-%boolean versionrelease = (releasetime + this.timespan) < nextrelease;
-%boolean stupidrepo = releasetime > nextrelease;
+The function $stable$ takes a component $c$, a number of days $d$, and a time $t$ and returns true iff:
 \begin{enumerate}
-  \item  the component was released within $d$ days of time $t$.
-  \item there exists no component with the same name, a greater version, that was released within $d$ days after the release of it. 
+  \item the component was released within $d$ days of time $t$.
+  \item no component was released within $d$ days after $c$ was released that has the same name and a greater version than $c$.
 \end{enumerate}
 \end{defs}
 This function takes a component and a $d$ and attempts to determine if the component has not been changed in $d$ days.
-The first part of the definition ensures that the function waits $d$ days before stating a component is stable.
-The second part ensures that if a better version is released within $d$ days, the component is stated to be unstable.
+The first part of the definition ensures that the function waits $d$ days before returning that the component is stable.
+The second part ensures that if a better version is released within $d$ days, the component is returned as not stable.
 
-A criterion using this measurement can then be defined:
+A criterion using this function can then be defined:
 \begin{defs}
 	Given the set of components $\mathbb{C}_t$ and number of days $d$, the \textbf{stable version} criterion is defined as $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$,
 	where \\$rank^{sv}_{\alpha}(\beta) = \sum_{c \in \beta} \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& not stable(c,d,\mathbb{C}_t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
 \end{defs}
 That is the ranking function $rank^{sv}_{\alpha}(\beta)$ returns the UTTD of the component if it is stable,
 else it returns 1000 added to the UTTD.
-This extra weight of 1000 that is added if the component is seen as unstable will encourage the system to wait $d$ days to upgrade this component.
+This additional weight of 1000 is added only to encourage the system not install unstable components.
 
 The mapping between this criterion, MOF and the PB criteria is presented in table \ref{exp.stablcritmapping}, with a full description in appendix \ref{apx.critmapping}.
 \begin{table}[htp]
@@ -441,14 +438,19 @@ The UTTDpC of these simulated users are presented in figure \ref{exp.q5auttdperc
 \end{center}
 \end{figure}
 
-This figure shows the cost of using this criteria, the system is $d$ days out-of-date while the criterion waits for the components to ``stabilise''.
-The difference between the ``Always Upgrade'' user and the ``7 Days SV Upgrade'' user is on average 0.025 UTTDpC.
+This figure shows the cost of using this criteria, the system is $d$ days out-of-date while the criterion waits for the components to stabilise.
+The difference between the mean UTTDpC of the ``Always Upgrade'' user and the user ``7 Days SV Upgrade" is 0.025 UTTDpC.
+This increases linearly with the other users; ``14 Days SV Upgrade'' is 0.05, ``21 Days SV Upgrade'' is 0.078, and ``28 Days SV Upgrade'' is 0.104.
+The cost of waiting for the components to become stable is 0.0036 UTTDpC per day.
 
-The reduction in change for the ``7 Days SV Upgrade'' user is 28 changes over the year.
+The reduction in change for the ``7 Days SV Upgrade'' user is the 23  changes over the year.
 This is measured by subtracting the total change of the ``Always Upgrade'' user 7 days before the end of the simulation
 from the total change of the  ``7 Days SV Upgrade'' user.
 This calculation takes into account the lag caused by the 7 day delay in upgrading.
-Above, it was calculated the total number of occurrences where a component is released
+The reduction in change for the other users are: 29 for ``14 Days SV Upgrade'', 41 for ``21 Days SV Upgrade'', and 59 for ``28 Days SV Upgrade''.
+
+There is a minor reduction in change when using this stable version criterion.
+However, it makes a system out-of-date as the system continually waits for components to become stable.
 
 \section{Real Evolution}
 \label{exp.realuserssim}
