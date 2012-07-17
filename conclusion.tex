@@ -1,23 +1,23 @@
 \chapter{Conclusion}
 \label{conclusion}
 %%%Answers to our initial questions
-The main research goal of this thesis is to study CSE.
-This research has been directed towards this objective.
-To attain this goal the semantics of component system evolution where defined, a CDR algorithm implemented and validated, user strategies for evolution explored,
-and finally a simulation of the evolution of Ubuntu component systems conducted.
-The assessment of the strategies took the form of answering various questions.
+This thesis investigates the evolution of component systems through a simulation of an Ubuntu system being changed over a year.
+To accomplish this the models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were developed.
+These models describe a component system evolving through repetitive change and the user that requests the changes.
+The implementation GJSolver was then described (chapter \ref{implementation}) to take a description of an evolving system and resolve the exact changes made over time.
+Together these artifacts were used to simulate the evolution of many component systems (chapter \ref{experiments}) to answer the questions:
+\begin{enumerate}
+  \item What effects do the users requests have on their system?
+  \item Can the upgrade criteria be altered to decrease out-of-dateness?
+  \item Can the upgrade criteria be altered to reduce change?
+  \item What are the effects of these criteria when simulating realistic users?
+\end{enumerate}
 
-TODO describe the methodology
+Each of these questions will be addressed in turn here.
+
+\section{User Requests}
 
 
-TODO DESCRIBE THE FOUND CONSEQUENCES I.E. How fast a system goes out of date when
-
-How well has this research goal been attained?
-Firstly; the strategies that have been accessed are component model (Ubuntu) specific. 
-Secondly; not all strategies were enumerated and accessed.
-
-Finding the consequences of component evolution on further component models (like the ones listed in chapter \ref{background}) to make generalisations is impractical and may be impossible.
-This is because component models may not have enough information to create a simulation and the effort required to simulate them may exceed available resources of this project.
 
 To simulate the evolution of a component model enough information to populate the variables of the conceptual model is required.
 This information, like the likely hood a user will install a component, is often not accessible or does not exist.
@@ -32,16 +32,6 @@ The computational power required to analyse just a single component model requir
 Each evolution problem is itself a hard problem to solve, to simulate generations of a single system was a massive undertaking.
 The resources in both man hours and computational hours would need to be increased in order to analyse further component models.
 
-Finding a complete set of all consequences for all user strategies is an impractical goal.
-The amount of possible user strategies is massive, and only the common strategies where used in the simulation.
-When these strategies where simulated only specific consequences where measured to answer the questions asked in chapter \ref{ubunutsimulation}.
-Creating then simulating all possible user strategies would create a massive amount of data.
-Then the extensive analysis of this data to find all consequences would likely be uninteresting and unusable.
-Finding the consequences to a strategy that is not currently used provides little practical information.
-
-What was presented in this thesis to answer the research question was 
-\text{some} of the consequences when evolving an \textbf{Ubuntu} component system with CDR with \textbf{common} user strategies where described in this thesis.
-This is believed to be significant enough to state that this research has been successful.  
 
 To conclude this thesis, a list of contributions is briefly given as these are the ultimate outcomes of the research.
 Then similar and used research from third parties are described to give a more general view of this domain.

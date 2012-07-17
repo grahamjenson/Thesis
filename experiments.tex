@@ -14,12 +14,12 @@ This chapter presents experiments and results to study the effects of CSE.
 The specific effects that are focused on are the change made to the system, and the out-of-dateness of the system during evolution.
 This exploration is accomplished through trying to answer the questions:
 \begin{enumerate}
-  \item What effects do the probabilities user upgrades per day ($u$) and a user installs a component per day ($i$) have during CSE?
+  \item What effects do the users requests ($u$ and $i$) have on their system?
   \item Can the upgrade criteria ($U$) be altered to decrease out-of-dateness?
   \item Can the upgrade criteria ($U$) be altered to reduce change?
-  \item What are the effects of these new criteria when simulating ``real'' users?
+  \item What are the effects of these criteria when simulating realistic users?
 \end{enumerate}
-This chapter is organised to present these questions in this order. 
+This chapter is organised to present experiments intended to answer these questions in this order. 
 
 \section{Upgrade and Install Variable Analysis}
 How often a user decides to upgrade their system or install a component will effect how the system evolves.
@@ -70,11 +70,13 @@ The \texttt{apt-get} criteria minimises new components installed into the system
 Therefore, if a newer version of a component require a new component to be installed, this component will not be upgraded when using this criteria.
 Section \ref{exp.prouttdsection} presents experiments where changing this criteria removes this barrier to new components. 
 
-
 This figure also shows that users which do not upgrade, the ``Control'' and ``Always Install'' users, become nearly three times more out-of-date than users that upgrade.
 The speed at which systems become out-of-date increases over the months between March and May 2010.
 The reason for this is likely due to the increased development effort because of the Ubuntu 10.04 release in April 2010.
 The users that upgrade are less affected by this release as they are continually upgrading to the new component versions.
+
+The ``Control'' users UTTDpC curve can be used as a measure of the speed at which components evolve.
+This is because the faster versions of a component are released, the more the ``Control'' user becomes out-of-date.
 
 The effect of the normalisation can also be seen in this figure, where the install variable $i$ has little effect on the UTTDpC of a component system.
 
@@ -114,13 +116,12 @@ These initial experiments are the most extreme users that can be simulated.
 This means phenomena that occur rarely are most observable in these simulations.
 For this reason, these simulations were chosen to be closely inspected for various failures.
 
-Three types of failure were observed in the results of these simulations:
+Two types of failure were observed in the results of these simulations:
 \begin{enumerate}
   \item \textbf{Hard Failure}: Where a request has no satisfactory solution, therefore no change is made to the system.
   \item \textbf{Soft Failure}: The request is satisfied, however the search was interrupted and the best solution found at that time was returned.
-  \item \textbf{Multi-component Failure}: A type of hard failure where multiple components must be installed to satisfy a request. 
-  This causes the next upgrade request to fail and the next install request to remove the offending components.
 \end{enumerate}
+Additionally, a notable type of hard failure was observed: the \textbf{Multi-component Failure}, where multiple components must be installed to satisfy a request. 
 
 %%%Hard failures
 Hard failures where observed to occur in 24 of the 60 ``Always Install'' and ``Always Upgrade\&Install'' users, and never in the ``Always Upgrade'' user.
@@ -197,13 +198,13 @@ This is most noticeable in the ``Upgrade once a month'' users.
 This is likely because the increased release of new versions during the April release.
 If the user does not upgrade often during this time their system will become quickly out of date.
 
-Another result from this experiment is showing the correlation between UTTDpC and the reciprocal of the upgrade probability.
+Another result from this experiment is showing the correlation between UTTDpC and the frequency of upgrading.
 This can be seen in figure \ref{exp.q1bcorrolationuttdpc} that compares the mean UTTDpC to $1/u$.
 
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1bcorrolationuttdpc}
-  \caption{The mean up-to-date distance per component (UTTDpC) plotted against of the reciprocal of the users update probability ($u$)}
+  \caption{The mean up-to-date distance per component (UTTDpC) plotted against of the reciprocal of the users upgrade probability ($u$)}
   \label{exp.q1bcorrolationuttdpc}
 \end{center}
 \end{figure}
@@ -224,10 +225,12 @@ The total change of these users is presented in figure \ref{exp.q1bchange}.
 \end{center}
 \end{figure}
 
-This figure shows that upgrading less frequently requires less change. 
-This is in part due to the fact that updating once a month means that the majority of the month there is no change.
+This figure shows that upgrading is causes significantly more change in the system than installing.
+For example, the total change of the ``Upgrade once a month" user has a greater total change than the ``Always Install'' user.
 
-Another effect was noticed that reduced change of the users that upgraded less frequently.
+This figure also shows that upgrading less frequently requires less change. 
+This is in part due to the fact that updating once a month means that the majority of the month there is no change.
+Under further analysis another effect was noticed that reduced change of the users that upgraded less frequently.
 This is where many versions of a component may be released in quick succession, making upgrading to each interim version not required.
 For example, if over a week a user upgrades their system every day and upgrades 5 different components twice (a total of 10 change), 
 then they will upgrade twice as much as a user that only upgraded at the end of the week.
@@ -293,9 +296,15 @@ The amount of change this effect causes can be found out by looking at the ``Alw
 This user upgraded the same component within seven days on 23 different occasions.
 This may not seem like an insignificant amount of change, especially since the ``Always Upgrade'' user changes over 1500 components during the year.
 However, these changes may introduce bugs (as with the above example) and are an unnecessary risk to the users system.
-Additionally, as a user installs more components these situations will likely increase.
+Additionally, as a user installs more components this will likely increase the amount this type of change occurs.
 
-In section \ref{exp.stable} a criteria is created to explicitly take advantage of this phenomena to reduce change.
+By updating less frequently the change caused by rapid releasing the components is reduced.
+However, this reduction is by chance alone.
+For example, if a user upgrade once a month then they will likely miss many of the rapid releases that happened during the month.
+Such a user may upgrade during such a release, and therefore have a component (potentially with bugs) until they upgrade again in a month.
+
+To remove the reduction of this change without updating less frequently and resorting to chance a novel criterion is presented in section \ref{exp.stable}.
+This criterion is explicitly defined take advantage of this phenomena to reduce change during CSE.
 
 
 \subsection{Install Probability Effects}
@@ -325,9 +334,10 @@ The total change of these users is presented in figure \ref{exp.q1cchange}.
 \end{center}
 \end{figure}
 This figure shows the range of possible change given the probability to install a component.
-It also shows the change is inversely proportional to the reciprocal of $i$, 
+It also shows the change is inversely proportional to the frequency of installing, 
 i.e. ``Install twice a week'' users change twice as much as ``Install once a week'' users.
-The reason that further analysis is futile is that the selection of components is the least valid part of the simulation, as discussed in section \ref{sim.randomness}.
+
+Further analysis is futile is that the selection of components is the least valid part of the simulation, as discussed in section \ref{sim.randomness}.
  
 
 \section{Decreased Out-of-dateness During Evolution}
@@ -379,28 +389,27 @@ This criteria is further simulated in section \ref{exp.realuserssim}.
 \section{Reduction of Change During Evolution}
 \label{exp.stable}
 The phenomenon where components are rapidly released causes unnecessary change when upgrading.
-This change can be reduced by creating a criterion that does not upgrade to a package until it has become \text{stable}.
-This criterion is called \textit{stable version}.
-To check exactly when a package is stable the $stable$ function is used.
+To reduce this change a criterion is defined that does not upgrade to a component until it has become \textit{stable}.
+A component is stable if no better version is released within a certain amount of time after its release.
+To express this the $stable$ function is defined:
 \begin{defs}
-The function $stable$ takes a component $c$, a number of days $d$, and a time $t$ and returns true iff:
+The function $stable$ takes a component $c$, a number of days $d$, and a time $t$ and returns \texttt{true} iff:
 \begin{enumerate}
   \item the component was released within $d$ days of time $t$.
   \item no component was released within $d$ days after $c$ was released that has the same name and a greater version than $c$.
 \end{enumerate}
 \end{defs}
-This function takes a component and a $d$ and attempts to determine if the component has not been changed in $d$ days.
 The first part of the definition ensures that the function waits $d$ days before returning that the component is stable.
 The second part ensures that if a better version is released within $d$ days, the component is returned as not stable.
 
 A criterion using this function can then be defined:
 \begin{defs}
 	Given the set of components $\mathbb{C}_t$ and number of days $d$, the \textbf{stable version} criterion is defined as $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$,
-	where \\$rank^{sv}_{\alpha}(\beta) = \sum_{c \in \beta} \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& not stable(c,d,\mathbb{C}_t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
+	where \\$rank^{sv}_{\alpha}(\beta) = \sum_{c \in \beta} \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& not stable(c,d,t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
 \end{defs}
 That is the ranking function $rank^{sv}_{\alpha}(\beta)$ returns the UTTD of the component if it is stable,
 else it returns 1000 added to the UTTD.
-This additional weight of 1000 is added only to encourage the system not install unstable components.
+This additional weight of 1000 is added to encourage the system to only install stable components.
 
 The mapping between this criterion, MOF and the PB criteria is presented in table \ref{exp.stablcritmapping}, with a full description in appendix \ref{apx.critmapping}.
 \begin{table}[htp]
@@ -438,33 +447,59 @@ The UTTDpC of these simulated users are presented in figure \ref{exp.q5auttdperc
 \end{center}
 \end{figure}
 
-This figure shows the cost of using this criteria, the system is $d$ days out-of-date while the criterion waits for the components to stabilise.
+This figure shows the cost of using this criteria which is that the system is $d$ days out-of-date while the criterion waits for the components to stabilise.
 The difference between the mean UTTDpC of the ``Always Upgrade'' user and the user ``7 Days SV Upgrade" is 0.025 UTTDpC.
 This increases linearly with the other users; ``14 Days SV Upgrade'' is 0.05, ``21 Days SV Upgrade'' is 0.078, and ``28 Days SV Upgrade'' is 0.104.
 The cost of waiting for the components to become stable is 0.0036 UTTDpC per day.
 
-The reduction in change for the ``7 Days SV Upgrade'' user is the 23  changes over the year.
-This is measured by subtracting the total change of the ``Always Upgrade'' user 7 days before the end of the simulation
-from the total change of the  ``7 Days SV Upgrade'' user.
-This calculation takes into account the lag caused by the 7 day delay in upgrading.
-The reduction in change for the other users are: 29 for ``14 Days SV Upgrade'', 41 for ``21 Days SV Upgrade'', and 59 for ``28 Days SV Upgrade''.
+The reduction in change for these users are described in table \ref{exp.tblsvchange}.
+This is measured by subtracting the total change of the ``Always Upgrade'' user $d$ days before the end of the simulation
+from the total change of the  ``$d$ Days SV Upgrade'' user.
+This calculation takes into account the delay in upgrading caused when waiting for components to become stable.
+This table also includes the estimate from the ``Always Upgrade'' user.
+This is a total of the amount of occurrences the ``Always Upgrade" user upgraded the same component within $d$ days.
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | }
+\hline
+User Name 				& Reduction in change 	& ``Always Upgrade'' estimate		\\ \hline
+7 Days SV Upgrade		& 23 					& 23 			 \\
+14 Days SV Upgrade		& 29	 				& 31			\\
+21 Days SV Upgrade		& 41 					& 46 			 \\
+28 Days SV Upgrade 		& 59 					& 68			\\ \hline
+\end{tabular}
+\caption{Users with different upgrade probabilities.}
+\label{exp.tblsvusers}
+\end{table}
 
-There is a minor reduction in change when using this stable version criterion.
-However, it makes a system out-of-date as the system continually waits for components to become stable.
+This table shows that the reduction in change grows quickly.
+However, increasing the amount of days that is waited for a component to become stable more than a month may start to effect regular patterns of component evolution.
+This is a trade off when using this criteria; increasing the time to stabilise significantly reduces change, however it may be detrimental to the systems normal evolution.
+
+Another aspect this table shows is the estimate of this change from the ``Always Upgrade'' user.
+This estimate differs from the actual reduction due to the stable version criterion because of components waiting to become stable at the end of the simulation.
+This estimate is later used to determine the amount of change that could be reduced for a simulated user.
+This is preferred over further simulation with the stable version criterion as the change is to small to be measured against the background noise of the randomness of a simulation. 
 
 \section{Real Evolution}
 \label{exp.realuserssim}
-During the previous experiments how often the user upgrades or installs a component have been assigned values that may not be ``realistic''.
-This section presents the final experiments where the variables are assigned values calculated from real user's systems.
+During the previous experiments the probabilities a user upgrades and installs have been assigned values that may not be ``realistic''.
+This section presents the experiment where these variables are assigned values extracted from submitted user's \texttt{apt-get} logs.
+Four such users are defined, ``High Install'', ``High Upgrade'', ``Medium Change'' and ``Low change''.
+These users are then assigned the \texttt{apt-get} criteria, and the ``Progressive Upgrade'' criteria and simulated.
+Using the estimate described in the previous section, the potential reduction in change for these users if they used the stable version criterion is discussed.
 
+This section first discusses the method used to extract the information from the \texttt{apt-get} logs and define the users.
+The results from the simulation of these users is then discussed and analysed.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extracting Information from the User Submitted Logs}
-These variables of update probability and user install probability can be extracted from the user submitted logs from the survey.
-Initially, 31 logs where submitted, these logs were filtered to be APT logs, of more than 15 days long.
-This resulted in 19 logs of between 23 and 277 days long to be processed.
+As previously discussed in chapter \ref{simulation}, during the conducted survey users where asked to submit their \texttt{apt-get} logs.
+Nineteen logs were submitted of users using \texttt{apt-get} on either Debian or Ubuntu systems over a period between 23 and 277 days long. 
+In section \ref{impl.validation} these logs were used to validate the simulations output.
+This section describes how these logs are parsed to measure the probability a user upgrades and installs a component.
+Through using the k-means clustering algorithm, four general users are extracted and described.
 
-An extract from one of these logs is shown in figure \ref{aptlog}.
+To give an example of the information included in an \texttt{apt-get} log, an extract is shown in figure \ref{aptlog}.
 \begin{figure}[htp]
 \begin{center}
 \begin{alltt}
@@ -480,16 +515,120 @@ End-Date: 2010-12-21 11:33:03
 \end{center}
 \end{figure}
 
-These logs mainly describe the changes made to the system by APT, not necessarily what the user requested.
-This is because APT may be used through another application, like semantic, to install or update the system.
-As the criteria of APT is known, some information about the action the user requested can be inferred.
+These logs describe the changes made to the system by \texttt{apt-get}, and not necessarily what the user requested to cause the change.
+However, using the constraints that \texttt{apt-get} employs to make changes, the user request can be extracted.
+These constraints are:
+\begin{itemize}
+  \item \texttt{apt-get} will never install or remove a component if the system is upgraded.
+  \item \texttt{apt-get} will only install a package if one has been selected to be installed.
+\end{itemize}
+Using these constraints each log is processed and the dates a user upgraded or installed a component are extracted.
+With this information the probability that a user upgrades or installs a component on a given day is calculated.
+A k-means algorithm is used to cluster and find the center points for four types of users.
+The results of this process are presented in figure \ref{exp.figuserlogs} and table \ref{exp.tbluserlogs} .
 
-Given APT will never install or remove a component if the system is updated; 
-if a package is upgraded but none are removed or installed then the user probably selected to update.
-Also, if a package is installed, then the user requested a single package to be installed.
-This second rule is assuming that only one package was selected, and not two at the same time.
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/userlogAnalysis}
+  \caption{The Extracted Upgrade and Install probabilities of the Submitted Logs}
+  \label{exp.figuserlogs}
+\end{center}
+\end{figure}
 
-Using these rules, each log is processed, and the variables of update probability and install distribution are measured.
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | }
+\hline
+User Name 				& 	$u$ 		& $i$ 		\\ \hline
+High Install (HI)			& 0.422			& 0.764 	\\
+Medium Change (MC)			& 0.222			& 0.259 	\\
+High Upgrade (HU)			& 0.561			& 0.192		\\
+Low Change 	(LC)			& 0.186			& 0.086 	\\ \hline
+\end{tabular}
+\caption{Extracted Users from submitted \texttt{apt-get} Logs}
+\label{exp.tbluserlogs}
+\end{table}
+
+\subsection{Simulation of ``Real'' users}
+Above some realistic users are created by extracting information from user submitted logs.
+These users are simulated using the \texttt{apt-get} upgrade criteria \texttt{-removed,-new,-uptodatedistance} and the progressive upgrade criteria \texttt{-removed,-uptodatedistance,-new}.
+The progressive users names are prefixed  with ``Pro. Upgrade'' where the users using the \texttt{apt-get} criteria are not changed.
+
+The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc}.
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/q6usersuttd}
+  \caption{The UTTDpC plotted for the simulated users.}
+  \label{exp.q6uttdpc}
+\end{center}
+\end{figure}
+This figure shows that using the \texttt{apt-get} upgrade criteria results in a system that after a year of simulation is about 0.8 UTTDpC out of date for all users. 
+The only noticeable difference between these users is that ``High Install'' users systems take longer to become up-to-date after the Ubuntu 10.04 release.
+
+The users ``Pro. Upgrade High Install'' and ``Pro. Upgrade High Update'' benefit the most from using the progressive upgrade criteria.
+These two users are about 0.42 UTTDpC at the end of the simulations.
+This is compared to the other two progressive users who are about 0.62 UTTDpC out-of-date.
+These results show that using the progressive criteria has the most benefit for users that upgrade the most.      
+
+The total changes of these users are presented in figure \ref{exp.q6userchange} and table \ref{exp.tblq6change}.
+\begin{figure}[htp]
+\begin{center}
+  \includegraphics[width=\textwidth]{plots/q6userchange}
+  \caption{The Total Change for the simulated users.}
+  \label{exp.q6userchange}
+\end{center}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | c | }
+\hline
+User Name 				& \texttt{apt-get} criteria 		& Progressive criteria 	& Difference	\\ \hline
+High Install (HI)			& 3176			& 4043 	& 867	\\
+Medium Change (MC)			& 2291			& 2660 	& 369 	\\
+High Upgrade (HU)			& 2123			& 2842	& 719   \\
+Low Change 	(LC)			& 1903			& 2212 	& 309   \\ \hline
+\end{tabular}
+\caption{The mean total change when using different upgrade criteria}
+\label{exp.tblq6change}
+\end{table}
+
+This figure shows the additional change required when using the progressive criteria.
+This figure shows that the total change of  ``High Install'' users for both criteria are significantly more than the other users.
+Additionally it shows that the ``High Upgrade'' user's total change is significantly increased when using the progressive criteria.
+This can be seen in the final months of the simulation where the rate of change increases due to the upcoming release of Ubuntu 10.10.
+
+The reduced change when using the stable version criteria can be estimated for each of these users.
+This is accomplished by counting the amount of times each user upgrades the same component within $d$ days.
+These results are presented in table \ref{exp.tblq6sv}.
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | c | c |}
+\hline
+User Name 	& $d$ = 7 	&  $d$ = 14 	&	$d$ = 21 	&	$d$ = 28 	\\ \hline
+HI 			&24.58 	&	43.24&	 67.22&	 93.88\\
+HU 			&19.08 	&	31.32&	 48.4&	 70.52\\
+MC 			&11.54 	&	26.98&	 45.14&	 65.1\\
+LC 			&8.5 	&	22.54&	 38.48&	 53.56\\
+Pro. HI 	&30.72 	&	57.0&	 85.52&	 117.52\\
+Pro. HU 	&32.02 	&	56.2&	 79.62&	 110.1\\
+Pro. MC 	&14.9 	&	30.28&	 48.28&	 67.66\\
+Pro. LC 	&12.4 	&	24.84&	 41.3&	 59.4\\ \hline
+\end{tabular}
+\caption{The estimated mean reduced change when using the stable version criteria}
+\label{exp.tblq6sv}
+\end{table}
+
+This table shows that users that upgrade often will have the most benefit using the stable version criterion.
+These users may not wish to use the stable version criterion as they may upgrade frequently to decrease out-of-dateness of their systems
+which would be increased when using the stable version criterion.
+However, the reduction in change caused when using the stable version criterion may reduce the risk of upgrading 
+and this may increase the probability a conservative user would upgrade.
+This situation would increase the benefits of the using the stable version criterion for conservative users.
 
 \section{Summary}
-%%%A list of the answers gained from the questions
+This chapter presented the experiments involving simulating the evolution of many component systems.
+These experiments were conducted in order to answer questions posed about CSE.
+In the following chapter the answers to these questions is described and this thesis concluded.
+
+
