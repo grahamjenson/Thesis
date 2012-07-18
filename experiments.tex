@@ -14,14 +14,15 @@ This chapter presents experiments and results to study the effects of CSE.
 The specific effects that are focused on are the change made to the system, and the out-of-dateness of the system during evolution.
 This exploration is accomplished through trying to answer the questions:
 \begin{enumerate}
-  \item What effects do the users requests ($u$ and $i$) have on their system?
-  \item Can the upgrade criteria ($U$) be altered to decrease out-of-dateness?
-  \item Can the upgrade criteria ($U$) be altered to reduce change?
-  \item What are the effects of these criteria when simulating realistic users?
+  \item What consequences do a user's choices (their probabilities to upgrade $u$ and install $i$) have on their system?
+  \item Can the out-of-dateness of a system be reduced?
+  \item Can the change of a system be reduced?
+  \item How do the systems of realistic users evolve?
 \end{enumerate}
-This chapter is organised to present experiments intended to answer these questions in this order. 
+This chapter presents experiments intended to answer these questions. 
 
-\section{Upgrade and Install Variable Analysis}
+\section{Users Choices to Upgrade and Install}
+\label{exp.q1}
 How often a user decides to upgrade their system or install a component will effect how the system evolves.
 This section attempts to quantify the effects on change and out-of-dateness that these actions have on the users systems.
 
@@ -98,18 +99,18 @@ This is likely because the increased development of components leads to an incre
 This increased change cannot be seen in the ``Always Install'' users as they will not change in response to newer versions.
 
 The ``Always Install'' users start by changing their systems quickly, then after a month this change slows to a constant rate.
-This can be seen with the mean change per day, during the first month it is 4.9, where the final 11 months it is 3.0.
-After a small investigation this reduction in change can be explained due to the common reuse of individual components e.g. \texttt{libaudio2} and \texttt{libqt3-mt}.
-Many components require such components to be installed, they are then required to be installed in the first month.
-After this installation they are no longer required to be added, so the future change is reduced. 
-These effects described here may be due to the way in which \usermodel selects components to be installed.
+This can be seen with the mean change per day during the first month it is 4.9, where the final 11 months it is 3.0.
+After further investigation this reduction in change is explained due to the common reuse of individual components like \texttt{libaudio2} and \texttt{libqt3-mt}.
+Many components require such components to be installed which increases their likely hood of being installed in the first month.
+After this installation they are no longer required to be added so the future change is reduced.
+With no reuse in this system the rate of change would remain at 4.9 per day, resulting in a total change of 1788.5.
+This is an addition of more than 650 change over the year.
 
 The ``Always Upgrade\&Install'' users changes more than the combined amount of ``Always Upgrade'' and ``Always Install'' changes.
 The mean total change of the ``Always Upgrade'' user is 1655, the ``Always Install'' user is 1137 and the ``Always Upgrade\&Install'' user is 3482.
-This shows that a user that always upgrades and installs changes more than 700 components more than the sum of just installing and just upgrading.
+This shows that a user that upgrades and installs changes more than 700 components than the combined amount changed by just installing and just upgrading.
 The additional change is due to the installed components increasing the amount of components to be upgraded.
-This also shows that upgrading a system over the course of a year causes more change than installing a component everyday.
-Though, this may be related to how packages are selected for installation.
+
 
 \subsection{Failures}
 These initial experiments are the most extreme users that can be simulated.
@@ -303,7 +304,7 @@ However, this reduction is by chance alone.
 For example, if a user upgrade once a month then they will likely miss many of the rapid releases that happened during the month.
 Such a user may upgrade during such a release, and therefore have a component (potentially with bugs) until they upgrade again in a month.
 
-To remove the reduction of this change without updating less frequently and resorting to chance a novel criterion is presented in section \ref{exp.stable}.
+To remove the reduction of this change without updating less frequently and resorting to chance a novel criterion is presented in section \ref{exp.q3}.
 This criterion is explicitly defined take advantage of this phenomena to reduce change during CSE.
 
 
@@ -340,7 +341,8 @@ i.e. ``Install twice a week'' users change twice as much as ``Install once a wee
 Further analysis is futile is that the selection of components is the least valid part of the simulation, as discussed in section \ref{sim.randomness}.
  
 
-\section{Decreased Out-of-dateness During Evolution}
+\section{Reduction of Out-of-dateness During Evolution}
+\label{exp.q2}
 \label{exp.prouttdsection}
 In the previous section the criteria used during evolution were the criteria used by \texttt{apt-get}.
 This criteria limits the up-to-dateness of the system by prioritising the minimisation of installing new components.
@@ -387,7 +389,7 @@ Users that prefer to have an up-to-date system may favour this criteria over the
 This criteria is further simulated in section \ref{exp.realuserssim}.
 
 \section{Reduction of Change During Evolution}
-\label{exp.stable}
+\label{exp.q3}
 The phenomenon where components are rapidly released causes unnecessary change when upgrading.
 To reduce this change a criterion is defined that does not upgrade to a component until it has become \textit{stable}.
 A component is stable if no better version is released within a certain amount of time after its release.
@@ -481,7 +483,7 @@ This estimate differs from the actual reduction due to the stable version criter
 This estimate is later used to determine the amount of change that could be reduced for a simulated user.
 This is preferred over further simulation with the stable version criterion as the change is to small to be measured against the background noise of the randomness of a simulation. 
 
-\section{Real Evolution}
+\section{Realistic Evolution}
 \label{exp.realuserssim}
 During the previous experiments the probabilities a user upgrades and installs have been assigned values that may not be ``realistic''.
 This section presents the experiment where these variables are assigned values extracted from submitted user's \texttt{apt-get} logs.
@@ -549,7 +551,8 @@ Low Change 	(LC)			& 0.186			& 0.086 	\\ \hline
 \label{exp.tbluserlogs}
 \end{table}
 
-\subsection{Simulation of ``Real'' users}
+\subsection{Simulation of Realistic Users}
+\label{exp.q4}
 Above some realistic users are created by extracting information from user submitted logs.
 These users are simulated using the \texttt{apt-get} upgrade criteria \texttt{-removed,-new,-uptodatedistance} and the progressive upgrade criteria \texttt{-removed,-uptodatedistance,-new}.
 The progressive users names are prefixed  with ``Pro. Upgrade'' where the users using the \texttt{apt-get} criteria are not changed.
@@ -626,9 +629,68 @@ However, the reduction in change caused when using the stable version criterion 
 and this may increase the probability a conservative user would upgrade.
 This situation would increase the benefits of the using the stable version criterion for conservative users.
 
+\section{Answers}
+The above performed experiments were conducted in order to answer the questions:
+\begin{enumerate}
+  \item What consequences do a user's choices have on their system?
+  \item Can the out-of-dateness of a system be reduced?
+  \item Can the change of a system be reduced?
+  \item How do the systems of realistic users evolve?
+\end{enumerate}
+
+Each of these questions will be addressed in turn here.
+\subsection{User Requests}
+The notable consequences a users requests to change their system were measured through the experiments in section \ref{exp.q1}.
+These experiments simulated users using the criteria \texttt{apt-get} uses to alter systems.
+These consequences are summarised as:
+\begin{itemize}
+	\item A system will always become more out of date due to:
+  		\begin{itemize}
+  			\item the internal constraints of the components hindering the upgrading of components.
+  			\item the criteria of \texttt{apt-get} stopping the installation of new packages to enable the upgrading of an installed component.  
+		\end{itemize}
+	\item The majority of change during evolution is caused by a user upgrading.
+	Installing new components increases the amount of change when upgrading.
+	\item Systems become out-of-date at the rate at which components evolve. Components evolve at a higher rates during release cycles.
+	\item Reuse decreases the rate of change during CSE.
+	This is due to the two effects; 
+	reuse decreases the installation rate of components and this decreases the amount of components necessary to be upgraded.   
+	\item There were two types of failures observed to occur:
+		\begin{itemize}
+  			\item Hard failures: where the constraints of a request could not be satisfied. These occurred 0.12\% during the simulation.
+  			\item Soft failures: where the constraints were satisfied, though the returned solution was possibly not optimal.
+  				These occurred in 3\% of the requests, though only 1\% of these were determined to be detrimental to the system.
+  				Such detrimental soft failures occur more frequently during release cycles when components are evolving at a higher rate.
+		\end{itemize}
+	\item Increasing the frequency of upgrading has depreciating returns on reducing a systems out-of-dateness. 
+	It may also increase change due to components being repeatedly upgraded if they are quickly released. 
+\end{itemize}
+
+\subsection{Reduce Out-of-dateness}
+As noted above, a system becomes out-of-date partially due to the \texttt{apt-get} criteria not allowing new components to be installed.
+To remove this restriction the \texttt{apt-get} criteria was altered to the ``progressive'' criteria.
+Using this criteria to upgrade a system every day was shown to decrease the out-of-dateness by 24\% at the cost of increasing change by 21\%.
+This additional change was due to the new components being installed and upgraded during the simulation.
+
+\subsection{Reduce Change}
+Some of the change caused when upgrading a system was due to rapidly released components being repeatedly upgraded.
+For a user that upgrades every day, there were 23 occasions were a component being upgraded twice within a week.
+This is unnecessary change that introduces risk into a system. 
+The stable version criterion was defined to reduce this change by waiting for a component to become stable over a period of days.
+The cost of using the stable version criteria was the system remains out-of-date by the number of days waited for components to become stable.
+However, through using the stable version criteria waiting a week for components to become stable all 23 instances of this unnecessary change were removed.
+
+\subsection{Real Users}
+To simulate realistic users the probability a user upgrades and installed were extracted from user's submitted logs.
+Using the k-means algorithm four stereotypes of user were created; `High Install'', ``High Upgrade'', ``Medium Change'' and ``Low change''.
+These users were simulated using the \texttt{apt-get} criteria and the progressive criteria, and the lowered change from using the stable version criterion was estimated.
+This has shown that the greatest benefits for using the progressive criteria and the stable version criterion is for the ``High Install'' and ``High Upgrade'' users.
+This is due to their higher frequency they upgrade their systems.
+
 \section{Summary}
-This chapter presented the experiments involving simulating the evolution of many component systems.
-These experiments were conducted in order to answer questions posed about CSE.
-In the following chapter the answers to these questions is described and this thesis concluded.
+This chapter presented a series of experiments that simulated various users to study CSE.
+These experiments explored the consequences of users changing their systems, and the novel proposed progressive and stable version criteria.
+The next chapter describes the conclusions, the related work, and the potential future research of CSE.
+
 
 

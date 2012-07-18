@@ -5,17 +5,9 @@ This thesis investigates the evolution of component systems through a simulation
 To accomplish this the models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were developed.
 These models describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver was then described (chapter \ref{implementation}) to take a description of an evolving system and resolve the exact changes made over time.
-Together these artifacts were used to simulate the evolution of many component systems (chapter \ref{experiments}) to answer the questions:
-\begin{enumerate}
-  \item What effects do the users requests have on their system?
-  \item Can the upgrade criteria be altered to decrease out-of-dateness?
-  \item Can the upgrade criteria be altered to reduce change?
-  \item What are the effects of these criteria when simulating realistic users?
-\end{enumerate}
 
-Each of these questions will be addressed in turn here.
 
-\section{User Requests}
+
 
 
 
@@ -145,6 +137,9 @@ therefore during evolution the optimisation of such criteria may return better s
 
 %%%Further stufy of the interaction between users and their component systems. We found it hard to find information, maybe some research would be interesting,
 %%%which we could include to make the simulations more valid.
+
+%%%Auto-remove request in CUDF* removing packages that are unnecessary as they will increase change due to upgrading.
+
 
 \section{Final Thoughts}
 The domain of software evolution is fundamental to software engineering, and this domain includes the evolution of component systems.
