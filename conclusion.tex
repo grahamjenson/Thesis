@@ -1,148 +1,109 @@
 \chapter{Conclusion}
 \label{conclusion}
 %%%Answers to our initial questions
-This thesis investigates the evolution of component systems through a simulation of an Ubuntu system being changed over a year.
-To accomplish this the models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were developed.
-These models describe a component system evolving through repetitive change and the user that requests the changes.
-The implementation GJSolver was then described (chapter \ref{implementation}) to take a description of an evolving system and resolve the exact changes made over time.
+There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}.
+These users are repeatedly installing new components and upgrading components to newer versions.
+This causes their systems to evolve over time through the CSE process.
 
+This thesis investigates the evolution of such component systems using a developed simulation.
+To build this simulation first the background of software evolution, component based software engineering and component systems were explored (chapter \ref{background}).
+The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
+to describe a component system evolving through repetitive change and the user that requests the changes.
+The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
 
+Using these artifacts experiments were defined that simulate the evolution of many different systems,
+and the out-of-dateness and changes made to the systems were analysed.
+Some discoveries were:
+\begin{itemize}
+  \item that the majority of change is caused through the user upgrading their system.
+  \item it is most important to upgrade during periods where new component versions are released quickly (e.g. during Ubuntu releases).
+  \item all systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
+  \item increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
+  but may cause more change when components that release many versions quickly are upgraded multiple times.
+\end{itemize} 
 
+Another important discovery is that re-use dramatically lowers the change necessary during CSE.
+This is due to lowering the amount of required components to be installed.
+Additionally, this lowers the amount of components that require to be upgraded.
+The benefits of reuse have when using software components has been explored before\citep{Szyperski2002}.
+However, this research provides empirical evidence that confirms reuses importance during CSE.
 
+To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
+This criteria allows new components to be installed to enable the upgrading of components.
+This alteration was shown to be most effective for users that upgrade frequently.
+It was shown to decrease the out-of-dateness of a system by as much as 49\% at the cost of increasing change by 34\%.
+For many users this may be a supports the objectives of their system.
 
+To reduce the change made to a system during CSE the stable version criterion was proposed.
+This criterion waits for a period of days for a component to cease releasing newer version and become stable.
+By using this criterion and waiting a week for a component to become stable before upgrading it, it was estimated to save some types of users more than 30 changes over a year.
+These changes could introduce bugs into the system and are therefore seen as an unnecessary risk for a component system. 
+Using this criterion comes at a cost of the system always being one week out-of-date.
+For users that may run a mission critical system, this may be a tolerable trade-off.
 
-To simulate the evolution of a component model enough information to populate the variables of the conceptual model is required.
-This information, like the likely hood a user will install a component, is often not accessible or does not exist.
-The most difficult conceptual model attribute to assign is the repository function that returns a set of components that were available given a time. 
-Many component models do not have a set of publicly available components, as their main users create proprietary components or do not see an advantage in sharing.
-Component models that do make sets of component public often neglect to keep historical information, e.g. the OSGi repository OSGi Bundle Repository.
-In some instances information is gathered but it may be incomplete or be stopped as it is seen to lack value,  
-e.g. the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project was shut down as it was deemed not to have a significant return on investment.  
-
-If enough information was available for a simulation to be conducted, the effort of multiple simulations exceeds the resources of this project.
-The computational power required to analyse just a single component model required many hours of high performance computers.
-Each evolution problem is itself a hard problem to solve, to simulate generations of a single system was a massive undertaking.
-The resources in both man hours and computational hours would need to be increased in order to analyse further component models.
-
-
-To conclude this thesis, a list of contributions is briefly given as these are the ultimate outcomes of the research.
-Then similar and used research from third parties are described to give a more general view of this domain.
-Finally, the future of this research is outlined and the final thoughts are discussed.
-
-\section{Contributions}
-To answer the research questions various artifacts where created.
-The artifacts that could be deemed useful to further study, that are also relatively unique are seen as contributions knowledge. 
-These contributions include; the formal definition of component evolution, the implementation of CDR that evolves a component system,
-the simulation that  
-
-%%%Formalisation of evolution, the semantics
-
-%%%GJSolver implementation 
-
-%%%Simulation -- conceptual model
-
-%%%List of consequences
-
-%%%New stable components shown to reduce certain problems for certain user strategies
+Understanding how component systems evolve can inform users and developers about the effects of their choices.
+It can also provide new methods to change systems that better suit a user's requirements.
+This thesis builds on existing research to provide the initial steps to studying how component systems evolve.
+It also opens the door for further questions about CSE.
+The remainder of this chapter reviews the related research and potential future research of CSE.  
 
 \section{Related Work}
-Throughout this research the domains of software evolution, component based software engineering (CBSE) and component dependency resolution.
-Research from these domains has shaped and informed this research, and in this section such research is discussed and contrasted with this thesis.
+Research from the Mancoosi project and Le Berre has been used extensively throughout this thesis.
+This has shaped and informed the direction of this study.
 
-\subsection{Software Evolution}
-%%%Lehman, other stuff on evolution
-Software evolution is continual management of change to software. 
-Software maintenance is often used to describe this,
-however is considered an invalid description of evolution, as it conveys a
-restoration of a system to a previous state, where evolution is a progression
-of changes to a system \citep{lehman_software_2006}. Versioning software is the atomic mechanism of evolution, 
-incrementing systems along the time axis.\\ 
-Evolution is an intrinsic value of real world software
-design and implementation \citep{lehman_programs_1980}. Laws of software
-evolution identified by Lehman include continuing change, increasing complexity and
-continuing growth \citep{lehman_rules_2001} to name a few. These empirically proven laws
-display the importance of software evolution as a process within software
-engineering.
+As previously mentioned,
+Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
+It is the further evolution of the EDOS project, which was focused on building GNU/Linux distributions.
+Throughout this thesis many contributions from Mancoosi have been used, including:
+\begin{itemize}
+  \item the CUDF \citep{treinen2009common} and MOF syntaxs.
+  \item the MISC 2011 competition.
+  \item the research papers and technical reports from \cite{abatetrenen2010}, \cite{Treinen2009}, \cite{argelich2010solving} and \cite{abate2011}..
+\end{itemize} 
+This organisation has provided the basis for this project and has produced a large amount of useful resources for the study of changing, and evolving component systems. 
 
-This paper has many similarities to the empirical work into software evolution by Lehman \citep{lehman1980},
-which looks for laws and relationships between software and its evolutionary process.
-In this paper we aimed to look into the evolution of component systems through CDR,
-and identify the consequences of different definitions of minimal change. 
+The research of Le Berre is focused on implementations that resolve changes made to component systems.
+This research has provided:
+\begin{itemize}
+  \item The SAT4J library used to solve SAT problems \citep{le2010sat4j}.
+  \item Detailed description of using SAT4J to resolve changes to component systems \citep{le_berre_dependency_2009} \citep{leBerre2010}
+  \item The Eclipse P2 provisioning system, which is the basis of GJSolver
+\end{itemize}
+This research has been used to create the implementation GJSolver, and simulate the evolution of component systems efficiently.
 
+\section{Future Research}
+The largest area of future research is into the generalisation of the results of this thesis.
+This is where additional component systems, such as Eclipse, 
+can be studied as they evolve and the conclusions of this research can be shown to be invariable between component systems or Ubuntu specific.
+The core hurdle of accomplishing this is that the information does not yet exist for other component models.
+Component models like Eclipse do not have the history archived as precisely as Ubuntu, thus collecting information like the components that were available on a given day is impossible.
+Other types of information are available, but incomplete.
+For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) 
+has information on popular components however was shut down as it was deemed not to have a significant return on investment. 
 
-\subsection{CBSE}
-%%%All the CBSE stuff, Szyperski \ldots
+Another area of research involves altering and extending the \modelname and \usermodel models to more precisely describe CSE.
+An aspect of \modelname that is not described is that a component system may only view a certain subset of components that exist.
+This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of it's repository is limited.
+The \usermodel has many aspects that could be added to make the simulated users closer to reality.
+Constraints such as only upgrading only during the work week, 
+or additional types of request like remove of components that are no longer required would create more valid simulations.
 
-Research often looks at the mechanisms of component evolution \citep{Wang2006}, how to add or remove a changed component in a system.  
-However, this research looks at the architectural level into the properties of the component system as it evolves.
-The mechanisms of exactly 
-
-Research into how the finer-grained evolution of individual components integrates with the larger architectural view of component systems, which
-usually focuses on component versioning \citep{Bauml2009,Stuckenholz2005}.
-This work aims to add well-defined semantics to component versions, 
-allowing them to describe if a component has changed its external requirements or if it has only changed internally.
-Adding this to component models would allow CDR to make more informed decisions during evolution, 
-and through experiments similar to the one described in this paper,
-their semantics could be tested to find if their effect is positive to system evolution.
-
-\subsection{Component Dependency Resolution}
-%%%Le Berre and Parrain + Mancoosi 
-
-%%%Mancoosi is by far the most related work, though its focus is slightly different than ours
-As mentioned many times throughout this paper, 
-the Mancoosi organisation is producing significant research in the area of Component Dependency Resolution.
-They have defined the format CUDF \citep{treinen2009common}, to express and solve the CDR problems.
-They also run constant comparisons against different CDR implementations through the Mancoosi International Solver Competition (MISC),
-which we based our experiment on.
-They also contribute significantly in the areas of modelling the problem \citep{Cosmo2010} 
-and defining and researching solutions for it \citep{Trezentos2010}.
-%TODO write more here
-
-Le Berre and Parrain \citep{Berre2008} describe methods for solving dependency resolution with minimal optimisation.
-Dependency resolution is used in such areas as software product lines,
-for instance Savolainen et al. \citep{savolainen_analyzing_2007} uses dependency analysis to identify and remove unnecessary features.
-The optimisation of such algorithms is usually hard coded maximising version while minimising components, 
-as discussed in Section \ref{sec:motivation}.
-The algorithms that do optimise for other properties, 
-such as one proposed by Aleti et al. \citep{Aleti2009} that uses ant colony optimisation for quality optimisation,
-usually are not based on a formal framework for multi-criteria optimisation but defines a specific model for each problem.
-
-\subsection{Software product lines}
-
-
-\section{Future Work}
-%%%The formal model: the all-or-nothing returing of evolution if a evolution problem is unsatisfiable, the not considering previous user requests  
-
-%%%The report returned because an evolution problem is unsatisfiable, how best to give this
-
-%%%Future work may be looking at different component models, and the application of CDR to them (e.g. Web Services). Incuding recursive component models like Fractal
-
-%%%Additional hard constraints, like apt-gets Never remove anything for an update
-
-%%%Exploring more component models, and mapping them to CUDF to experiment with, and solve more problems.
-
-%%%Making more criteria, based on testcases contracts user communities, as discuesed in chapter 
-
-%%%Information from differnet loactions and meta data can be used to define the criteria.
-Many different criteria can be created to be used in such a problem.
-Criteria can be defined from current solvers like Eclipse P2's criteria to minimise the age of the installed components.
-Information from component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
+The development of criteria that take advantage of other properties of components collected from additional sources.
+Sources like component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
 composition testing \citep{XuejieZhang2008} and user preferences could be used to define criteria.
-Additional criteria, such as size, reliability or licence, may change a systems' desirability, 
-therefore during evolution the optimisation of such criteria may return better solution.
-
-%%%Explore the difference between iterative strengthing one function vs lex iterative stregnenthing (e.g. Eclipse P2 vs GJSolver)
+Additional criteria, such as size, reliability or licence, may change a systems' desirability.
+Such criteria could be simulated and their effect, positive or negative, measured during evolution.
 
 %%%Integration with MPM then test on real systems the implications of this research
+Comparing the results from the simulations to real systems would be able to absolutely validate the results.
+This could be accomplished using the MPM solver from Mancoosi.
+This solver has already been proposed for the modification of real systems \citep{abate2011}.
+Through modification or extension of MPM the proposed criteria could be installed into real Ubuntu systems, and the effects measured.  
 
 %%%Further stufy of the interaction between users and their component systems. We found it hard to find information, maybe some research would be interesting,
 %%%which we could include to make the simulations more valid.
-
-%%%Auto-remove request in CUDF* removing packages that are unnecessary as they will increase change due to upgrading.
-
-
-\section{Final Thoughts}
-The domain of software evolution is fundamental to software engineering, and this domain includes the evolution of component systems.
-It is hoped that some aspects of component system evolution have been illuminated and that this research has contributed to the field. 
-
+One of the least valid parts of the simulation is the selection of the requests made by the user.
+This is both when they select to upgrade, when they select to install, and what components they select to install.
+By studying real users changing their systems, either through collecting more \texttt{apt-get} logs or through direct observation,
+a more valid simulation could be created.
  

@@ -557,7 +557,7 @@ Above some realistic users are created by extracting information from user submi
 These users are simulated using the \texttt{apt-get} upgrade criteria \texttt{-removed,-new,-uptodatedistance} and the progressive upgrade criteria \texttt{-removed,-uptodatedistance,-new}.
 The progressive users names are prefixed  with ``Pro. Upgrade'' where the users using the \texttt{apt-get} criteria are not changed.
 
-The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc}.
+The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc} and table \ref{exp.tblq6uttd}.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q6usersuttd}
@@ -565,8 +565,24 @@ The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc}.
   \label{exp.q6uttdpc}
 \end{center}
 \end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l | c | c | c | }
+\hline
+User Name 				& \texttt{apt-get} criteria & Progressive criteria 	& \% Less UTTDpC	\\ \hline
+High Install (HI)			& 0.798				& 0.433 			& 46\%	\\
+Medium Change (MC)			& 0.795				& 0.633 			& 20\% 	\\
+High Upgrade (HU)			& 0.826				& 0.418				& 49\%  \\
+Low Change 	(LC)			& 0.773				& 0.620 			& 24\%   \\ \hline
+\end{tabular}
+\caption{The final UTTDpC when using different upgrade criteria}
+\label{exp.tblq6uttd}
+\end{table}
+
 This figure shows that using the \texttt{apt-get} upgrade criteria results in a system that after a year of simulation is about 0.8 UTTDpC out of date for all users. 
 The only noticeable difference between these users is that ``High Install'' users systems take longer to become up-to-date after the Ubuntu 10.04 release.
+
 
 The users ``Pro. Upgrade High Install'' and ``Pro. Upgrade High Update'' benefit the most from using the progressive upgrade criteria.
 These two users are about 0.42 UTTDpC at the end of the simulations.
@@ -586,11 +602,11 @@ The total changes of these users are presented in figure \ref{exp.q6userchange} 
 \centering
 \begin{tabular}{|l | c | c | c | }
 \hline
-User Name 				& \texttt{apt-get} criteria 		& Progressive criteria 	& Difference	\\ \hline
-High Install (HI)			& 3176			& 4043 	& 867	\\
-Medium Change (MC)			& 2291			& 2660 	& 369 	\\
-High Upgrade (HU)			& 2123			& 2842	& 719   \\
-Low Change 	(LC)			& 1903			& 2212 	& 309   \\ \hline
+User Name 				& \texttt{apt-get} criteria 		& Progressive criteria 	& \% Added Change	\\ \hline
+High Install (HI)			& 3176			& 4043 	& 27\% 	\\
+Medium Change (MC)			& 2291			& 2660 	& 16\% 	\\
+High Upgrade (HU)			& 2123			& 2842	& 34\%   \\
+Low Change 	(LC)			& 1903			& 2212 	& 16\%   \\ \hline
 \end{tabular}
 \caption{The mean total change when using different upgrade criteria}
 \label{exp.tblq6change}
@@ -622,12 +638,12 @@ Pro. LC 	&12.4 	&	24.84&	 41.3&	 59.4\\ \hline
 \label{exp.tblq6sv}
 \end{table}
 
-This table shows that users that upgrade often will have the most benefit using the stable version criterion.
-These users may not wish to use the stable version criterion as they may upgrade frequently to decrease out-of-dateness of their systems
-which would be increased when using the stable version criterion.
+This table shows that users that the ``High Install'' and ``High Upgrade'' users will have the most benefit using the stable version criterion.
+This is likely due to their high probabiltiy to upgrade their systems.
 However, the reduction in change caused when using the stable version criterion may reduce the risk of upgrading 
 and this may increase the probability a conservative user would upgrade.
 This situation would increase the benefits of the using the stable version criterion for conservative users.
+
 
 \section{Answers}
 The above performed experiments were conducted in order to answer the questions:

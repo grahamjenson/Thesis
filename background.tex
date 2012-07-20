@@ -926,7 +926,7 @@ These patterns are further discussed in \citep{Hnetynka2006}.
 
 \subsection{Common Upgradeability Description Format}
 %%%CUDF model created for compeition
-Many component models share similar properties:
+Many component models share similar properties including:
 \begin{itemize}
   \item a component name
   \item a component version
@@ -934,15 +934,16 @@ Many component models share similar properties:
   \item description of what the component requires
 \end{itemize} 
 
-By creating an abstraction of these models, that contains only necessary information to describe a changing component system, different component models, and CDR implementations can be compared.
-The Common Upgradeability Description Format (CUDF) model is defined as an abstraction used to describe a component systems change.
-For example, CUDF can be used to represent the installation of a package into a Debian system.
-CUDF was created by the Mancoosi project to foster interest and competition in creating solvers for problems faced when changing Free and Open Source Software (FOSS).
+By abstracting these common elements into a single model, the description of how a component system is changed can become component model independent.
+The Common Upgradeability Description Format (CUDF) model is such an abstraction.
+It is used to describe a request by a user to change a component system, and can be used by a CDR implementation to calculate the resulting system.
+CUDF was created by the Mancoosi project to foster interest in this domain and to be used in a competition that compared CDR implementations.
+Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
 
 %%%No concrete components, but fits our definition
-The CUDF component model has no concrete component; it is not been designed to be executed.
-This means that there is no defined semantics to execute a CUDF component system, or similar implementation details like those presented for other component models.
-In this respect it is similar to the OBR component model, as it has been created to explicitly represent the changing of a component system.
+The CUDF component model has no concrete component as it was designed to be an abstract component model.
+This means that there is no defined semantics to execute a CUDF component system.
+In this respect it is similar to the OBR component model, as it has been created to explicitly represent the problem of changing a component system.
 
 To show how a CUDF document describes a changing component system, an example is presented in figure \ref{CUDFmetadata}.
 
@@ -977,7 +978,7 @@ In fact through this research one such implementation, GJSolver was created and 
 This is further discussed in the latter chapter \ref{implementation}.
 Here the implementation from Mancoosi, Modular Package Manager \citep{abate2011} (MPM), is discussed.
 
-MPM was created by the Mancoosi organisation to explore the possibility of using CUDF solver to evolve real systems.
+MPM was created by the Mancoosi project to explore the possibility of using CUDF solver to evolve real systems.
 In the study by \cite{abate2011}, this package manager was compared against other solvers, such as apt-get and aptitude, and shown to be an improvement in performance.
 MPM also was the first to allow the user to completely specify the criteria by which the solver selects a system.
 Further discussion of MPM criteria is given in chapter \ref{implementation}. 
