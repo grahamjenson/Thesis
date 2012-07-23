@@ -10,12 +10,14 @@ To build this simulation first the background of software evolution, component b
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
+The verification and validation of these artifacts were discussed, in occordance with our methodology \cite{Law2005}, 
+as this is the primary concern when creating a simulation.
 
-Using these artifacts experiments were defined that simulate the evolution of many different systems,
-and the out-of-dateness and changes made to the systems were analysed.
+Experiments were defined thst use these artifacts to simulate the evolution of many different systems.
+The primary focus of these simulation was the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
-  \item that the majority of change is caused through the user upgrading their system.
+  \item the majority of change is caused through the user upgrading their system.
   \item it is most important to upgrade during periods where new component versions are released quickly (e.g. during Ubuntu releases).
   \item all systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
   \item increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
@@ -23,23 +25,23 @@ Some discoveries were:
 \end{itemize} 
 
 Another important discovery is that re-use dramatically lowers the change necessary during CSE.
-This is due to lowering the amount of required components to be installed.
-Additionally, this lowers the amount of components that require to be upgraded.
-The benefits of reuse have when using software components has been explored before\citep{Szyperski2002}.
-However, this research provides empirical evidence that confirms reuses importance during CSE.
+This is due to lowering the amount of required components to be installed,
+that in turn lowers the amount of components that require to be upgraded.
+The benefits reuse has when using software components has been explored before\citep{Szyperski2002}.
+However, this research provides empirical evidence that confirms reuses importance specifically during CSE.
 
 To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
 This alteration was shown to be most effective for users that upgrade frequently.
 It was shown to decrease the out-of-dateness of a system by as much as 49\% at the cost of increasing change by 34\%.
-For many users this may be a supports the objectives of their system.
+For users that prefer up-to-date systems, this trade-off might be favourable for their system.
 
 To reduce the change made to a system during CSE the stable version criterion was proposed.
 This criterion waits for a period of days for a component to cease releasing newer version and become stable.
 By using this criterion and waiting a week for a component to become stable before upgrading it, it was estimated to save some types of users more than 30 changes over a year.
-These changes could introduce bugs into the system and are therefore seen as an unnecessary risk for a component system. 
-Using this criterion comes at a cost of the system always being one week out-of-date.
-For users that may run a mission critical system, this may be a tolerable trade-off.
+These changes could introduce bugs into the system and are seen as unnecessary. 
+Using this criterion comes at a cost of the system always being out-of-date by the number of days that are waited for components to become stable.
+For users that prefer reduce change to their systems, this may be a tolerable trade-off.
 
 Understanding how component systems evolve can inform users and developers about the effects of their choices.
 It can also provide new methods to change systems that better suit a user's requirements.
@@ -53,40 +55,40 @@ This has shaped and informed the direction of this study.
 
 As previously mentioned,
 Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
-It is the further evolution of the EDOS project, which was focused on building GNU/Linux distributions.
-Throughout this thesis many contributions from Mancoosi have been used, including:
+It is the continuation of the EDOS project which focused on building GNU/Linux distributions.
+Throughout this thesis many contributions from Mancoosi have been used including:
 \begin{itemize}
   \item the CUDF \citep{treinen2009common} and MOF syntaxs.
-  \item the MISC 2011 competition.
-  \item the research papers and technical reports from \cite{abatetrenen2010}, \cite{Treinen2009}, \cite{argelich2010solving} and \cite{abate2011}..
+  \item the MISC 2011 competitions.
+  \item the research papers and technical reports from \cite{abatetrenen2010}, \cite{Treinen2009}, \cite{argelich2010solving} and \cite{abate2011}.
 \end{itemize} 
-This organisation has provided the basis for this project and has produced a large amount of useful resources for the study of changing, and evolving component systems. 
+This research has provided the basis for this project and has produced a large amount of useful resources for the study of changing, and evolving component systems. 
 
 The research of Le Berre is focused on implementations that resolve changes made to component systems.
 This research has provided:
 \begin{itemize}
   \item The SAT4J library used to solve SAT problems \citep{le2010sat4j}.
-  \item Detailed description of using SAT4J to resolve changes to component systems \citep{le_berre_dependency_2009} \citep{leBerre2010}
-  \item The Eclipse P2 provisioning system, which is the basis of GJSolver
+  \item Detailed description of using SAT4J to resolve changes to component systems described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}.
+  \item The Eclipse P2 provisioning system, which is the basis of GJSolver.
 \end{itemize}
 This research has been used to create the implementation GJSolver, and simulate the evolution of component systems efficiently.
 
 \section{Future Research}
 The largest area of future research is into the generalisation of the results of this thesis.
-This is where additional component systems, such as Eclipse, 
-can be studied as they evolve and the conclusions of this research can be shown to be invariable between component systems or Ubuntu specific.
-The core hurdle of accomplishing this is that the information does not yet exist for other component models.
-Component models like Eclipse do not have the history archived as precisely as Ubuntu, thus collecting information like the components that were available on a given day is impossible.
+This is where additional component systems, such as Eclipse, can be studied as they evolve. 
+Through such generalisation the conclusions of this research can be shown to be invariable between component systems or be Ubuntu specific.
+The core hurdle of accomplishing this is that much of the collected information does not exist for other component models.
+Component models like Eclipse do not have their history archived as precisely as Ubuntu, thus collecting information, like the components that were available on a given day, is impossible.
 Other types of information are available, but incomplete.
-For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) 
-has information on popular components however was shut down as it was deemed not to have a significant return on investment. 
-
+For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) collected information on popular Eclipse components. 
+However, this project was shut down as it was deemed not to have a significant return on investment. 
+ 
 Another area of research involves altering and extending the \modelname and \usermodel models to more precisely describe CSE.
-An aspect of \modelname that is not described is that a component system may only view a certain subset of components that exist.
+An aspect of CSE that is not included in \modelname is that a component system may only view a certain subset of components that exist.
 This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of it's repository is limited.
 The \usermodel has many aspects that could be added to make the simulated users closer to reality.
 Constraints such as only upgrading only during the work week, 
-or additional types of request like remove of components that are no longer required would create more valid simulations.
+or additional types of request like remove of components that are no longer required could create more valid simulations.
 
 The development of criteria that take advantage of other properties of components collected from additional sources.
 Sources like component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
@@ -94,16 +96,17 @@ composition testing \citep{XuejieZhang2008} and user preferences could be used t
 Additional criteria, such as size, reliability or licence, may change a systems' desirability.
 Such criteria could be simulated and their effect, positive or negative, measured during evolution.
 
-%%%Integration with MPM then test on real systems the implications of this research
-Comparing the results from the simulations to real systems would be able to absolutely validate the results.
-This could be accomplished using the MPM solver from Mancoosi.
-This solver has already been proposed for the modification of real systems \citep{abate2011}.
-Through modification or extension of MPM the proposed criteria could be installed into real Ubuntu systems, and the effects measured.  
-
 %%%Further stufy of the interaction between users and their component systems. We found it hard to find information, maybe some research would be interesting,
 %%%which we could include to make the simulations more valid.
 One of the least valid parts of the simulation is the selection of the requests made by the user.
 This is both when they select to upgrade, when they select to install, and what components they select to install.
 By studying real users changing their systems, either through collecting more \texttt{apt-get} logs or through direct observation,
 a more valid simulation could be created.
- 
+
+%%%Integration with MPM then test on real systems the implications of this research
+Comparing the results from the simulations to real systems would be able to confirm the conclusions drawn from the simulation.
+This could be accomplished using the MPM solver \citep{abate2011} from Mancoosi.
+This solver has already been proposed for the modification of real systems.
+Through modification or extension of MPM the proposed criteria could be used to evolve real Ubuntu systems, and the effects measured.  
+This would confirm or refute all conclusions from this study.
+However, the resources required to accomplish such a goal are currently unavailable.   

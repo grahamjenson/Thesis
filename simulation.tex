@@ -35,12 +35,12 @@ ConMI -> CMI [ label="creates"];
 \end{center}
 \end{figure}
 
-The \usermodel model was developed in part using the results of a survey conducted to determine how users change their component systems.
+The \usermodel model was developed using the results of a survey conducted to determine how users change their component systems.
 This survey is described in section \ref{strat.usersurvey}.
 
 \usermodel contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will upgrade their system on a given day.
 In addition it contains information (e.g. the dates the simulation takes place) and assumptions (e.g. the probability a package will be selected to be installed) about the simulation.
-\usermodel is presented in section \ref{sim.usermodel} and the variables, information, and assumptions for the simulation are discussed.
+\usermodel is presented in section \ref{sim.usermodel} and the variables and assumptions for the simulation are discussed.
 
 In order to define parts of \usermodel it was necessary to collect and convert data into usable formats.
 The sources this data was collected from and the methods used to convert it are described in section \ref{sim.collection}.
@@ -53,8 +53,8 @@ These differences are important to explore, as they may reduce the validity of t
 \label{strat.usersurvey}
 To explore the user's role in CSE and to construct the \usermodel model, a survey was conducted on users of component systems.
 This survey targeted users of GNU/Linux distributions (specifically Ubuntu) and server administrators through the online forum reddit\footnote{http://reddit.com accessed 6/3/2012}.
-It was completed by 59 users, who answered questions about their background, the systems they use, and the ways they change their component systems.
-In GNU/Linux system typically the way in which component systems are changed is through interaction with package manager applications. 
+It was completed by 59 users, who answered questions about their background, the systems they use, and the ways they change their systems.
+Typically the way in which GNU/Linux systems are changed is through interaction with package manager applications. 
 Therefore, the questions were primarily about this interaction.
 
 In this section, a description of the survey and an analysis of responses are given.
@@ -78,6 +78,7 @@ The set of questions that asked about the use of package mangers were:
   \item At what frequency are your typical interactions with the package manager?
 \end{itemize}
 These questions were focused on identifying the types and times the user's interacted with their package manager.
+To answer these questions the user could input free text.
 
 \subsection{Results}
 %%%The results are summarised as:
@@ -88,7 +89,7 @@ Thirteen respondents used ArchLinux\footnote{http://www.archlinux.org/ accessed 
 Other systems and package managers represented in this survey include Fedora\footnote{http://fedoraproject.org/ accessed 18/7/2012} with the yum\footnote{http://yum.baseurl.org/ accessed 18/7/2012} package manger,
 Slackware with the pkgtools\footnote{http://www.slackbook.org/ accessed 18/7/2012} package manager, and Gentoo with the portage\footnote{http://www.gentoo.org/doc/en/handbook accessed 18/7/2012} package manager.
 
-The mean of the respondents self ranked experience was 3.9/5.
+The mean of the respondents self-ranked experience was 3.9/5.
 While this can be considered a subjective measure, it is expected that the respondents were confident in their answers. 
 
 The respondents responses to the questions about the types and the times interactions with package managers have been summarised in table \ref{strat.tblaction}.
@@ -121,7 +122,7 @@ which is is contrasted by progressivism philosophy that promotes change and refo
 
 Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
 \begin{quotation}
-``In production I rarely remove packages (easier to leave software as-is than risk breaking stuff).''
+``In production I rarely remove packages ([it is] easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
 The previous quote shows that this respondent is less likely to change their system, even though it may be beneficial. 
 
@@ -145,7 +146,7 @@ To lower the risk that such packages have on the function of the system, this us
 This way the user tries to ensure that potential problems will not be too severe.
 The system of this user will never be out-of-date, but will be changed frequently.
 
-An example of user's extremely conservative response on the frequency with which they interact with the package manager:
+An example of a very conservative user's response on the frequency with which they interact with the package manager:
 \begin{quotation}
 ``As little as possible. I like build my box into whatever I'll need in the first couple of weeks after an install. 
 Following the configuration and construction, only the occasional upgrade is necessary. 
@@ -167,7 +168,7 @@ The \usermodel model consists of:
 This section presents the variables and assumptions of \usermodel, and how an instance of this model can be used to create a CUDF* document.
 
 \subsection{Variables and Assumptions}
-The variables that make up the \usermodel are: 
+The \usermodel entity consists of the following variables: 
 \begin{itemize}
   \item $u$ is the probability a user requests to upgrade the system per day.
   \item $i$ is the probability a user requests to install per day.
@@ -182,7 +183,7 @@ The $I$ and $U$ criteria to install a component and upgrade a system are represe
 These can be assigned criteria that is based from package managers like \texttt{apt-get} or novel criteria.
 
 
-The assumptions made in the \usermodel are:
+The assumptions made in the \usermodel model are:
 \begin{itemize}
   \item The starting time of the evolution $t_0$ is October 30th 2009.
   \item The initial component system $\alpha_{t_0}$ is Ubuntu 9.10 (i386) released October 29th 2009.
@@ -283,7 +284,7 @@ The conversion from Debian control files to a CUDF document is described by \cit
 This report describes the handling of virtual packages and the conversion of versions. 
 This process is followed to create the CUDF* template with the exceptions that:
 \begin{itemize}
-  \item \texttt{apt-pinning} priorities are ignored
+  \item \texttt{apt-pinning} priorities that force the use of only particular versions of a package are ignored.
   \item If a package has the value \texttt{require} for key \texttt{priority}, the CUDF* package is given the property \texttt{keep: package} to ensure the package remains between requests.
   \item In the \texttt{preamble} the time $t_0$ is added.
   \item Each CUDF package has the key \texttt{time} added with the tagged time of their control file.
@@ -294,9 +295,10 @@ However, the restriction for these systems to only allow one version to be insta
 By allowing multiple packages to be installed means that this specific constraint can be studied.
 For example, questions like ``how often does an install request require the installation of multiple packages?'' 
 or ``how much does does this restriction effect the evolution of Ubuntu systems?'' can be answered by not enforcing this restriction.
-It is still preferable for a user to not have multiple versions of a pacakage.
+It is still preferable for a user to not have multiple versions of a package.
 Therefore, this restriction can be ``softly'' enforced through using a criterion to minimise the number of packages with multiple versions.
 Such a criterion is defined in section \ref{impl.ipp}.
+It is shown in chapter \ref{experiments} that this alteration has almost no impact on the simulation.
 
 \subsection{Probability a component will be selected}
 %%%The probability a component will be selected
@@ -310,11 +312,11 @@ To define the probability a user will select a component to install, the problem
   \item What component would a user select to install?
   \item How often are these components selected to be installed?
 \end{enumerate}
-A user would not likely select to install many of the available packages in the Ubuntu repository.
+For many available packages in the Ubuntu repository a user would not likely select to install.
 Packages that provide libraries, background daemons, interfaces between services are usually installed because other packages depend on them, not because the user selected to install them.
 By answering the first question a set of packages can be found that a user may install.
 Further, by looking at current systems and what packages they have installed, the probability that these packages are selected to be installed can be estimated.
-These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest.
+These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}..
 
 The package \texttt{app-install-package} contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
 This data is used by other applications, like the Ubuntu Software Center, to provide a list of packages the user may wish to install.
@@ -322,7 +324,7 @@ Some of these packages are installed by default in Ubuntu systems, and some are 
 After filtering out such packages from the provided list there remain 2087 packages that the user may select to install in their system. 
 
 %%%PopCon
-The probability a package from the \texttt{app-install-package} list is actually selected to be installed can be calculated using the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}.
+The probability a package from the \texttt{app-install-package} list is actually selected to be installed can be calculated using the Ubuntu popularity contest.
 The Ubuntu popularity contest is a broad data-set of information of the popularity of Ubuntu packages.
 Each week an automated survey is submitted by nearly two million users, that contains information on what packages a user has installed.
 The results from this survey are processed and the number of systems that have a package installed is presented in the Ubuntu popularity contest.
@@ -335,7 +337,8 @@ The validation of \usermodel has been accomplished through:
 \begin{itemize}
   \item discussions with project supervisors and other stakeholders.
   \item comparing \usermodel to the responses from the user survey.
-  \item compare generated CUDF* documents with \texttt{apt-get} logs collected from 19 respondents of the survey.
+  \item compare generated CUDF* documents with \texttt{apt-get} logs collected from 19 
+  respondents of the survey\footnote{Comparing these logs to the resulting simulated systems is described in section \ref{impl.validation}}.
   \item creating a virtual Ubuntu 11.10 system to study its perspective of the Ubuntu repository changing over the month of November 2011.
 \end{itemize}
 
