@@ -3,11 +3,10 @@
 \epigraph{We are like sailors who on the open sea must reconstruct their ship but are never able to start afresh from the bottom.}
 {\textit{Willard Van Orman Quine, Word and Object, 1960}}
 In the previous chapter, component system evolution (CSE) was described as the continual alteration of a system of components by a composer.
-This change was subject to many constraints that ensured the resulting system is valid.
+The described component models each defined constraints on this change to ensure the resulting system is valid.
 
 This chapter describes a model (\modelname) and syntax (CUDF*) used to describe the CSE process. 
-These were developed to simulate the evolution of a component system.
-They also enable the discussion of CSE as they define terms and concepts used in this domain.
+They also enable the discussion of CSE as they formally define terms and concepts used in this research.
 
 The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aims for the qualities described in \citep{Selic2003}:
 \begin{itemize}
@@ -20,10 +19,10 @@ The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aim
 \modelname describes CSE as a series of evolution steps, where each step is in response to a user request to alter the system. 
 
 The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have previously been used to describe a single evolution step.
-However, for the purpose of this thesis, these formats are insufficient due to the fact that \modelname describes CSE as a series of steps rather than a single step.
+and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have previously been used to describe a single change to a component system.
+However, for the purpose of this thesis, these formats are insufficient due to the fact that \modelname describes CSE requires many changes.
 To address this issue the CUDF* syntax was developed as a combination and extension of the CUDF and MOF models.
-A CUDF* document can be parsed to create an instance of \modelname.
+A CUDF* document can be parsed to create an instance of \modelname, thus fully describe the evolution of a component system.
 
 The relationships between the models presented in this chapter are described in figure \ref{formal.modeldiagram}.
 \begin{figure}[htp]
@@ -51,9 +50,9 @@ subgraph {
 \end{center}
 \end{figure}
 
-The rest of this chapter is organised as follows:
-the \modelname model is defined and discussed in section \ref{formal.step}:
-the CUDF* syntax is presented in section \ref{formal.cudf}.
+This chapter first 
+defines the \modelname model in section \ref{formal.step},
+the CUDF* syntax is then presented in section \ref{formal.cudf}.
 The complete description of parsing a CUDF* document to an instance of \modelname is presented in appendix \ref{apx.cudf}.
  
 \section{\modelname Model of Component System Evolution}
@@ -893,10 +892,9 @@ $\{syslib_1\}$, to $\{syslib_2, textEditor_1, spellChecker_1\}$, then to $\{sysl
 Based on this example it can be concluded that CUDF* documents can be used to describe component system evolution. 
 
 \section{Summary}
-This chapter described the model \modelname was presented to describe CSE as a series of alterations to a system in response to repeated requests from the user to change.
-The syntax CUDF* was then presented, 
-and through a detailed example it was shown how a CUDF* document could be parsed to a \modelname instance.
-These artifacts can be used to describe the evolution of component systems, however neither of them describe the user's that drive the evolution of a system.
-To simulate the evolution of a system, the following chapter explores and models how a user would realistically request a system to be changed.
-This user model together with \modelname and CUDF* can be used to realistically describe situations of CSE that can then be simulated. 
+This chapter described the \modelname model and the CUDF* syntax. 
+These are used to describe the evolution of a component systems as the repeated requested change made to the system by a user.
+These changes are subject to constraints that must be satisfied in order to result in a valid system.
+These describe the evolution of a system and not the user that requests changes to the system.
+The following chapter defines the \modelname model that describes the user, their system, and the changes they make.
 

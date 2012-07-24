@@ -12,8 +12,7 @@ To resolve a \modelname instance, each evolution step can be mapped to a Boolean
 \modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to the criteria that are lexicographic.
 The constraints are clauses and linear inequalities defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 Each criterion is defined to either maximise or minimise a PB function.
-Section \ref{impl.mapping} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
-
+Section \ref{impl.blo} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
 
 \begin{figure}[htp]
@@ -61,7 +60,7 @@ The verification of GJSolver is through the Mancoosi International Solver Compet
 Section \ref{impl.gjsolver} discusses GJSolver and its verification.
 
 \section{Boolean Lexicographic Optimization Problem}
-\label{impl.mapping}
+\label{impl.blo}
 A \modelimpl problem consists of trying to find an assignment to a set of Boolean variables that:
 \begin{itemize}
   \item satisfies a set of constraints
@@ -1000,5 +999,4 @@ The algorithms used to solve a \modelimpl problem where also discussed.
 The implementation GJSolver was presented.
 GJSolver takes a CUDF* document, parses it to a \modelname instance, and resolves it by mapping it to \modelimpl problems and solving them.
 GJSolver was verified through the MISC competition, and was shown to perform well when compared against other solvers.
-
-The following chapter discusses the simulation of CSE and discusses the users motivations for change.
+The following chapter presents the experiments that use the developed simulation to answer questions about CSE.

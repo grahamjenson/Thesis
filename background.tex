@@ -8,7 +8,7 @@ In order to agree to talk, we just have to agree we are talking about roughly th
 %%%What is Software Evolution
 Software evolution \citep{lehman1980} is the process of repeated change made to a software system to maintain it or to extend its functionality over the system's lifetime.
 This evolution process is necessary as any system must adapt to the changing software environment, accommodate new user requirements, 
-fix errors, and/or prevent errors from occurring in the future \citep{IsoIec2006}.
+fix errors and/or prevent errors from occurring in the future \citep{IsoIec2006}.
 Software maintenance and evolution are often used interchangeably \citep{Godfrey2008}, however some differences exist.
 One difference is that maintenance has connotations of a planned activity, where evolution is the gradual refinement of a system \citep{lehman1980}.
 That is, software maintenance is a range of activities through which software is changed, and software evolves as the system is repeatedly changed.
@@ -16,13 +16,14 @@ This is similar to the definition given in \citep{lehman1980}.
 
 %%%What is component system evolution
 A component system is created out of a set of components combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
-Apart from creating the systems, composers are also responsible for changing their systems, as they have the power to alter the composition of components that make the system.
+Apart from creating the systems, composers are also responsible for changing their systems.
+This change can be motivated by the same forces as software change, e.g. new system requirements.   
 As a composer makes changes to their component system over time, the component system is said to \textit{evolve}.
 Such a relationship between component system change and CSE is similar to the relationship between software maintenance and software evolution.
- 
+
 %%%In this chapter\ldots
 This chapter illustrates the histories and presents the state of the art of software evolution, component systems, and CSE.
-Section \ref{background.histories} first describes the history and connections of these domains. 
+Section \ref{background.histories} first describes the history and connections between domains. 
 Section \ref{background.componentsystemevolution} explores the separation of the evolution of individual components and the evolution of component systems.
 The definitions of software components and component models used in this thesis are then presented in section \ref{background.components}.
 To conclude this chapter, examples of various component models that fit the given definitions are discussed in section \ref{background.models}.
@@ -1070,11 +1071,9 @@ The presented comparison of these models shows that although they are aimed at d
 This similarity motivates the research into CSE, as results may contribute to many different domains. 
 
 \section{Summary}
-In this chapter, first software evolution, CBSE and the use of component systems were discussed and the history and connections between these domains were described.
-The evolution of individual components and the evolution of component systems were then described and compared.
-As this research centers around software components, it is necessary to discuss their definition.
-The difficulty in giving an accurate and agreeable definition to ``software component'' was discussed. 
-A definition of ``software component'' with respect to CSE is then presented as an incomplete definition that is sufficient for the purposes of this research.
-Various component models that conform to this definition are then presented and discussed, and their properties explored and compared.
-In the next chapter the concepts discussed in this chapter, such as software component, are formally defined as the first step to creating a simulation of CSE.
+In this chapter, the concepts related to CSE are explored.
+The domains of software evolution, CBSE and component systems are described and the important concepts, such as software component, are defined.
+Various component models are described, and the similarities between them are discussed.
+In the next chapter the concepts discussed in this chapter are formally defined. 
+This is the first step towards creating a simulation of CSE.
 

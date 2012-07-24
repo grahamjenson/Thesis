@@ -9,7 +9,7 @@ and the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
 The request stanzas are used to define a series of times $t_0,\ldots,t_n$, sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$,
 and the evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
 
-\subsection{CUDF* BNF Grammar}
+\section{CUDF* BNF Grammar}
 The CUDF* syntax is described in the EBNF grammar presented in figure \ref{formal.cudfBNFgrammar}.
 This is an extension of the CUDF EBNF grammar given by Mancoosi\footnote{http://www.mancoosi.org/cudf/ebnf/ visited 26/3/2012}
 combined with the MOF EBNF grammar.
@@ -65,7 +65,7 @@ and each component must also define a time value.
 \end{center}
 \end{figure}
 
-\subsection{Additional Stanza Constraints}
+\section{Additional Stanza Constraints}
 In figure \ref{formal.cudfBNFgrammar}, a CUDF* document is described as a preamble, a list of package descriptions, and a list of requests.
 The preamble is a stanza started with the text \verb+preamble:+.
 A package description is a stanza started with the text \verb+package:+ followed by a package name, a package version, and a time.
@@ -116,7 +116,7 @@ Property Name & Value Type & Default Value \\ \hline
 In addition to the properties allowed in the package description, as presented in table \ref{formal.cudfpdprops}, extra properties can be defined in the preamble's \texttt{property} property.
 This is described in section \ref{cudf.preambledes}, and restricted to only defining new \texttt{<int>} typed properties.
 
-\subsection{Parsing}
+\section{Parsing}
 How a CUDF* represented and parsed to create the \modelname instance is described in this section.
 
 \begin{defs}
@@ -145,7 +145,7 @@ and $t_1,\ldots,t_n$ are defined as $r_1$.\texttt{time}$,\ldots,r_n$.\texttt{tim
 \end{defs}
 
 
-\subsection{Components}
+\section{Components}
 The sets of components $C_{t_0},\ldots,C_{t_n}$, and component system $\alpha_{t_{0}}$ are defined given a CUDF* document.
 
 \begin{defs}
@@ -168,7 +168,7 @@ the initial component system $\alpha_{t_0}$ is the set of components in $\mathbb
 i.e. $\alpha_{t_{0}} = \{c \mid c \in \mathbb{C}_{t_0} $ and $ c.$\texttt{installed} $=$ \texttt{"true"} $\}$
 \end{defs}
 
-\subsection{Features}
+\section{Features}
 %%%Features or services
 CUDF* specifies an additional aspect to system constraints, that of a feature (this can also be described as a service, or a virtual package).
 Each component can provide a many features, more over, a component can provide many versions of a feature.
@@ -196,7 +196,7 @@ $providedFeatures(c) =$ the set of features mapped from the $c$.\texttt{provides
 For example, a component $a$ is defined such that $a.$\texttt{provides} $=$ \texttt{"n = 10, m"};
 the function $providedFeatures(a)$ returns the set of features $\{( \texttt{"n"},\{10\} ), ( \texttt{"m"},\mathcal{V})\}$.
 
-\subsection{Package formula}
+\section{Package formula}
 A package formula, of type \texttt{<vpkg>}, is a query for a set of components from a CUDF* document.
 This formula is the mechanism that defines all constraints and requests in the CUDF specification.
 
@@ -228,7 +228,7 @@ Given a set of components $\mathbb{C}_{t_i}$,
 the function $packagesThatSatisfy$ takes a package formula $pf$ and returns all components in  $\mathbb{C}_{t_i}$ that satisfy it, i.e. $packagesThatSatisfy(pf) = \{c \mid c \in \mathbb{C}_{t_i}$ and $ c$ satisfies $pf\}$
 \end{defs}
 
-\paragraph{Sets of Package Formula}
+\subsection{Sets of Package Formula}
 The elements \texttt{<orformula>} and \texttt{<vpkglist>} are both lists of \texttt{<vpkg>}'s.
 The element \texttt{<vpkgformula>} is a list of \texttt{<orformula>}'s, therefore is a list of lists of \texttt{<vpkg>}'s.
 
@@ -245,7 +245,7 @@ the function $allPackagesThatSatisfy$ takes a set of package formula $pkgflist$ 
 i.e. $allPackagesThatSatisfy(pkgflist) = \bigcup \limits_{pf \in pkgflist} packagesThatSatisfy(pf)$ 
 \end{defs}
 
-\subsection{System Constraints}
+\section{System Constraints}
 Given a CUDF* document, there are three sets of constraints that make up a set of system constraints $\omega_{t_i}$, each containing a different constraint type:
 \begin{itemize}
   \item keep constraints $\omega_{t_i}^{keep}$ are extracted from the values of \verb+keep+ properties of components in $\alpha_{t_{i-1}}$.
@@ -256,7 +256,7 @@ A set of system constraints $\omega_{t_i}$ is the union of these,
 $\omega_{t_i} =  \omega_{t_i}^{keep} \cup \omega_{t_i}^{dep} \cup \omega_{t_i}^{con}$.
 Therefore, the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$ can be defined from a CUDF* document.
 
-\paragraph{Keep Constraints}
+\subsection{Keep Constraints}
 Given a CUDF* document, a set of keep constraints is $\omega_{t_i}^{keep}$.
 These constraints are extracted from the property with the key \texttt{keep} in the components in $\alpha_{t_{i-1}}$.
 
@@ -283,7 +283,7 @@ The set of all keep constraints can be defined as:
 Given the component system $\alpha_{t_{i-1}}$, $\omega_{t_i}^{keep} = \bigcup \limits_{c \in \alpha_{t_{i-1}}} keep(c)$.
 \end{defs}
 
-\paragraph{Dependency Constraint}
+\subsection{Dependency Constraint}
 Given a CUDF* document, the set of dependency constraints is $\omega_{t_i}^{dep}$.
 These constraints are extracted from the property \texttt{depends} in the components in the set $\mathbb{C}_{t_i}$.
 The value of the property with key \texttt{depends} is a \texttt{<vpkgformula>} which is mapped to a set of sets of package formula.
@@ -305,7 +305,7 @@ The set of all dependency constraints can be defined as:
 Given the set of components $\mathbb{C}_{t_i}$, $\omega_{t_i}^{dep} = \bigcup \limits_{a \in \mathbb{C}_{t_i}} depends(a)$.
 \end{defs}
 
-\paragraph{Conflict Constraint}
+\subsection{Conflict Constraint}
 Given a CUDF* document, the set of conflict constraints is $\omega_{t_i}^{con}$.
 These constraints are extracted from the property \texttt{conflicts} in the components in the set $\mathbb{C}_{t_i}$.
 The value of the property with key \texttt{conflicts} is a \texttt{<vpkglist>} mapped to a set of package formula.
@@ -324,7 +324,7 @@ Given the set of components $\mathbb{C}_{t_i}$,
 $\omega_{t_i}^{con} = \bigcup \limits_{a\in \mathbb{C}_{t_i}} conflicts(a)$.
 \end{defs} 
 
-\subsection{Request}
+\section{Request}
 \label{formal.cudf.request}
 Given a CUDF* document, there are three sets of constraints that make up a set of request constraints $\delta_{t_i}$, each containing a different user request type:
 \begin{itemize}
@@ -336,7 +336,7 @@ A set of user request constraints $\delta_{t_i}$ is the union of these,
 $\delta_{t_i} =  \delta_{t_i}^{ins} \cup \delta_{t_i}^{rem} \cup \delta_{t_i}^{upg}$.
 Therefore, the sets of requests $\delta_{t_1},\ldots,\delta_{t_n}$ can be defined from a CUDF* document.
 
-\paragraph{Install}
+\subsection{Install}
 Given a CUDF* document, $\delta_{t_i}^{ins}$ is extracted from value $r$.\texttt{install} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 The value $r$.\texttt{install} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
 \begin{defs}
@@ -350,7 +350,7 @@ Given a CUDF* document, a set of install request constraints $\delta_{t_i}^{ins}
 where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{install} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 \end{defs}
 
-\paragraph{Remove}
+\subsection{Remove}
 Given a CUDF* document, $\delta_{t_i}^{rem}$ is extracted from value $r$.\texttt{remove} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 The value of $r$.\texttt{remove} is of type \texttt{<vpkglist>} which can be mapped to a set of package formula.
 \begin{defs}
@@ -358,7 +358,7 @@ Given a CUDF* document, a set of remove request constraints $\delta_{t_i}^{rem}$
 where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{remove} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 \end{defs}
 
-\paragraph{Upgrade}
+\subsection{Upgrade}
 Given a CUDF* document, the set of upgrade requests $\delta_{t_i}^{upg}$ is extracted from the value \texttt{request}.\texttt{upgrade}.
 If the value $r$.\texttt{upgrade} is of type \texttt{<vpkglist>}, it can be mapped to a set of package formula.
 If the value of $r$.\texttt{upgrade} is equal to \texttt{*}, it can be mapped to a set of package formula where $\{\langle n, 0, > \rangle \mid \langle n,v \rangle \in \alpha_{t_{i-1}} \}$.
@@ -395,7 +395,7 @@ Given a CUDF* document, a set of upgrade request constraints $\delta_{t_i}^{upg}
 where $pkgflist$ is the set of package formula mapped from value $r$.\texttt{upgrade} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 \end{defs}
 
-\subsection{Criteria}
+\section{Criteria}
 Given a CUDF* document, an evolutionary preference order $\prec_{\alpha_{t_{i-1}}}$ is extracted from the value $r$.\texttt{criteria} where $r$ is the request stanza such that $r$.\texttt{time} = $t_i$.
 The value $r$.\texttt{criteria} is a list of \verb+criterion+ separated by the delimiter ``\verb+,+'' that can be mapped to a tuple of strings $\langle criterion_1, \ldots, criterion_n \rangle$.
 
@@ -415,13 +415,13 @@ In this appendix a mapping between the \modelname criteria and PB criteria in ta
 \label{apx.critmapping}
 \begin{table}
 \begin{tabular}{c | c | c}
-\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
-\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\ \hline
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\ 
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
-\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
 \texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
-\texttt{-stableversion(N)} 	& $crit_{stableversion(N)} = \langle rank^{stableversion(N)}_{\alpha}, \leq \rangle$ & $\langle f_{stableversion}, <, I_{stableversion} \rangle$ \\
+\texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
+\texttt{-stableversion(}$d$\texttt{)} & $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$ & $\langle f_{sv}, <, I_{sv} \rangle$ \\
 \end{tabular}
 \caption{Mapping between these elements}
 \label{apx.crittable}
@@ -452,83 +452,114 @@ The change criterion is defined:
 \end{defs}
 
 \begin{defs}
-Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
-the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
+Given a name $n$, a component system $\alpha$, and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined with the set of literals $\{l_1,\ldots,l_i\} = V(\alpha,n) \cup \neg V(\mathbb{C}_t / \alpha ,n)$ 
 such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
 This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
 \end{defs}
 That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
 
 \begin{defs}
-Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
-$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+Given a set of names $\mathcal{N}_t$, the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
+$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, \neg x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
 The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
 \end{defs}
+The PB criterion minimises the sum of names that have changed.
 
 \section{-removed}
 
 The removed criterion is defined:
 \begin{defs}
 	The \textbf{removed} criterion is defined as $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$,
-	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) =\emptyset\}|$.
+	where $rank^{removed}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) \neq \emptyset$ and $V(\beta,n) = \emptyset\}|$.
 \end{defs}
 
 \begin{defs}
-Given a name $n$, a component system $\alpha_{t-1}$, and the set of components $\mathbb{C}_t$,
-the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\alpha_{t-1},n) \cup \neg V(\mathbb{C}_t / (\alpha_{t-1} ,n)$ 
-such that $x_n \Leftrightarrow l_1 \wedge \ldots \wedge l_i$.
-This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{\neg x_n,l_1\},\ldots, \{\neg x_n,l_n\}, \{x_n, \neg l_1,\ldots,\neg l_i\}\}$.
+\label{apx.packagenameaux}
+Given a name $n$ and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\mathbb{C}_t ,n)$ 
+such that $x_n \Leftrightarrow l_1 \vee \ldots \vee l_i$.
+This $x_n$ can be converted into the set of CNF clauses $J_n = \{ \{x_n, \neg l_1\},\ldots, \{x_n, \neg l_n\}, \{\neg x_n, l_1,\ldots, l_i\}\}$.
 \end{defs}
-That is, $x_n$ is true only if all components with name $n$ that are installed stay installed and if not installed stay not installed.
+That is, $x_n$ is true only if the name $n$ is in the solution.
 
 \begin{defs}
-Given a set of names $\mathcal{N}_t$ , the PB criterion is defined as $\langle f_{change}, <, I_{changed} \rangle$ where 
-$f_{change}$ is defined with the literals $\langle \neg x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
-The formula $I_{changed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+Given a set of names in the system $\alpha$ is $\mathbb{N}_{\alpha}$, the PB criterion is defined as $\langle f_{removed}, <, I_{removed} \rangle$ where 
+$f_{removed}$ is defined with the literals $\langle \neg x_{n_1},\ldots, \neg x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathbb{N}_{\alpha}$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{removed}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
 \end{defs}
+That is, the PB function sums the total number of names that have been removed from $\alpha$.
+
 
 \section{-new}
-%%%TODO
+
+The new criterion is defined:
+
 \begin{defs}
 	The \textbf{new} criterion is defined as $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$,
-	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ and $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
+	where $rank^{new}_{\alpha}(\beta) = |\{n \mid n \in \mathcal{N}$ where $V(\alpha,n) = \emptyset$ and $V(\beta,n) \neq \emptyset\}|$.
 \end{defs}
 
-\section{-uptodatedistance}
-%%%TODO
+The new criteria use the same definition of axillary variables from the removed criterion in definition \ref{apx.packagenameaux}.
 
-By creating a criterion with this measurement, the measurement of a system's up-to-dateness respects the two version criteria.
+\begin{defs}
+Given a set of names that are not in the system $\alpha$ is $\mathbb{N}_{\not \in \alpha}$, the PB criterion is defined as $\langle f_{removed}, <, I_{removed} \rangle$ where 
+$f_{new}$ is defined with the literals $\langle x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathbb{N}_{\not \in \alpha}$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{new}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
+That is, the PB function sums the total number of names that have been added to $\alpha$.
+
+\section{-uptodatedistance}
+
+The UTTD criteria is defined:
 \begin{defs}
 	Given the set of components $\mathbb{C}_t$, the \textbf{uptodate distance} criterion is defined as $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$,
 	where $rank^{utdd}_{\alpha}(\beta) = \sum_{c \in \beta} uptodatedistance(c,\mathbb{C}_t)$.
 \end{defs}
 
+No axillary variables are required for this criteria.
+
+\begin{defs}
+Given the set of components $\mathbb{C}_t$ the PB criterion is defined as $\langle f_{utdd}, <, I_{utdd} \rangle$ where 
+$f_{utdd}$ is defined with the literals $\{l_1,\ldots,l_i\} = \mathbb{C}_t$, and integers 
+$\langle uptodatedistance(l_1,\mathbb{C}_t), \ldots ,uptodatedistance(l_i,\mathbb{C}_t)\rangle$.
+The formula $I_{utdd}$ then equals $\emptyset$.
+\end{defs}
+That is, the sum of the $uptodatedistance$ for each component that is installed in the system (where the literal is positive) is the returned value of $f_{utdd}$.
+
 \section{-ovpp}
-%%%TODO
+The one version per package criterion is defined as:
+\begin{defs}
+	Given the set of components $\mathbb{C}_t$, the \textbf{One Version per Package} criterion is defined as $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$,
+	where $rank^{ovpp}_{\alpha}(\beta) = \sum_{n \in \mathcal{N}} |V(\beta,n)| > 1$.
+\end{defs}
+This criteria is defined to minimise the number of components with more than one version installed.
 
-\section{-stableversion(N)}
-%%%TDO
+\begin{defs}
+Given a name $n$ and the set of components $\mathbb{C}_t$,
+the auxiliary variable $x_n$ is defined given the set of literals $\{l_1,\ldots,l_i\} = V(\mathbb{C}_t ,n)$ 
+such that $x_n$ is true iff two or more of the literals $l_1, \ldots, l_i$ are true.
+This $x_n$ is defined using the PB constraint where the PB function is defined with literals $\langle l_1,\ldots,l_i\rangle$ tuple of integers 
+$\langle 1_1, \ldots ,1_i\rangle$, the relationship is $>$ and the integer $k = 1$.
+\end{defs}
+That is, $x_n$ is true only if their are two components, both with name $n$ installed.
 
+\begin{defs}
+Given the set of names $\mathcal{N}_t$, the PB criterion is defined as $\langle f_{ovpp}, <, I_{ovpp} \rangle$ where 
+$f_{ovpp}$ is defined with the literals $\langle x_{n_1},\ldots, x_{n_i}\rangle$ where $\langle n_1,\ldots, n_i \rangle = \mathcal{N}_t$, and integers $\langle 1_1,\ldots,1_i\rangle$.
+The formula $I_{ovpp}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
+\end{defs}
 
-\chapter{Glossary}
-MISC
-CUDF
-Software Component
-Component System Evolution
-Component Evolution
-Component Model
-Strategy
-install
-remove
-upgrade
+\section{-stableversion(d)}
+The stable version criterion is a modification of the uptodate distance criterion.
+The only modification necessary is to the integers in the $f_{utdd}$, to create the $f_{sv}$ function using the stable version function described in definition \ref{exp.stablefunction}.
+\begin{defs}
+The function $stableweight$ is defined to return the $uptodatedistance$ of a component if it is stable, or $1000$ plus its $uptodatedistance$ if it is not,
+i.e. $stableweight(c,d,\mathbb{C}_t) = \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& \text{not }stable(c,d,t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
+\end{defs}
 
-Composer: The user who creates or alters component systems (compositions)
-
-Versioning Model: A method to define and compare versions
-
-\chapter{Survey}
-\label{apx.survey}
-
-\section{Code Samples}
-\subsection{Scripts for Simulation}
-\subsection{SAT Algorithms}
+\begin{defs}
+Given a number of days $d$, a set of components $\mathbb{C}_t$ the PB criterion for the stable version criteria is defined as $\langle f_{sv}, <, I_{sv} \rangle$ where 
+$f_{sv}$ is defined with the literals $\{l_1,\ldots,l_i\} = \mathbb{C}_t$, and integers $\langle stableweight(l_1,\mathbb{C}_t), \ldots ,stableweight(l_i,\mathbb{C}_t)\rangle$.
+The formula $I_{sv}$ then equals $\emptyset$.
+\end{defs}

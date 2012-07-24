@@ -15,7 +15,7 @@ A \textbf{component system} can be constructed by composing together software co
 and the process by which software systems change over time is \textbf{software evolution} \citep{lehman1980}.
 The focus of this thesis is \textbf{component system evolution} (CSE), which is the process by which component systems change over time.
 A component system is changed by altering its composition of components and \textbf{evolved} through repeated changes.
-This research asks questions out how component systems evolve and what the effects this evolution has.
+This research asks questions about how component systems evolve and what the effects this evolution has.
 
 \section{Objective}
 %%%What do I want to find out?
@@ -23,7 +23,7 @@ The primary objective of this research is to study the process of CSE.
 The focus is on the amount of change made to systems and how out-of-date the systems become during CSE.
 Through understanding this change and out-of-dateness
 this research can inform developers and users of the consequences their choices have to the CSE process.
-Additionally, this research can be used adjust how component systems are currently changed in order to reduce change and out-of-dateness.
+Additionally, this research can be used to alter how component systems are currently changed in order to reduce change and out-of-dateness during evolution.
 
 \section{Motivation}
 %%%Why research this?
@@ -38,15 +38,15 @@ By studying the effects of CSE and providing recommendations, this research has 
 %%%How are we going to study CSE?
 To study the evolution of a single component system, all changes to that system over a period of time must be examined.
 Additionally, to gain a broad and useful perspective of CSE effects, the evolution of many systems must be studied.
-To this end this research simulates the evolution of many Ubuntu component systems.
+To this end, this research simulates the evolution of many Ubuntu component systems.
 The reason for selecting Ubuntu as the component system, and simulation as the method of study are described further in this section.
 
 \subsection{Why Ubuntu?}
 The Ubuntu operating system was selected as the component system to study CSE for the following reasons:
 \begin{itemize}
-  \item it has significant size and complexity which ensures that the results will not be trivial;
-  \item it has open and accessible information that can be used for simulation;
-  \item it has an active research community which provides a base for research;
+  \item it has significant size and complexity which ensures that the results will not be trivial.
+  \item it has open and accessible information that can be used to create a simulation.
+  \item it has an active research community which provides a base for research.
   \item it has an estimated 20 million users potentially making the outcomes of this research have a significant impact.
 \end{itemize} 
 
@@ -92,7 +92,7 @@ This methodology has a seven step approach to creating a valid simulation:
 The above described methodology was created for large scale industrial projects with a substantial amount of resources available.
 It describes the employment and use of experts and analysts to ensure validity.
 The available resources for this project are less than such projects, therefore some of the steps have been decreased in scope.
-This may reduce the validity of the end model, but these restrictions have been made only when necessary,
+This may reduce the validity of the final simulation, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
 \section{Contributions}
@@ -102,11 +102,11 @@ Each of these artifacts, as well as the simulation and its results are contribut
 These contributions are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
-  \item The \textbf{CUDF* syntax} that defines documents that describe the evolution of a component system.
+  \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
   \item The \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) model that approximates a user that changes their system.
-  \item \textbf{GJSolver} is an implementation that is used by the simulation.
-  \item A \textbf{simulation of the evolution of Ubuntu operating systems}.
-  \item The results, analysis and conclusions from the simulations.
+  \item \textbf{GJSolver} is an implementation that calculates the changes made to a system as it evolves (called resolving).
+  \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
+  \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
 Some of these contributions are Ubuntu specific, e.g. the \usermodel model and the results and analysis.
@@ -124,21 +124,19 @@ This aims to put CSE in historical context and to give a suitable definitions to
 Chapter \ref{formal} presents the \modelname model and the CUDF* syntax that describe the formal aspects of the evolution of component systems.
 \modelname can be used to describe the evolution of a component system and CUDF* is used as the syntax to serialise \modelname instances.
 
-Chapter \ref{simulation} presents \usermodel that is used to describe the users who drives the evolution of component systems.
-To explore the role users have during CSE, a survey was conducted and the results are presented.
-Significant variables are extracted, like ``the probability the user update the system per day'' and ``the probability a user installs a certain package'',
-and used to define \usermodel.
-The differences this model has to the reality of CSE will impact the validity of the simulation.
-Therefore, the validation of \usermodel is also discussed.
+Chapter \ref{simulation} presents \usermodel that is used to describe users that request changes to their component systems.
+This model includes assumptions and variables that are necessary to simulate the evolution of Ubuntu systems. 
+It is defined using a conducted survey, whose results are also presented.
+As this model relies on many assumptions that may impact the validity of the simulation, the validation of this model is also discussed. 
 
-Chapter \ref{implementation} describes the algorithms and the GJSolver implementation used to simulate CSE.
-The calculation of the evolution of component systems (called resolving) can require significant computational effort,
+Chapter \ref{implementation} describes the algorithms used to create the GJSolver implementation.
+The resolving of a component system can require significant computational effort,
 therefore the algorithms and implementation used are an important aspect of research.
 The verification of GJSolver, and validation of the simulation are also discussed in this chapter.
 
-Chapter \ref{ubunutsimulation} describes the experiments, results and analysis of the conducted by simulations of the evolution of Ubuntu systems.
-The main effects described are the change that the systems go through, and how out-of-date the systems become during evolution.
-While studying these effects, some novel ideas are proposed to try to decrease change, and out-of-dateness of systems.
-The effects of these novel changes are described, and shown that to have potential application in CSE.
+Chapter \ref{experiments} describes the experiments, results and analysis that are conducted using the developed simulation.
+The effects examined are the change that the systems go through, and how out-of-date the systems become during evolution.
+Through these experiments some causes of change and out-of-dateness are found, and to reduce their effects some novel changes to CSE are proposed.
+The effects of these novel changes are measured using the simulation and are shown to have benefits during CSE.
 
-This thesis concludes in chapter \ref{conclusion} with further discussion of the experimental results, the contributions of this research, related work, and possible future research.
+This thesis concludes in chapter \ref{conclusion} by describing the contributions of this research, related work, and possible future research.

@@ -19,7 +19,7 @@ This exploration is accomplished through trying to answer the questions:
   \item Can the change of a system be reduced?
   \item How do the systems of realistic users evolve?
 \end{enumerate}
-This chapter presents experiments intended to answer these questions. 
+This chapter presents experiments intended to answer these questions in the order they were asked. 
 
 \section{Users Choices to Upgrade and Install}
 \label{exp.q1}
@@ -400,6 +400,7 @@ To reduce this change a criterion is defined that does not upgrade to a componen
 A component is stable if no better version is released within a certain amount of time after its release.
 The $stable$ function is defined to return \texttt{true} if a component is stable.
 \begin{defs}
+\label{exp.stablefunction}
 The function $stable$ takes a component $c$, a number of days $d$, and the current time $t$ and returns \texttt{true} iff:
 \begin{enumerate}
   \item the component was not released within $d$ days of time $t$.

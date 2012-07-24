@@ -2,7 +2,7 @@
 \label{conclusion}
 %%%Answers to our initial questions
 There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}.
-These users are repeatedly installing new components and upgrading components to newer versions.
+These users are repeatedly making changes to their systems by installing new components and upgrading components to newer versions.
 This causes their systems to evolve over time through the CSE process.
 
 This thesis investigates the evolution of such component systems using a developed simulation.
@@ -10,15 +10,15 @@ To build this simulation first the background of software evolution, component b
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
-The verification and validation of these artifacts were discussed, in occordance with our methodology \cite{Law2005}, 
+The verification and validation of these artifacts were discussed, in accordance with our methodology \cite{Law2005}, 
 as this is the primary concern when creating a simulation.
 
-Experiments were defined thst use these artifacts to simulate the evolution of many different systems.
+Experiments were defined that use these artifacts to simulate the evolution of many different systems.
 The primary focus of these simulation was the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
   \item the majority of change is caused through the user upgrading their system.
-  \item it is most important to upgrade during periods where new component versions are released quickly (e.g. during Ubuntu releases).
+  \item it is most important to upgrade during periods where new component versions are released quickly, e.g. during Ubuntu releases.
   \item all systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
   \item increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
   but may cause more change when components that release many versions quickly are upgraded multiple times.
@@ -27,8 +27,8 @@ Some discoveries were:
 Another important discovery is that re-use dramatically lowers the change necessary during CSE.
 This is due to lowering the amount of required components to be installed,
 that in turn lowers the amount of components that require to be upgraded.
-The benefits reuse has when using software components has been explored before\citep{Szyperski2002}.
-However, this research provides empirical evidence that confirms reuses importance specifically during CSE.
+The benefits reuse has when using software components has been explored before \citep{Szyperski2002}.
+However, this research provides empirical evidence that confirms reuses importance, specifically during CSE.
 
 To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
@@ -47,7 +47,8 @@ Understanding how component systems evolve can inform users and developers about
 It can also provide new methods to change systems that better suit a user's requirements.
 This thesis builds on existing research to provide the initial steps to studying how component systems evolve.
 It also opens the door for further questions about CSE.
-The remainder of this chapter reviews the related research and potential future research of CSE.  
+The remainder of this chapter reviews the related research and potential future research of CSE, and closes with a final remark. 
+
 
 \section{Related Work}
 Research from the Mancoosi project and Le Berre has been used extensively throughout this thesis.
@@ -62,7 +63,7 @@ Throughout this thesis many contributions from Mancoosi have been used including
   \item the MISC 2011 competitions.
   \item the research papers and technical reports from \cite{abatetrenen2010}, \cite{Treinen2009}, \cite{argelich2010solving} and \cite{abate2011}.
 \end{itemize} 
-This research has provided the basis for this project and has produced a large amount of useful resources for the study of changing, and evolving component systems. 
+This research has provided the basis for this project and has produced a large amount of useful resources for the study of changing and evolving component systems. 
 
 The research of Le Berre is focused on implementations that resolve changes made to component systems.
 This research has provided:
@@ -78,14 +79,15 @@ The largest area of future research is into the generalisation of the results of
 This is where additional component systems, such as Eclipse, can be studied as they evolve. 
 Through such generalisation the conclusions of this research can be shown to be invariable between component systems or be Ubuntu specific.
 The core hurdle of accomplishing this is that much of the collected information does not exist for other component models.
-Component models like Eclipse do not have their history archived as precisely as Ubuntu, thus collecting information, like the components that were available on a given day, is impossible.
-Other types of information are available, but incomplete.
+Component models like Eclipse do not have their history archived as precisely as Ubuntu.
+Collecting information for Eclipse or other component models, like the components that were available on a given day, is difficult or impossible.
+Other resources of information are available, but are mostly incomplete.
 For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) collected information on popular Eclipse components. 
 However, this project was shut down as it was deemed not to have a significant return on investment. 
  
 Another area of research involves altering and extending the \modelname and \usermodel models to more precisely describe CSE.
 An aspect of CSE that is not included in \modelname is that a component system may only view a certain subset of components that exist.
-This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of it's repository is limited.
+This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of it's repository.
 The \usermodel has many aspects that could be added to make the simulated users closer to reality.
 Constraints such as only upgrading only during the work week, 
 or additional types of request like remove of components that are no longer required could create more valid simulations.
@@ -104,9 +106,19 @@ By studying real users changing their systems, either through collecting more \t
 a more valid simulation could be created.
 
 %%%Integration with MPM then test on real systems the implications of this research
-Comparing the results from the simulations to real systems would be able to confirm the conclusions drawn from the simulation.
+Comparing the results from the simulations to the evolution of real systems would be able to confirm the conclusions drawn from the simulation.
 This could be accomplished using the MPM solver \citep{abate2011} from Mancoosi.
 This solver has already been proposed for the modification of real systems.
-Through modification or extension of MPM the proposed criteria could be used to evolve real Ubuntu systems, and the effects measured.  
-This would confirm or refute all conclusions from this study.
-However, the resources required to accomplish such a goal are currently unavailable.   
+Through modification or extension of MPM the proposed criteria could be used to evolve real Ubuntu systems, and the effects measured.
+It would require significant resources to conduct such a study, but its reults and conclusions would be more valid than the study presented in this thesis.    
+
+\section{Closing Remark}
+This thesis opened with a question posed by Plutarch:
+\begin{quote}
+If an object has all its component parts replaced, is it the same object?
+\end{quote}
+This research has focused on software systems that are made of components.
+These systems have their components parts continually changed by being replaced with newer versions or having additional components installed.
+This change drives the process of CSE.
+A possible answer to this question is then proposed; it is not the same object, it has evolved!
+
