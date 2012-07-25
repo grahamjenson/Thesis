@@ -60,7 +60,7 @@ and each component must also define a time value.
 <criteria> ::= <criterion> ("," <criterion>)*
 <criterion> ::= <string>
 \end{alltt}
-  \caption{CUDF BNF Grammar}
+  \caption{CUDF* BNF Grammar}
   \label{formal.cudfBNFgrammar}
 \end{center}
 \end{figure}
@@ -83,7 +83,7 @@ the allowed properties for the preamble, a package description, and the request 
 Property Name & Value Type & Default Value \\ \hline
 property & \verb+<typedecl>+ & \verb+""+ \\\hline
 \end{tabular}
-\caption{Preamble properties}
+\caption{CUDF* Preamble properties}
 \label{formal.cudfpremableprops}
 \end{table}
 
@@ -97,7 +97,7 @@ Property Name & Value Type & Default Value \\ \hline
 \texttt{installed} & \texttt{<bool>} & \verb+"false"+ \\ 
 \texttt{keep} & \texttt{<ident>} either \texttt{"version"}, \texttt{"package"}, or \texttt{"none"} & \texttt{"none"} \\ \hline
 \end{tabular}
-\caption{Package Description properties}
+\caption{CUDF* Package Description properties}
 \label{formal.cudfpdprops}
 \end{table}
 
@@ -109,7 +109,7 @@ Property Name & Value Type & Default Value \\ \hline
 \texttt{remove} & \verb+<vpkglist>+ & \verb+""+ \\ 
 \texttt{upgrade} & \verb+<vpkglist> | "*"+ & \verb+""+ \\ \hline
 \end{tabular}
-\caption{Request properties}
+\caption{CUDF* Request properties}
 \label{formal.cudfrequestprops}
 \end{table}
 
@@ -423,7 +423,7 @@ In this appendix a mapping between the \modelname criteria and PB criteria in ta
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
 \texttt{-stableversion(}$d$\texttt{)} & $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$ & $\langle f_{sv}, <, I_{sv} \rangle$ \\
 \end{tabular}
-\caption{Mapping between these elements}
+\caption{Mapping of the change, removed, new, one version per package, up-to-date distance and stable version criteria between MOF, \modelname and PB}
 \label{apx.crittable}
 \end{table}
 

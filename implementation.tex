@@ -36,7 +36,7 @@ rank=same
 SATPB -> SAT [label=extends];
 FMI -> \modelnamewx [ label = "instantiates"];
 }
-  \caption{A description of the relationships of \modelimpl and \modelname}
+  \caption{The relationships between the \modelimpl problem and the \modelname model}
   \label{impl.modelsatdiagram}
 \end{center}
 \end{figure}
@@ -393,7 +393,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
 \end{tabular}
-\caption{Mapping between the chang }
+\caption{Mapping of the change, removed and new criteria between MOF, \modelname and PB}
 \label{impl.ccritmapping}
 \end{table}
 
@@ -435,7 +435,7 @@ The mapping between this criterion, MOF and the PB criteria is presented in tabl
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
 \end{tabular}
-\caption{Mapping between these elements}
+\caption{Mapping of the up-to-date distance criterion between MOF, \modelname and PB}
 \label{impl.ucritmapping}
 \end{table}
 
@@ -456,7 +456,7 @@ The mapping between this criterion, MOF and the PB criteria is presented in tabl
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
 \end{tabular}
-\caption{Mapping between these elements}
+\caption{Mapping of the one version per package criterion between MOF, \modelname and PB}
 \label{impl.mcritmapping}
 \end{table}
 
@@ -497,7 +497,7 @@ function DPLL(\(F, P\)):
    else
        return DPLL\((F, P \cup \{\neg l\})\);
 \end{alltt}
-  \caption{Recursive DPLL algorithm}
+  \caption{The DPLL algorithm}
   \label{impl.DPLL}
 \end{center}
 \end{figure}
@@ -540,7 +540,7 @@ unit-propagate(\(F, P\)):
     \(P\) = \(P \cup \{l\}\)
   return \(P\)
 \end{alltt}
-  \caption{Pseudo code of Unit Propagation}
+  \caption{The Unit Propagation algorithm}
   \label{impl.propagation}
 \end{center}
 \end{figure}
@@ -588,7 +588,7 @@ iterative-strengthening(\(F\),\(\langle f, R, I \rangle\)):
     while not (interrupted() or  \(answer\) == UNSATISIFABLE)
     return \(M\) 
 \end{alltt}
-  \caption{Pseudo code of Iterative Strengthening Algorithm}
+  \caption{The Iterative Strengthening algorithm}
   \label{impl.strength}
 \end{center}
 \end{figure}
@@ -648,7 +648,7 @@ lexicographic-iterative-strengthening(\(F\),\(\langle{}\mathfrak{crit}\sb{1}, \l
     while not (interrupted() or \(i\) == \(n\))
     return \(M\) 
 \end{alltt}
-  \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
+  \caption{The Lexicographic Iterative Strengthening algorithm}
   \label{impl.lexstrength}
 \end{center}
 \end{figure}
@@ -708,7 +708,7 @@ resolver:
             \(\alpha\sb{t\sb{i}}\) mapped from \(answer\)
     return \(\alpha\sb{t\sb{1}},\ldots,\alpha\sb{t\sb{n}}\) 
 \end{alltt}
-  \caption{Pseudo code of the Lexicographic Iterative Strengthening Algorithm}
+  \caption{The algorithm to resolve a \modelname instance}
   \label{impl.resolver}
 \end{center}
 \end{figure}
@@ -716,7 +716,7 @@ resolver:
 In this algorithm, the systems are calculated starting at time $t_1$ and stopping at time $t_n$.
 For each evolution step at time $t_i$ is mapped to a SAT + PB formula $F$ and PB criteria $\langle \mathfrak{crit}_{1}, \ldots ,\mathfrak{crit}_{n} \rangle$.
 The algorithm \texttt{lexicographic-iterative-strengthening} is then used to find an optimal solution to $F$ with respect to the PB criteria, and return $answer$.
-Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_{t_i}$ is assigned as the previous system $\alpha_{t_{i-1}}$ (according to definition \ref{forml.stepdef}).
+Either $answer$ equals \texttt{UNSATISFIABLE} at which point the system $\alpha_{t_i}$ is assigned as the previous system $\alpha_{t_{i-1}}$ (according to definition \ref{formal.stepdef}).
 Otherwise, $answer$ is a set of literals that can be mapped back to the component system $\alpha_{t_i}$.
 This algorithm, once completed, returns the set of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$ that resolve the \modelname instance.
 
@@ -743,7 +743,7 @@ CMI -> FMI [ label="parsed to" ];
 FMI -> \modelimplwx [ label="mapped to" ];
 }
 }
-  \caption[labelInTOC]{GJSolver implementation description}
+  \caption{The relationships within the GJSolver implementation}
   \label{impl.modelofgjsolver}
 \end{center}
 \end{figure}
@@ -957,7 +957,7 @@ Simulated Installs				& 200 	& 11\% 		 	& 7.31 	& 9.41 \\
 \texttt{apt-get logs} 	& 1519 	& 35.3\% 	 	& 9.04 	& 23.33 \\ \hline
 \end{tabular}
 \end{center}
-\caption{A comparison of the installed packages (IP) between the install requests from the collected \texttt{apt-get} logs and the 200 most likely packages to be installed in the simulation}
+\caption[Comparison of installed packages between the collected \texttt{apt-get} logs and the simulation.]{A comparison of the installed packages (IP) between the install requests from the collected \texttt{apt-get} logs and the 200 most likely packages to be installed in the simulation}
 \label{implementation.validlogs}
 \end{table}
 The submitted \texttt{apt-get} logs have 1519 requests for installation to be analysed, compared to the 200 from the simulation.
@@ -984,7 +984,7 @@ Simulated System			& 1270 	& 12	 	& 4.2 		 	& 7.3 	\\
 Virtual Ubuntu System 		& 1338 	& 12 		& 5.8 	 		& 9.7 	\\ \hline
 \end{tabular}
 \end{center}
-\caption{A comparison of the upgraded packages (UP) between the upgrade requests from the virtual Ubuntu system and the simulation}
+\caption[Comparison of upgraded packages between the virtual Ubuntu 11.10 system and the simulation.]{A comparison of the upgraded packages (UP) between the upgrade requests from the virtual Ubuntu system and the simulation}
 \label{implementation.validvirtual}
 \end{table}
 

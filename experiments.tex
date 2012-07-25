@@ -43,7 +43,7 @@ Always Upgrade				& 1 			& 1			& 0				 \\
 Always Install 				& 30 			& 0			& 1				 \\
 Always Upgrade\&Install 	& 30 			& 1			& 1				\\ \hline
 \end{tabular}
-\caption{Users that are the boundary cases in the simulation.}
+\caption{Configuration of users that are the boundary cases in the simulation.}
 \label{exp.tblextremeusers}
 \end{table}
 In addition to the values for $u$ and $i$, this table also states the number of simulations that were run for each user.
@@ -64,7 +64,7 @@ The UTTDpC of each simulated user is presented in figure \ref{exp.q1auttdpc}.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1auttdperc}
-  \caption{The Up-to-date distance per Component (UTTDpC) of the simulated systems.}
+  \caption{The UTTDpC of the simulated boundary case users.}
   \label{exp.q1auttdpc}
 \end{center}
 \end{figure}
@@ -95,7 +95,7 @@ The total change, i.e. the sum of all change a system has to a date, is presente
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1achange}
-  \caption{The total change of the simulated systems.}
+  \caption{The total change of the simulated boundary case users.}
   \label{exp.q1achange}
 \end{center}
 \end{figure}
@@ -141,10 +141,9 @@ Given each ``Always Install'' user has 365 requests and each ``Always Upgrade\&I
 and 30 users of each type were simulated, the chance for a request to fail is just over 0.12\%.
 The chance for a hard failure to occur is extremely low in this simulation.
 
-Due to the difficultly of finding the constraints that caused these failures \citep{quickxplain},
+Due to the difficultly of finding the constraints that caused these failures \citep{Junker2001},
 and the rarity of these failures, the specific reasons for hard failures are not further explored.
 
-%%%Soft Failure TODO
 Soft failures are called ``soft'' because the request that causes them succeeds, however the search failed to finish.
 This occurs when the time-limit of two minutes is reached when searching for an optimal solution, and the anytime algorithm employed by GJSolver is interrupted.
 This does not mean that the returned solution is not optimal\footnote{In MISC GJSolver was interrupted many times and most times returned the optimal solution},
@@ -192,7 +191,7 @@ Upgrade twice a month	& 10 			& 0.06 (1/15)		& 0				\\
 Upgrade once a week		& 10 			& 0.14 (1/7)		& 0				 \\
 Upgrade twice a week 	& 10 			& 0.29 (1/3.5)		& 0				\\ \hline
 \end{tabular}
-\caption{Users with different upgrade probabilities.}
+\caption{Configuration of users with variable probability to upgrade.}
 \label{exp.tblq1busers}
 \end{table}
 These users are compared to the ``Always Upgrade'' user described in table \ref{exp.tblextremeusers}.
@@ -201,7 +200,7 @@ The up-to-date distance per component for these users is compared in figure \ref
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1buttdperc}
-  \caption{The Up-to-date distance per Component (UTTDpC) of the simulated systems.}
+  \caption{The UTTDpC of the variable upgrade users.}
   \label{exp.q1buttdperc}
 \end{center}
 \end{figure}
@@ -214,7 +213,7 @@ The mean UTTDpC of the simulated users plotted against their frequency ($1/u$) o
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1bcorrolationuttdpc}
-  \caption{The mean up-to-date distance per component (UTTDpC) plotted against of the frequency a user upgrades ($1/u$)}
+  \caption{The mean UTTDpC against of the frequency a user upgrades ($1/u$)}
   \label{exp.q1bcorrolationuttdpc}
 \end{center}
 \end{figure}
@@ -231,7 +230,7 @@ The total change of these users is presented in figure \ref{exp.q1bchange}.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1bchange}
-  \caption{The mean total change plotted against of the simulated users.}
+  \caption{The mean total change of the variable upgrade users.}
   \label{exp.q1bchange}
 \end{center}
 \end{figure}
@@ -263,7 +262,7 @@ apache2 (2.2.19-2) unstable; urgency=high
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 29 Aug 2011 17:08:17 +0200
 \end{alltt}
-\caption[Apache Changelog]{An extract from the apache changelog located on http://changelogs.ubuntu.com/}
+\caption{Extract from the \texttt{apache2} change-log from http://changelogs.ubuntu.com/}
 \label{exp.apachelog}
 \end{center}
 \end{figure}
@@ -285,7 +284,7 @@ Version: 2.2.9-10+lenny10
 Yesterday evenings update broke our Apache server setup,
 \ldots
 \end{alltt}
-\caption[Apache Bug Report]{Extract from the bug report \#639825, filed with Debian}
+\caption{Extract from the bug report \#639825 filed with Debian}
 \label{exp.apachebug}
 \end{center}
 \end{figure}
@@ -326,7 +325,7 @@ Install twice a month	& 30 			& 0 & 0.06 (1/15)						\\
 Install once a week		& 30 			& 0 & 0.14 (1/7)					 \\
 Install twice a week 	& 30 			& 0 & 0.29 (1/3.5)						\\ \hline
 \end{tabular}
-\caption{Users with different upgrade probabilities.}
+\caption{Configuration of users with variable probability to install a component.}
 \label{exp.tblq1cusers}
 \end{table}
 These users are compared to the ``Always Install'' users described in table \ref{exp.tblextremeusers}.
@@ -335,7 +334,7 @@ The total change of these users is presented in figure \ref{exp.q1cchange}.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1cchange}
-  \caption{The mean total change plotted against of the simulated users.}
+  \caption{The mean total change of the variable install users}
   \label{exp.q1cchange}
 \end{center}
 \end{figure}
@@ -360,7 +359,7 @@ The simulated user is described in table \ref{exp.tblq4ausers}.
 User Name 								& \# simulated 			& $u$ 		& $i$ 			\\ \hline
 Progressive Always Upgrade				& 1 			 	& 1				& 0\\ \hline
 \end{tabular}
-\caption{Progressive Users with different upgrade probabilities.}
+\caption{Configuration of progressive user that always upgrades.}
 \label{exp.tblq4ausers}
 \end{table}
 This user has the upgrade criteria $U$ assigned to \texttt{-removed,-uptodatedistance,-new}.
@@ -370,7 +369,7 @@ Figure \ref{exp.q4auttdperc} presents the UTTDpC of these users.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q4auttdperc}
-  \caption{The UTTDpC plotted for the simulated users.}
+  \caption{The UTTDpC of the simulated progressive user.}
   \label{exp.q4auttdperc}
 \end{center}
 \end{figure}
@@ -425,7 +424,7 @@ The mapping between this criterion, MOF and the PB criteria is presented in tabl
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-stableversion(}$d$\texttt{)} & $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$ & $\langle f_{sv}, <, I_{sv} \rangle$ \\
 \end{tabular}
-\caption{Mapping between these elements}
+\caption{Mapping of the stable version criterion between MOF, \modelname and PB}
 \label{exp.stablcritmapping}
 \end{table}
 In this mapping the amount of days $d$ is left blank, allowing a range of different values to be simulated.
@@ -441,7 +440,7 @@ User Name 				& \# simulated 	& $u$ 	& $U$ 			\\ \hline
 21 Days SV Upgrade		& 1 			& 1 & 	\texttt{-removed,-new,-stableversion(21)}			 \\
 28 Days SV Upgrade 		& 1 			& 1 & 	\texttt{-removed,-new,-stableversion(28)}			\\ \hline
 \end{tabular}
-\caption{Users with different upgrade probabilities.}
+\caption{Configuration of users using the stable version criterion with variable number of days.}
 \label{exp.tblsvusers}
 \end{table}
 These users are compared to the ``Always Upgrade'' user described in table \ref{exp.tblextremeusers}.
@@ -450,7 +449,7 @@ The UTTDpC of these simulated users are presented in figure \ref{exp.q5auttdperc
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q5auttdperc}
-  \caption{The UTTDpC plotted for the simulated users.}
+  \caption{The UTTDpC of the simulated users using the stable version criterion}
   \label{exp.q5auttdperc}
 \end{center}
 \end{figure}
@@ -476,7 +475,7 @@ User Name 				& Reduction in change 	& ``Always Upgrade'' estimate		\\ \hline
 21 Days SV Upgrade		& 41 					& 46 			 \\
 28 Days SV Upgrade 		& 59 					& 68			\\ \hline
 \end{tabular}
-\caption{Users with different upgrade probabilities.}
+\caption{Reduced change compared to the estimated reduced change of using the stable version criterion.}
 \label{exp.tblsvchange}
 \end{table}
 
@@ -518,7 +517,7 @@ Upgrade: mysql-common (5.1.41-3ubuntu12.6, 5.1.41-3ubuntu12.8), libmysqlclient16
 End-Date: 2010-12-21 11:33:03
 \ldots
 \end{alltt}
-\caption[APT log extract]{An extract of an APT log file}
+\caption{An extract of an \texttt{apt-get} log file}
 \label{aptlog}
 \end{center}
 \end{figure}
@@ -538,7 +537,7 @@ The results of this process are presented in figure \ref{exp.figuserlogs} and ta
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/userlogAnalysis}
-  \caption{The Extracted Upgrade and Install probabilities of the Submitted Logs}
+  \caption{The upgrade and install probabilities of the submitted \texttt{apt-get} logs and the ``realistic'' users}
   \label{exp.figuserlogs}
 \end{center}
 \end{figure}
@@ -553,7 +552,7 @@ Medium Change (MC)			& 0.222			& 0.259 	\\
 High Upgrade (HU)			& 0.561			& 0.192		\\
 Low Change 	(LC)			& 0.186			& 0.086 	\\ \hline
 \end{tabular}
-\caption{Extracted Users from submitted \texttt{apt-get} Logs}
+\caption{Configuration of ``realistic" users extracted from the submitted \texttt{apt-get} logs}
 \label{exp.tbluserlogs}
 \end{table}
 
@@ -567,7 +566,7 @@ The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc} and table \
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q6usersuttd}
-  \caption{The UTTDpC plotted for the simulated users.}
+  \caption{The UTTDpC for the simulated ``realistic'' users}
   \label{exp.q6uttdpc}
 \end{center}
 \end{figure}
@@ -582,7 +581,7 @@ Medium Change (MC)			& 0.795				& 0.633 			& 20\% 	\\
 High Upgrade (HU)			& 0.826				& 0.418				& 49\%  \\
 Low Change 	(LC)			& 0.773				& 0.620 			& 24\%   \\ \hline
 \end{tabular}
-\caption{The final UTTDpC when using different upgrade criteria}
+\caption{The mean final UTTDpC of the simulated ``realistic" users using \texttt{apt-get} and progressive criteria}
 \label{exp.tblq6uttd}
 \end{table}
 
@@ -599,7 +598,7 @@ The total changes of these users are presented in figure \ref{exp.q6userchange} 
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q6userchange}
-  \caption{The Total Change for the simulated users.}
+  \caption{The mean total change for the simulated ``realistic'' users.}
   \label{exp.q6userchange}
 \end{center}
 \end{figure}
@@ -614,7 +613,7 @@ Medium Change (MC)			& 2291			& 2660 	& 16\% 	\\
 High Upgrade (HU)			& 2123			& 2842	& 34\%   \\
 Low Change 	(LC)			& 1903			& 2212 	& 16\%   \\ \hline
 \end{tabular}
-\caption{The mean total change when using different upgrade criteria}
+\caption{The mean total change of the simulated ``realistic" users using \texttt{apt-get} and progressive criteria}
 \label{exp.tblq6change}
 \end{table}
 
@@ -640,7 +639,7 @@ Pro. HU 	&32.02 	&	56.2&	 79.62&	 110.1\\
 Pro. MC 	&14.9 	&	30.28&	 48.28&	 67.66\\
 Pro. LC 	&12.4 	&	24.84&	 41.3&	 59.4\\ \hline
 \end{tabular}
-\caption{The estimated mean reduced change when using the stable version criteria}
+\caption{The mean estimated reduced change when using the stable version criterion for the simulated ``realistic" users using \texttt{apt-get} and progressive criteria}
 \label{exp.tblq6sv}
 \end{table}
 

@@ -425,7 +425,7 @@ Export-Package: nz.geek.textEditor;version="0.0.1.alpha"
 Require-Bundle: nz.geek.fonts
 Import-Package: nz.geek.spellchecker;version>"0.0.1"
 \end{alltt}
-  \caption[OSGi Meta-data]{Example of OSGi Meta-data}
+  \caption{Example of OSGi Meta-data}
   \label{osgibundle}
 \end{center}
 \end{figure}
@@ -464,7 +464,7 @@ and example is presented in figure \ref{dsmetadata}.
         policy="dynamic"/>
 </component>
 \end{alltt}
-  \caption[OSGi Declarative Services]{Example of OSGi Declarative Services meta-data}
+  \caption{Example of OSGi Declarative Services meta-data}
   \label{dsmetadata}
 \end{center}
 \end{figure}
@@ -519,7 +519,7 @@ To show how OBR describes component constraints an example of an OBR document is
 
 </repository>
 \end{alltt}
-  \caption[OSGi Bundle Repository markup example]{Example of OSGi Bundle Repository meta-data}
+  \caption{Example of OSGi Bundle Repository meta-data}
   \label{obrmetadata}
 \end{center}
 \end{figure}
@@ -581,7 +581,7 @@ To show how plugin meta data is used to define constraints, an example is presen
         schema="spellchecker.exsd"/>
 </plugin>
 \end{alltt}
-  \caption[Eclipse Plugin meta-data]{Example of an Eclipse Plugin plugin.xml meta-data file}
+  \caption{Example of an Eclipse Plugin plugin.xml meta-data file}
   \label{eclipseplugin}
 \end{center}
 \end{figure}
@@ -609,7 +609,7 @@ The schema of an extension point, as shown in figure \ref{eclipseextensionschema
  </element>
 </schema>
 \end{alltt}
-  \caption[Eclipse Plugin extension point schema]{Example of an Eclipse Plugin extension point schema file}
+  \caption{Example of an Eclipse Plugin extension point schema file}
   \label{eclipseextensionschema}
 \end{center}
 \end{figure}
@@ -671,7 +671,7 @@ To show how Fractal meta-data can describe component constraints an example is p
   <content class="nz.geek.textEditorImpl"/>
 </definition>
 \end{alltt}
-  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
+  \caption{Example of a simple Fractal ADL file}
   \label{fractalmetadata}
 \end{center}
 \end{figure}
@@ -711,7 +711,7 @@ An example of the definition of a recursive component can be seen in figure \ref
    server="spellCheckerComponent.spellChecker"/>
 </definition>
 \end{alltt}
-  \caption[Fractal ADL Example]{Example of a simple Fractal ADL file}
+  \caption{Example of a simple Fractal ADL file}
   \label{fractalrecursve}
 \end{center}
 \end{figure}
@@ -782,7 +782,7 @@ To show how the Maven Project Object Model (POM) meta-data file is used to descr
   </dependencies>
 </project>
 \end{alltt}
-  \caption[Maven POM file]{Example of a Maven POM file}
+  \caption{Example of a Maven POM file}
   \label{mavenmetadata}
 \end{center}
 \end{figure}
@@ -829,7 +829,7 @@ Package: spellCheckerPackage
 Version: 1.0.0
 Provides: spellChecker
 \end{alltt}
-  \caption[Debian Control files for Spell Checker]{Example of a Debian Control File for Spell Checker}
+  \caption{Example of a Debian Control File for Spell Checker}
   \label{debianmetadatasc}
 \end{center}
 \end{figure}
@@ -900,7 +900,7 @@ To show how SOFA meta-data describes constraints an example is presented in figu
   <provides name="spellChecker" itf-type="sofatype://nz.geek.spellChecker"/>
 </frame>
 \end{alltt}
-  \caption[SOFA ADL files]{Example of a SOFA ADL Files}
+  \caption{Example of a SOFA ADL Files}
   \label{SOFAmetadata}
 \end{center}
 \end{figure}
@@ -963,7 +963,7 @@ request:
 install:textEditor
 
 \end{alltt}
-  \caption[CUDF meta-data file]{Example of a CUDF problem file}
+  \caption{Example of a CUDF file}
   \label{CUDFmetadata}
 \end{center}
 \end{figure}
@@ -1015,7 +1015,7 @@ Debian					& Package			& Virtual-Package 			& Provide/Depends\\
 SOFA 2.0				& Frame				& \textit{typed} 			& Provide/Require\\
 CUDF					& Package			& Package 					& Provides/Depends\\\hline
 \end{tabular}
-\caption{Summary of presented component models' constraints. Note: \textit{typed} refers the ability to type a requirement.}
+\caption[Summary of presented component models' constraints.]{Summary of presented component models' constraints. Note: \textit{typed} refers the ability to type a requirement.}
 \label{background.comparisonrel}
 \end{table}
 
@@ -1034,7 +1034,7 @@ Debian					& control				& Key/Value pairs							\\
 SOFA 2.0				& ADL					& XML 							\\
 CUDF					& CUDF					& Key/Value pairs									\\\hline
 \end{tabular}
-\caption{Summary of presented component models' constraints description formats}
+\caption{Summary of presented component models' constraints description formats.}
 \label{background.comparisonmeta}
 \end{table}
 
