@@ -18,7 +18,7 @@ This is similar to the definition given in \citep{lehman1980}.
 A component system is created out of a set of components combined into a functioning system by a composer (or assembler) \citep{Szyperski2002}.
 Apart from creating the systems, composers are also responsible for changing their systems.
 This change can be motivated by the same forces as software change, e.g. new system requirements.   
-As a composer makes changes to their component system over time, the component system is said to \textit{evolve}.
+As a composer makes changes to their component system over time, the system is said to \textit{evolve}.
 Such a relationship between component system change and CSE is similar to the relationship between software maintenance and software evolution.
 
 %%%In this chapter\ldots
@@ -30,7 +30,7 @@ To conclude this chapter, examples of various component models that fit the give
 
 \section{Software Evolution and Component-Based Software Engineering}
 \label{background.histories}
-The foundations for software evolution, software components, and component systems were established in the late 1960's.
+The foundations for software evolution, software components, and component systems were established in the late 1960s.
 Software evolution was first described by Lehman in 1969\footnote{In \cite{Lehman1969} this process was not referred to as evolution}.
 The concept of software components was proposed by \cite{McIlroy1969}.
 The operating system Unix \citep{raymond2003art}, whose core philosophy is a modular system, was developed in 1969.
@@ -41,7 +41,7 @@ This section describes these advancements, building up to a discussion about CSE
 \subsection{Software Evolution}
 \cite{Brooks1975} states that over 90\% of the cost of a system occurs after deployment in the maintenance phase,
 and that any successful piece of software will inevitably be maintained.
-This realisation, that software requires significant expense to maintain, led researches to study how software changed after deployment.
+This realisation, that software requires significant expense to maintain, led researchers to study how software changed after deployment.
 This is the study of software evolution \citep{lehman1980}.
 
 In 1980, two fundamental empirical studies on the emerging domain of software evolution were published.
@@ -58,8 +58,8 @@ This study showed that around 75\% of the maintenance effort was on the first tw
 The second study by \cite{lehman1980} explored how evolution affected software.
 In this publication, Lehman described a set of laws that characterise software evolution:
 \begin{enumerate}
-  \item \textit{Continuing Change:} Software systems\footnote{E-type systems: software implemented in a real-world computing context \citep{lehman1980}} must be continually adapted 
-  otherwise, they become progressively less satisfactory.
+  \item \textit{Continuing Change:} Software systems\footnote{E-type systems: software implemented in a real-world computing context \citep{lehman1980}} must be continually adapted, 
+  otherwise they become progressively less satisfactory.
   \item \textit{Increasing Complexity:} As the system evolves its complexity increases unless work is done to reduce it.
   \item \textit{Self Regulation:} The system evolves with statistically determinable trends and invariences.
   \item \textit{Conservation of Organisational Stability:} The average effective activity rate to evolve a system is invariant over its lifetime.
@@ -98,6 +98,7 @@ Current explorations of the history, and state-of-the-art, of software evolution
 In all these papers, the importance of software evolution is emphasised, and the need for more knowledge about the evolution process and its properties is discussed.
 
 \subsection{Component-Based Software Engineering}
+\label{back.CBSE}
 The concept of Component-Based Software Engineering (CBSE) was first outlined by \cite{McIlroy1969}, 
 by describing the idea of a software components subindustry which created components to be used to in software.
 This report is an expansion on an earlier idea for \textit{pipes} \citep{mcilroy1964pipes}, 
@@ -123,7 +124,7 @@ Each unit corresponds to exactly one small well-defined piece of the system, and
 As the number of software component grew, a problem emerged of selecting the set of components that satisfy the requirements of the system.
 \cite{PrietoDiaz1987} described this as the \textbf{selection problem}, where a composer can have many alternative compositions of components to select from.
 This increases the effort required to use software components as each possible combination must be examined and ranked based on how well they match the composer's specifications.
-Current research into solutions to the selection problem looks at the questions:
+Current research into solutions to the selection problem asks the questions:
 \begin{itemize}
   \item how to describe a component and its attributes \citep{treinen2009common,Xinjuan2007}?
   \item how to search for compositions that fit a set of requirements \citep{abate2011,Kwong2010,Treinen2009,DeAlmeida2004}?
@@ -163,13 +164,12 @@ that stated that Debian would be constructed from high quality components (or pa
 Initially, a significant amount of technical expertise was required to change the composition of packages in a Debian system.
 Each package had a set of constraints that described the systems that it would be functional in
 and whenever a change was made these constraints where required to be satisfied.  
-Furthermore, satisfying these constraints was difficult due to the selection problem (as discussed earlier).
-For example, installing a new package required satisfying all its constraints.
-This may may require the installation of other packages whose constraints must also be satisfied. 
+Not only was satisfying these constraints difficult, but selecting an appropriate system was also a problem (due to the selection problem discussed earlier in section \ref{back.CBSE}).
+For example, installing a new package required satisfying all its constraints, and if there were multiple systems that satisfied these constraints, one would have to be chosen.
 
-With the release of the application \textit{apt-get} in the late 1990's, the necessary technical knowledge to compose or change a Debian system was significantly reduced.
-A user could request apt-get to change their system, and it would find, select then change to a new composition that satisfies the request.
-This automated the search for a satisfactory solution, solving the problem which had restricted the evolution Debian systems prior to apt-get's release.
+With the release of the application \texttt{apt-get} in the late 1990's, the necessary technical knowledge to compose or change a Debian system was significantly reduced.
+A user could request \texttt{apt-get} to change their system, and it would find, select then change to a new composition that satisfies the request and component constraints.
+This automated the search for a satisfactory solution, solving the problem which had restricted the evolution Debian systems prior to \texttt{apt-get}'s release.
 The apt-get package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
 \footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/} 
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
@@ -184,7 +184,7 @@ A user, without technical knowledge, can now change the composition of their com
 
 The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
 It has been noted that the potential of component systems have increased with this user composition \citep{Szyperski2002} as the user can craft solutions without requiring expert assistance.
-However, a system is also more fragile as the quality of a system may not be verifiable by a potentially non-technical user.
+However, a system is also more fragile as the quality of a system may not be verifiable by a non-technical user.
 
 When the user is the composer of their system, it also breaks apart two important processes,
 component evolution and CSE.
@@ -201,60 +201,51 @@ This makes component evolution similar to software evolution as it is a process 
 A significant difference between software evolution and component evolution occurs because a developer has limited control over the system in which their component is used.
 This difference makes validating a component difficult as testing all possible systems it can be deployed in may be practically impossible.
 
-To give the developer a means to describe valid compositions the component will be valid in
+To allow the developer to describe valid compositions their component will be valid in
 they are typically provided a means of expressing constraints.
 These constraints can describe conflicts between components, and/or dependencies on other components.
 For example, if a component $a$ requires component $b$ to be included in the composition for $a$ to be functional, $a$ is said to depend on $b$.
 Further, if $a$ requires that component $c$ not be in the composition, it is said that $a$ conflicts with $c$.
 Such constraints are used to ensure that a component system that includes $a$ is valid. 
  
-These constraints must be maintained along with the component. 
-This is because the developer may not have control over the evolution of components it depends on or conflicts with.
-For example, if a component $b$ is changed, and component $a$ uses $b$'s functionality, this change may effect $a$.
-As the developers of $a$ do not have control over the maintenance of $b$, 
-the changes must be discussed and co-ordinated to ensure that they are not detrimental to either component.
-
-This example shows that a component may require constraints on a particular evolved state or range of evolved states of other components.
-Such component states are tagged with \textit{version}s, which provide an order to the evolution of a component.
-Unlike software evolution, component evolution depends on the version of components as they are often used in the constraints that describe valid compositions.
+The developer may not have control over the evolution of components it depends on or conflicts with.
+Therefore, any constraint a component has on another may only be valid for a particular state, or range of states, of the other components.
+Such component states are tagged with \textit{version}s, these provide an order to the evolution of a component.
 For example, a component $a$ which is version $1$, is less evolved than the component $a$ version $2$.
 Further consider, $a$ version $1$ depends on $b$ version $1$, and $a$ version $2$ depends on $b$ version $2$.
-This example shows that during component evolution these constraints can change and must be considered.
 
 This discussion on component evolution describes some differences to software evolution.
-It is given not as a complete exploration of this domain but an introduction into some of its consideration. 
+It is given not as a complete exploration of this domain but an introduction. 
 A proper methodology for the development and evolution of software components it still being searched for \citep{Szyperski2002}.
 Discussions on types of evolutionary changes with comparisons to other domains are given in \citep{Papazoglou2011},
 and empirically explored by \cite{vasa2007patterns}.
 
 \subsection{Component System Evolution}
-A component system is changed by the composer by altering the composition of components contained within their component system.
-The system evolves over time as these changes are made.
+A component system is changed when its composer alters the systems composition of components.
+The system evolves over time as these changes are repeatedly made.
 As described above in \citep{IsoIec2006}, these changes could be adaptive, perfective, corrective or preventive.
 However, unlike the changes in software evolution or component evolution, CSE can only make architectural changes by adding or removing components that already exist.
 For example, a composer could not change the system to satisfy a requirement if no component has yet been developed to satisfy that requirement.
 
 %%%CSE must satisfy constraints, for the user to be a composer CDR must be used
-Changing a component system is restricted by the constraints that components have on the composition. 
-It would be very difficult for a user to alter a composition without some helping functionality provided by applications like apt-get.
+Changing a component system is restricted by the constraints that components use to describe valid compositions. 
+It would be very difficult for a non-technical user to alter a composition without some provided functionality.
 In this research such functionality is called  \textbf{Component Dependency Resolution} (CDR).
-CDR takes requests to change a system from the composer and component constraints and searches for systems that satisfy both.
-Given some preferences, an appropriate component system is selected.
+CDR helps the composer alter their system by satisfying their requests for change with valid compositions.
+Additionally, the returned compositions satisfy some preferences.
 For example, a user wants to install a new text-editor component into their system, and the selected text editor has a dependency on a spell-checker.
-This means a spell checker component must be installed for the text editor to be functional. 
-Therefore, CDR tries to find a system that has a text-editor and a spell-checker, and that is a preferable solution.
+A preference to be up-to-date means that the most recent version of components should be selected.
+A system that provides CDR functionality would try to find an up-to-date composition that has a text-editor and a spell-checker.
 
-CDR can be referred to by various names; provisioning system or dependency management in Eclipse domain \citep{leBerre2010},
-or package manager in the GNU/Linux \citep{Barth2005} domain.
-CDR can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \citep{casey_better_2008}),
+CDR functionality is currently available for Eclipse in the P2 provisioning system \citep{leBerre2010}
+and the package manager \texttt{apt-get} for the Debian GNU/Linux distribution \citep{Barth2005}.
+CDR functionality can be used at design time to determine the required dependencies to build and test a project (as in Apache Maven \citep{casey_better_2008}),
 at run time to evolve or extend a component-based system (as in Eclipse P2 \citep{leBerre2010}),
 or it can be used to build and restructure software product lines \citep{savolainen_analyzing_2007}.
-CDR is also used in package management systems, like apt-get \citep{Barth2005},
-for adding, removing and updating components in package based operating systems like Ubuntu\footnote{http://www.ubuntu.com accessed 6/3/2012}. 
 
 %%%How can a user change their system with CDR
-The core functions that CDR provides to change component system are \textbf{install} and \textbf{remove}, these add or remove a component to or from the system.
-Furthermore, the function of \textbf{upgrade} is defined to remove then install a higher version of the same component.
+CDR systems typically provide similar functionality that allow the user to \textbf{install} and \textbf{remove} components, these add or remove a component to or from the system.
+Furthermore, typically provided is a \textbf{upgrade} function that removes then installs a higher version of the same component.
 For example, to upgrade the components in a Debian GNU/Linux system, the command \texttt{apt-get upgrade} is all that is needed to be executed.
 To extend the system to install a component \texttt{comp} the command \texttt{apt-get install comp} can be executed.
 The simplicity that CDR provides enables users to become composers of their component systems.
@@ -262,18 +253,17 @@ The simplicity that CDR provides enables users to become composers of their comp
 %%%Problem with versioning componenet systems
 A problem arises, during component system evolution when trying to measure the evolved state of a component system.
 A component system is a set of components, where each component can have different versions.
-This may make a component system impossible \textit{version}, in a way similar to how components are versioned.
+This may make a component system impossible to \textit{version} in a way similar to how components are versioned.
 For example, a system that has version $1$ of component $a$ and version $2$ of component $b$, 
-is neither more or less evolved than a system with version $2$ of $a$ and version $1$ of $b$.
+is neither more or less out-of-date than a system with version $2$ of $a$ and version $1$ of $b$.
 This can get even more complicated when considering some component models allow multiple versions of a single component installed, e.g. 
 is a system with version $1$ and $2$ of $a$ installed less evolved that a system with only version $2$ of $a$ installed?
 
-This process of component system evolution is empirically studied by \cite{fortuna2011} 
+Component system evolution is empirically studied by \cite{fortuna2011} 
 who look at the first ten releases of the Debian and compare it to the evolution within biology.
 Methods to change component systems are discussed in \citep{Ryan2005} and \citep{Luo2004},
 and the mitigation of the negative effects caused by such evolution is discussed in the paper \citep{Stuckenholz2007}.
-
-A formal definition of the component system evolution is given in chapter \ref{formal}.
+This thesis contributes a formal model of the component system evolution in chapter \ref{formal}.
 
 \section{What is a Software Component?}
 \label{background.components}
@@ -282,15 +272,15 @@ It is difficult to find a precise definition of what a software component is, as
 Finding a definition that satisfies all parties may be an impossible task.
 However, by defining a software component with respect to component system evolution, 
 this process can be studied without the paralysis of finding a complete definition.
-In this thesis a software component is defined to have explicitly declared constraints and include mechanisms to automatically alter the a component composition.
+In this thesis a software component is defined to have explicitly declared constraints and include mechanisms to automatically alter a component composition.
 These two attributes are seen as sufficient to allow CDR to be used, and thus a user to be the composer and drive CSE. 
 
 %%%What is a component in a larger context
-A component is a natural concept that describes a part or element of a larger system or process.
+A component describes a part or element of a larger system or process.
 A broad characterisation of a component is ``components can be composed together''.
-They can be physical, as in electrical or mechanical components, where their properties and how they are composed are documented to be used in construction.
+They can be physical, as in electrical or mechanical components, or virtual, as in software component.
 Typically, components can be used in many different contexts, e.g. a resistor component, they can be used in electrical systems from space stations to cellphones.   
-This natural concept of what a component is has led to problems in defining the concept of a software component.
+This concept of what a component is has led to problems in defining the concept of a software component.
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
 A discussion between two researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining ``software component''. 
@@ -322,7 +312,7 @@ Others, like \citep{heineman2001component} have stated that components must conf
 A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.
 \end{quotation}
 
-Defining a component model as:
+Furthermore, they define a component model as:
 \begin{quotation}
 A component model defines a set of standards for component implementation, naming, interoperability, customization, composition, evolution, and deployment.
 \end{quotation}
@@ -335,7 +325,7 @@ This diversity has inspired a classification approach from \citep{Crnkovic2011},
 This effort highlights the difficulty in creating an exact definition of a software component. 
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
-The problems encountered when trying to exactly define a software component may stem from the fact that ``component'' is a natural concept.
+The problems encountered when trying to exactly define a software component may stem from the fact that ``component'' is a broad concept.
 The problem, as observed from the area of formal concept analysis \citep{Ganter1999} by \citep{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
@@ -348,28 +338,27 @@ and exploring the technically inevitable consequences \citep{Szyperski2002}.
 As the intention of this study is to investigate component system evolution,
 the definition of software component will be with respect to this process.
 
-This view of a software component's definition will not agree with every persons view of what a software component is, but (as described above) no precise view can.
-By only looking at aspects that are necessary for this research, the arguments over unnecessary semantics can be eliminated. 
-
-\subsection{Software Component}
+\subsection{The Definition of Software Component in this Thesis}
 The definition of a software component is given with respect to the evolution of a component system using component dependency resolution.
 Both these areas have already been discussed in this chapter and will be used to define the concept of ``software component''.
 This definition specifies the type of components and component models this research can be applied to.
 
-In this research a software component is a unit of independent deployment, and third party composition,
+In this thesis a software component is a unit of independent deployment, and third party composition,
 and a component model must:
 \begin{enumerate}
   \item require the explicit definition of component constraints on compositions where they are valid 
-  \item include mechanisms in which to programmatically compose or change a component system
+  \item include mechanisms in which to programmatically change a component system
 \end{enumerate}
 
-To enable the user to become the composer by using CDR, the component constraints must be explicitly defined and computer readable,
+To allow CDR functionality to alter a component system, the component constraints must be explicitly defined and computer readable,
 and an interface must be provided by the component system to be changed. 
-That is, CDR should be able to calculate a valid composition, and change the system to the calculated composition.
+This definition will allow the study of component system evolution as a user changes their system using CDR functionality.
 
 This definition leaves undefined many aspects of a software components, as can be seen when compared to the classification from \citep{Crnkovic2011}.
 Most aspects of a component model are ignored as they are superfluous to the core topic of this research.
 This makes the definition in this research broadly applicable, while also being focused on CSE.
+As such, this software component definition will not agree with every persons idea of what a software component is, but (as described above) no precise view can.
+By only looking at aspects that are necessary for this research, the arguments over unnecessary aspects can be eliminated. 
 
 The next section explores this definition of software component by discussing different component models that conform to it.
 
@@ -377,22 +366,15 @@ The next section explores this definition of software component by discussing di
 \label{background.models}
 %%%Some core component models are described, and their dependencies and evolution are discussed
 Given the definition of a software component for this research, some current component models are described and discussed.
-These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian, RPM) and academia (SOFA2).
+These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian) and academia (SOFA2, CUDF).
 
 %%%Meta data of component models is discussed
-Firstly, for these component models to conform to the previously described definition, their components must explicitly describe their constraints.
-The typical mechanism in which components from these frameworks express their constraints is through meta-data files.
-These files contain what a component requires and provides, as well as other information like versions and provider details.
-These meta-data files are then a core element in the description of a component model.
-
-%%%How to change a system is discussed
-As defined above, a component model must also provide a mechanism to alter the systems composition.
-This is usually a low level interface, where the addition or removal of a component is the core functionality.
-A CDR implementation can then use these interfaces to evolve a system.
-
-%%%Exisiting CDR implementations are discussed
-Some component models have a CDR implementation available.
-These implementations are also described as they are core to the evolution of the models component systems.
+For these component models to conform to the previously described definition
+their components must explicitly describe their constraints and they must provide a mechanism to alter the systems composition.
+The typical method in which components from these models express their constraints is through meta-data files,
+and to alter compositions some low level interface is provided.
+These meta-data files and interfaces are described and discussed..
+Additionally, many of these component models have systems that provide CDR functionality, these will also be discussed.
 
 To compare these component models, the example of a text editor component that depends on a spell checker component is used.
 It is hoped this simple situation will highlight the similarities and differences between the various component models.
@@ -476,11 +458,10 @@ The \texttt{service} tag describes the services provided, and the \texttt{refere
 %%%DS provides no versioning
 One aspect lacking in the DS meta-data is the ability to define version properties on a constraint.
 Although the version of a service is implicitly defined by the version of the bundle that the service is provided by.
-This may lead to problems as services evolve over a systems life-time.
 
 \subsubsection{OSGi Change}
 The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance.\footnote{http://www.osgi.org/javadoc/r4v43/ accessed 6/3/2012}
-The installation and removal of both the bundles and services from the OSGi system are defined as such:
+The installation and removal of both the bundles and services from the OSGi system are:
  
 \begin{itemize}
   \item To install a bundle:\\ \texttt{org.osgi.framework.BundleContext}\verb+#+\texttt{install}
@@ -493,8 +474,8 @@ These methods can sometimes be implemented in a console, this allows a user to d
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
-A CDR implementation for OSGi was proposed by Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006}.
-This is called the OSGi Bundle Repository and consists of collection of components described in an XML format and a functionality to reason about them.
+To implement CDR functionality for OSGi Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006} proposed the OSGi Bundle Repository (OBR).
+OBR is an XML format that describes OSGi components, and also an application with CDR functionality.
 To show how OBR describes component constraints an example of an OBR document is presented in figure \ref{obrmetadata}.
 
 \begin{figure}[htp]
@@ -524,9 +505,9 @@ To show how OBR describes component constraints an example of an OBR document is
 \end{center}
 \end{figure}
 
-This meta-data was designed so that it can merge the bundle and service meta-data as described above.
-It also ignore many of the implementation aspects of OSGi bundles.
-OBR is then an abstract component model that represents the necessary elements from both OSGi bundle and service layers in order to help the user change a OSGi system. 
+This meta-data was designed so that it can merge the bundle and service meta-data together.
+It also ignores many of the implementation aspects of OSGi bundles and focuses on the constraints of the components.
+OBR represents only the necessary elements from both OSGi bundle and service layers to provide CDR functionality. 
 
 OBR has been seen as a solution to to simplify deployment of OSGi applications \citep{Jung2007}, 
 distribution and deployment to embedded ubiquitous systems \citep{Jung2006}, 
@@ -537,8 +518,8 @@ The most mature implementation of an OBR client is offered by the Apache foundat
 This can be used with any of the large public or private OBR collections of bundles.
 An example of one such public repository is the Paremus repository\footnote{http://www.osgi.org/Repository/ accessed 6/3/2012} which contains (as of December 2011) over 2000 bundles.
 
-The specification of OBR does not define a method or parameters to select a component system.
-Therefore, the solution to the selction problem is implementation specific.
+The specification of OBR does not define a method or parameters to define preferences when selecting a component system.
+Therefore, selecting systems, when many are valid, is implementation specific.
 The method used by the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} implementation 
 to select a system is described on its help page as:
 
@@ -547,13 +528,13 @@ OBR might have to install new bundles during an update to satisfy either new dep
 In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.
 \end{quotation}
 
-This shows that when updating a system of bundles, if there are multiple systems available maintaining currently installed bundles in the system is the preference.
+This shows that when upgrading a system not installing new bundles is preferred.
 
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
 Eclipse is a widely used IDE and an extensible plugin platform for creating Java applications.
-It is built on top of the OSGi framework, but ignores OSGi's service layer and re-implements it with its own Eclipse plugin runtime.
-Therefore, the distrusted components are OSGi bundles and the run time elements are plugin services.
+It is built on top of the OSGi framework, but re-implements OSGi's service layer with its own Eclipse plugin runtime.
+Therefore, the distributed components are OSGi bundles and the run time elements are plugin services.
 
 These plugins are defined using extensions and extension points, where extensions provide a service for an extension point.
 To show how plugin meta data is used to define constraints, an example is presented in figure \ref{eclipseplugin}. 
@@ -633,7 +614,7 @@ The methods used to add and remove these are:
 
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
-Eclipse P2 \citep{le_berre_dependency_2009}, \citep{leBerre2010} is the provisioning system for the Eclipse IDE platform.
+Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
 It provides the CDR functionality to alter an Eclipse based component system. 
 Eclipse P2 is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
@@ -651,7 +632,7 @@ These criteria are used to select a system if multiple possible systems are avai
 Fractal \citep{Quma2006} is a component model developed by France Telecom R\&D and INRA.
 It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse that both depend on Java specific elements.
 The most notable aspect, and the reason for its name, is that a components can be composed together to make a new component.
-This recursive nature of composition, actually means the system of components can itself be a component.
+This hierarchical nature of composition, actually means the system of components can itself be a component.
 
 To show how Fractal meta-data can describe component constraints an example is presented in figure \ref{fractalmetadata}.
 
@@ -680,7 +661,7 @@ This meta-data describes the component constraints as a metaphor between a clien
 The interface tag with the role attribute assigned to ``server'', defines the provided functionality of the component.
 The interface tag with the role attribute assigned to ``client'' then defines the required functionality of the component.  
 
-An example of the definition of a recursive component can be seen in figure \ref{fractalrecursve}.
+An example of the definition of a hierarchical component can be seen in figure \ref{fractalrecursve}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -716,7 +697,7 @@ An example of the definition of a recursive component can be seen in figure \ref
 \end{center}
 \end{figure}
 
-This description of a recursive component structure defines both the text editor and spell checker components, as well as their constraints.
+This description of a hierarchical component structure defines both the text editor and spell checker components, as well as their constraints.
 The tag \texttt{definition} is then used to define a composition of components that provides a service of \texttt{textEditorWithSpellChecker}.
 To provide this the spell checker must be bound (described in the tag \texttt{binding}) to the text editor,
 and the text editors provided interface bound to the output interface. 
@@ -724,27 +705,25 @@ and the text editors provided interface bound to the output interface.
 \subsubsection{Fractal Change}
 The programmatic evolution of a Fractal component system can differ between implementations.
 To simplify this, only the Java implementation is described. 
-In this implementation the methods to edit the configuration are\footnote{http://fractal.ow2.org/current/doc/javadoc/fractal/ accessed 6/3/2012}:
+In this implementation the methods to edit the composition are\footnote{http://fractal.ow2.org/current/doc/javadoc/fractal/ accessed 6/3/2012}:
 \begin{itemize}
-  \item to create a component: \\ \texttt{org.objectweb.fractal.api.factory.GenericFactory}\verb+#+\texttt{newFcInstance}
-  \item to add a component to a composite: \\ \texttt{org.objectweb.fractal.api.control.ContentController}\verb+#+\texttt{addFcSubComponent}
-  \item to remove a component from a composite: \\ \texttt{org.objectweb.fractal.api.control.ContentController}\verb+#+\texttt{removeFcSubComponent}
+  \item to create a component: \\ \texttt{org.objectweb.fractal.api.factory.GenericFactory} \verb+#+\texttt{newFcInstance}
+  \item to add a component to a composite: \\ \texttt{org.objectweb.fractal.api.control.ContentController} \verb+#+\texttt{addFcSubComponent}
+  \item to remove a component from a composite: \\ \texttt{org.objectweb.fractal.api.control.ContentController} \verb+#+\texttt{removeFcSubComponent}
 \end{itemize}
 
 There are two points that may make the changing a Fractal component model particularly difficult,
-the recursive nature of Fractal, and the lack of required version information about components and composites.
+the hierarchical nature of Fractal, and the lack of required version information about components and composites.
 
 %%%Fractal requires not only the selection of components but the configuration
-The recursive nature of of Fractal will make is difficult to change a system. 
-Given the recursive nature of the components described, any system may provide the same functionality with the same components in a combinatorial number of configurations.
-When changing a system, not only would a new system need to be selected, but the groups of components to make composites will need to be selected.
-This has then made the selection problem more difficult to solve.
-The simplest solution to this problem is to ignore the recursive nature of this component model
+The hierarchical nature of Fractal will make it difficult to change a system. 
+Given the hierarchical nature of the components described, any system may provide the same functionality with the same components in a combinatorial number of configurations.
+When changing a system, not only would a new system need to be selected, but components must be grouped to make composites.
+The simplest solution to this problem is to ignore the hierarchical nature of this component model
 and have the changed component system be exactly one composite with all components in it.
 More difficult solutions could be created by reusing user composites,
 or analyzing the graph structure to extract relationships by using algorithms like the one presented in \citep{dietrich2008cluster}.
-This is all speculation however, and will not be explored in this research.
-
+This is not be explored in this research.
 
 Another aspect that will makes changing Fractal systems difficult, is the lack of versioning information.
 Like DS, this component model does not explicitly require the version of the component and the interfaces they provide.
@@ -794,7 +773,7 @@ where it states that it depends on the artifact \texttt{spellChecker} from versi
 \subsubsection{Maven Change}
 The use of Maven primarily during development does not exclude it from the definition of being a component model in this study.
 Maven both explicitly declares constraints and provides an interface to change its component systems. 
-This unique characteristic of Maven does mean that changing a component system is done in two stages where first it is altered, then it is recompiled and replaced.
+This characteristic of Maven does mean that changing a component system is done in two stages where first it is altered, then it is recompiled.
 
 Another core difference from the other presented component models is that Maven POM objects do not declare what they provide.
 For example, an OSGi bundle can declare provided packages and a Fractal component declares provided interfaces, where a Maven project can only provide itself.
@@ -847,22 +826,22 @@ For Debian, the dependence of one package on another has no prescribed run-time 
 The way in which a package, uses or communicates with a depended upon package is then defined between the packages and not in the component model.
 
 \subsubsection{Debian Change}
-The application ``dpkg'' is the command line tool use to modify a Debian package system.
+The application \texttt{dpkg} is the command line tool use to modify a Debian package system.
 
 The commands to modify a Debian package system are:
 \begin{itemize}
-  \item to add a package: dpkg --install <package file>
-  \item to remove a package: dpkg --remove <package>
+  \item to add a package: \texttt{dpkg --install <package file>}
+  \item to remove a package: \texttt{dpkg --remove <package>}
 \end{itemize}
 
 These commands define the atomic actions to change a Debian system.
 They can be executed from other applications through the command line, this makes them programming language independent and easily accessible. 
 
 \subsubsection{apt-get}
-The dpkg application can only remove and add a single component at a time, it does not resolve the dependencies of the component.
-There are many applications that can resolve these dependencies on a Debian system, the default and most popular solution is through the ``apt-get'' application.
-This tool is built on top of dpkg, to provide an interface to simplify and extend its functionality.
-The apt-get application is a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
+The dpkg application can only remove and add a single component at a time, it does not satisfy the constraints of a component.
+There are many applications that provide CDR functionality on Debian systems, the default and most popular solution is through the \texttt{apt-get} application.
+This tool is built on top of \texttt{dpkg}, to provide an interface to simplify and extend its functionality.
+The \texttt{apt-get} application is a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
 
 Apt-get follows some basic criteria when altering the system, for example when upgrading:
 \begin{itemize}
@@ -881,9 +860,9 @@ Aptitude allows some of its criteria to be user defined, for example when the fl
 \end{itemize}
 
 \subsection{SOFA 2.0}
-Software Appliance (SOFA) is a component model developed at Charles University in Prague.
+Software Appliance (SOFA) \citep{Hnetynka2006} is a component model developed at Charles University in Prague.
 A component in the SOFA framework is defined by it's frame, which contains the meta-data of what the component requires and provides.
-Like Fractal, SOFA is a recursive component model, allowing for a composite of components to be treated as a single component.
+Like Fractal, SOFA is a hierarchical component model, allowing for a composite of components to be treated as a single component.
 
 To show how SOFA meta-data describes constraints an example is presented in figure \ref{SOFAmetadata}.
 
@@ -913,9 +892,9 @@ This interface is defined using an Architecture Definition Language (ADL) and ad
 \subsubsection{SOFA Change}
 SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at run-time. 
 Unlike other component systems,
-it only allows for controlled evolution; 
+it only allows for controlled change; 
 Many component models allow the change of the component system on a fine grained level of adding or removing a component.
-However this model only allows more granular changes to be made to the system, these changes must conform to specified evolution patterns.
+However, SOFA only allows more granular changes that must conform to specified evolution patterns.
 This restriction is meant to increase the manageability and predictability of a component systems evolution. 
 
 Three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
@@ -931,14 +910,14 @@ Many component models share similar properties including:
 \begin{itemize}
   \item a component name
   \item a component version
-  \item description of what the component provides
-  \item description of what the component requires
+  \item a description of what the component provides
+  \item a description of what the component requires
 \end{itemize} 
 
 By abstracting these common elements into a single model, the description of how a component system is changed can become component model independent.
 The Common Upgradeability Description Format (CUDF) model is such an abstraction.
-It is used to describe a request by a user to change a component system, and can be used by a CDR implementation to calculate the resulting system.
-CUDF was created by the Mancoosi project to foster interest in this domain and to be used in a competition that compared CDR implementations.
+It is used to describe a request by a user to change a component system, and can be used to calculate the resulting system.
+CUDF was created by the Mancoosi project to foster interest in this domain and to be used in a competition that compared CDR functionality.
 Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
 
 %%%No concrete components, but fits our definition
@@ -974,11 +953,9 @@ Further definition of the syntax and semantics of CUDF is in chapter \ref{formal
 
 \subsubsection{Mancoosi MPM}
 %%%The mancoosi Modular Package Manager uses CUDF, currently going through the process in the Debian component repository
-The CUDF component model was defined especially to compare CDR implementations, therefore many implementations exist.
-In fact through this research one such implementation, GJSolver was created and compared to other implementations.
-This is further discussed in the latter chapter \ref{implementation}.
-Here the implementation from Mancoosi, Modular Package Manager \citep{abate2011} (MPM), is discussed.
-
+The CUDF component model was defined especially to compare CDR implementations, and it was successful in that many implementations were created to be compared.
+One such implementation, GJSolver, was contributed by this thesis and is further discussed in chapter \ref{implementation}.
+The implementation from Mancoosi is the Modular Package Manager \citep{abate2011} (MPM).
 MPM was created by the Mancoosi project to explore the possibility of using CUDF solver to evolve real systems.
 In the study by \cite{abate2011}, this package manager was compared against other solvers, such as apt-get and aptitude, and shown to be an improvement in performance.
 MPM also was the first to allow the user to completely specify the criteria by which the solver selects a system.
@@ -986,8 +963,7 @@ Further discussion of MPM criteria is given in chapter \ref{implementation}.
 
 \subsection{Comparison}
 Each of the presented component models provide an explicit description of their components constraints, and a mechanism to change a component system.
-This means that they are all component models w.r.t. the definition of component in this research,
-as they allow the process of component system evolution where the user is the composer.
+This means that they are all component models w.r.t. the definition of component in this research.
 
 The constraints in these models fall into two groups:
 \begin{enumerate}
@@ -1001,7 +977,7 @@ The constraints in these models have broadly similar semantics, though different
 The comparison between these models is then mostly linking together vocabulary.
 This comparison is summarised in the tables  \ref{background.comparisonrel} and \ref{background.comparisonmeta}.  
 
-\begin{table}
+\begin{table}[h!]
 \begin{tabular}{|l || c | c | c | }
 \hline \textbf{Component Model}& \textbf{Component}& \textbf{Provides}	& \textbf{Provide/Require}\\ \hline
 
@@ -1015,7 +991,7 @@ Debian					& Package			& Virtual-Package 			& Provide/Depends\\
 SOFA 2.0				& Frame				& \textit{typed} 			& Provide/Require\\
 CUDF					& Package			& Package 					& Provides/Depends\\\hline
 \end{tabular}
-\caption[Summary of presented component models' constraints.]{Summary of presented component models' constraints. Note: \textit{typed} refers the ability to type a requirement.}
+\caption[Summary of presented component models' constraints.]{Summary of presented component models' constraints. Note: \textit{typed} refers the ability to define the type of requirement.}
 \label{background.comparisonrel}
 \end{table}
 
@@ -1045,8 +1021,9 @@ Maven component systems are also represented by the meta-data, though once the m
 With the exception of SOFA 2.0, all the mechanisms to alter a component system in the remaining component models have the actions of either adding, removing and/or replacing a component.
 SOFA only allows altering the system by pre-defined evolution patterns.
 
-Most of these models have some form of CDR implementation to help evolve their component systems.
-Fractal and SOFA are the only systems to not include a CDR implementation, this may be due to the difficulty in evolving hierarchical component models.
+Most of these models have an application with CDR functionality to assist in changing their component systems.
+Fractal and SOFA are the only exceptions.
+This may be due to the difficulty in evolving hierarchical component models.
 A comparison between these component model properties is presented in table \ref{background.comparisonprop}.
 
 \begin{table}
@@ -1067,9 +1044,10 @@ CUDF					& No			& NA 									& MPM\\\hline
 \label{background.comparisonprop}
 \end{table}
 
-The presented comparison of these models shows that although they are aimed at different domains, they are very similar with respect to component change and therefore CSE.
+The presented comparison of these models shows that although they are aimed at different domains, they are very similar with respect to component change.
 This similarity motivates the research into CSE, as results may contribute to many different domains. 
 
+%%%TODO Scoping, they are all similar therefore studying one should provide some insight into others.
 \section{Summary}
 In this chapter, the concepts related to CSE are explored.
 The domains of software evolution, CBSE and component systems are described and the important concepts, such as software component, are defined.

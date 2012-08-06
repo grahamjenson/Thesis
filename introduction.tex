@@ -7,21 +7,21 @@ The Greek philosopher Plutarch proposed in his work \textit{Life of Theseus} a p
 \begin{quote}
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
-This question addresses many themes including objects made of components, the change of component parts,
+This question addresses many themes including how objects are made of components, how they change their component parts,
 and how this change effects the object in question.
 
 Like the object in Plutarch's question, a software system can be constructed from components and changed by altering its composition.
 A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002},
-and the process by which software systems change over time is \textbf{software evolution} \citep{lehman1980}.
+and the process by which a software system changes over time is called \textbf{software evolution} \citep{lehman1980}.
 The focus of this thesis is \textbf{component system evolution} (CSE), which is the process by which component systems change over time.
-A component system is changed by altering its composition of components and \textbf{evolved} through repeated changes.
+A component system is changed by altering its composition of components and \textbf{evolves} through repeated changes.
 This research asks questions about how component systems evolve and what the effects this evolution has.
 
 \section{Objective}
 %%%What do I want to find out?
-The primary objective of this research is to study the process of CSE. 
-The focus is on the amount of change made to systems and how out-of-date the systems become during CSE.
-Through understanding this change and out-of-dateness
+The primary objective of this research is to study the process of component system evolution. 
+The aspects of CSE that are focused on is the amount of change made to systems and how out-of-date the systems become over time.
+Through understanding this change and out-of-dateness,
 this research can inform developers and users of the consequences their choices have to the CSE process.
 Additionally, this research can be used to alter how component systems are currently changed in order to reduce change and out-of-dateness during evolution.
 
@@ -44,17 +44,17 @@ The reason for selecting Ubuntu as the component system, and simulation as the m
 \subsection{Why Ubuntu?}
 The Ubuntu operating system was selected as the component system to study CSE for the following reasons:
 \begin{itemize}
-  \item it has significant size and complexity which ensures that the results will not be trivial.
-  \item it has open and accessible information that can be used to create a simulation.
-  \item it has an active research community which provides a base for research.
-  \item it has an estimated 20 million users potentially making the outcomes of this research have a significant impact.
+  \item It has significant size and complexity which ensures that the results will not be trivial.
+  \item It has open and accessible information that can be used to create a simulation.
+  \item It has an active research community which provides a base for research.
+  \item It has an estimated 20 million users, potentially making the outcomes of this research have a significant impact.
 \end{itemize} 
 
 \subsection{Why Simulate?}
 To study the CSE process, the evolution of many component systems must be studied.
 The method selected for this study is to model the relevant aspects of CSE, then simulate the evolution of many Ubuntu systems using collected data and reasonable approximations.
 Using a simulation provides the benefit of having control over variables that impact CSE.
-This control allows for testing extreme as well as normal situations.
+This control allows for testing normal as well as extreme situations.
 It also allows for the quick experimentation with novel or proposed techniques.
 
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid.
@@ -66,15 +66,15 @@ In this context:
 The methodology that \cite{Law2005} outlines was selected to create such a valid simulation.
 This methodology was selected because it gave practical guidance to creating and using a simulation.
 The methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
-Also observed was that simulations that are not validated can produce erroneous information that leads to bad, possibly costly decisions being made.
+It was also observed was that simulations that are not validated can produce erroneous information that leads to bad, possibly costly decisions being made.
 
 This methodology has a seven step approach to creating a valid simulation:
 \begin{itemize}
   \item \textbf{Step 1: Formulate the problem}: %Intro, Background and Formal Models of the problem
 	The problem should be described as clearly as possible.
-	The core artifacts at this stage are the overall objectives of the study, the scope of the study.
-\item \textbf{Step 2: Collect information/data to construct conceptual model}: %Simulation
-	The conceptual model is a description of how the simulation and system work in relation to the studies objectives.
+	The core artifacts at this stage are the overall objectives and the the scope of the study.
+\item \textbf{Step 2: Collect information/data to construct a conceptual model}: %Simulation
+	The conceptual model is a description of how the simulation and system work in relation to the study's objectives.
 	It contains all variables used to configure the simulation. 
 \item \textbf{Step 3: Validate conceptual model}: %Simulation
 	The validation of the conceptual model is accomplished through interviews and discussions with the stakeholders of the study.
@@ -91,7 +91,7 @@ This methodology has a seven step approach to creating a valid simulation:
 
 The above described methodology was created for large scale industrial projects with a substantial amount of resources available.
 It describes the employment and use of experts and analysts to ensure validity.
-The available resources for this project are less than such projects, therefore some of the steps have been decreased in scope.
+The available resources for this project are less than other such projects, therefore some of the steps have been decreased in scope.
 This may reduce the validity of the final simulation, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
@@ -104,19 +104,19 @@ These contributions are:
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
   \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
   \item The \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) model that approximates a user that changes their system.
-  \item \textbf{GJSolver} is an implementation that calculates the changes made to a system as it evolves (called resolving).
+  \item The \textbf{GJSolver} which is an implementation that calculates the changes made to a system as it evolves (called resolving).
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
   \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
 Some of these contributions are Ubuntu specific, e.g. the \usermodel model and the results and analysis.
-However, the \modelname model and CUDF* syntax could be generalizable to other component systems.
+However, the \modelname model and CUDF* syntax are generalizable to other component systems.
 Though this generalization is not explored in this research, a case is made for further research in this area in chapter \ref{conclusion}.
 
 \section{Thesis Overview}
 This thesis is organised and presented in the order that resembles the steps of the above described methodology
 where first the problem is described (chapter \ref{background}), then the models are presented and validated (chapters \ref{formal} and \ref{simulation}),
-the implementation and validation of the simulation is described (chapter \ref{implementation}), finally the experiments and their results are discussed (chapter \ref{experiments}).  
+the implementation and validation of the simulation is described (chapter \ref{implementation}), and finally the experiments and their results are discussed (chapter \ref{experiments}).  
 
 Chapter \ref{background} explores the backgrounds of CSE and its related domains.
 This aims to put CSE in historical context and to give a suitable definitions to the elements of CSE.
@@ -135,8 +135,8 @@ therefore the algorithms and implementation used are an important aspect of rese
 The verification of GJSolver, and validation of the simulation are also discussed in this chapter.
 
 Chapter \ref{experiments} describes the experiments, results and analysis that are conducted using the developed simulation.
-The effects examined are the change that the systems go through, and how out-of-date the systems become during evolution.
+The effects examined are the changes that the systems go through, and how out-of-date the systems become during evolution.
 Through these experiments some causes of change and out-of-dateness are found, and to reduce their effects some novel changes to CSE are proposed.
-The effects of these novel changes are measured using the simulation and are shown to have benefits during CSE.
+The effects of these changes are measured using the simulation and are shown to have benefits during CSE.
 
 This thesis concludes in chapter \ref{conclusion} by describing the contributions of this research, related work, and possible future research.
