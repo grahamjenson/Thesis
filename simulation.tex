@@ -39,14 +39,13 @@ The \usermodel model was developed using the results of a survey conducted to de
 This survey is described in section \ref{strat.usersurvey}.
 
 \usermodel contains variables to create a realistic scenario of CSE, e.g. a variable that describes the probability a user will upgrade their system on a given day.
-In addition it contains information (e.g. the dates the simulation takes place) and assumptions (e.g. the probability a package will be selected to be installed) about the simulation.
+In addition it contains assumptions (e.g. the probability a package will be selected to be installed) made in the simulation.
 \usermodel is presented in section \ref{sim.usermodel} and the variables and assumptions for the simulation are discussed.
 
 In order to define parts of \usermodel it was necessary to collect and convert data into usable formats.
 The sources this data was collected from and the methods used to convert it are described in section \ref{sim.collection}.
 
-This chapter concludes in section \ref{sim.modelvalidation} with a discussion over the validity of \usermodel.
-This section describes the differences between the reality of CSE and \usermodel.
+This chapter concludes in section \ref{sim.modelvalidation} with a discussion over the validity of \usermodel, focusing on the differences from the reality of CSE.
 These differences are important to explore, as they may reduce the validity of the results from the simulation.
 
 \section{User Survey}
@@ -83,23 +82,22 @@ To answer these questions the user could input free text.
 \subsection{Results}
 %%%The results are summarised as:
 As was already mentioned earlier, the survey was completed by 59 respondents.
-The majority of these (29) were Debian based operating systems users.
-Among these users apt-get was the most popular package manager.
-Thirteen respondents used ArchLinux\footnote{http://www.archlinux.org/ accessed 6/3/2012} with pacman\footnote{http://www.archlinux.org/pacman/ accessed 6/3/2012} as the package manager.
-Other systems and package managers represented in this survey include Fedora\footnote{http://fedoraproject.org/ accessed 18/7/2012} with the yum\footnote{http://yum.baseurl.org/ accessed 18/7/2012} package manger,
-Slackware with the pkgtools\footnote{http://www.slackbook.org/ accessed 18/7/2012} package manager, and Gentoo with the portage\footnote{http://www.gentoo.org/doc/en/handbook accessed 18/7/2012} package manager.
+The majority of these (29) were Debian-based operating systems users.
+Among these users \texttt{apt-get} was the most popular package manager.
+The other respondents used a variety of other GNU/Linux distributions and their package managers.
+These package managers provide similar functionality to \texttt{apt-get}, a comparison can be seen at \texttt{http://distrowatch.com/dwres.php?resource=package-management}\footnote{accessed 7/8/2012}. 
 
 The mean of the respondents self-ranked experience was 3.9/5.
 While this can be considered a subjective measure, it is expected that the respondents were confident in their answers. 
 
-The respondents responses to the questions about the types and the frequency of interactions with their package managers have been summarised in table \ref{strat.tblaction}.
+The respondents answers to the questions about the types and the frequency of interactions with their package managers have been summarised in table \ref{strat.tblaction}.
 \begin{table}[htp]
 \centering
-\begin{tabular}{l | c | c | c | c |}
-Request & Set-up & Daily & Weekly & Monthly \\ \hline
+\begin{tabular}{| l | c | c | c | c |} \hline
+\textbf{Request} & \textbf{Set-up} & \textbf{Daily} & \textbf{Weekly} & \textbf{Monthly} \\ \hline
 Upgrade  & 45 & 27 & 16 & 0 \\
 Install & 49 & 6 & 17 & 3 \\
-Remove & 6 & 4 & 1 & 0\\
+Remove & 6 & 4 & 1 & 0\\ \hline
 \end{tabular}
 \caption{Summary of the survey respondents types and frequencies of interactions with their package managers.}
 \label{strat.tblaction}
@@ -118,13 +116,13 @@ Based on the responses the users attitudes towards changing their systems are af
 \end{itemize}
 The behaviours of these users can be described with two user stereotypes, \textbf{conservative} and \textbf{progressive}.
 These terms come from the domain of politics where conservatism philosophy that emphasises minimal and gradual change in society,
-which is is contrasted by progressivism philosophy that promotes change and reform \citep{oed2010}.
+which is contrasted by progressivism philosophy that promotes change and reform \citep{oed2010}.
 
 Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
 \begin{quotation}
 ``In production I rarely remove packages ([it is] easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
-The previous quote shows that this respondent is less likely to change their system, even though it may be beneficial. 
+This quote shows that this respondent is less likely to change their system, even though it may be beneficial. 
 
 Another example of a user's response that expresses a progressive attitude:
 \begin{quotation}
@@ -180,8 +178,7 @@ An instance of \usermodel is an assignment to these variables.
 The variable $u$ is the probability per day that a user will upgrade their system, and the variable $i$ is the probability a user will request to install a component.
 The reason for selecting the ``per day'' resolution came from the user survey responses where typically the most frequent a user interacted with a package manager was daily.
 The $I$ and $U$ criteria to install a component and upgrade a system are represented in MOF.
-These can be assigned criteria that is based from package managers like \texttt{apt-get} or novel criteria.
-
+These criteria can be based on package manager criteria from currently applications like \texttt{apt-get} or on novel criteria.
 
 The assumptions made in the \usermodel model are:
 \begin{itemize}
@@ -198,13 +195,13 @@ A year was selected as 30/59 respondents of the survey stated that their systems
 The Ubuntu system has 6 monthly releases, therefore the simulation will be over the release of Ubuntu 10.04 in April 2010.
 
 The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
-Using this as the set of packages because it is the default choice on Ubuntu systems.
+Using this as the set of packages because it is the default choice of newly installed Ubuntu systems.
 
-Typically a user would not select a specific version of a package to be installed, and let the package manager install the most recent version.
+Typically a user would not select a specific version of a package to be installed but let the package manager install the most recent version.
 Additionally, a user would select packages for a purpose, to fulfil some requirement of their system.
 Therefore, it is assumed that a user would more likely select some packages over others to be installed into their systems.
 This assumes that all users will equally likely install the same packages, which is incorrect.
-The impact on the validity of \usermodel caused bt such assumptions is further discussed in section \ref{sim.modelvalidation}.
+The impact on the validity of \usermodel caused by such assumptions is further discussed in section \ref{sim.modelvalidation}.
 
 \subsection{CUDF* Document Creation}
 The process used to create a CUDF* document from a \usermodel instance attempts to create a description of how such a user would change their system.
@@ -242,7 +239,7 @@ This function is used to randomly select what requests the user will make on a g
 
 If a user requests to upgrade their system, the upgrade request is added to the CUDF template at time initial time $t_0$ plus the number of elapsed days.
 This request uses the MOF criteria $U$ to find an optimal system.
-If the user requests to install a component, first the component to be installed is selected.
+If the user requests to install a component, a component to be installed must first be selected.
 This selection is: 
 \begin{itemize}
   \item \textit{Weighted}: names with a higher weight are more likely to be requested to be installed.
@@ -297,8 +294,7 @@ For example, questions like ``how often does an install request require the inst
 or ``how much does does this restriction effect the evolution of Ubuntu systems?'' can be answered by not enforcing this restriction.
 It is still preferable for a user to not have multiple versions of a package.
 Therefore, this restriction can be ``softly'' enforced through using a criterion to minimise the number of packages with multiple versions.
-Such a criterion is defined in section \ref{impl.ipp}.
-It is shown in chapter \ref{experiments} that this alteration has almost no impact on the simulation.
+Such a criterion is defined in section \ref{impl.ipp} and it is shown in chapter \ref{experiments} that this alteration has almost no impact on the simulation.
 
 \subsection{Probability a component will be selected}
 %%%The probability a component will be selected
@@ -324,7 +320,7 @@ Some of these packages are installed by default in Ubuntu systems, and some are 
 After filtering out such packages from the provided list there remain 2087 packages that the user may select to install in their system. 
 
 %%%PopCon
-The probability a package from the \texttt{app-install-package} list is actually selected to be installed can be calculated using the Ubuntu popularity contest.
+The probability a package from the \texttt{app-install-package} list is selected to be installed can be calculated using the Ubuntu popularity contest.
 The Ubuntu popularity contest is a broad data-set of information of the popularity of Ubuntu packages.
 Each week an automated survey is submitted by nearly two million users, that contains information on what packages a user has installed.
 The results from this survey are processed and the number of systems that have a package installed is presented in the Ubuntu popularity contest.
@@ -388,7 +384,7 @@ An important caveat to note is that there exist two assignments to the variables
   \item \textbf{Always Upgrade} user: $u = 1$ and $i = 0$
 \end{enumerate}
 The ``Control'' user never requests to change their system, therefore their system will always be the initial system and never evolve.
-The ``Always Upgrade" user will update every day, and given users have the same upgrade criteria $U$, will generate the same CUDF* document.
+The ``Always Upgrade" user will update every day, and given two users that have the same upgrade criteria $U$, their systems will evolve identically.
 These effects of these two users are further discussed in chapter \ref{experiments}.
 
 \subsection{Limitations of \usermodel}
@@ -426,7 +422,7 @@ Much effort that went into creating \usermodel was directed at finding a list of
 However, the core problem is that there exists very little information on what packages users commonly request to be installed.
 This problem is seen as a possible future research that is described in chapter \ref{conclusion}. 
 
-\subsection{Ubuntu Repository of \usermodel}
+\subsection{Perspective of the Ubuntu Repository}
 In a real Ubuntu system only a subset of the packages in the Ubuntu repository is visible to the package manager.
 This ``view'' of the repository is the set of packages considered when resolving a request.
 This is different to \modelname and \usermodel, 
@@ -442,7 +438,9 @@ This difference is made up mostly of deprecated packages, i.e. packages that are
 It is also made up of packages that are have not yet been validated and put into the main ``view'', e.g. experimental packages. 
 This causes the mean amount of packages that have a new version added to the repository to be much higher in the \usermodel repository,
 126 packages per day compared to the virtual systems view of 37 packages per day.
-The most dramatic difference though is the amount of removed packages from the ``view'' which is 8, where the \usermodel repository never removes a package.
+
+The most dramatic difference though is the amount of removed packages from the ``view''.
+The mean amount of packages removed per day from the view of the Ubuntu repository is eight, where the \usermodel repository never removes a package.
 This removal of packages reduces the complexity of the problem, 
 though it also means that a real Ubuntu system may not have all information available when satisfying user requests. 
 
@@ -455,7 +453,7 @@ This chapter presented the \usermodel model which is used to describe how a real
 This model was partially created from a survey, whose results where presented and discussed.
 The variables that make up the \usermodel and the process used to create CUDF* documents were then described.
 The data that was used to create the \usermodel was then described with the processes to collect and convert it.
-This description of the validation of \usermodel was then described, and the differences to the reality of CSE discussed.
+The validation of \usermodel was then described, and the differences to the reality of CSE discussed.
 By exploring the differences to the reality of CSE the results from a simulation can be more accurately interpreted.
 
 Although the \usermodel model can be used to create a description of the evolution of a component system, it may require significant calculation to find how exactly the component system evolves.

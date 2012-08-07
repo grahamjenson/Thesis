@@ -6,7 +6,7 @@ These users are repeatedly making changes to their systems by installing new com
 This causes their systems to evolve over time through the CSE process.
 
 This thesis investigates the evolution of such component systems using a developed simulation.
-To build this simulation first the background of software evolution, component based software engineering and component systems were explored (chapter \ref{background}).
+To build this simulation first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
@@ -14,13 +14,13 @@ The verification and validation of these artifacts were discussed, in accordance
 as this is the primary concern when creating a simulation.
 
 Experiments were defined that use these artifacts to simulate the evolution of many different systems.
-The primary focus of these simulation was the out-of-dateness and changes made to the systems during evolution.
+The primary focus of these experiments were the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
-  \item the majority of change is caused through the user upgrading their system.
-  \item it is most important to upgrade during periods where new component versions are released quickly, e.g. during Ubuntu releases.
-  \item all systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
-  \item increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
+  \item The majority of change is caused through the user upgrading their system.
+  \item It is most important to upgrade regularly during periods where new component versions are released quickly, e.g. during Ubuntu releases.
+  \item All systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
+  \item Increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
   but may cause more change when components that release many versions quickly are upgraded multiple times.
 \end{itemize} 
 
@@ -28,7 +28,7 @@ Another important discovery is that re-use dramatically lowers the change necess
 This is due to lowering the amount of required components to be installed,
 that in turn lowers the amount of components that require to be upgraded.
 The benefits reuse has when using software components has been explored before \citep{Szyperski2002}.
-However, this research provides empirical evidence that confirms reuses importance, specifically during CSE.
+However, this research provides empirical evidence that confirms reuses importance, especially during CSE.
 
 To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
@@ -36,7 +36,7 @@ This alteration was shown to be most effective for users that upgrade frequently
 It was shown to decrease the out-of-dateness of a system by as much as 49\% at the cost of increasing change by 34\%.
 For users that prefer up-to-date systems, this trade-off might be favourable for their system.
 
-To reduce the change made to a system during CSE the stable version criterion was proposed.
+To reduce the change made to a system during CSE the unstable criterion was proposed.
 This criterion waits for a period of days for a component to cease releasing newer version and become stable.
 By using this criterion and waiting a week for a component to become stable before upgrading it, it was estimated to save some types of users more than 30 changes over a year.
 These changes could introduce bugs into the system and are seen as unnecessary. 
@@ -49,52 +49,26 @@ This thesis builds on existing research to provide the initial steps to studying
 It also opens the door for further questions about CSE.
 The remainder of this chapter reviews the related research and potential future research of CSE, and closes with a final remark. 
 
-
-\section{Related Work}
-Research from the Mancoosi project and Le Berre has been used extensively throughout this thesis.
-This has shaped and informed the direction of this study.
-
-As previously mentioned,
-Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
-It is the continuation of the EDOS project which focused on building GNU/Linux distributions.
-Throughout this thesis many contributions from Mancoosi have been used including:
-\begin{itemize}
-  \item the CUDF \citep{treinen2009common} and MOF syntaxs.
-  \item the MISC 2011 competitions.
-  \item the research papers and technical reports from \cite{abatetrenen2010}, \cite{Treinen2009}, \cite{argelich2010solving} and \cite{abate2011}.
-\end{itemize} 
-This research has provided the basis for this project and has produced a large amount of useful resources for the study of changing and evolving component systems. 
-
-The research of Le Berre is focused on implementations that resolve changes made to component systems.
-This research has provided:
-\begin{itemize}
-  \item The SAT4J library used to solve SAT problems \citep{le2010sat4j}.
-  \item Detailed description of using SAT4J to resolve changes to component systems described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}.
-  \item The Eclipse P2 provisioning system, which is the basis of GJSolver.
-\end{itemize}
-This research has been used to create the implementation GJSolver, and simulate the evolution of component systems efficiently.
-
 \section{Future Research}
 The largest area of future research is into the generalisation of the results of this thesis.
 This is where additional component systems, such as Eclipse, can be studied as they evolve. 
 Through such generalisation the conclusions of this research can be shown to be invariable between component systems or be Ubuntu specific.
-The core hurdle of accomplishing this is that much of the collected information does not exist for other component models.
+The core hurdle of accomplishing this is that much of the collected information in this study does not exist for other component models.
 Component models like Eclipse do not have their history archived as precisely as Ubuntu.
-Collecting information for Eclipse or other component models, like the components that were available on a given day, is difficult or impossible.
-Other resources of information are available, but are mostly incomplete.
+Information, like the Ubuntu repository, does not exist, or does not contain the detailed information, for other component models.
+Resources of information are available, but can be incomplete.
 For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) collected information on popular Eclipse components. 
 However, this project was shut down as it was deemed not to have a significant return on investment. 
  
 Another area of research involves altering and extending the \modelname and \usermodel models to more precisely describe CSE.
 An aspect of CSE that is not included in \modelname is that a component system may only view a certain subset of components that exist.
-This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of it's repository.
+This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of its repository.
 The \usermodel has many aspects that could be added to make the simulated users closer to reality.
 Constraints such as only upgrading only during the work week, 
 or additional types of request like remove of components that are no longer required could create more valid simulations.
 
-The development of criteria that take advantage of other properties of components collected from additional sources.
-Sources like component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
-composition testing \citep{XuejieZhang2008} and user preferences could be used to define criteria.
+The development of criteria that take advantage of other properties of components collected from additional sources, e.g. component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
+composition testing \citep{XuejieZhang2008} and user preferences.
 Additional criteria, such as size, reliability or licence, may change a systems' desirability.
 Such criteria could be simulated and their effect, positive or negative, measured during evolution.
 
@@ -110,15 +84,4 @@ Comparing the results from the simulations to the evolution of real systems woul
 This could be accomplished using the MPM solver \citep{abate2011} from Mancoosi.
 This solver has already been proposed for the modification of real systems.
 Through modification or extension of MPM the proposed criteria could be used to evolve real Ubuntu systems, and the effects measured.
-It would require significant resources to conduct such a study, but its reults and conclusions would be more valid than the study presented in this thesis.    
-
-\section{Closing Remark}
-This thesis opened with a question posed by Plutarch:
-\begin{quote}
-If an object has all its component parts replaced, is it the same object?
-\end{quote}
-This research has focused on software systems that are made of components.
-These systems have their components parts continually changed by being replaced with newer versions or having additional components installed.
-This change drives the process of CSE.
-A possible answer to this question is then proposed; it is not the same object, it has evolved!
-
+Such a study would require significant resources but its results and conclusions would be valid.    

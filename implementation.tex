@@ -2,7 +2,7 @@
 \label{implementation}
 \epigraph{What I cannot create, I do not understand.}
 {\textit{Richard Feynman, 1988}}
-The \modelname model that was presented in chapter \ref{formal} describes the evolution of a component system as a series of evolution steps.
+The \modelname model, presented in chapter \ref{formal}, describes the evolution of a component system as a series of evolution steps.
 In this model, each evolution step alters the component system to satisfy a user's request to change it.
 Calculation of all the systems that occur as a result of these requests is described as \textbf{resolving} a \modelname instance.
 
@@ -49,15 +49,19 @@ The main difference is that LIS specifies implementation details like using the 
 Section \ref{impl.algorithms} describes LIS and the other algorithms used to resolve a \modelname instance.
 
 Some criteria that can be used by the LIS algorithm are also presented in this chapter. 
-These criteria are mapped to MOF strings and \modelname criteria as they are useful for CSE.
+These criteria are mapped to MOF strings and \modelname criteria.
 The criteria can be grouped into two general areas minimising change and minimising how out-of-date a system is.
-The presented criteria that minimise change were defined by Mancoosi and the criteria to minimise the out-of-dateness were defined by \cite{leBerre2010}.
+The presented criteria that minimise change were defined by Mancoosi and the criterion to minimise the out-of-dateness was defined by \cite{leBerre2010}.
 These criteria are presented in section \ref{impl.criteria}.
 
 This chapter also describes the implementation of GJSolver that takes a CUDF* document, parses it into a \modelname instance (as described in appendix \ref{apx.cudf}),
 then resolves it using the LIS algorithm.
 The verification of GJSolver is through the Mancoosi International Solver Competition (MISC)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}.
 Section \ref{impl.gjsolver} discusses GJSolver and its verification.
+
+The validation of the simulation that uses GJSolver and \usermodel is described in section \ref{impl.validation}.
+The results from the simulation are compared to a virtual Ubuntu system and to the collected user \texttt{apt-get} logs.
+This is an important step in developing a simulation as it ensures that the simulation is an accurate representation of reality. 
 
 \section{Boolean Lexicographic Optimization Problem}
 \label{impl.blo}
@@ -68,8 +72,8 @@ A \modelimpl problem consists of trying to find an assignment to a set of Boolea
 \end{itemize}
 In this thesis, the constraints in the \modelimpl problem are Boolean disjunctions (clauses) and pseudo-Boolean (PB) constraints (a SAT+PB problem),
 and each criterion is defined to maximise or minimise a PB function.
-By mapping the constraints from an evolution problem and the criteria from the evolution preference,
-an evolution step can be mapped to a \modelimpl problem.
+By mapping the constraints from an evolution problem and the criteria from an evolution preference order,
+an single evolution step can be mapped to a \modelimpl problem.
 
 For example, if component $a$ depends on $b$, all systems with $a$ must include $b$.
 This constraint can be mapped to a Boolean disjunction $\neg a \vee b$, were all assignments where $a$ is true, $b$ must also be true.
@@ -186,8 +190,8 @@ Such variables are used to express aspects of the problem that are not directly 
 To describe the use of $I$, an example is presented where a user wants to minimise the number different software licences in a component system (to potentially lower legal fees).
 This criterion require  auxiliary variables $l_1,\ldots,l_n$, where each variable represents a licence included in the system.
 In this example, components $a$ and $b$ are the only components with licence $l_1$.
-This means that an iff assignment includes either $a$ or $b$ it must also include $l_1$, i.e. $l_1 \Leftarrow a \vee b$.
-To ensure this constraint is satisfied, the formula $I$ is defined to include and expansion into the SAT constraints of $l_1 \Leftarrow a \vee b$ ($\{\neg l_1, a , b\}$, $\{\neg a , l_1\}$ 
+This means that an iff assignment includes either $a$ or $b$ it must also include $l_1$, i.e. $l_1 \Leftrightarrow a \vee b$.
+To ensure this constraint is satisfied, the formula $I$ is defined to include and expansion into the SAT constraints of $l_1 \Leftrightarrow a \vee b$ ($\{\neg l_1, a , b\}$, $\{\neg a , l_1\}$ 
 and $\{b , \neg l_1\}$).
 A PB function $f$ is defined using the literals $\langle l_1,\ldots,l_n\rangle$ and integers $\langle 1_1,\ldots,1_n\rangle$.
 The criterion to minimise the number of licences is defined as $\langle f, > , I \rangle$.
@@ -230,7 +234,7 @@ This means that given a \modelimpl problem that consists of:
 \end{itemize}
 A solution to \modelimpl problem is the optimal solution to $F$ w.r.t. to its PB criteria.
 
-\subsection{Mapping \modelname Instance to \modelimpl Problem}
+\subsection{Mapping \modelname Instance to \modelimpl Problems}
 \label{impl.mapping}
 Following from the definition of \modelname in section \ref{formal.step}, 
 an instance of \modelname consists of a series of evolution steps at time $t_i$, where $i$ is from $1$ to $n$.
@@ -266,7 +270,7 @@ A component system is the set of components that are not negative in the set of 
 Note: the mapping from a set of literals to a component system is surjective, and the mapping from a component system to a set of literals is injective.
 
 The evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is mapped to the formula $F$
-by mapping each constraint to a SAT clause or PB constraint:
+by mapping each constraint type to a SAT clause or PB constraint:
 \begin{enumerate}
   \item \textbf{Exclusion}: $\neg a$ is mapped to the clause $\{\neg a\}$
   \item \textbf{Conflict}: $a \rightarrow \neg c $ is mapped to the clause $\{\neg a, \neg c\}$ 
@@ -312,15 +316,15 @@ $rank_{\alpha}(\beta) = \begin{cases} 1 & a \in \beta \text{ or } b \in \beta\\ 
 This criterion expresses the preference of having either components $a$ or $b$ (or both) in the system.
 
 Further consider the pseudo-Boolean criterion $\langle f, < , I \rangle$.
-The auxiliary variable $x$ is defined such that $x \Leftrightarrow a \in \beta \vee b \in \beta$.
+The auxiliary variable $x$ is defined such that $x \Leftrightarrow a \vee b$.
 This variable must be  converted to the set of CNF clauses, and included in $I$,
 i.e. $I = \{\{\neg x, a,b\}, \{\neg a,x\}, \{\neg b, x \}\}$.
 The PB function $f$ is defined with the tuple of literals $\langle x \rangle$ and natural numbers $\langle 1 \rangle$.
 
 The criterion $\langle rank_{\alpha}, \leq \rangle$ maps to $\langle f, < , I \rangle$,
-as the strict order pf $\leq$ from the criterion equals the order $<$ in the PB criterion.
+as the strict order $\leq$ from the criterion equals the order $<$ in the PB criterion.
 Given a solution $P$ to $I$, where $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$.
-This can is shown in table \ref{impl.critmapexmp}.
+This is shown in table \ref{impl.critmapexmp}.
 \begin{table}[h!]
 \centering
 \begin{tabular}{| c | c | c | c |}
@@ -331,7 +335,7 @@ $\{\neg a,  b, x\}$             & $\{b\}$                & 1                    
 $\{ a,  \neg b, x\}$             & $\{a\}$                & 1                        & 1 \\
 $\{ a,  b, x\}$                 & $\{a,b\}$                & 1                        & 1 \\ \hline
 \end{tabular}
-\caption{Values to show $f$  maps to $rank_{\alpha}$}
+\caption{Example of the mapping from \modelname criterion to a PB criterion.}
 \label{impl.critmapexmp}
 \end{table}
 
@@ -386,7 +390,8 @@ The change, new and remove criteria were taken directly from the MISC competitio
 
 The mapping between these criteria, PB criteria and MOF are presented in table \ref{impl.ccritmapping}.
 A full description of the mapping is presented in appendix \ref{apx.critmapping}.
-\begin{table}
+\begin{table}[h!]
+\centering
 \begin{tabular}{c | c | c}
 \textbf{MOF name} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
@@ -397,7 +402,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \label{impl.ccritmapping}
 \end{table}
 
-\subsubsection{Out-of-date criteria}
+\subsection{Out-of-date criteria}
 When changing a component system it is a good idea to select more recent versions of components, as they keep the system from becoming out-of-date.
 However, it is a difficult task to define an appropriate measurement of how out-of-date a component system is.
 This difficulty comes from two properties of component versions must be considered:
@@ -411,7 +416,7 @@ This difficulty comes from two properties of component versions must be consider
 Not considering these properties when defining criteria could lead to significant problems.
 
 A useful criterion has been defined in Eclipse P2 that minimises a measurement of the out-of-dateness of a component name.
-This out-of-dateness measures the amount of components that exist that have greater versions, and have a component with the same name installed.
+This measurement of out-of-dateness counts the amount of components that is a greater version than a component currently installed.
 It is defined as:
 \begin{defs}
 The function $uptodatedistance$ takes a component $\langle n, v \rangle$ and a set of components $\mathbb{C}_t$ and returns the number of components with the same name and a greater version,
@@ -427,10 +432,11 @@ That is, the measurement to be minimised is the number of components that have t
 This measurement depends on the release of new versions to measure out-of-dateness, and it assumes that components are maintained.
 If a component is not maintained, and versions are never released, the component will be measured to never go out-of-date.
 Conversely, if a components developer releases versions very quickly, the component will become quickly out-of-date.
-These problems can be solved through community effort to maintain components, as is attempted for Debian systems \citep{Barth2005}.
+These problems can be solved through community effort to maintain and release components, as is attempted for Debian systems \citep{Barth2005}.
 
 The mapping between this criterion, MOF and the PB criteria is presented in table \ref{impl.ucritmapping}, with a full description in appendix \ref{apx.critmapping}.
-\begin{table}
+\begin{table}[h!]
+\centering
 \begin{tabular}{c | c | c}
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
@@ -439,7 +445,7 @@ The mapping between this criterion, MOF and the PB criteria is presented in tabl
 \label{impl.ucritmapping}
 \end{table}
 
-\subsubsection{One Version per Package Criteria}
+\subsection{One Version per Package Criteria}
 \label{impl.ipp}
 As discussed in the previous chapter, the restriction that Ubuntu systems must have only one version of each package installed is not enforced by the component constraints.
 This restriction can however be encouraged by defining a criterion that minimises the amount of packages with multiple versions.
@@ -451,7 +457,8 @@ This restriction can however be encouraged by defining a criterion that minimise
 That is, this criteria minimises the number of package names that have more than one version installed.
 
 The mapping between this criterion, MOF and the PB criteria is presented in table \ref{impl.mcritmapping} with a full description in appendix \ref{apx.critmapping}.
-\begin{table}
+\begin{table}[h!]
+\centering
 \begin{tabular}{c | c | c}
 \textbf{MOF} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
 \texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
@@ -467,19 +474,19 @@ This section describes the lexicographic-iterative-strengthening-algorithm (LIS)
 This algorithm uses the DPLL algorithm \citep{Davis1960, davis1962machine} to find a solution to a SAT+PB formula,
 and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sat4j} to find an optimal solution to a SAT+PB problem given a single PB criterion.
 This section also describes how a \modelname instance is resolved by mapping to \modelimpl problems.
-The algorithms presented in this section are described to give an overview of how \modelimpl problems were solved.
+The algorithms presented in this section are described to give an overview of how \modelimpl problems are solved.
 
 \subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is a complete (meaning it will find a solution if one exists), 
-backtracking based search algorithm for solving SAT and SAT+PB problems.
+backtracking-based search algorithm for solving SAT and SAT+PB problems.
 
 
 DPLL takes a formula $F$ and a set of literals $P$ (described as a partial assignment), and returns a solution to $F$ if $P$ is a partial solution, 
 otherwise returning \verb+UNSATISIFABLE+.
 When \texttt{DPLL} is called without a value $P$, $P$ is defaulted to equal the empty set .
 By first calling \texttt{DPLL} with $P$ as the empty set, then adding literals to $P$ and recursively calling itself; 
-the DPLL function searches for a solution to show the formula is satisfiable.
+the DPLL function searches for a solution to the formula.
 The DPLL algorithm in defined in figure \ref{impl.DPLL} (a slight modification of the algorithm presented in \citep{dixon2004automating}):
 \begin{figure}[h]
 \begin{center}
@@ -605,22 +612,22 @@ The first action in this loop is to assign the contents of the variable $answer$
 The variable $M$ is a set of literals, used as a store of the currently best found solution.
 
 The function \texttt{strengthen} is then called to create a formula $J$.
-The formula $J$ ensures that if \texttt{DPLL} is called with formula $F \cup J$, either:
+The formula $J$ ensures that the answer returned by \texttt{DPLL(}$F \cup J$\texttt{)} is either:
 \begin{itemize}
-  \item a solution is returned that is better (w.r.t. the criterion) than the currently best found solution $M$. 
-  \item \texttt{UNSATISIFABLE} is returned, showing that no better solution exists.
+  \item a better solution (w.r.t. the criterion) than the currently best found solution $M$. 
+  \item \texttt{UNSATISIFABLE} showing that no better solution exists.
 \end{itemize}
 
 \begin{defs}
 Given a set of literals $M$, and a criterion $\langle f, R, I \rangle$,
-the function \texttt{strengthen} returns a formula $J$ consisting of a single pseudo-Boolean constraint, i.e. $ J = \{ \langle f,R,f(M) \rangle \}$.
+the function \texttt{strengthen} returns a formula $J$ consisting of a single pseudo-Boolean constraint $\langle f,R,f(M) \rangle$, i.e. $ J = \{ \langle f,R,f(M) \rangle \}$.
 \end{defs}
 That is, \texttt{strengthen} returns a formula $J$,
 that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f(P)$ than the previously best solutions value of $f(M)$.
 
 The next steps are then to add the formula $J$ to $F$, then search for a new solution using \texttt{DPLL}.
 
-The main loop will end given the condition that either the \texttt{interrupted} function returns $true$, or the \texttt{DPLL} function returns \texttt{UNSATISIFABLE}.
+The main loop will end if either the \texttt{interrupted} function returns $true$, or the \texttt{DPLL} function returns \texttt{UNSATISIFABLE}.
 The \texttt{interrupted} method is typically defined to return false until some external input (like a user stopping the algorithm or a timer running out) is encountered.
 The \texttt{interrupted} method has the additional responsibility of stopping the \texttt{DPLL} function, 
 so that if at any point \texttt{interrupted} returns true the \texttt{DPLL} function immediately returns.
@@ -668,14 +675,14 @@ is a solution that is no worse than $M$.
 This means that the returned value could be equivalent to the previously defined solution, if there exists no better solution than what has already been found.
 
 The function \texttt{lock} is then called to return a formula $K$.
-The formula $K$ ensures that if \texttt{DPLL} is called with $F \cup K$ a solution is returned that is not worse (w.r.t. the criterion $\mathfrak{crit}_i$) than the solution $M$. 
+The formula $K$ ensures that when \texttt{DPLL(}$F \cup K$\texttt{)} the solution returned that is not worse (w.r.t. the criterion $\mathfrak{crit}_i$) than the solution $M$. 
 \begin{defs}
 Given a set of literals $M$, and a criterion $\langle f, R, I \rangle$,
-the function \texttt{lock} returns a formula consisting of a single pseudo-Boolean constraint, $\{ \langle f,=,f(M) \rangle \}$,
+the function \texttt{lock} returns a formula consisting of a single pseudo-Boolean constraint $\langle f,=,f(M) \rangle$, i.e. $K = \{ \langle f,=,f(M) \rangle \}$.
 \end{defs}
 That is, \texttt{lock} returns a formula $K$,
 that ensures any solution $P$, to the formula $F \cup K$, must have the best value of $f$ found so far.
-Note that $K$ does not effect the satisfiability of $F$, as $M$ is still a valid solution to $F \cup K$.
+Note, the formula $K$ does not effect the satisfiability of $F$, as $M$ is still a valid solution to $F \cup K$.
 The formula $K$ is then added to the formula $F$, i.e. $F = F \cup K$,
 
 The main loop will iterate until either all the criteria have been optimised, or the function is interrupted.
@@ -690,10 +697,11 @@ It has been designed to return a solution to a \modelimpl problem, even if it is
 The reason for this anytime behaviour is that \modelimpl problems can take an impractical amount of time to solve.
 It is therefore practically necessary to limit the time this algorithm searches for an optimal solution, 
 and interrupt it when this time limit is reached. 
+The effects of this anytime behaviour is discussed in section \ref{exp.failures}.
 
 \subsection{Resolving a \modelname instance}
 Resolving a \modelname instance involves finding the series of component systems $\alpha_{t_1},\ldots,\alpha_{t_n}$.
-To do this, each evolution step starting at $t_1$ and ending at $t_n$ is mapped to an \modelimpl problem and solved using the lexicographic iterative strengthening algorithm.
+To do this, each evolution step starting at $t_1$ and ending at $t_n$ is mapped to an \modelimpl problem and solved using the lexicographic-iterative-strengthening algorithm.
 This resolver algorithm is presented in figure \ref{impl.resolver}.
 \begin{figure}[h!t!]
 \begin{center}
@@ -722,8 +730,8 @@ This algorithm, once completed, returns the set of component systems $\alpha_{t_
 
 \section{GJSolver}
 \label{impl.gjsolver}
-GJSolver\footnote{named after the author Graham Jenson}\footnote{located at https://github.com/grahamjenson/ComponentSystemEvolutionSimulation/tree/master/GJSolver} 
-is the implementation of the process from a CUDF* document to a resolved \modelname instance.
+GJSolver\footnote{named after the author Graham Jenson and located at https://github.com/grahamjenson/ComponentSystemEvolutionSimulation/tree/master/GJSolver} 
+is the implementation of the process from a CUDF* document\footnote{in practicality it takes a compressed format, as many CUDF* documents replicate information} to a resolved \modelname instance.
 GJSolver grew through the course of this research to satisfy the need for an implementation to study CSE.
 This implementation takes a CUDF* document, parses it to an instance of \modelname, which is then resolved by \modelimpl.
 
@@ -776,7 +784,7 @@ How P2's optimisation approach compares to GJSolver's is not measured, though a 
 Given the use of SAT4J in GJSolver, a brief background of its development is presented here.
 
 MiniSAT presented in \citep{een2003}, is a simple SAT solver implementation written in C, and designed for speed and extensibility.
-It uses the DPLL based conflict driven algorithm as discussed in section \ref{impl.DPLL}.
+It uses the DPLL-based conflict driven algorithm as discussed in section \ref{impl.DPLL}.
 This solver has become popular and is the basis of many other SAT solvers due to its open source distribution.
 This has also lead to a track in the 2011 SAT competitions\footnote{http://www.satcompetition.org/2011/ accessed 6/3/2012} that deals with only altering MiniSAT to increase performance.
 This means that MiniSAT has been repeatedly validated for performance by third parties across many different SAT problems. 
@@ -787,15 +795,13 @@ Due to the easily modifiable and transparent implementation of SAT4J, it has bee
 
 \subsection{Verification of GJSolver}
 \label{impl.verif}
-The MISC competition, organised by Mancoosi, is a competition to compare CUDF solvers.
-The MISC competition held in 2011 was used as a method to verify GJSolver.
-This competition compares CUDF solvers by asking them to correctly parse and resolve hundreds of CUDF problems, and return optimal solutions with respect to various criteria.
-MISC was created to promote interest in the component system evolution problems.
+The MISC competition, organised by Mancoosi, is a competition to compare CUDF solvers by asking them to correctly parse and resolve hundreds of CUDF problems, 
+and return optimal solutions with respect to various criteria.
+MISC was created to promote interest in the problem of changing component systems.
 
-By viewing a CUDF problem as a single evolutionary step in a CUDF* problem, GJSolver has been modified to also solve CUDF problems.
+By viewing a CUDF problem as a single evolutionary step in a CUDF* problem, GJSolver was modified to also solve CUDF problems.
 Using such a modification, GJSolver could then be entered into the Mancoosi International Solver Competition (MISC) competition.
-
-GJSolver was entered twice into MISC, firstly in a MISC Live event, which is an interim competition held during the year;
+GJSolver was entered twice into MISC, firstly in a MISC Live event, which is an interim competition held during 2011;
 secondly at the MISC 2011 event\footnote{The results for MISC 2011 were announced at the Workshop on Logics for Component Configuration\footnote{http://www.pps.jussieu.fr/~treinen/lococo/2011/ accessed 6/3/2012}.}, 
 which is the main competition. 
 
@@ -808,7 +814,7 @@ and a solver finding a problem unsatisfiable.
 
 \subsubsection{Mancoosi International Solver Competition}
 \label{impl.MISCDEF}
-Given a goal of the GJSolver implementation is to compete in the MISC, the interface and standards defined for this competition must be followed.
+To enter GJSolver into MISC the interface and standards defined for this competition must be followed.
 How the entered solvers are executed, what environment they are executed in, and the output required are all important aspects.
 
 %%%They are executed on the command line
@@ -829,11 +835,11 @@ The time in which the solver is allowed to run is five minutes, after this time 
 This time limit ensures that the competition can be run in an practical time frame.
 
 \subsubsection{Tracks and Scoring}
-Each MISC competition is broken down into three possible tracks, where each track is defined by the criteria used.
-The first basic track, is 'paranoid', the second more advanced track is 'trendy', and third track is 'user'.
-Both 'paranoid' and 'trendy' have pre-defined criteria, e.g. the 'paranoid' tracks criteria in MOF is \texttt{-removed,-changed}.
-The 'user' track creates unknown criteria from a set of pre-defined criteria, so that the exact optimisation criteria is unknown before the competition.
-This means that 'paranoid' and 'trendy' can have solvers tailored to their specific criteria, where the 'user' track cannot.
+The MISC 2011 competition is broken down into three possible tracks, where each track is defined by the criteria used.
+The first basic track, is ``paranoid'', the second more advanced track is ``trendy'', and third track is ``user''.
+Both ``paranoid'' and ``trendy'' have pre-defined criteria, e.g. the ``paranoid'' tracks criteria in MOF is \texttt{-removed,-changed}.
+The ``user'' track creates unknown criteria from a set of pre-defined criteria, so that the exact optimisation criteria is unknown before the competition.
+This means that ``paranoid'' and ``trendy'' can have solvers tailored to their specific criteria, where the ``user'' track cannot.
 The exact criteria that is used for these tracks can be found on the MISC website\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 12/5/2012}.
 
 For each track, a set of solvers is entered.
@@ -865,38 +871,38 @@ This total time value is used as the tie breaker.
 \subsubsection{MISC Live}
 %%%In the first competition we had only partially implemented much of the functionality, so we did not expect great results.
 The MISC Live was entered when GJSolver was only partially implemented.
-Therefore, the only track that was possible to enter was the 'paranoid' track.
+Therefore, the only track that was possible to enter was the ``paranoid'' track.
 The results for this track\footnote{http://mancoosi.org/misc-live/20101126/paranoid/ accessed 6/3/2012} where promising, though some improvements were necessary.
 GJSolver's deficiencies were identified and corrected.
 
 \subsubsection{MISC}
 The main verification of GJSolver was through the MISC 2011 event.
 In this event GJSolver was entered into all tracks of this event.
-The 'paranoid' track had a total of 5 solvers, the 'trendy' track had a total of 6 solvers, 
-and the 'user' track had a total of 4 solvers.
+The ``paranoid'' track had a total of 5 solvers, the ``trendy'' track had a total of 6 solvers, 
+and the ``user'' track had a total of 4 solvers.
 Each track was also entered by the solver which GJSolver is based on, Eclipse P2, and another efficient solver aspuncud.
 These two solvers will form the basis of GJSolver's comparison.
 
 The scores and the times for each of the track compared to that from Eclipse P2 and aspuncud are in table \ref{impl.misc2011}.
-\begin{table}
+\begin{table}[h!]
 \begin{tabular}{| l | c | c | c | c |}\hline
 Track & \# of Problems & GJSolver & P2 & aspuncud\\ \hline
 paranoid & 129 & (190 : 5,294) & (181 : 4,646) & (147 : 1,035) \\ \hline
 trendy & 129 & (197 : 13,073) & (232 : 13,435) & (151 : 1,767) \\ \hline
 user & 400 & (656 : 73,522) & (1392 : 87,956) & (1215 : 39,905) \\ \hline
 \end{tabular}
-\caption{Results from MISC 2011, results are (score (less is better) : time in seconds)}
+\caption{Results from MISC 2011, (score (less is better) : time in seconds)}
 \label{impl.misc2011}
 \end{table}
 
-The winner for both 'paranoid' and 'trendy' tracks was the aspuncud solver.
-The winner for the 'user' track was GJSolver that got nearly half the points of second place aspuncud, but took nearly twice the time.
+The winner for both ``paranoid'' and ``trendy'' tracks was the aspuncud solver.
+The winner for the ``user'' track was GJSolver that got nearly half the points of second place aspuncud, but took nearly twice the time.
 
 \subsubsection{Analysis}
 The results from the MISC competition show:
 \begin{itemize}
   \item During the competition GJSolver had very consistent results.
-These results allowed it to compete with the other solvers, and win the 'user' track.
+These results allowed it to compete with the other solvers, and win the ``user'' track.
  \item No CUDF problem in the competition was incorrectly solved by GJSolver. 
  This could be used to argue that the parsing of CUDF to \modelname, mapping to \modelimpl problems, and the implementations of the algorithms are correct.
  \item When compared to the similar implementation of Eclipse P2, GJSolver produces similar results, in a similar time. 
@@ -932,7 +938,7 @@ To represent the \texttt{apt-get} upgrade criteria in MOF
 as only allowing one package to be installed is a hard constraint of the upgrade request} 
 is used.
 The hard constraints in \texttt{apt-get} to never remove or install new packages are softened when using this criteria.
-However, they have been made more important in the lexicographical order to encourage the GJSolver to not remove of add packages.
+However, they have been made more important in the lexicographical order to encourage the GJSolver to not remove or add packages.
 
 When installing a package it is assumed that \texttt{apt-get} will try to select the most recent version component while minimising change.
 This has lead to using the MOF criteria \texttt{-ovpp,-removed,-changed,-uptodatedistance} to represent the \texttt{apt-get} criteria for installing a component.
@@ -963,7 +969,7 @@ Simulated Installs				& 200 	& 11\% 		 	& 7.31 	& 9.41 \\
 The submitted \texttt{apt-get} logs have 1519 requests for installation to be analysed, compared to the 200 from the simulation.
 These results show that although they both have a similar mean amount of new packages installed into their systems, 
 the requests from the logs are much more varied than that from the simulation.
-Over a third of the installs from the logs only required the installation of one package, presumably the package to be installed.
+Over a third of the installs from the logs only required the installation of one package.
 Additionally, the standard deviation is much higher in the logs, showing the users install packages that cause much greater change as well.
 For example, one log recorded the request to install \texttt{kubuntu-desktop} that required over 100 new packages to be installed.
 
@@ -991,7 +997,7 @@ Virtual Ubuntu System 		& 1338 	& 12 		& 5.8 	 		& 9.7 	\\ \hline
 The virtual Ubuntu System and the simulated system have very similar amount of updated packages,
 for example both systems had 12 days where their upgrade requests where not necessary.
 The virtual system has slightly more updated packages over the month,
-this could be attributed to the increased size of the system, or the increase in popularity of Ubuntu from 2009 to 2011. 
+this could be attributed to the increased size of the system, or an increase in package maintenance of Ubuntu from 2009 to 2011. 
 
 \section{Summary}
 This chapter described the \modelimpl problem and how it mapped to the evolution steps from a \modelname instance.

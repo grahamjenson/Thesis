@@ -40,8 +40,8 @@ This section describes these advancements, building up to a discussion about CSE
 
 \subsection{Software Evolution}
 \cite{Brooks1975} states that over 90\% of the cost of a system occurs after deployment in the maintenance phase,
-and that any successful piece of software will inevitably be maintained.
-This realisation, that software requires significant expense to maintain, led researchers to study how software changed after deployment.
+and that any successful piece of software will inevitably need to be maintained.
+This realisation, that software requires significant expense to maintain, led researchers to study how software changed after its deployment.
 This is the study of software evolution \citep{lehman1980}.
 
 In 1980, two fundamental empirical studies on the emerging domain of software evolution were published.
@@ -61,9 +61,9 @@ In this publication, Lehman described a set of laws that characterise software e
   \item \textit{Continuing Change:} Software systems\footnote{E-type systems: software implemented in a real-world computing context \citep{lehman1980}} must be continually adapted, 
   otherwise they become progressively less satisfactory.
   \item \textit{Increasing Complexity:} As the system evolves its complexity increases unless work is done to reduce it.
-  \item \textit{Self Regulation:} The system evolves with statistically determinable trends and invariences.
+  \item \textit{Self Regulation:} The system evolves with statistically determinable trends and invariances.
   \item \textit{Conservation of Organisational Stability:} The average effective activity rate to evolve a system is invariant over its lifetime.
-  \item \textit{Conservation of Familiarity:} As the system evolves, its incremental growth remains invariant to ensure users maintain mastery over the system.
+  \item \textit{Conservation of Familiarity:} As the system evolves, its incremental growth must remain invariant to ensure users maintain mastery over the system.
   \item \textit{Continuing Growth:} The system must continually grow to maintain user satisfaction.
   \item \textit{Declining Quality:} The quality of the system will decline unless rigorously maintained.
   \item \textit{Feedback System:} The function a system performs is changed by the effect it has on its environment.
@@ -104,12 +104,12 @@ by describing the idea of a software components subindustry which created compon
 This report is an expansion on an earlier idea for \textit{pipes} \citep{mcilroy1964pipes}, 
 where McIlroy described designing software to fit together, like screwing a hose to a tap.
 
-The reuse of code in order to decrease development time, was originally the major perceived benefit of using software components.
+The reuse of code to decrease development time was originally the major perceived benefit of using software components.
 Later, other benefits of constructing systems from modular components were identified by \cite{Parnas1972}:
 \begin{itemize}
-  \item \textit{Managerial Separation}: develop components in separate groups with little communication
-  \item \textit{Product Flexibility}: make drastic changes to one component, without changing others
-  \item \textit{Comprehensibility}: be able to study the system one module at a time
+  \item \textit{Managerial Separation}: the ability to develop components in separate groups with little communication
+  \item \textit{Product Flexibility}: the ability to make drastic changes to one component, without changing others
+  \item \textit{Comprehensibility}: the ability to study the system one module at a time
 \end{itemize}
 
 The ``software component'' concept was soon picked up by other researchers such as \cite{Yourdon1976}, where they described their ideas on \textit{structured design} as:
@@ -124,7 +124,7 @@ Each unit corresponds to exactly one small well-defined piece of the system, and
 As the number of software component grew, a problem emerged of selecting the set of components that satisfy the requirements of the system.
 \cite{PrietoDiaz1987} described this as the \textbf{selection problem}, where a composer can have many alternative compositions of components to select from.
 This increases the effort required to use software components as each possible combination must be examined and ranked based on how well they match the composer's specifications.
-Current research into solutions to the selection problem asks the questions:
+Current research into solutions to the selection problem asks the questions of:
 \begin{itemize}
   \item how to describe a component and its attributes \citep{treinen2009common,Xinjuan2007}?
   \item how to search for compositions that fit a set of requirements \citep{abate2011,Kwong2010,Treinen2009,DeAlmeida2004}?
@@ -155,7 +155,7 @@ This philosophy led to the first two rules (out of fifteen) of Unix \citep{raymo
 \end{itemize} 
 
 To eliminate the perceived problems of the proprietary Unix system, in 1983 Richard Stallman created the GNU project \citep{stallman1985gnu} to implement a free Unix-like operating system.
-With a kernel developed by Linus Torvalds based on the MINIX \citep{tanenbaum1989minix} operating system, the GNU/Linux \citep{torvalds2002just} operating system was created.
+With a kernel developed by Linus Torvalds based on the MINIX operating system \citep{tanenbaum1989minix} , the GNU/Linux operating system \citep{torvalds2002just} was created.
 GNU/Linux is seen as a return to the original philosophy of Unix \citep{Gancarz2003} where the creation of small modular programs that interact is central.
 Aligned with this philosophy, a distribution of GNU/Linux called Debian \citep{Barth2005} was announced in 1993.
 This release came with the Debian Manifesto \citep{murdock1994brief} 
@@ -173,7 +173,7 @@ This automated the search for a satisfactory solution, solving the problem which
 The apt-get package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
 \footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/} 
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
-Such lowering of the technical knowledge required to become a composer of a component system has had other effects discussed in the next section.
+Such lowering of the technical knowledge required to become a composer of a component system has had other effects that are discussed in the next section.
 
 \section{Component Evolution vs. Component System Evolution}
 \label{background.componentsystemevolution}
@@ -186,10 +186,9 @@ The situation where the user is the composer of the system has been called syste
 It has been noted that the potential of component systems have increased with this user composition \citep{Szyperski2002} as the user can craft solutions without requiring expert assistance.
 However, a system is also more fragile as the quality of a system may not be verifiable by a non-technical user.
 
-When the user is the composer of their system, it also breaks apart two important processes,
+When the user is the composer of their system, it breaks apart two important processes,
 component evolution and CSE.
-The developer, no longer the composer of the component system, is now solely in charge of evolution of the components they maintain. 
-With the user becoming the composer, the evolution of their component system is now their responsibility. 
+The developer, rather than the composer of the component system, is now solely in charge of evolution of the components they maintain. 
 
 In this section, the differences between, and the impact of separating, component evolution and CSE are discussed.
 
@@ -201,7 +200,7 @@ This makes component evolution similar to software evolution as it is a process 
 A significant difference between software evolution and component evolution occurs because a developer has limited control over the system in which their component is used.
 This difference makes validating a component difficult as testing all possible systems it can be deployed in may be practically impossible.
 
-To allow the developer to describe valid compositions their component will be valid in
+To allow the developer to describe valid compositions their component will be valid in,
 they are typically provided a means of expressing constraints.
 These constraints can describe conflicts between components, and/or dependencies on other components.
 For example, if a component $a$ requires component $b$ to be included in the composition for $a$ to be functional, $a$ is said to depend on $b$.
@@ -216,7 +215,7 @@ Further consider, $a$ version $1$ depends on $b$ version $1$, and $a$ version $2
 
 This discussion on component evolution describes some differences to software evolution.
 It is given not as a complete exploration of this domain but an introduction. 
-A proper methodology for the development and evolution of software components it still being searched for \citep{Szyperski2002}.
+A proper methodology for the development and evolution of software components it still being sought \citep{Szyperski2002}.
 Discussions on types of evolutionary changes with comparisons to other domains are given in \citep{Papazoglou2011},
 and empirically explored by \cite{vasa2007patterns}.
 
@@ -267,13 +266,13 @@ This thesis contributes a formal model of the component system evolution in chap
 
 \section{What is a Software Component?}
 \label{background.components}
-How ``software component'' is defined will impact how CSE is studied and discussed.
-It is difficult to find a precise definition of what a software component is, as the intuitive concept may be quite different from any model or implementation \citep{Crnkovic2011}.
+How a ``software component'' is defined will impact how CSE is studied and discussed.
+It is difficult to find a precise definition of a software component as the intuitive concept may be quite different from any model or implementation \citep{Crnkovic2011}.
 Finding a definition that satisfies all parties may be an impossible task.
 However, by defining a software component with respect to component system evolution, 
 this process can be studied without the paralysis of finding a complete definition.
-In this thesis a software component is defined to have explicitly declared constraints and include mechanisms to automatically alter a component composition.
-These two attributes are seen as sufficient to allow CDR to be used, and thus a user to be the composer and drive CSE. 
+In this thesis, a software component is defined to have explicitly declared constraints and include mechanisms to automatically alter a component composition.
+These two attributes are seen as sufficient to allow CDR to be used, and allow a user to be the composer and also to drive CSE. 
 
 %%%What is a component in a larger context
 A component describes a part or element of a larger system or process.
@@ -283,8 +282,8 @@ Typically, components can be used in many different contexts, e.g. a resistor co
 This concept of what a component is has led to problems in defining the concept of a software component.
 
 %%%Discussion of articles where Szyperski and Meyers discuss give their versions of what a component is.
-A discussion between two researchers in component software, Bertrand Meyer and Clemens Szyperski, highlight the difficultly of defining ``software component''. 
-They describe across multiple articles \citep{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000} their definitions of what a software component is and the importance of its features.
+A discussion between two researchers in component software, Bertrand Meyer and Clemens Szyperski, highlighted the difficultly of defining ``software component''. 
+They converse across the articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000}, discussing their definitions of what a software component is and the importance of its features.
 
 %%%Szyperski's definition
 Szyperski defines components in \citep{Szyperski2002} as having three characteristic properties:
@@ -295,19 +294,19 @@ Szyperski defines components in \citep{Szyperski2002} as having three characteri
 \end{enumerate}
 
 %%%Meyers Definition
-Meyer's definition of software components is enumerated as:
+Meyer's definition of software components is enumerated as one that:
 \begin{enumerate}
-  \item May be used by other software elements (clients)
-  \item May be used by clients without the intervention of the components developers
-  \item Includes a specification of all dependencies (hardware and software platform, versions, other components)
-  \item Includes a precision specification of the functionality it offers
-  \item Is usable on the sole basis of that specification
-  \item Is composable with other components
-  \item Can be integrated into a system quickly and smoothly
+  \item may be used by other software elements (clients)
+  \item may be used by clients without the intervention of the components developers
+  \item includes a specification of all dependencies (hardware and software platform, versions, other components)
+  \item includes a precise specification of the functionality it offers
+  \item is usable solely on the basis of that specification
+  \item is composable with other components
+  \item can be integrated into a system quickly and smoothly
 \end{enumerate}
 
 %%%Using a component model
-Others, like \citep{heineman2001component} have stated that components must conform to a component model: 
+Others, like \citep{heineman2001component}, have stated that components must conform to a component model: 
 \begin{quotation}
 A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.
 \end{quotation}
@@ -321,11 +320,11 @@ A component model defines a set of standards for component implementation, namin
 Exactly what is, and what is not a software component is in dispute amongst the community,
 and a definitive description of a software component is elusive \citep{vasa2007patterns}.
 As such, many different components models have been developed, each targeting various domains with different functionality and technical aspects.
-This diversity has inspired a classification approach from \citep{Crnkovic2011}, where components and component models are classified into a scheme.
+This diversity has inspired a classification approach \citep{Crnkovic2011}, where components and component models are classified into a scheme.
 This effort highlights the difficulty in creating an exact definition of a software component. 
 
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
-The problems encountered when trying to exactly define a software component may stem from the fact that ``component'' is a broad concept.
+The problems encountered when trying to precisely define a software component may stem from the fact that ``component'' is a broad concept.
 The problem, as observed from the area of formal concept analysis \citep{Ganter1999} by \citep{Szyperski2002}, is that it is impossible to
 
 \begin{quotation} 
@@ -335,7 +334,7 @@ The problem, as observed from the area of formal concept analysis \citep{Ganter1
 %%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
 However, a definition can be found, not by feature enumeration but through stating the intention for the concept
 and exploring the technically inevitable consequences \citep{Szyperski2002}. 
-As the intention of this study is to investigate component system evolution,
+As the intention of this thesis is to investigate component system evolution,
 the definition of software component will be with respect to this process.
 
 \subsection{The Definition of Software Component in this Thesis}
@@ -357,15 +356,15 @@ This definition will allow the study of component system evolution as a user cha
 This definition leaves undefined many aspects of a software components, as can be seen when compared to the classification from \citep{Crnkovic2011}.
 Most aspects of a component model are ignored as they are superfluous to the core topic of this research.
 This makes the definition in this research broadly applicable, while also being focused on CSE.
-As such, this software component definition will not agree with every persons idea of what a software component is, but (as described above) no precise view can.
-By only looking at aspects that are necessary for this research, the arguments over unnecessary aspects can be eliminated. 
+As such, this software component definition will not be universal, but (as described above) no precise view can.
+Only by looking at aspects that are necessary for this research, can the arguments over unnecessary aspects be eliminated. 
 
 The next section explores this definition of software component by discussing different component models that conform to it.
 
 \section{Component Models}
 \label{background.models}
 %%%Some core component models are described, and their dependencies and evolution are discussed
-Given the definition of a software component for this research, some current component models are described and discussed.
+Given the definition of a software component in this thesis, some current component models are described and discussed.
 These models come from industry (OSGi, Eclipse Plugins, Fractal, Maven), open source community (Debian) and academia (SOFA2, CUDF).
 
 %%%Meta data of component models is discussed
@@ -385,7 +384,7 @@ OSGi is a mature component model from the OSGi Alliance.
 It has implementation from organizations like the Eclipse Foundation with their Equinox framework \citep{mcaffer2010osgi}, 
 and the Apache foundation with their framework Felix\footnote{http://felix.apache.org/ accessed 6/3/2012}.
 
-OSGi components are refereed to as bundles, each contains a meta-data file describing the bundle's constraints, and a set of Java packages and classes as implementation.
+OSGi components are referred to as bundles, each contains a meta-data file describing the bundle's constraints, and a set of Java packages and classes as implementation.
 A notable difference between OSGi and other component frameworks is that it separates the unit of deployment, the bundle, and the run-time unit, the service.
 These services exist on a separate layer to the bundles, each service is created at run-time and is represented by a Java object.
 This service layer can also describe constraints through frameworks like Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
@@ -427,7 +426,7 @@ To fill this gap, a number of frameworks have emerged that define service constr
 Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
 OSGi's compendium specification \citep{osgicompendium2007} also defines a service layer meta-data format called Declarative Services (DS).
 To show how the DS meta-data can be used to express constraints on the service layer,
-and example is presented in figure \ref{dsmetadata}.
+an example is presented in figure \ref{dsmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -451,13 +450,14 @@ and example is presented in figure \ref{dsmetadata}.
 \end{center}
 \end{figure}
 
-This meta-data includes references to implementation elements like interfaces that are provided and required, and methods to interact with the services.
+This meta-data includes references to implementation elements (like interfaces) that are provided and required, and methods to interact with the services.
 The dependency constraints can have cardinalities, e.g. a text editor can use multiple spell checkers.
 The \texttt{service} tag describes the services provided, and the \texttt{reference} tag expresses a dependence on another services.
 
 %%%DS provides no versioning
-One aspect lacking in the DS meta-data is the ability to define version properties on a constraint.
-Although the version of a service is implicitly defined by the version of the bundle that the service is provided by.
+One aspect lacking in the DS meta-data is the ability to define a version range on constraints.
+The version of a service is implicitly defined by the version of the bundle that provides the service.
+However, this implicit version is unable to be reasoned about by DS.
 
 \subsubsection{OSGi Change}
 The programmatic evolution of an OSGi system is defined in the interfaces created by the OSGi alliance.\footnote{http://www.osgi.org/javadoc/r4v43/ accessed 6/3/2012}
@@ -470,13 +470,13 @@ The installation and removal of both the bundles and services from the OSGi syst
   \item To unregister a service: \\ \texttt{org.osgi.framework.ServiceRegistration}\verb+#+\texttt{unregister}
 \end{itemize}
 
-These methods can sometimes be implemented in a console, this allows a user to directly execute them to add or remove bundles.
+These methods can be used from an implemented console, allowing a user to directly execute them to add or remove bundles.
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
 To implement CDR functionality for OSGi Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006} proposed the OSGi Bundle Repository (OBR).
 OBR is an XML format that describes OSGi components, and also an application with CDR functionality.
-To show how OBR describes component constraints an example of an OBR document is presented in figure \ref{obrmetadata}.
+To show how OBR describes component constraints, an example of an OBR document is presented in figure \ref{obrmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -615,7 +615,7 @@ The methods used to add and remove these are:
 \subsubsection{Eclipse P2}
 %%%The Eclipse P2 Solver, by Le Berre and Rapicault
 Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010} is the provisioning system for the Eclipse IDE platform.
-It provides the CDR functionality to alter an Eclipse based component system. 
+It provides the CDR functionality to alter an Eclipse-based component system. 
 Eclipse P2 is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
 Some of the preferences used by Eclipse P2 to change the system are described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}:
@@ -782,7 +782,7 @@ However, it may go against core CBSE principles like dependency on interface or 
 
 \subsection{Debian Packages}
 \label{background.debianPackages}
-Debian is a GNU/Linux based operating system provided by the Debian Project \citep{Barth2005}.
+Debian is a GNU/Linux-based operating system provided by the Debian Project \citep{Barth2005}.
 This operating system most prominent feature is that it is composed of packages, a unit of deployment with explicit constraints.
 
 The constraints of each package are defined in a control file.

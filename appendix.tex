@@ -3,10 +3,10 @@
 \chapter{CUDF* Parsing to \modelname Instance}
 \label{apx.cudf}
 In this section, the parsing of a CUDF* document (presented in section \ref{formal.step}) to a \modelname instance is described.
-The package stanzas in the document define the sets of components $C_{t_0},\ldots,C_{t_n}$, the initial component system $\alpha_{t_0}$, 
-and the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
 
-The request stanzas are used to define a series of times $t_0,\ldots,t_n$, sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$,
+The package stanzas in the document define the sets of components $C_{t_1},\ldots,C_{t_n}$, the initial component system $\alpha_{t_0}$, 
+and the sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
+The preamble stanza describes the time $t_0$, the request stanzas define a series of times $t_1,\ldots,t_n$, sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$,
 and the evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
 
 \section{CUDF* BNF Grammar}
@@ -421,9 +421,9 @@ In this appendix a mapping between the \modelname criteria and PB criteria in ta
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
 \texttt{-ovpp} 	& $crit_{ovpp} = \langle rank^{ovpp}_{\alpha}, \geq \rangle$ & $\langle f_{ovpp}, <, I_{ovpp} \rangle$ \\
 \texttt{-uptodatedistance} 	& $crit_{utdd} = \langle rank^{utdd}_{\alpha}, \geq \rangle$ & $\langle f_{utdd}, <, I_{utdd} \rangle$ \\
-\texttt{-stableversion(}$d$\texttt{)} & $crit_{sv} = \langle rank^{sv}_{\alpha}, \geq \rangle$ & $\langle f_{sv}, <, I_{sv} \rangle$ \\
+\texttt{-unstable(}$d$\texttt{)} & $crit_{us} = \langle rank^{us}_{\alpha}, \geq \rangle$ & $\langle f_{us}, <, I_{us} \rangle$ \\
 \end{tabular}
-\caption{Mapping of the change, removed, new, one version per package, up-to-date distance and stable version criteria between MOF, \modelname and PB}
+\caption{Mapping of the change, removed, new, one version per package, up-to-date distance and unstable criteria between MOF, \modelname and PB}
 \label{apx.crittable}
 \end{table}
 
@@ -550,16 +550,12 @@ $f_{ovpp}$ is defined with the literals $\langle x_{n_1},\ldots, x_{n_i}\rangle$
 The formula $I_{ovpp}$ then equals $J_{n_1} \cup \ldots \cup J_{n_i}$.
 \end{defs}
 
-\section{-stableversion(d)}
-The stable version criterion is a modification of the uptodate distance criterion.
-The only modification necessary is to the integers in the $f_{utdd}$, to create the $f_{sv}$ function using the stable version function described in definition \ref{exp.stablefunction}.
-\begin{defs}
-The function $stableweight$ is defined to return the $uptodatedistance$ of a component if it is stable, or $1000$ plus its $uptodatedistance$ if it is not,
-i.e. $stableweight(c,d,\mathbb{C}_t) = \begin{cases} 1000 + uptodatedistance(c,\mathbb{C}_t)& \text{not }stable(c,d,t) \\ uptodatedistance(c,\mathbb{C}_t) & \text{otherwise} \\  \end{cases}$
-\end{defs}
+\section{-unstable(d)}
+The unstable criterion uses the stable function, from definition \ref{exp.stablefunction}, to minimise the number of unstable components.
 
 \begin{defs}
-Given a number of days $d$, a set of components $\mathbb{C}_t$ the PB criterion for the stable version criteria is defined as $\langle f_{sv}, <, I_{sv} \rangle$ where 
-$f_{sv}$ is defined with the literals $\{l_1,\ldots,l_i\} = \mathbb{C}_t$, and integers $\langle stableweight(l_1,\mathbb{C}_t), \ldots ,stableweight(l_i,\mathbb{C}_t)\rangle$.
-The formula $I_{sv}$ then equals $\emptyset$.
+Given a number of days $d$, a set of components $\mathbb{C}_t$, and the function $stable(c,d,t)$ is modified to return $1$ instead of \texttt{true} and $0$ instead of \texttt{false},
+the unstable PB criterion is defined as $\langle f_{us}, <, I_{us} \rangle$ where 
+$f_{us}$ is defined with the literals $\{l_1,\ldots,l_i\} = \mathbb{C}_t$, and integers $\langle stable(l_1,d,t), \ldots ,stable(l_i,d,t)\rangle$.
+The formula $I_{us}$ equals $\emptyset$.
 \end{defs}
