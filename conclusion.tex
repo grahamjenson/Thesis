@@ -5,7 +5,7 @@ There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http:/
 These users are repeatedly making changes to their systems by installing new components and upgrading components to newer versions.
 This causes their systems to evolve over time through the CSE process.
 
-This thesis investigates the evolution of such component systems using a developed simulation.
+This research investigates the evolution of such component systems using a developed simulation.
 To build this simulation first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
@@ -49,7 +49,29 @@ This thesis builds on existing research to provide the initial steps to studying
 It also opens the door for further questions about CSE.
 The remainder of this chapter reviews the related research and potential future research of CSE, and closes with a final remark. 
 
+\section{Thesis Validation}
+This research started with the thesis:
+\begin{quote}
+\textit{It is possible to reduce the negative effects of component system evolution by altering the mechanisms by which the system evolves.} 
+\end{quote}
+The necessary steps to validate this thesis were:
+\begin{itemize}
+  \item develop a reproducible and controllable environment in which to measure the effects of CSE.
+  \item use this environment to study how systems evolve.
+  \item alter the mechanisms of evolution and demonstrate a reduction in change and out-of-dateness of the system during CSE.
+\end{itemize}
+
+To address these steps:
+\begin{itemize}
+  \item a simulation was developed.
+  \item it was used to study the evolution of Ubuntu systems.
+  \item the novel unstable criterion and progressive criteria  were proposed and demonstrated to reduce change and out-of-dateness of component systems during CSE.
+\end{itemize}  
+
+It is therefore possible to conclude that the thesis is supported.
+ 
 \section{Future Research}
+\label{conclusion.futurework}
 The largest area of future research is into the generalisation of the results of this thesis.
 This is where additional component systems, such as Eclipse, can be studied as they evolve. 
 Through such generalisation the conclusions of this research can be shown to be invariable between component systems or be Ubuntu specific.

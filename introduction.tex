@@ -13,32 +13,47 @@ and how this change effects the object in question.
 Like the object in Plutarch's question, a software system can be constructed from components and changed by altering its composition.
 A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002},
 and the process by which a software system changes over time is called \textbf{software evolution} \citep{lehman1980}.
-The focus of this thesis is \textbf{component system evolution} (CSE), which is the process by which a component system changes over time.
+The focus of this research is \textbf{component system evolution} (CSE), which is the process by which a component system changes over time.
 A component system is changed by altering its composition of components and \textbf{evolves} through repeated changes.
-This research asks questions about how component systems evolve and what the effects this evolution has.
 
-\section{Objective}
-%%%What do I want to find out?
-The primary objective of this research is to study the process of component system evolution. 
-The aspects of CSE that are focused on is the amount of change made to systems and how out-of-date the systems become over time.
-Through understanding this change and out-of-dateness,
-this research can inform developers and users of the consequences their choices have to the CSE process.
-Additionally, this research can be used to alter how component systems are changed in order to reduce change and out-of-dateness during evolution.
-
-%%%TODO Thesis statement
 \section{Motivation}
 %%%Why research this?
+
 An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}. 
 Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf  accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
-and can be changed by adding or removing components to and from their systems.
-Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve, which in the context of this thesis is the CSE process.
-By studying the effects of CSE and providing recommendations, this research has the potential to impact millions of users and their systems.
+and can be changed by adding, removing and upgrading components.
+Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve through the CSE process.
+By studying the CSE process,
+this research has the potential to impact millions of users and their systems.
+
+\section{Objective}
+%%%What do I want to find out?
+The objective of this research is to study the process of component system evolution and its effects.
+The primary effects that are focused on are the amount of change made to systems and how out-of-date the systems become over time.
+These two effects are argued to be primary concerns of users during CSE in section \ref{strat.usersurvey}.
+Through understanding this change and out-of-dateness,
+this research aims to inform developers and users of the consequences their choices have on evolving systems,
+and reduce these negative effects.
+
+The objective of this research has lead to the thesis:
+\begin{quote}
+\textit{It is possible to reduce the negative effects of component system evolution by altering the mechanisms by which the system evolves.} 
+\end{quote}
+
+The necessary steps to validate this thesis are:
+\begin{itemize}
+  \item develop a reproducible and controllable environment in which to measure the effects of CSE.
+  \item use this environment to study how systems evolve.
+  \item alter the mechanisms of evolution and demonstrate a reduction in change and out-of-dateness of the system during CSE.
+\end{itemize}
+
+Once these steps are completed, this thesis will be shown to be supported.  
 
 \section{Research Approach}
 %%%How are we going to study CSE?
 To study the evolution of a single component system, all changes to that system over a period of time must be examined.
-Additionally, to gain a broad and useful perspective of CSE effects, the evolution of many systems must be studied.
+Additionally, to gain a broad and useful perspective of CSE characteristics, the evolution of many systems must be studied.
 To this end, this research simulates the evolution of many Ubuntu component systems.
 The reason for selecting Ubuntu as the component system, and simulation as the method of study are described further in this section.
 
@@ -46,17 +61,24 @@ The reason for selecting Ubuntu as the component system, and simulation as the m
 The Ubuntu operating system was selected as the component system to study CSE for the following reasons:
 \begin{itemize}
   \item It has significant size and complexity which ensures that the results will not be trivial.
-  \item It has open and accessible information that can be used to create a simulation.
-  \item It has an active research community which provides a base for research.
+  \item It has an active research community which provides a base for this research.
   \item It has an estimated 20 million users, potentially allowing the outcomes of this research to have a significant impact.
+  \item There are many open resources of information available to be collected and used for simulation.
 \end{itemize} 
-
+%TODO
+Another important question is ``Why only Ubuntu?''.
+Collecting enough information to accurately simulate the evolution of a component system requires significant effort.
+The effort of collecting accurate information about Ubuntu was reduced due to its open nature.
+Other such component models may not have open and accessible information, or may not collect such information at all.
+Additionally, many component systems share similar properties, e.g. how they are changed and how their components relate to one another.
+This means that many of the artifacts developed in creating an simulation of Ubuntu are component model independent.
+The similarities between component models is discussed in section \ref{background.models} and the simulation of further component systems is proposed in section \ref{conclusion.futurework}.
+ 
 \subsection{Why Simulate?}
-To study the CSE process, the evolution of many component systems must be studied.
-The method selected for this study is to model the relevant aspects of CSE, then simulate the evolution of many Ubuntu systems using collected data and reasonable approximations.
-Using a simulation provides the benefit of having control over variables that impact CSE.
-This control allows for testing normal as well as extreme situations.
-It also allows for the quick experimentation with novel or proposed techniques.
+%TODO
+The method selected to study CSE is to model its relevant aspects, then simulate the evolution of many Ubuntu systems.
+This method was selected as a simulation provides the necessary control over the variables of CSE to validate the thesis.
+Other methods, e.g. collecting information from real systems, will not enable for the study of novel techniques that a simulation allows.
 
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid.
 In this context:
@@ -92,14 +114,13 @@ This methodology has a seven step approach to creating a valid simulation:
 
 The above described methodology was created for large scale industrial projects with a substantial resources available.
 It describes the employment and use of experts and analysts to ensure validity.
-The available resources for this project are less than other such projects, therefore some of the steps have been decreased in scope.
+The available resources for this project is less than these larcreatedge scale projects, therefore some of the steps have been decreased in scope.
 This may reduce the validity of the final simulation, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
 \section{Contributions}
 As stated above, CSE is studied through simulating the evolution of Ubuntu systems guided by the methodology outlined by \cite{Law2005}.
-To create this simulation, a variety of artifacts had to be developed.
-Each of these artifacts, as well as the simulation and its results are contributions of this research. 
+The simulation artifacts, the novel alterations to CSE, and results from the simulation are all contributions of this research. 
 These contributions are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
@@ -107,12 +128,20 @@ These contributions are:
   \item The \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) model that approximates a user that changes their system.
   \item The \textbf{GJSolver} which is an implementation that calculates the changes made to a system as it evolves (called resolving).
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
+  \item The novel alterations to reduce the out-of-dateness and change during CSE. 
   \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
 Some of these contributions are Ubuntu specific, e.g. the \usermodel model and the results and analysis.
 However, the \modelname model and CUDF* syntax are generalizable to other component systems.
 Though this generalization is not explored in this research, a case for further research in this area is made in chapter \ref{conclusion}.
+
+Additional contributions are in the form of published papers that include:
+\begin{enumerate}
+  \item An empirical study into the search space of resolving component systems \citep{Jenson2010}.
+  \item A formal framework to describe the user preferences during CSE \citep{Jenson2010a}.
+  \item An empirical study into the evolution of component systems \citep{jenson2011}.
+\end{enumerate}
 
 \section{Thesis Overview}
 This thesis is organised and presented in the order that resembles the steps of the above described methodology
@@ -137,7 +166,8 @@ The verification of GJSolver, and validation of the simulation are also discusse
 
 Chapter \ref{experiments} describes the experiments, results and analysis that are conducted using the developed simulation.
 The effects examined are the changes that the systems go through, and how out-of-date the systems become during evolution.
-Through these experiments some causes of change and out-of-dateness are found, and to reduce their effects some novel changes to CSE are proposed.
+Through these experiments, causes of additional change and out-of-dateness are identified.
+These causes are addressed with some novel changes to CSE, and through using the simulation the impact of these changes is measured.
 The effects of these changes are measured using the simulation and are shown to have benefits during CSE.
 
-This thesis concludes in chapter \ref{conclusion} by describing the contributions of this research, related work, and possible future research.
+This thesis concludes in chapter \ref{conclusion} by describing the contributions of this research and possible future research.
