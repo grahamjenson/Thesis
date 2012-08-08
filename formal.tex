@@ -8,20 +8,20 @@ The described component models each defined constraints on this change to ensure
 This chapter describes a model (\modelname) and syntax (CUDF*) used to describe the CSE process. 
 They also enable the discussion of CSE as they formally define terms and concepts used in this research.
 
-The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aims for the qualities described in \citep{Selic2003}:
+The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aims for the qualities of a model described by \cite{Selic2003}:
 \begin{itemize}
   \item \textbf{Abstractness}: A model is a reduction of reality, removing or hiding detail that is irrelevant.
   \item \textbf{Understandability}: A model directly appeals to intuition, to convey complex ideas with little intellectual effort.
-  \item \textbf{Accuracy}: A model must provide a true to life representation of the modeled system.
-  \item \textbf{Predictiveness}: A model must be able to be used to predict the modeled system's non-obvious yet interesting properties.
-  \item \textbf{Inexpensive}: A model must be cheaper to construct and analyze than the modeled system.
+  \item \textbf{Accuracy}: A model must provide a true to life representation of the modelled system.
+  \item \textbf{Predictiveness}: A model must be able to be used to predict the modelled system's non-obvious yet interesting properties.
+  \item \textbf{Inexpensive}: A model must be cheaper to construct and analyze than the modelled system.
 \end{itemize}
 \modelname describes CSE as a series of evolution steps, where each step is in response to a user request to alter the system. 
 
 The Common Upgradeability Description Format (CUDF) \citep{treinen2009common} 
-and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have previously been used to describe a single change to a component system.
+and the Mancoosi Optimisation Format (MOF) \citep{abate2011} have been used to describe a single change to a component system.
 However, for the purpose of this thesis, these formats are insufficient due to the fact that CSE requires many changes.
-To address this issue the CUDF* syntax was developed as a combination and extension of the CUDF and MOF models.
+To address this issue, the CUDF* syntax was developed as a combination and extension of the CUDF and MOF models.
 A CUDF* document can be parsed to create an instance of \modelname, thus fully describe the evolution of a component system.
 
 The relationships between the models presented in this chapter are described in figure \ref{formal.modeldiagram}.
@@ -51,9 +51,8 @@ subgraph {
 \end{figure}
 
 This chapter first 
-defines the \modelname model in section \ref{formal.step},
-the CUDF* syntax is then presented in section \ref{formal.cudf}.
-The complete description of parsing a CUDF* document to an instance of \modelname is presented in appendix \ref{apx.cudf}.
+defines the \modelname model then the CUDF* syntax.
+The complete description of parsing a CUDF* document to an instance of \modelname is presented in Appendix \ref{apx.cudf}.
  
 \section{\modelname Model of Component System Evolution}
 \label{formal.step}
@@ -68,7 +67,7 @@ An evolution problem defines the set of valid component systems that can be evol
 To define this, first the basic elements of the model must be defined, such as components and constraints. 
 
 %%%What a component is
-Components are the atomic units of component system evolution.
+Components are the atomic units of a component system's evolution.
 \begin{defs}
 \label{formal.componentdef}
 Let $\mathcal{N}$ be the set of names, where a name is a finite string of characters; 
@@ -87,7 +86,7 @@ A \textbf{component system} is a finite subset of components, e.g. $\alpha$ is a
 The characters $\alpha,\beta,\gamma$ are used to denote component systems\footnote{In hierarchical component models, such as Fractal \citep{Quma2006}, 
 a component system would also be a component.
 That is, a component system could have elements that are themselves component systems.
-This definition is not included in this model, though it may be possible to be modified to include it if required.}.
+This definition is not included in this model, though it may be possible for it to be modified to include it if required.}.
 
 Constraints are used to describe valid systems.
 \begin{defs}
@@ -95,7 +94,7 @@ Constraints are used to describe valid systems.
 A \textbf{constraint} is a set of component systems, e.g. $con$ is a constraint and $con \subseteq 2^{\mathbb{C}}$.
 \end{defs}
 
-In most component models described in chapter \ref{background} only specific types of constraints are used, these types are:
+In most component models described in chapter \ref{background}, only specific types of constraints are used, these types are:
 \begin{enumerate}
   \label{formal.constrainttypes}
   \item \textbf{Exclusion}: $\neg a := \{\alpha \in 2^{\mathbb{C}} \mid a \not \in \alpha \}$ \label{formal.removeconstraint}.
@@ -121,9 +120,9 @@ The vocabulary used when discussing constraints is as follows:
 Based on the definitions presented in this section, the following example illustrates how an evolution problem can be described and solved.
 Assume the evolution problem $EP$ is defined as the set of two constraints $con_1$ and $con_2$, i.e. $EP = \{con_1,con_2\}$.
 The constraints $con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which is defined as the set of all component system with $b$ in them.
-The constraint $con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), which is defined as the set of all component systems where if $a$ is included, then $c$ is included.
+The constraint $con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), is defined as the set of all component systems where if $a$ is included, then $c$ is included.
 The component systems that satisfy both $con_1$ and $con_2$ are solutions to $EP$.
-Some solutions to $EP$ are $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
+Some of these solutions are $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
 
 \subsubsection{Complexity of an Evolution Problem}
 When investigating the complexity of an evolution problem, the observation was made that:
@@ -159,7 +158,7 @@ The set of \textbf{user requests} $\Delta$ is the set of all constraints, where 
 \begin{enumerate}
   \item an \textbf{installation} request of constraint type \ref{formal.keepconstraint}.
   \item a \textbf{remove} request of constraint type \ref{formal.removeconstraint}.
-  \item an \textbf{*grade} request of constraint type \ref{formal.upgradeconstraint}.
+  \item an \textbf{*grade}\footnote{This referrers to either request an upgrade or a downgrade} request of constraint type \ref{formal.upgradeconstraint}.
 \end{enumerate}
 \end{defs}
 
@@ -214,7 +213,6 @@ and a set of \textbf{system constraints}, $\omega_{t}$, is a finite set of syste
 
 An evolution problem, $EP$, can be defined by combining a user request $\delta_{t}$ and a set of system constraints $\omega_{t}$, such that $EP = \delta_{t} \cup \omega_{t}$.
 
-
 An example is presented to illustrate the relationship an evolution problem has to time.
 Consider the system constraint $con_1$ that is defined as $a \rightarrow b \vee d$, and the user request constraint $con_2$ defined as $a$ (a singleton installation constraint).
 The constraint $con_1$ can (but is not limited to) be satisfied by the component systems $\{\}$, $\{b\}$, $\{a,b\}$, $\{a,b,d\}$, and $\{a,d\}$,
@@ -236,7 +234,7 @@ A component system is changed from one system to another to satisfy an evolution
 Many evolution problems have multiple valid solutions, as evolution problems are generally under-constrained \citep{Berre2008}.
 Different solutions may have different properties,
 and as a result, a user may prefer one system over another.
-Introducing an order over the solutions addresses such user preferences.  
+Introducing an ordering over the solutions addresses such user preferences.  
 
 \begin{defs}
 Given a component system $\alpha$, an \textbf{evolution preference order} is a strict partial order defined w.r.t. $\alpha$,  $\prec_{\alpha} \subseteq 2^{\mathbb{C}} \times 2^{\mathbb{C}}$.
@@ -301,14 +299,14 @@ The following observations can be made about the \modelname model.
 \begin{obs}
 It is not required for an evolution step to satisfy prior user requests.
 \end{obs}
-For example, if a user requests to install a text editor into the system, 
+For example, if a user wants to install a text editor into the system, 
 the user would expect that in future the text editor will remain in the system.
-This property is not explicitly stated in the model, because (as described above) it is difficult to determine a users intention with a request.
+This property is not explicitly stated in the model, because (as described above) it is difficult to determine a user's intention with a request.
 
 A similar problem is faced by the revision function in the domain of belief revision \citep{alchourron1985logic}.
 Revision functions try to preserve consistency across a set of beliefs as new, and possibly inconsistent, information is introduced.
 This is similar, as a set of previous user requests should try to remain satisfied with the component system, as the user requests to change the system.    
-This problem with the evolution process is not further explored in this research, while belief revision may provide inspiration for future research.
+This problem with the evolution process is not further explored in this research, but belief revision may provide inspiration for future research.
 
 
 \begin{obs}
@@ -346,8 +344,8 @@ This counter-intuitive result shows that the incomplete knowledge of future user
 \subsection{Multiple Criteria Preferences}
 \label{formal.opt}
 %%%The formal definition of how to evolve a component system is complicated because it is a multicriteria problem
-To define an evolution preference order typically multiple criteria are considered. 
-All systems presented in chapter \ref{background} such as Eclipse P2, apt-get, aptitude, and MPM, define multiple criteria that express the preferences in their systems.
+Typically to define an evolution preference order, multiple criteria are considered. 
+All systems presented in chapter \ref{background} (such as Eclipse P2, apt-get, aptitude, and MPM), define multiple criteria that express the preferences in their systems.
 A multi-criteria framework is presented as part of \modelname, to enable the description of evolution preference orders. 
 
 %%%A naive solution is to map all criteria to real numbers, then aggregate them through addition multiplication with weights.
@@ -372,7 +370,7 @@ A possibly more intuitive approach to define the evolution preference order is t
 A criterion is then a ranking function and an order over its range. 
 By not reducing the problem to only real numbers, information can be retained about the selection of a component system.
 
-Using a lexicographic order each criterion can then be composed together into a composite criterion.
+Using a lexicographic order, each criterion can then be composed together into a composite criterion.
 The lexicographic composition lets an order over the preference of criteria be defined, without having to assign arbitrary weights.
 This method has been used before in the MPM \citep{abate2011}.
 It is the selected mechanism to define the preference order in this thesis.
@@ -418,8 +416,8 @@ and resulting criterion can then be used to define the evolution preference orde
 
 \section{CUDF* Syntax}
 \label{formal.cudf}
-For \modelname to be practically used to study CSE, a syntax to describe CSE problems is required.
-As mentioned already, this syntax is defined as CUDF* which extends and combines the Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
+For \modelname to be of use to study CSE, a syntax to describe CSE problems is required.
+As mentioned already, this new syntax is defined as CUDF* which extends and combines the Common Upgradeability Description Format (CUDF)\footnote{This specification was previously discussed in section \ref{background.models}, with an example shown in figure \ref{CUDFmetadata}.
 }
 \citep{treinen2009common} and the Mancoosi Optimisation Format (MOF)\footnote{http://www.mancoosi.org/misc-2011/criteria/ accessed 6/3/2012}.
 To describe CUDF*, this section first describes CUDF and MOF.
@@ -429,7 +427,7 @@ Then CUDF* is presented, and the description of how CUDF* it is parsed to create
 \label{formal.cudfDesign}
 CUDF was designed by Mancoosi for the Mancoosi International Solver Competition (MISC).
 Mancoosi is a research project committed to the improvement of the process of evolving Free and Open Source Software (FOSS) distributions.
-Mancoosi looks at various problems within this domain and have made many contributions.
+Mancoosi looks at various problems within this domain and has made many contributions.
 One such contribution was to hold the MISC that compared solvers CUDF problems.
 MISC was held to encourage researchers and practitioners into researching change made to component systems.
 

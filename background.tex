@@ -170,7 +170,7 @@ For example, installing a new package required satisfying all its constraints, a
 With the release of the application \texttt{apt-get} in the late 1990's, the necessary technical knowledge to compose or change a Debian system was significantly reduced.
 A user could request \texttt{apt-get} to change their system, and it would find, select then change to a new composition that satisfies the request and component constraints.
 This automated the search for a satisfactory solution, solving the problem which had restricted the evolution Debian systems prior to \texttt{apt-get}'s release.
-The apt-get package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
+The \texttt{apt-get} package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
 \footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/} 
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
 Such lowering of the technical knowledge required to become a composer of a component system has had other effects that are discussed in the next section.
@@ -179,7 +179,7 @@ Such lowering of the technical knowledge required to become a composer of a comp
 \label{background.componentsystemevolution}
 Originally it was assumed that developers were the composers \citep{Parnas1972,PrietoDiaz1987} of component systems.
 That is, developers would compose, verify, then release a component system to users.
-However, with applications like apt-get the user has started to play the role of the composer for their systems.
+However, with applications like \texttt{apt-get} the user has started to play the role of the composer for their systems.
 A user, without technical knowledge, can now change the composition of their component system to satisfy their requirements.
 
 The situation where the user is the composer of the system has been called system tailoring \citep{Morch1997} and end-user assembly \citep{Szyperski2002}. 
@@ -263,6 +263,7 @@ who look at the first ten releases of the Debian and compare it to the evolution
 Methods to change component systems are discussed in \citep{Ryan2005} and \citep{Luo2004},
 and the mitigation of the negative effects caused by such evolution is discussed in the paper \citep{Stuckenholz2007}.
 This thesis contributes a formal model of the component system evolution in chapter \ref{formal}.
+%%%TODO did they conclude anything
 
 \section{What is a Software Component?}
 \label{background.components}
@@ -514,11 +515,12 @@ distribution and deployment to embedded ubiquitous systems \citep{Jung2006},
 smart home applications \citep{Gouin-Vallerand2007} and 
 dynamic distribution of drivers \citep{Kriens2008}. 
 
-The most mature implementation of an OBR client is offered by the Apache foundation, which is bundled with their core OSGi framework Apache Felix. 
-This can be used with any of the large public or private OBR collections of bundles.
+The most mature implementation of an OBR client is offered by the Apache foundation.
+The client is bundled with their core OSGi framework Apache Felix. 
+This client can be used with any of the large public or private OBR collections of bundles.
 An example of one such public repository is the Paremus repository\footnote{http://www.osgi.org/Repository/ accessed 6/3/2012} which contains (as of December 2011) over 2000 bundles.
 
-The specification of OBR does not define a method or parameters to define preferences when selecting a component system.
+The specification of OBR does not define a method or parameters used to define preferences when selecting a component system.
 Therefore, selecting systems, when many are valid, is implementation specific.
 The method used by the Apache OBR\footnote{http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html accessed 6/12/2011} implementation 
 to select a system is described on its help page as:
@@ -528,7 +530,7 @@ OBR might have to install new bundles during an update to satisfy either new dep
 In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.
 \end{quotation}
 
-This shows that when upgrading a system not installing new bundles is preferred.
+This shows that when upgrading a system, not installing new bundles is preferred.
 
 \subsection{Eclipse Plugins}
 %%%What is Eclipse
@@ -567,7 +569,7 @@ To show how plugin meta data is used to define constraints, an example is presen
 \end{center}
 \end{figure}
 
-This plugin defines the name and version of the plugin, and using the tags \texttt{requires} defines the requirements of this plugin to function.
+This plugin defines the name and version of the plugin, and using the tag \texttt{requires} defines the requirements of this plugin to function.
 The \texttt{extension-point} tag defines not only what the plugin provides, but also the required information in order to provide it, described in a schema.
 This is a special feature of the Eclipse plugin framework, as other component models generally do not specify these parameters on this type of constraint. 
 
@@ -602,13 +604,13 @@ This is the only requirement for this extension point, but other parameters of t
 The programmatic evolution of an Eclipse system is through the use of the previously OSGi methods and interaction with the plugin registry.
 
 The extensions and extension points, for an Eclipse system, can be altered in the plugin registry.
-This registry contains all references to the extensions and extension points in a system.
-The methods used to add and remove these are:
+This registry contains all references to the extensions and extension points in a system,
+and the methods used to add and remove these are:
 
 \begin{itemize}
-  \item add extensions and extension points described in an XML file: \\ \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{addContribution}
-  \item remove extension: \\ \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{removeExtension}
-  \item remove extension point:\\ \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{removeExtensionPoint}
+  \item \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{addContribution}, to add an extension and extension point described in an XML file
+  \item \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{removeExtension}, to remove an extension
+  \item \texttt{org.eclipse.core.runtime.IExtensionRegistry}\verb+#+\texttt{removeExtensionPoint}, to remove an extension point
 \end{itemize}
 
 
@@ -618,7 +620,8 @@ Eclipse P2 \citep{le_berre_dependency_2009,leBerre2010} is the provisioning syst
 It provides the CDR functionality to alter an Eclipse-based component system. 
 Eclipse P2 is mainly accessed through the Eclipse user interface, where the user can select to update the entire system, or install a component.
 
-Some of the preferences used by Eclipse P2 to change the system are described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}:
+Some of the preferences used by Eclipse P2 to change the system are described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}.
+These are to:
 \begin{enumerate}
   \item minimise the amount of components installed that have no dependency to them 
   \item minimise the removal of already installed components
@@ -632,9 +635,9 @@ These criteria are used to select a system if multiple possible systems are avai
 Fractal \citep{Quma2006} is a component model developed by France Telecom R\&D and INRA.
 It is a specification that is designed to be programming language independent, unlike OSGi or Eclipse that both depend on Java specific elements.
 The most notable aspect, and the reason for its name, is that a components can be composed together to make a new component.
-This hierarchical nature of composition, actually means the system of components can itself be a component.
+This hierarchical nature of composition means that a system of components can itself be a component.
 
-To show how Fractal meta-data can describe component constraints an example is presented in figure \ref{fractalmetadata}.
+To show how Fractal meta-data can describe component constraints, an example is presented in figure \ref{fractalmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -699,8 +702,8 @@ An example of the definition of a hierarchical component can be seen in figure \
 
 This description of a hierarchical component structure defines both the text editor and spell checker components, as well as their constraints.
 The tag \texttt{definition} is then used to define a composition of components that provides a service of \texttt{textEditorWithSpellChecker}.
-To provide this the spell checker must be bound (described in the tag \texttt{binding}) to the text editor,
-and the text editors provided interface bound to the output interface. 
+To provide this, the spell checker must be bound (described in the tag \texttt{binding}) to the text editor,
+and the text editors' provided interface must be bound to the output interface. 
 
 \subsubsection{Fractal Change}
 The programmatic evolution of a Fractal component system can differ between implementations.
@@ -730,7 +733,7 @@ Like DS, this component model does not explicitly require the version of the com
 This may lead to problems as components and services evolve, and the dependencies on them cannot specify which component version to depend on.
 
 \subsection{Maven}
-Maven is a build automation tool, designed to be programming language agnostic, but primarily used with Java.
+Maven is a build automation tool, designed to be programming language agnostic, but it is primarily used with Java.
 The core component aspect of Maven is that it can dynamically select and download files from a repository to be used to build a system.
 Maven itself is built using a plugin architecture.
 This architecture is built to make it easy to change and adapt the Maven application.
@@ -776,17 +779,14 @@ Maven both explicitly declares constraints and provides an interface to change i
 This characteristic of Maven does mean that changing a component system is done in two stages where first it is altered, then it is recompiled.
 
 Another core difference from the other presented component models is that Maven POM objects do not declare what they provide.
-For example, an OSGi bundle can declare provided packages and a Fractal component declares provided interfaces, where a Maven project can only provide itself.
-This will simplify the constraints that can be described. 
-However, it may go against core CBSE principles like dependency on interface or specification \citep{Szyperski2002} and not implementation.
+For example, an OSGi bundle can declare provided packages and a Fractal component declares provided interfaces.
+A Maven project can only provide itself. 
 
 \subsection{Debian Packages}
 \label{background.debianPackages}
 Debian is a GNU/Linux-based operating system provided by the Debian Project \citep{Barth2005}.
-This operating system most prominent feature is that it is composed of packages, a unit of deployment with explicit constraints.
-
-The constraints of each package are defined in a control file.
-To show how this control file defines such constraints two examples are presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
+This operating system's most prominent feature is that it is composed of packages, where each package is a unit of deployment with explicit constraints defined in a \textit{control} file.
+To show how this control file defines such constraints, two examples are presented in figures \ref{debianmetadatate} and \ref{debianmetadatasc}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -823,7 +823,7 @@ One aspect that differentiates the Debian package model from the many other mode
 That is, there is no formal specification of the semantics of the communication and relationships between packages.
 For instance, OSGi bundles exist in a very constrained environment that manages their interactions, depending on another bundle has run-time implications.
 For Debian, the dependence of one package on another has no prescribed run-time effects, other than the assumption that without satisfying the dependence the package will not be functional.
-The way in which a package, uses or communicates with a depended upon package is then defined between the packages and not in the component model.
+The way in which a package uses or communicates with a depended upon package is defined between the packages and not in the component model.
 
 \subsubsection{Debian Change}
 The application \texttt{dpkg} is the command line tool use to modify a Debian package system.
@@ -843,12 +843,12 @@ There are many applications that provide CDR functionality on Debian systems, th
 This tool is built on top of \texttt{dpkg}, to provide an interface to simplify and extend its functionality.
 The \texttt{apt-get} application is a command line tool, which provides the necessary tools to efficiently allow the user to evolve their system.
 
-Apt-get follows some basic criteria when altering the system, for example when upgrading:
+\texttt{apt-get} follows some basic criteria when altering the system, for example when upgrading:
 \begin{itemize}
-  \item under no circumstances will apt-get remove an already installed package
-  \item under no circumstances will apt-get retrieve a package that is not installed
+  \item under no circumstances will \texttt{apt-get} remove an already installed package.
+  \item under no circumstances will \texttt{apt-get} install a new package.
 \end{itemize}
-Note: apt-get defines removing a package as removing all packages with the same name, e.g. replacing a package named \texttt{text-editor} with a higher version is not ``removed'' as apt-get defines.
+Note: \texttt{apt-get} defines removing, installing and upgrading separately, e.g. upgrading a package named \texttt{text-editor} is not defined by  \texttt{apt-get} as removing then installing a new package.
 
 Another application that extends \texttt{apt-get}'s functionality is \texttt{aptitude} \citep{Burrows2005}.
 This application adds a basic user interface to \texttt{apt-get} and also extends functionality in aspects like locating and removing redundant packages.
@@ -886,7 +886,7 @@ To show how SOFA meta-data describes constraints an example is presented in figu
 
 This meta-data describes two components, a text editor and a spell checker, using the tag \texttt{frame}.
 The sub elements \texttt{requires} and \texttt{provides} describes the component constraints through an externally defined interface with the name-space \texttt{sofatype://nz.geek.spellChecker}.
-This interface is defined using an Architecture Definition Language (ADL) and added to a repository to be re-used. 
+This interface defined using an Architecture Definition Language (ADL), is added to a repository to be re-used. 
 
 
 \subsubsection{SOFA Change}
@@ -898,10 +898,10 @@ However, SOFA only allows more granular changes that must conform to specified e
 This restriction is meant to increase the manageability and predictability of a component systems evolution. 
 
 Three evolution patterns are predefined: factory pattern, removal pattern, and service access pattern.
-As its name suggests, in factory pattern a designated component serves as a component factory. 
-The removal pattern serves for destroying of a component previously dynamically created.
+As its name suggests, in the factory pattern a designated component acts as a component factory. 
+The removal pattern serves for the destruction of a component that was previously created.
 The service access pattern allows for the access to external services.
-These patterns are further discussed in \citep{Hnetynka2006}.
+These patterns are further described in \citep{Hnetynka2006}.
 
 
 \subsection{Common Upgradeability Description Format}
@@ -917,12 +917,12 @@ Many component models share similar properties including:
 By abstracting these common elements into a single model, the description of how a component system is changed can become component model independent.
 The Common Upgradeability Description Format (CUDF) model is such an abstraction.
 It is used to describe a request by a user to change a component system, and can be used to calculate the resulting system.
-CUDF was created by the Mancoosi project to foster interest in this domain and to be used in a competition that compared CDR functionality.
+CUDF was created by the Mancoosi project\footnote{http://www.mancoosi.org/ accessed 8/8/2012} to foster interest in this domain and to be used in a competition that compared CDR functionality.
 Mancoosi is a European research project focused on the problems faced by Free and Open Source Software (FOSS) systems when being changed.
 
 %%%No concrete components, but fits our definition
 The CUDF component model has no concrete component as it was designed to be an abstract component model.
-This means that there is no defined semantics to execute a CUDF component system.
+This means that there are no defined semantics to execute a CUDF component system.
 In this respect it is similar to the OBR component model, as it has been created to explicitly represent the problem of changing a component system.
 
 To show how a CUDF document describes a changing component system, an example is presented in figure \ref{CUDFmetadata}.
@@ -957,7 +957,7 @@ The CUDF component model was defined especially to compare CDR implementations, 
 One such implementation, GJSolver, was contributed by this thesis and is further discussed in chapter \ref{implementation}.
 The implementation from Mancoosi is the Modular Package Manager \citep{abate2011} (MPM).
 MPM was created by the Mancoosi project to explore the possibility of using CUDF solver to evolve real systems.
-In the study by \cite{abate2011}, this package manager was compared against other solvers, such as apt-get and aptitude, and shown to be an improvement in performance.
+In the study by \cite{abate2011}, this package manager was compared against other solvers, such as \texttt{apt-get} and aptitude, and shown to be an improvement in performance.
 MPM also was the first to allow the user to completely specify the criteria by which the solver selects a system.
 Further discussion of MPM criteria is given in chapter \ref{implementation}. 
 
@@ -967,13 +967,13 @@ This means that they are all component models w.r.t. the definition of component
 
 The constraints in these models fall into two groups:
 \begin{enumerate}
-  \item \textit{dependencies}, where one component requires what another component or what it provides.
+  \item \textit{dependencies}, where one component requires another component or what it provides.
   \item \textit{conflicts}, where one component conflicts with another component or what it provides. 
 \end{enumerate} 
 Typically these constraints are between pre-defined types in the component model, e.g. a service or a package.
 However, OBR, Maven, and SOFA allowed the definition of a type of dependency. 
-All component constraints are defined in meta-data files in either XML, or key/value pairs formats.
-The constraints in these models have broadly similar semantics, though different vocabulary.
+All component constraints are defined in meta-data files in either XML, or key/value pair format.
+The constraints in these models have broadly similar semantics, though a different vocabulary.
 The comparison between these models is then mostly linking together vocabulary.
 This comparison is summarised in the tables  \ref{background.comparisonrel} and \ref{background.comparisonmeta}.  
 
@@ -1036,7 +1036,7 @@ OBR						& No			& NA									& OBR \\
 Eclipse					& No			& Method								& Eclipse P2\\
 Fractal					& Yes			& Method 								& None\\
 Maven					& No			& NA 									& Maven\\
-Debian					& No			& Command Line 							& apt-get\\
+Debian					& No			& Command Line 							& \texttt{apt-get}\\
 SOFA 2.0				& Yes			& Evolution Patterns 					& None\\
 CUDF					& No			& NA 									& MPM\\\hline
 \end{tabular}
@@ -1048,6 +1048,7 @@ The presented comparison of these models shows that although they are aimed at d
 This similarity motivates the research into CSE, as results may contribute to many different domains. 
 
 %%%TODO Scoping, they are all similar therefore studying one should provide some insight into others.
+%%%Also are they sufficient?
 \section{Summary}
 In this chapter, the concepts related to CSE are explored.
 The domains of software evolution, CBSE and component systems are described and the important concepts, such as software component, are defined.
