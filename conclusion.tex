@@ -3,10 +3,10 @@
 %%%Answers to our initial questions
 There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}.
 These users are repeatedly making changes to their systems by installing new components and upgrading components to newer versions.
-This causes their systems to evolve over time through the CSE process.
+This causes their systems to evolve over time.
 
 This research investigates the evolution of such component systems using a developed simulation.
-To build this simulation first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
+To build this simulation, first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
@@ -43,12 +43,9 @@ These changes could introduce bugs into the system and are seen as unnecessary.
 Using this criterion comes at a cost of the system always being out-of-date by the number of days that are waited for components to become stable.
 For users that prefer reduce change to their systems, this may be a tolerable trade-off.
 
-Understanding how component systems evolve can inform users and developers about the effects of their choices.
-It can also provide new methods to change systems that better suit a user's requirements.
-This thesis builds on existing research to provide the initial steps to studying how component systems evolve.
-It also opens the door for further questions about CSE.
-The remainder of this chapter reviews the related research and potential future research of CSE, and closes with a final remark. 
-
+The remainder of this chapter will examine the proposed thesis in chapter \ref{introduction},
+the potential future research,
+and provide a closing remark.
 \section{Thesis Validation}
 This research started with the thesis:
 \begin{quote}
@@ -106,4 +103,12 @@ Comparing the results from the simulations to the evolution of real systems woul
 This could be accomplished using the MPM solver \citep{abate2011} from Mancoosi.
 This solver has already been proposed for the modification of real systems.
 Through modification or extension of MPM the proposed criteria could be used to evolve real Ubuntu systems, and the effects measured.
-Such a study would require significant resources but its results and conclusions would be valid.    
+Such a study would require significant resources but its results and conclusions would be valid.
+
+\section{Closing Remark}
+Understanding how component systems evolve can inform users and developers about the effects of their choices.
+It can also provide new methods to change systems that better suit a user's requirements.
+This research has proposed novel ways to reduce negative effects during CSE and the tools in which to measure the effectiveness of these proposals.
+Given these contributions, this research is seen as a success.
+ 
+
