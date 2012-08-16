@@ -132,21 +132,18 @@ These contributions are:
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
   \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
   \item \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) that models a user that changes their system.
-  \item The \textbf{GJSolver} which is an implementation that calculates the changes made to a system as it evolves (called resolving).
+  \item The \textbf{GJSolver} which is an efficient implementation that calculates the changes made to a system as it evolves (called resolving).
+	GJSolver was independently validated through the MISC competition hosted by the Mancoosi project\footnote{http://www.mancoosi.org/ accessed 8/8/2012}. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
   \item The defined methods to reduce the out-of-dateness and change during CSE. 
   \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
-Some of these contributions are Ubuntu specific, e.g. the \usermodel model and the simulations results.
-However, the \modelname model and CUDF* syntax are generalizable to other component systems.
-Though this generalization is not explored in this research, a case for further research in this area is made in chapter \ref{conclusion}.
-
-Additional contributions are in the form of published papers that include:
+These contributions overlap with published papers from thsi research:
 \begin{enumerate}
-  \item An empirical study into the search space of resolving component systems \citep{Jenson2010}.
-  \item A formal framework to describe the user preferences during CSE \citep{Jenson2010a}.
-  \item An empirical study into the evolution of component systems \citep{jenson2011}.
+  \item An empirical study into the search space of resolving component systems \citep{Jenson2010} in the proceedings of Component Based Software Engineering (CBSE) 2010.
+  \item A formal framework to describe the user preferences during CSE \citep{Jenson2010a} in the proceedings of Asia/Pacific Software Engineering Conference (APSEC) 2010.
+  \item An empirical study into the evolution of component systems \citep{jenson2011} in the proceedings of CBSE 2011.
 \end{enumerate}
 
 \section{Thesis Overview}
@@ -160,9 +157,9 @@ This aims to put CSE in historical context and to give a suitable definitions to
 Chapter \ref{formal} presents the \modelname model and the CUDF* syntax that describe the formal aspects of the evolution of component systems.
 \modelname is used to describe the evolution of a component system and CUDF* is used as the syntax to serialise \modelname instances.
 
-Chapter \ref{simulation} presents \usermodel which is used to describe users that request changes to their component systems.
+Chapter \ref{simulation} presents the \usermodel model which is used to describe users that request changes to their component systems.
 This model includes assumptions and variables that are necessary to simulate the evolution of Ubuntu systems. 
-It is defined using a conducted survey, whose results are also presented.
+It is developed from the results of a conducted survey.
 As this model relies on many assumptions that may impact the validity of the simulation, the validation of this model is also discussed. 
 
 Chapter \ref{implementation} describes the algorithms used to create the GJSolver implementation.
