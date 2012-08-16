@@ -38,14 +38,15 @@ and reduce these negative effects.
 
 The objective of this research has lead to the thesis:
 \begin{quote}
-\textit{It is possible to reduce the negative effects of component system evolution by altering the mechanisms by which the system evolves.} 
+\textit{It is possible to reduce the negative effects of component system evolution by altering the mechanisms by which systems are changed.} 
 \end{quote}
 
 The necessary steps to validate this thesis are:
 \begin{itemize}
-  \item to develop a reproducible and controllable environment in which to measure the effects of CSE.
-  \item to use this environment to study how systems evolve.
-  \item to alter the mechanisms of evolution and demonstrate a reduction in change and out-of-dateness of the system during CSE.
+  \item To develop a reproducible and controllable environment in which to measure the effects of CSE.
+  \item To use this environment to study how systems evolve.
+  \item To alter the mechanisms of evolution and study their impact on CSE.
+  \item To define methods to reduce change and out-of-dateness and demonstrate their effect.
 \end{itemize}
 
 Once these steps are completed, this thesis will be shown to be supported.  
@@ -61,16 +62,16 @@ The reason for selecting Ubuntu and simulation as the method of study are detail
 The Ubuntu operating system was selected as the component system to study CSE for the following reasons:
 \begin{itemize}
   \item It has significant size and complexity which ensures that the results will not be trivial.
-  \item It has an active research community which provides a base for this research.
+  \item It has an active research community whose results can be used and built upon.
   \item It has an estimated 20 million users, potentially allowing the outcomes of this research to have a significant impact.
   \item There are many open resources of information available to be collected and used for simulation.
 \end{itemize} 
 
 Another important question is ``Why only Ubuntu?'', 
-as only focusing on the evolution of one component system makes the results from this research non-generalisable.
+as only focusing on the evolution of one component system may make the results from this research non-generalisable.
 There are many similarities between component models (some are discussed in section \ref{background.models})
 including the relationships between components and the mechanisms used to change component systems.
-These similarities make many of the contributions from this research component system independent.
+These similarities may make many of the contributions from this research component system independent.
 
 Another factor in the decision to only simulate the evolution of Ubuntu systems was the significant effort invested in the collection of data.
 This effort was reduced because of Ubuntu's open nature and active community that provided tools and resources to be used.
@@ -124,15 +125,16 @@ and done so in a manner that attempts to minimise negative effects.
 
 \section{Contributions}
 As stated above, CSE is studied through simulating the evolution of Ubuntu systems guided by the methodology outlined by \cite{Law2005}.
-The simulation artifacts, the novel alterations to CSE, and results from the simulation are all contributions of this research. 
+The simulation artifacts, the alterations defined to reduce negative effects during CSE, 
+and results from the simulation are all contributions of this research. 
 These contributions are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
   \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
-  \item The \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) model that approximates a user that changes their system.
+  \item \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) that models a user that changes their system.
   \item The \textbf{GJSolver} which is an implementation that calculates the changes made to a system as it evolves (called resolving).
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
-  \item The novel alterations to reduce the out-of-dateness and change during CSE. 
+  \item The defined methods to reduce the out-of-dateness and change during CSE. 
   \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
