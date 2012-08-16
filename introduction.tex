@@ -19,8 +19,8 @@ A component system is changed by altering its composition of components and \tex
 \section{Motivation}
 %%%Why research this?
 
-An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/ accessed 16/5/2012}. 
-Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf  accessed 29/5/2012}.
+An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012}. 
+Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
 and can be changed by adding, removing and upgrading components.
 Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve through the CSE process.
@@ -31,7 +31,7 @@ this research has the potential to impact millions of users and their systems.
 %%%What do I want to find out?
 The objective of this research is to study the process of component system evolution and its effects.
 The primary effects that are focused on are the amount of change made to systems and how out-of-date the systems become over time.
-These two effects are argued to be the users' primary concerns during CSE in section \ref{strat.usersurvey}.
+In section \ref{strat.usersurvey}, these two effects are argued to be the users' primary concerns during CSE.
 Through understanding this change and out-of-dateness,
 this research aims to inform developers and users of the consequences their choices have on evolving systems,
 and reduce these negative effects.
@@ -77,8 +77,8 @@ Another factor in the decision to only simulate the evolution of Ubuntu systems 
 This effort was reduced because of Ubuntu's open nature and active community that provided tools and resources to be used.
 It may be more difficult to collect equally valid data for other component systems because they are typically not as open or have such an active community as Ubuntu.
 To simulate these systems would then be an additional, considerable effort.
-Therefore, the simulation of other component systems are not defined within the scope of this research.
-The simulation of further component systems is discussed in section \ref{conclusion.futurework}.
+Therefore, the simulation of other types of component system is not within the scope of this research,
+however the simulation of further component systems is proposed as future research in section \ref{conclusion.futurework}.
 
 \subsection{Why Simulate?}
 The method selected to study CSE is to model its relevant aspects, then simulate the evolution of many Ubuntu systems.
@@ -91,16 +91,15 @@ In this context:
 ``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.'' \citep{Law2005}
 \end{quotation}
 
-The methodology that \cite{Law2005} outlines was selected to create such a valid simulation.
-This methodology was selected because it gave practical guidance to creating and using a simulation.
+The methodology that \cite{Law2005} outlines was selected because it gave practical guidance to creating and using a valid simulation.
 The methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
-It was also observed was that simulations that are not validated can produce erroneous information that leads to bad, possibly costly decisions being made.
+It was also observed was that non-validated simulations can produce erroneous information that leads to bad, possibly costly decisions being made.
 
 This methodology has a seven step approach to creating a valid simulation:
 \begin{itemize}
   \item \textbf{Step 1: Formulate the problem}: %Intro, Background and Formal Models of the problem
 	The problem should be described as clearly as possible.
-	The core artifacts at this stage are the overall objectives and the the scope of the study.
+	The core artifacts at this stage are the overall objectives and the scope of the study.
 \item \textbf{Step 2: Collect information/data to construct a conceptual model}: %Simulation
 	The conceptual model is a description of how the simulation and system work in relation to the study's objectives.
 	It contains all variables used to configure the simulation. 
@@ -133,7 +132,7 @@ These contributions are:
   \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
   \item \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) that models a user that changes their system.
   \item The \textbf{GJSolver} which is an efficient implementation that calculates the changes made to a system as it evolves (called resolving).
-	GJSolver was independently validated through the MISC competition hosted by the Mancoosi project\footnote{http://www.mancoosi.org/ accessed 8/8/2012}. 
+	GJSolver was independently validated through the MISC competition hosted by the Mancoosi project\footnote{http://www.mancoosi.org/, accessed 8/8/2012}. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
   \item The defined methods to reduce the out-of-dateness and change during CSE. 
   \item The results, analysis and conclusions from experiments using the simulation.
