@@ -5,7 +5,7 @@ There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http:/
 These users are repeatedly making changes to their systems by installing new components and upgrading components to newer versions.
 This causes their systems to evolve over time.
 
-This research investigates the evolution of such component systems using a developed simulation.
+This research has investigated the evolution of such component systems using a developed simulation.
 To build this simulation, first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
@@ -17,7 +17,7 @@ Experiments were defined that use these artifacts to simulate the evolution of m
 The primary focus of these experiments were the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
-  \item Upgrading a system causes the amjority of change 
+  \item Upgrading a system causes the mjority of change 
   and installing new comopnents only adds to this change by increasing the number of comopnents to be upgraded.
   \item Upgrading frequently during most of the year is unnecessary as it has little impact on the out-of-dateness of systems.
   However, during periods where new component versions are released quickly, e.g. during Ubuntu releases, 
@@ -33,7 +33,7 @@ The main benefit during CSE is the reduced change due to lowering the amount of 
 that in turn lowers the amount of components that are upgraded.
 The benefits reuse has when using software components has been explored before in \cite{Szyperski2002}.
 
-To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
+To reduce the out-of-dateness of systems during evolution, the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
 This alteration was shown to be most effective for users that upgrade frequently.
 It was shown to decrease the out-of-dateness of a system by as much as 49\% at the cost of increasing change by 34\%.
@@ -68,18 +68,19 @@ To address these steps:
   \item A simulation was developed.
   \item It was used to study CSE through simulating the evolution of many Ubuntu systems.
   \item The novel unstable criterion and progressive criteria were proposed and their impacts on CSE studied.
-  \item The unstable criterion and progressive criteria were then simulated to approximate real CSE
-  and demonstrated to reduce change and out-of-dateness.
+  \item The unstable criterion and progressive criteria were then simulated to approximate the evolution of real component systems
+  and they were demonstrated to reduce change and out-of-dateness.
 \end{itemize}  
 
 It is therefore possible to conclude that the thesis is supported.
  
 \section{Future Research}
 \label{conclusion.futurework}
-The largest area of future research is into the generalisation of the results of this thesis.
-This is where additional component systems, such as Eclipse, can be studied as they evolve. 
-Through such generalisation the conclusions of this research can be shown to be invariable between component systems or be Ubuntu specific.
-The core hurdle of accomplishing this is that much of the collected information in this study does not exist for other component models.
+The largest area of future research is in the simulation of additional systems, such as Eclipse, 
+so they can be studied as they evolve. 
+Through such simulation the conclusions of this research can be shown to be invariable between component systems 
+or be Ubuntu-specific.
+The core hurdle of accomplishing this would be that much of the collected information in this study does not exist for other component models.
 Component models like Eclipse do not have their history archived as precisely as Ubuntu.
 Information, like the Ubuntu repository, does not exist or does not contain the detailed information for other component models.
 Resources of information are available, but can be incomplete.
@@ -104,7 +105,7 @@ could be measured using the simulation developed in this research.
 
 %%%Further stufy of the interaction between users and their component systems. We found it hard to find information, maybe some research would be interesting,
 %%%which we could include to make the simulations more valid.
-One of the least valid parts of the simulation is the selection of the requests made by the user.
+The part of the simulation that has the most room for improvement is the selection of the requests made by the user.
 This is both when they select to upgrade, when they select to install, and what components they select to install.
 By studying real users changing their systems, either through collecting more \texttt{apt-get} logs or through direct observation,
 a more valid simulation could be created.
