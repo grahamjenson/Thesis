@@ -10,6 +10,7 @@ If an object has all its component parts replaced, is it the same object?
 This question addresses many themes including how objects are made of components, how they change their component parts,
 and how this change effects the object in question.
 
+%TODO expand each point and give reasons for its existance.
 Like the object in Plutarch's question, a software system can be constructed from components and changed by altering its composition.
 A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002},
 and the process by which a software system changes over time is called \textbf{software evolution} \citep{lehman1980}.
@@ -18,13 +19,12 @@ A component system is changed by altering its composition of components and \tex
 
 \section{Motivation}
 %%%Why research this?
-
-An example of a popular component system is the Ubuntu GNU/Linux operating system, which has an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012}. 
-Another example of a component system is the Eclipse IDE, which is used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
+Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
+ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
 and can be changed by adding, removing and upgrading components.
-Repeatedly applying such changes allows Ubuntu and Eclipse systems to evolve through the CSE process.
-By studying the CSE process,
+Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
+By studying and changing the CSE process,
 this research has the potential to impact millions of users and their systems.
 
 \section{Objective}
@@ -45,8 +45,8 @@ The necessary steps to validate this thesis are:
 \begin{itemize}
   \item To develop a reproducible and controllable environment in which to measure the effects of CSE.
   \item To use this environment to study how systems evolve.
-  \item To alter the mechanisms of evolution and study their impact on CSE.
-  \item To define methods to reduce change and out-of-dateness and demonstrate their effect.
+  \item To alter the mechanisms by which systems are changed and study their impact on CSE.
+  \item To demonstrate a reduction on change and out-of-dateness using such alterations.
 \end{itemize}
 
 Once these steps are completed, this thesis will be shown to be supported.  
@@ -75,18 +75,20 @@ These similarities may make many of the contributions from this research compone
 
 Another factor in the decision to only simulate the evolution of Ubuntu systems was the significant effort invested in the collection of data.
 This effort was reduced because of Ubuntu's open nature and active community that provided tools and resources to be used.
-It may be more difficult to collect equally valid data for other component systems because they are typically not as open or have such an active community as Ubuntu.
-To simulate these systems would then be an additional, considerable effort.
+It may be more difficult to collect equally valid data for other component systems as
+many systems, like Eclipse, do not have their history archived as precisely as Ubuntu.
 Therefore, the simulation of other types of component system is not within the scope of this research,
 however the simulation of further component systems is proposed as future research in section \ref{conclusion.futurework}.
 
 \subsection{Why Simulate?}
 The method selected to study CSE is to model its relevant aspects, then simulate the evolution of many Ubuntu systems.
 This method was selected as a simulation provides the necessary control over the variables of CSE to validate the thesis.
-Other methods, e.g. collecting information from real systems, will not enable for the study of novel techniques that a simulation allows.
+Other methods, e.g. collecting information from real systems, would not allow the study of novel techniques that a simulation allows.
 
-The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid.
-In this context:
+%TODO REAL data cannot be used because it is difficult to change
+%TODO Theoritical study of evolution would be less valid and have little impact
+
+The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid:
 \begin{quotation}
 ``\textit{Validation} is the process of determining whether a simulation is an accurate representation of the system, for the particular object of the study.'' \citep{Law2005}
 \end{quotation}
