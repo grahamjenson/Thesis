@@ -17,18 +17,21 @@ Experiments were defined that use these artifacts to simulate the evolution of m
 The primary focus of these experiments were the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
-  \item The majority of change is caused through the user upgrading their system.
-  \item It is most important to upgrade regularly during periods where new component versions are released quickly, e.g. during Ubuntu releases.
-  \item All systems gradually become out of date partially due to the criteria used by \texttt{apt-get} that restricts adding new components.
-  \item Increasing the frequency a user upgrades their system may not significantly reduce their out-of-dateness, 
-  but may cause more change when many versions of comopnents are released quickly and upgraded multiple times.
+  \item Upgrading a system causes the amjority of change 
+  and installing new comopnents only adds to this change by increasing the number of comopnents to be upgraded.
+  \item Upgrading frequently during most of the year is unnecessary as it has little impact on the out-of-dateness of systems.
+  However, during periods where new component versions are released quickly, e.g. during Ubuntu releases, 
+  it is important to upgrade frequently. 
+  \item Regular updates cannot ensure that a component system stays up-to-date.
+  This is in part due to the criteria used by \texttt{apt-get} that restricts adding new components when upgrading.
+  \item Frequently upgrading a system may cause additional change 
+  when many versions of a comopnent are released quickly, forcing it to be upgraded multiple times.
 \end{itemize} 
 
-Another important discovery is that re-use dramatically lowers the change necessary during CSE.
-This is due to lowering the amount of required components to be installed,
-that in turn lowers the amount of components that require to be upgraded.
-The benefits reuse has when using software components has been explored before \citep{Szyperski2002}.
-However, this research provides empirical evidence that confirms reuses importance, especially during CSE.
+This research also provides empirical evidence and quantitative measurements of reuses benefits, especially during CSE.
+The main benefit during CSE is the reduced change due to lowering the amount of components to be installed,
+that in turn lowers the amount of components that are upgraded.
+The benefits reuse has when using software components has been explored before in \cite{Szyperski2002}.
 
 To reduce the out-of-dateness of systems during evolution the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
