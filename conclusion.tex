@@ -10,14 +10,13 @@ To build this simulation, first the background of software evolution, component-
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
 The implementation GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
-The verification and validation of these artifacts were discussed, in accordance with our methodology \cite{Law2005}, 
-as this is the primary concern when creating a simulation.
+The verification and validation of these artifacts were discussed, in accordance with our methodology \cite{Law2005}.
 
 Experiments were defined that use these artifacts to simulate the evolution of many different systems.
 The primary focus of these experiments were the out-of-dateness and changes made to the systems during evolution.
 Some discoveries were:
 \begin{itemize}
-  \item Upgrading a system causes the mjority of change 
+  \item Upgrading a system causes the majority of change 
   and installing new comopnents only adds to this change by increasing the number of comopnents to be upgraded.
   \item Upgrading frequently during most of the year is unnecessary as it has little impact on the out-of-dateness of systems.
   However, during periods where new component versions are released quickly, e.g. during Ubuntu releases, 
@@ -31,7 +30,7 @@ Some discoveries were:
 This research also provides empirical evidence and quantitative measurements of reuses benefits, especially during CSE.
 The main benefit during CSE is the reduced change due to lowering the amount of components to be installed,
 that in turn lowers the amount of components that are upgraded.
-The benefits reuse has when using software components has been explored before in \cite{Szyperski2002}.
+The benefits reuse, when using software components, has been explored before in \cite{Szyperski2002}.
 
 To reduce the out-of-dateness of systems during evolution, the progressive criteria was proposed.
 This criteria allows new components to be installed to enable the upgrading of components.
