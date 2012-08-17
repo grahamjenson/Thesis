@@ -7,17 +7,22 @@ The Greek philosopher Plutarch proposed in his work \textit{Life of Theseus} a p
 \begin{quote}
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
-This question addresses many themes including how objects are made of components, how they change their component parts,
-and how this change effects the object in question.
-Although ancient, 
-these themes are still subjects for discussion today and this research explores them in the domain of software.
+%how objects are made of components
+Software can be created by composing together software components \citep{Szyperski2002} into a \textbf{component system}.
+These components encapsulate functionality and provide it to be used by  other components and the user.
+Using this divide-and-conquer method to creating software reduces the  large and complex problem of creating and maintaining software into smaller, more manageable parts.
+It also has additional benefits of increaing reuse, making systems more modifiable and flexible, 
 
-%TODO expand each point and give reasons for its existance.
-Like the object in Plutarch's question, a software system can be constructed from components and changed by altering its composition.
-A \textbf{component system} can be constructed by composing together software components \citep{Szyperski2002},
-and the process by which a software system changes over time is called \textbf{software evolution} \citep{lehman1980}.
-The focus of this research is \textbf{component system evolution} (CSE), which is the process by which a component system changes over time.
-A component system is changed by altering its composition of components and \textbf{evolves} through repeated changes.
+%how/why they change their component parts
+A component system  can be changed by adding, removing and replacing components.
+These granular changes are driven by the user wanting to satisfy new user requirements, correct bugs or add new functionality. 
+The technical aspects required to change a component system (without breaking it) can be automated.
+This automation allows users of a component system to alter their component system without the need for technical knowledge of the composition of their system.
+With little technical knowledge, the user relies on the mechanisms to change their component system in a way that suits their preferences.
+
+%how this change effects the object in question
+Over time, as a component system is repeatedly changed by its user, it evolves.
+This process is \textbf{component system evolution} (CSE) and is the focus of this research.
 
 \section{Motivation}
 %%%Why research this?
