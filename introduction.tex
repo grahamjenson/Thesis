@@ -15,29 +15,30 @@ these themes are still subjects for discussion today and this research explores 
 %how objects are made of components
 \textit{How is software made from components?}
 Software can be created by composing together software components \citep{Szyperski2002} into a \textbf{component system}.
-Each of these components provide functionality to be used by other components, the system, or the user.
+Each of these components provides functionality to be used by other components, the system, or the user.
 By building software out of components, the large and complex problem of creating and maintaining software is reduced into smaller, more manageable parts.
 
 %how/why they change their component parts
 \textit{How are component systems changed?}
 A component system can be changed by adding, removing or replacing components.
-As components may require or conflict with other components, adding or removing a single component may have propagating effects across the system.
-However, these technical aspects can be automated, and this automation allows users to change their component systems without the need for technical knowledge or expertise.
-With little technical knowledge, the user relies entirely on the provided mechanisms to change their component system in a way that meets their requirements.
+As components may require or conflict with other components, adding or removing a single component may have propagating effects through the system.
+However, these technical aspects can be automated, and such automation allows users to change their component systems without the need for any technical knowledge.
+Withough such knowledge, the user relies entirely on the existing mechanisms to change their component system and trusts that they act in a way that meets their requirements.
 
 %how this change effects the object in question
 \textit{How does changing a component system effect that system?}
-Over time, as a component system is repeatedly changed by its user, it evolves through the \textbf{component system evolution} (CSE) process.
-This evolution has not been explored indepth previously, 
-and investigating what effects it has on the system is the focus of this thesis.
-Through understanding how component systems evolve can inform users and developers about the effects of their choices. 
+Over time, a user will continually change their system to suit their needs and keep it up-to-date.
+This gradual change to the system is the \textbf{component system evolution} (CSE) process.
+Understanding how component systems evolve is imporant to be able to inform users of the impact of their choices, 
+and create mechanisms of change that reflect a users requirements.
 
 \section{Motivation}
 %%%Why research this?
 Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
 ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
-Ubuntu systems can be changed using \texttt{apt-get} \citep{Barth2005}, and Eclipse systems can be changed  altered using and can be changed by adding, removing and upgrading components.
+Ubuntu systems can be changed using \texttt{apt-get} \citep{Barth2005}, and Eclipse systems can be changed using Eclipse P2 \citep{leBerre2010}.
+These systems allow users of Ubuntu and Eclipse systems to add, remove, and upgrade components without knowing the techical details.
 Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
 By studying and changing the CSE process,
 this research has the potential to impact millions of users and their systems.
@@ -104,7 +105,7 @@ The difficulty of this method would be finding participants willing to allow exp
 Finding enough participants to produce meaningful results would have required time and resources that were not available to this research.
 Additionally, as evolution occurs over long periods of time, problems could take months to identify and correct.
 This would increase the risk of this when using this method for this research. 
-Therefore, the simulation approach to validating the thesis was preferred as it has a lower cost and less risk, 
+Therefore, the simulation approach to validating the thesis was preferred as it has a lower cost and less risk.
 
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid:
 \begin{quotation}
