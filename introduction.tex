@@ -7,29 +7,37 @@ The Greek philosopher Plutarch proposed in his work \textit{Life of Theseus} a p
 \begin{quote}
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
+This question addresses many themes including how objects are made of components, how they change their component parts,
+and how this change effects the object in question.
+Although ancient, 
+these themes are still subjects for discussion today and this research explores them in the domain of software.
+
 %how objects are made of components
+\textit{How is software made from components?}
 Software can be created by composing together software components \citep{Szyperski2002} into a \textbf{component system}.
-These components encapsulate functionality and provide it to be used by  other components and the user.
-Using this divide-and-conquer method to creating software reduces the  large and complex problem of creating and maintaining software into smaller, more manageable parts.
-It also has additional benefits of increaing reuse, making systems more modifiable and flexible, 
+Each of these components provide functionality to be used by other components, the system, or the user.
+By building software out of components, the large and complex problem of creating and maintaining software is reduced into smaller, more manageable parts.
 
 %how/why they change their component parts
-A component system  can be changed by adding, removing and replacing components.
-These granular changes are driven by the user wanting to satisfy new user requirements, correct bugs or add new functionality. 
-The technical aspects required to change a component system (without breaking it) can be automated.
-This automation allows users of a component system to alter their component system without the need for technical knowledge of the composition of their system.
-With little technical knowledge, the user relies on the mechanisms to change their component system in a way that suits their preferences.
+\textit{How are component systems changed?}
+A component system can be changed by adding, removing or replacing components.
+As components may require or conflict with other components, adding or removing a single component may have propagating effects across the system.
+However, these technical aspects can be automated, and this automation allows users to change their component systems without the need for technical knowledge or expertise.
+With little technical knowledge, the user relies entirely on the provided mechanisms to change their component system in a way that meets their requirements.
 
 %how this change effects the object in question
-Over time, as a component system is repeatedly changed by its user, it evolves.
-This process is \textbf{component system evolution} (CSE) and is the focus of this research.
+\textit{How does changing a component system effect that system?}
+Over time, as a component system is repeatedly changed by its user, it evolves through the \textbf{component system evolution} (CSE) process.
+This evolution has not been explored indepth previously, 
+and investigating what effects it has on the system is the focus of this thesis.
+Through understanding how component systems evolve can inform users and developers about the effects of their choices. 
 
 \section{Motivation}
 %%%Why research this?
 Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
 ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
-Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively, 
-and can be changed by adding, removing and upgrading components.
+Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
+Ubuntu systems can be changed using \texttt{apt-get} \citep{Barth2005}, and Eclipse systems can be changed  altered using and can be changed by adding, removing and upgrading components.
 Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
 By studying and changing the CSE process,
 this research has the potential to impact millions of users and their systems.
@@ -92,13 +100,11 @@ The method selected to study CSE is to model its relevant aspects, then simulate
 This method was selected as a simulation provides the necessary control over the variables of CSE to validate the thesis.
 
 Another method that was considered when approaching this thesis was to study the evolving systems of real users.
-The difficulty of this method is in finding participants that would be willing 
-to allow experimental approaches change their (possiblly mission critical) systems.
-Therefore, to gain such a participant would require an immence amount of trust
-and finding enough participants to produce meaningful results would take time and resources not available to this research.
-This method also increase the risk of this research. 
-As evolution occurs over long periods of time, any small problem in the research could invalidate many months of data.  
-For these reasons the simulation approach to validating the thesis is preferred.
+The difficulty of this method would be finding participants willing to allow experimental techniques change their (possiblly mission critical) systems.
+Finding enough participants to produce meaningful results would have required time and resources that were not available to this research.
+Additionally, as evolution occurs over long periods of time, problems could take months to identify and correct.
+This would increase the risk of this when using this method for this research. 
+Therefore, the simulation approach to validating the thesis was preferred as it has a lower cost and less risk, 
 
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid:
 \begin{quotation}
