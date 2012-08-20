@@ -14,42 +14,55 @@ these themes are still relevant today and this research explores each of them in
 
 %how objects are made of components
 \textit{How is a software system made from components?}
-Software can be created by composing together software components \citep{Szyperski2002} into a \textbf{component system}.
-Each of these components provides functionality to be used by other components, the system, or the user.
-By building software out of components, the large and complex problem of creating and maintaining software is reduced into smaller, more manageable parts.
+A \textbf{component system} can be created by composing together \textbf{software component}s \citep{Szyperski2002}.
+A software component is an encapsulated unit that provides functionality that other components can use.
+For a software component to function, the functionality it requires must be available in its component system.
+This means that for a component system to be valid, all its components must be functional.
+For example, given a text-editor component requires spell-checker functionality, 
+the text-editor is functional only if another component provides it with spell-checker functionality.
+Furthermore, any system that includes the text-editor must include a component providing spell-checker functionality, otherwise it is not valid.
+This leads to an answer to the above question; software can be made out of software components by creating valid component systems.
 
-%how/why they change their component parts
+%how/why they change their component parts %Change, change must be valid, many valid choices, technical aspects automated, must trust the technology
 \textit{How are component systems changed?}
-A component system can be changed by adding, removing or replacing components within it.
-As components may require or conflict with other components, changing a single component may have propagating effects through the system.
-However, these technical aspects can be automated, and such automation allows users to change their component systems without the otherwise necessary technical knowledge.
-Without such knowledge, the user trust the available mechanisms to change their component system in a way that meets their requirements.
+A component system can be changed by adding, removing or replacing components, however these changes must result in a valid component system.
+This means that it may be impossibe to add, remove, or replace a single component without causing further addition, removal, or replacement of other components.
+For example, when adding a text-editor to a component system without spell-checker functionality, a component that provides spell-checker functionality must also be added.
+
+Additional complexity arises when changing a component system as there may be many possible valid component systems that could be selected from.
+As different systems may have different properties, one system may be more preferable over another.
+Therefore, not only must the change result in a valid system, but also a preferable one.  
+For example, given two components provide spell-checker functionality, 
+only one of these components is required when adding the text-editor to a component system.
+One of these spell-checker providing components must be selected, and one may be more preferable than another.  
+
+These complex and technical aspects of component system change can be automated. 
+Such automation allows users to change their component systems without performing the tedious, error prone task of finding a preferable, valid component system.
+However, when using this automated approach to system change, a user cannot ensure the changes made to their system are what they would prefer.
+Therefore, they must trust that the automated mechanisms that change their systems will do so with respect to their preferences.
 
 %how this change effects the object in question
 \textit{How does changing a component system effect that system?}
-Over time, a user will continually change their system to suit their needs and keep it up-to-date.
-This gradual change to the system is the \textbf{component system evolution} (CSE) process.
+Over time, a user will continually change their system to meet their requirements and keep it up-to-date.
+This gradual change to the system drives the \textbf{component system evolution} (CSE) process.
 The mechanisms by which the systems are changed will effect the system as it evolves.
-As a user trusts these mechanisms to change their system in occordance with their requirements, understanding how the effects they have on an evolving system is an important concern.
-This research looks at these 
-
+Given a user must trust these mechanisms, understanding their effects on evolving systems is an important are of study that this research focuses on.
 
 \section{Motivation}
 %%%Why research this?
 Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
 ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
-Ubuntu systems can be changed using \texttt{apt-get} \citep{Barth2005}, and Eclipse systems can be changed using Eclipse P2 \citep{leBerre2010}.
-These systems allow users of Ubuntu and Eclipse systems to add, remove, and upgrade components without knowing the techical details.
+Ubuntu systems come with the application \texttt{apt-get} \citep{Barth2005} and Eclipse systems come with Eclipse P2 \citep{leBerre2010}.
+These automate the changes made to systems, which allows users to add, remove or upgrade components without having to understand the technical details.
 Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
-By studying and changing the CSE process,
-this research has the potential to impact millions of users and their systems.
+By studying the CSE process and understanding the effects it has on systems, this research has the potential to impact millions of users and their systems.
 
 \section{Objective}
 %%%What do I want to find out?
 The objective of this research is to study the process of component system evolution and its effects.
 The primary effects that are focused on are the amount of change made to systems and how out-of-date the systems become over time.
-In section \ref{strat.usersurvey}, these two effects are argued to be the users' primary concerns during CSE.
+In section \ref{strat.usersurvey}, these two effects are argued to be a users' primary concerns during CSE.
 Through understanding this change and out-of-dateness,
 this research aims to inform developers and users of the consequences their choices have on evolving systems,
 and reduce these negative effects.
@@ -164,7 +177,7 @@ These contributions are:
 These contributions overlap with published papers from thsi research:
 \begin{enumerate}
   \item An empirical study into the search space of resolving component systems \citep{Jenson2010} in the proceedings of Component Based Software Engineering (CBSE) 2010.
-  \item A formal framework to describe the user preferences during CSE \citep{Jenson2010a} in the proceedings of Asia/Pacific Software Engineering Conference (APSEC) 2010.
+  \item A formal framework to describe a users preferences during CSE \citep{Jenson2010a} in the proceedings of Asia/Pacific Software Engineering Conference (APSEC) 2010.
   \item An empirical study into the evolution of component systems \citep{jenson2011} in the proceedings of CBSE 2011.
 \end{enumerate}
 
