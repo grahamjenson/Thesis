@@ -17,7 +17,7 @@ these themes are still relevant today and this research explores each of them in
 A \textbf{component system} can be created by composing together \textbf{software component}s \citep{Szyperski2002}.
 A software component is an encapsulated unit that provides functionality that other components can use.
 For a software component to function, the functionality it requires must be available in its component system.
-This means that for a component system to be valid, all its components must be functional.
+A component system is described as valid if all its components are functional.
 For example, given a text-editor component requires spell-checker functionality, 
 the text-editor is functional only if another component provides it with spell-checker functionality.
 Furthermore, any system that includes the text-editor must include a component providing spell-checker functionality, otherwise it is not valid.
@@ -26,35 +26,35 @@ This leads to an answer to the above question; software can be made out of softw
 %how/why they change their component parts %Change, change must be valid, many valid choices, technical aspects automated, must trust the technology
 \textit{How are component systems changed?}
 A component system can be changed by adding, removing or replacing components, however these changes must result in a valid component system.
-This means that it may be impossibe to add, remove, or replace a single component without causing further addition, removal, or replacement of other components.
-For example, when adding a text-editor to a component system without spell-checker functionality, a component that provides spell-checker functionality must also be added.
+This means that it may be impossible to add, remove, or replace a single component without causing further addition, removal, or replacement of other components.
+For example, when adding a text-editor to a component system without spell-checker functionality, 
+a component that provides spell-checker functionality must be added otherwise the system will not be valid.
 
 Additional complexity arises when changing a component system as there may be many possible valid component systems that could be selected from.
 As different systems may have different properties, one system may be more preferable over another.
-Therefore, not only must the change result in a valid system, but also a preferable one.  
+Therefore, not only must the change result in a valid system, but also a preferable system.  
 For example, given two components provide spell-checker functionality, 
 only one of these components is required when adding the text-editor to a component system.
 One of these spell-checker providing components must be selected, and one may be more preferable than another.  
 
 These complex and technical aspects of component system change can be automated. 
 Such automation allows users to change their component systems without performing the tedious, error prone task of finding a preferable, valid component system.
-However, when using this automated approach to system change, a user cannot ensure the changes made to their system are what they would prefer.
-Therefore, they must trust that the automated mechanisms that change their systems will do so with respect to their preferences.
+When using the automated mechanisms that change their systems, a user must trust that the change will reflect their preferences.
 
 %how this change effects the object in question
 \textit{How does changing a component system effect that system?}
 Over time, a user will continually change their system to meet their requirements and keep it up-to-date.
-This gradual change to the system drives the \textbf{component system evolution} (CSE) process.
+This gradual change to the system is the \textbf{component system evolution} (CSE) process.
 The mechanisms by which the systems are changed will effect the system as it evolves.
-Given a user must trust these mechanisms, understanding their effects on evolving systems is an important are of study that this research focuses on.
+Given a user must trust these mechanisms, understanding their effects on evolving systems is an important area of study that this research focuses on.
 
 \section{Motivation}
 %%%Why research this?
 Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
 ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
-Ubuntu systems come with the application \texttt{apt-get} \citep{Barth2005} and Eclipse systems come with Eclipse P2 \citep{leBerre2010}.
-These automate the changes made to systems, which allows users to add, remove or upgrade components without having to understand the technical details.
+Ubuntu systems can be changed with the application \texttt{apt-get} \citep{Barth2005} and Eclipse systems can be changed with Eclipse P2 \citep{leBerre2010}.
+These allow the user to add, remove or upgrade components in the system, ensuring that the system remains valid.
 Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
 By studying the CSE process and understanding the effects it has on systems, this research has the potential to impact millions of users and their systems.
 
