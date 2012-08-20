@@ -8,45 +8,45 @@ The Greek philosopher Plutarch proposed in his work \textit{Life of Theseus} a p
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
 This question addresses many themes including how objects are made of components, how they change their component parts,
-and how this change effects the object in question.
+and what effect does change have on the object in question.
 Although ancient, 
 these themes are still relevant today and this research explores each of them in the domain of software.
 
 %how objects are made of components
 \textit{How is a software system made from components?}
 A \textbf{component system} can be created by composing together \textbf{software component}s \citep{Szyperski2002}.
-A software component is an encapsulated unit that provides functionality that other components can use.
-For a software component to function, the functionality it requires must be available in its component system.
-A component system is described as valid if all its components are functional.
+A software component is an encapsulated unit that requires functionality supplied by other components, in order to provide its own functionality. 
+A component system is valid only if every contained component has all its required functionality provided by another component.
 For example, given a text-editor component requires spell-checker functionality, 
-the text-editor is functional only if another component provides it with spell-checker functionality.
-Furthermore, any system that includes the text-editor must include a component providing spell-checker functionality, otherwise it is not valid.
-This leads to an answer to the above question; software can be made out of software components by creating valid component systems.
+for a system to be valid that includes the text-editor must also include a component that provides spell-checker functionality.
+
 
 %how/why they change their component parts %Change, change must be valid, many valid choices, technical aspects automated, must trust the technology
 \textit{How are component systems changed?}
-A component system can be changed by adding, removing or replacing components, however these changes must result in a valid component system.
-This means that it may be impossible to add, remove, or replace a single component without causing further addition, removal, or replacement of other components.
-For example, when adding a text-editor to a component system without spell-checker functionality, 
-a component that provides spell-checker functionality must be added otherwise the system will not be valid.
+A component system can be changed by adding, removing or replacing components, however these actions must result in a valid component system.
+This means that adding, removing, or replacing a single component may cause a propagation of change to the component system.
+For example, when adding a text-editor to a component system 
+a component that provides spell-checker functionality must also be added, otherwise the system will not be valid.
 
-Additional complexity arises when changing a component system as there may be many possible valid component systems that could be selected from.
-As different systems may have different properties, one system may be more preferable over another.
-Therefore, not only must the change result in a valid system, but also a preferable system.  
-For example, given two components provide spell-checker functionality, 
-only one of these components is required when adding the text-editor to a component system.
-One of these spell-checker providing components must be selected, and one may be more preferable than another.  
+Additional complexity arises when changing a component system as there may be more than one valid component system to select from.
+Furthermore, different component systems may have different properties and one system may be preferable to another.
+Therefore, when changing a component system the resulting system should be valid and preferable.  
+For example, given a text-editor component is being added to a component system and two components provide spell-checker functionality, 
+a component system with either spell-checker component is valid, however the component system selected should be preferable to the other.
 
 These complex and technical aspects of component system change can be automated. 
 Such automation allows users to change their component systems without performing the tedious, error prone task of finding a preferable, valid component system.
-When using the automated mechanisms that change their systems, a user must trust that the change will reflect their preferences.
+However, when using such automated mechanisms a user must trust that the change will reflect their preferences.
+
 
 %how this change effects the object in question
-\textit{How does changing a component system effect that system?}
+\textit{What effects does changing a component system have?}
 Over time, a user will continually change their system to meet their requirements and keep it up-to-date.
-This gradual change to the system is the \textbf{component system evolution} (CSE) process.
-The mechanisms by which the systems are changed will effect the system as it evolves.
-Given a user must trust these mechanisms, understanding their effects on evolving systems is an important area of study that this research focuses on.
+This gradual change is the \textbf{component system evolution} (CSE) process.
+The mechanisms by which the systems are changed will effect the system as it evolves,
+particularly the criteria by which preferable component systems are selected.
+However, what exactly are the effects these mechanisms have on an evolving system is yet to be answered. 
+This research aims to provide answers to this questions by looking at component systems, the mechanisms that change them, and CSE.
 
 \section{Motivation}
 %%%Why research this?
@@ -54,13 +54,13 @@ Examples of popular component systems are the Ubuntu GNU/Linux operating systems
 ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
 Ubuntu systems can be changed with the application \texttt{apt-get} \citep{Barth2005} and Eclipse systems can be changed with Eclipse P2 \citep{leBerre2010}.
-These allow the user to add, remove or upgrade components in the system, ensuring that the system remains valid.
+These allow the user to change their system by adding, removing and upgrading components.
 Repeatedly applying such changes allows the Ubuntu and Eclipse systems to evolve through the CSE process.
 By studying the CSE process and understanding the effects it has on systems, this research has the potential to impact millions of users and their systems.
 
 \section{Objective}
 %%%What do I want to find out?
-The objective of this research is to study the process of component system evolution and its effects.
+The objective of this research is to study the process of component system evolution and its effect on component systems.
 The primary effects that are focused on are the amount of change made to systems and how out-of-date the systems become over time.
 In section \ref{strat.usersurvey}, these two effects are argued to be a users' primary concerns during CSE.
 Through understanding this change and out-of-dateness,
@@ -116,10 +116,9 @@ The method selected to study CSE is to model its relevant aspects, then simulate
 This method was selected as a simulation provides the necessary control over the variables of CSE to validate the thesis.
 
 Another method that was considered when approaching this thesis was to study the evolving systems of real users.
-The difficulty of this method would be finding participants willing to allow experimental techniques change their (possiblly mission critical) systems.
+The difficulty of this method would be finding participants willing to allow experimental techniques change their (possibly mission critical) systems.
 Finding enough participants to produce meaningful results would have required time and resources that were not available to this research.
-Additionally, as evolution occurs over long periods of time, problems could take months to identify and correct.
-This would increase the risk of this when using this method for this research. 
+Additionally, as evolution occurs over long periods of time, problems could take months to identify and correct, increasing the risk when using this method for this research. 
 Therefore, the simulation approach to validating the thesis was preferred as it has a lower cost and less risk.
 
 The core hurdle in creating a simulation is ensuring that the returned results are similar enough to reality to draw meaningful conclusions, i.e. the simulation is valid:
