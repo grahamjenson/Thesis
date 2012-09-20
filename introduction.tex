@@ -8,7 +8,7 @@ The Greek philosopher Plutarch proposed in his work \textit{Life of Theseus} a p
 If an object has all its component parts replaced, is it the same object?
 \end{quote}
 This question addresses many themes including how objects are made of components, how they change their component parts,
-and what effect does change have on the object in question.
+and what effect change has on the object in question.
 Although ancient, 
 these themes are still relevant today and this research explores each of them in the domain of software.
 
@@ -18,7 +18,7 @@ A \textbf{component system} can be created by composing together \textbf{softwar
 A software component is an encapsulated unit that requires functionality supplied by other components, in order to provide its own functionality. 
 A component system is valid only if every contained component has all its required functionality provided by another component.
 For example, given a text-editor component requires spell-checker functionality, 
-for a system to be valid that includes the text-editor must also include a component that provides spell-checker functionality.
+a valid system that includes the text-editor must also include a component that provides spell-checker functionality.
 
 
 %how/why they change their component parts %Change, change must be valid, many valid choices, technical aspects automated, must trust the technology
@@ -28,7 +28,8 @@ This means that adding, removing, or replacing a single component may cause a pr
 For example, when adding a text-editor to a component system 
 a component that provides spell-checker functionality must also be added, otherwise the system will not be valid.
 
-Additional complexity arises when changing a component system as there may be more than one valid component system to select from.
+Additional complexity arises when changing a component system,
+as there may be more than one way to change the system.
 Furthermore, different component systems may have different properties and one system may be preferable to another.
 Therefore, when changing a component system the resulting system should be valid and preferable.  
 For example, given a text-editor component is being added to a component system and two components provide spell-checker functionality, 
@@ -50,8 +51,8 @@ This research aims to provide answers to this questions by looking at component 
 
 \section{Motivation}
 %%%Why research this?
-Examples of popular component systems are the Ubuntu GNU/Linux operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
-ans Eclipse IDEs, which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
+Examples of popular component systems are the Ubuntu operating systems, which have an estimated 20 million users\footnote{http://www.ubuntu.com/, accessed 16/5/2012},
+and Eclipse integrated development environment (IDE), which are used by thousands of companies and millions of users\footnote{http://www.eclipse.org/org/community\_survey/Eclipse\_Survey\_2011\_Report.pdf, \\accessed 29/5/2012}.
 Ubuntu and Eclipse systems are constructed from components, called packages and bundles respectively. 
 Ubuntu systems can be changed with the application \texttt{apt-get} \citep{Barth2005} and Eclipse systems can be changed with Eclipse P2 \citep{leBerre2010}.
 These allow the user to change their system by adding, removing and upgrading components.
@@ -89,7 +90,7 @@ Additionally, to gain a broad and useful perspective of CSE characteristics, the
 To this end, this research simulates the evolution of many Ubuntu systems.
 The reason for selecting Ubuntu and simulation as the method of study are detailed further in this section.
 
-\subsection{Why Ubuntu?}
+\subsection{Dataset}
 The Ubuntu operating system was selected as the component system to study CSE for the following reasons:
 \begin{itemize}
   \item It has significant size and complexity which ensures that the results will not be trivial.
@@ -104,19 +105,18 @@ There are many similarities between component models (some are discussed in sect
 including the relationships between components and the mechanisms used to change component systems.
 These similarities may make many of the contributions from this research component system independent.
 
-Another factor in the decision to only simulate the evolution of Ubuntu systems was the significant effort invested in the collection of data.
-This effort was reduced because of Ubuntu's open nature and active community that provided tools and resources to be used.
-It may be more difficult to collect equally valid data for other component systems as
-many systems, like Eclipse, do not have their history archived as precisely as Ubuntu.
+Another factor in the decision to only simulate the evolution of Ubuntu systems was the lack of data available for other component models.
+Many systems, like Eclipse, do not have their history archived as precisely as Ubuntu.
+This lack of available data meant that data collection would be impractical or impossible.
 Therefore, the simulation of other types of component system is not within the scope of this research,
 however the simulation of further component systems is proposed as future research in section \ref{conclusion.futurework}.
 
-\subsection{Why Simulate?}
+\subsection{Methodology}
 The method selected to study CSE is to model its relevant aspects, then simulate the evolution of many Ubuntu systems.
 This method was selected as a simulation provides the necessary control over the variables of CSE to validate the thesis.
 
 Another method that was considered when approaching this thesis was to study the evolving systems of real users.
-The difficulty of this method would be finding participants willing to allow experimental techniques change their (possibly mission critical) systems.
+The difficulty of this method would be finding participants willing to allow experimental techniques to change their (possibly mission critical) systems.
 Finding enough participants to produce meaningful results would have required time and resources that were not available to this research.
 Additionally, as evolution occurs over long periods of time, problems could take months to identify and correct, increasing the risk when using this method for this research. 
 Therefore, the simulation approach to validating the thesis was preferred as it has a lower cost and less risk.
@@ -128,7 +128,7 @@ The core hurdle in creating a simulation is ensuring that the returned results a
 
 The methodology that \cite{Law2005} outlines was selected because it gave practical guidance to creating and using a valid simulation.
 The methodology was created after the observation that validation was often ``attempted after the simulation models had already been developed'' \citep{Law2005}.
-It was also observed was that non-validated simulations can produce erroneous information that leads to bad, possibly costly decisions being made.
+It was also observed that non-validated simulations can produce erroneous information that leads to bad, possibly costly decisions being made.
 
 This methodology has a seven step approach to creating a valid simulation:
 \begin{itemize}
@@ -144,16 +144,16 @@ This methodology has a seven step approach to creating a valid simulation:
 	The implementation of the conceptual model must be executed and documented in a way that allows others to replicate and repeat the process.
 \item \textbf{Step 5: Validate the simulation implementation}: %Through MISC
 	The most definitive way to validate a simulation is to compare its results to those from an actual system \citep{Law2005}.
-\item \textbf{Step 6: Design, conduct and analyse experiments} :
+\item \textbf{Step 6: Design, conduct and analyse experiments}:
 	Experiments use the simulation to measure effects and test hypothesises. 
 	For each of the experiments, the configuration and number of independent runs must be defined.
 \item \textbf{Step 7: Document and present results}:
 	This presentation is required to promote the future re-use of the models, through describing the validation process.
 \end{itemize}
 
-The above described methodology was created for large scale industrial projects with a substantial resources available.
+The above described methodology was created for large scale industrial projects with substantial resources available.
 It describes the employment and use of experts and analysts to ensure validity.
-The available resources for this project is fewer than these large scale projects, therefore some of the steps have been decreased in scope.
+The available resources for this project are fewer than these large scale projects, therefore some of the steps have been decreased in scope.
 This may reduce the validity of the final simulation, but these restrictions have been made only when necessary,
 and done so in a manner that attempts to minimise negative effects.
 
@@ -164,20 +164,20 @@ and results from the simulation are all contributions of this research.
 These contributions are:
 \begin{enumerate}
   \item A formal model \textbf{\modelname} (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) that describes CSE. 
-  \item The \textbf{CUDF* syntax} that is used to define documents that describe the evolution of a component system.
-  \item \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) that models a user that changes their system.
+  \item The \textbf{CUDF* language} that is used to define documents that describe the evolution of a component system.
+  \item \textbf{\usermodel} (\textbf{Sim}ulated \textbf{User}) that models a user who changes their system.
   \item The \textbf{GJSolver} which is an efficient implementation that calculates the changes made to a system as it evolves (called resolving).
 	GJSolver was independently validated through the MISC competition hosted by the Mancoosi project\footnote{http://www.mancoosi.org/, accessed 8/8/2012}. 
   \item A \textbf{simulation of the evolution of Ubuntu operating systems} using \modelname, CUDF*, \usermodel and GJSolver.
-  \item The defined methods to reduce the out-of-dateness and change during CSE. 
+  \item Two methods to reduce the out-of-dateness and change during CSE. 
   \item The results, analysis and conclusions from experiments using the simulation.
 \end{enumerate}
 
 These contributions overlap with published papers from this research:
 \begin{enumerate}
-  \item An empirical study into the search space of resolving component systems \citep{Jenson2010} in the proceedings of Component Based Software Engineering (CBSE) 2010.
-  \item A formal framework to describe a users preferences during CSE \citep{Jenson2010a} in the proceedings of Asia/Pacific Software Engineering Conference (APSEC) 2010.
-  \item An empirical study into the evolution of component systems \citep{jenson2011} in the proceedings of CBSE 2011.
+  \item An empirical study into the search space of resolving component systems \citep{Jenson2010}.
+  \item A formal framework to describe a users preferences during CSE \citep{Jenson2010a}.
+  \item An empirical study into the evolution of component systems \citep{jenson2011}.
 \end{enumerate}
 
 \section{Thesis Overview}
@@ -188,8 +188,8 @@ the implementation and validation of the simulation are described (chapter \ref{
 Chapter \ref{background} explores the backgrounds of CSE and its related domains.
 This aims to put CSE in historical context and to give a suitable definitions to the elements of CSE.
 
-Chapter \ref{formal} presents the \modelname model and the CUDF* syntax that describe the formal aspects of the evolution of component systems.
-\modelname is used to describe the evolution of a component system and CUDF* is used as the syntax to serialise \modelname instances.
+Chapter \ref{formal} presents the \modelname model and the CUDF* language that describe the formal aspects of the evolution of component systems.
+\modelname is used to describe the evolution of a component system and CUDF* is used as the language to serialise \modelname instances.
 
 Chapter \ref{simulation} presents the \usermodel model which is used to describe users that request changes to their component systems.
 This model includes assumptions and variables that are necessary to simulate the evolution of Ubuntu systems. 
