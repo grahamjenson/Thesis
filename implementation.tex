@@ -26,14 +26,14 @@ SS [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">
 SSI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelimplwx</TD></TR></TABLE>> shape=none];
 \modelnamewx [label=<<TABLE  BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\modelnamewx</TD></TR></TABLE>> shape=none];
 FMI [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\modelnamewx</TD></TR></TABLE>> shape=none ];
-SS -> PBCrit [label=uses];
-SS -> SATPB [label=uses];
-SSI -> SS [label=instanciates];
+SS -> PBCrit [label=" uses"];
+SS -> SATPB [label=" uses"];
+SSI -> SS [label=" instantiates"];
 subgraph {
 rank=same
-	FMI -> SSI [ label="maps to 1..*" ];
+	FMI -> SSI [ label=" maps to 1..*" ];
 }
-SATPB -> SAT [label=extends];
+SATPB -> SAT [label=" extends"];
 FMI -> \modelnamewx [ label = "instantiates"];
 }
   \caption{The relationships between the \modelimpl problem and the \modelname model}

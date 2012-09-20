@@ -1,9 +1,8 @@
 \chapter{User Model}
 \label{simulation}
-\epigraph{A model is a physical, mathematical, or logical representation of a system entity, phenomenon, or process. 
-A simulation is the implementation of a model over time. 
-A simulation brings a model to life and shows how a particular object or phenomenon will behave.}
-{\textit{Systems Engineering Fundamentals. Defense Acquisition University Press, 2001}}
+\epigraph{All parts should go together without forcing. You must remember that the parts you are reassembling were disassembled by you. 
+Therefore, if you can't get them together again, there must be a reason. By all means, do not use a hammer.}
+{\textit{IBM maintenance manual, 1925}}
 
 In the previous chapter, CUDF* documents were used to describe the evolution of component systems through a user's repeated requests to change.
 However, such a document can be used to describe unlikely situations,
@@ -26,9 +25,9 @@ subgraph {
 	ConMI[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">:\usermodelwx</TD></TR></TABLE>> shape=none];
 }
 ConM[label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="5"><TR><TD WIDTH="150">\usermodelwx</TD></TR></TABLE>> shape=none];
-CMI -> CMS [ label="instantiates"];
-ConMI -> ConM [ label="instantiates"];
-ConMI -> CMI [ label="creates"];
+CMI -> CMS [ label=" instantiates"];
+ConMI -> ConM [ label=" instantiates"];
+ConMI -> CMI [ label=" creates"];
 }
   \caption{Relationships between the \usermodel model and CUDF*}
   \label{sim.modeldiagram}
