@@ -299,7 +299,7 @@ Such a criterion is defined in section \ref{impl.ipp} and it is shown in chapter
 %%%The probability a component will be selected
 Different users will likely select different components to install.
 For example, a user who is a graphic designer will more likely select graphics editor tools to be installed, and less likely select programming tools.
-However, simulating the type of each user and their individual preferences of what they would install is impractical.
+To simulate each user with their individual preferences of what they would install is impractical.
 For this simulation each component name's probability to be installed will be the same for all users.
 
 To define the probability a user will select a component to install, the problem is broken into two questions:
@@ -307,11 +307,11 @@ To define the probability a user will select a component to install, the problem
   \item What component would a user select to install?
   \item How often are these components selected to be installed?
 \end{enumerate}
-For many available packages in the Ubuntu repository a user would not likely select to install.
-Packages that provide libraries, background daemons, interfaces between services are usually installed because other packages depend on them, not because the user selected to install them.
+There are many packages in the Ubuntu repository that a user would not likely select for install.
+Packages that provide libraries, background daemons, interfaces between services are usually installed because other packages depend on them, not because a user selected to install them.
 By answering the first question a set of packages can be found that a user may install.
 Further, by looking at current systems and what packages they have installed, the probability that these packages are selected to be installed can be estimated.
-These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}..
+These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}.
 
 The package \texttt{app-install-package} contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
 This data is used by other applications, like the Ubuntu Software Center, to provide a list of packages the user may wish to install.
@@ -347,8 +347,8 @@ This section discusses these differences and their impacts on the validity of \u
 \label{sim.randomness}
 When generating a CUDF* document, each simulated day there are three points of randomness in \usermodel:
 \begin{enumerate}
-  \item The probability a user requests upgrade their system, the $u$ variable.
-  \item The probability a user requests to install a component, the $i$ variable.
+  \item The probability $u$ a user requests to upgrade their system.
+  \item The probability $i$ a user requests to install a component.
   \item If the user requests to install, what package is selected to be installed.
 \end{enumerate}
 In reality, a user's request to upgrade the system or install a component are not random.
