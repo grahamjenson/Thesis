@@ -9,7 +9,7 @@ Calculation of all the systems that occur as a result of these requests is descr
 Resolving a \modelname instance can require significant computational effort due to the complexity of finding a satisfactory system for each request.
 Therefore, an efficient problem representation and algorithm are required.
 To resolve a \modelname instance, each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \citep{marque2011blex}.
-\modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to the criteria that are lexicographic.
+\modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to the lexicographic order the criteria are in.
 The constraints are clauses and linear inequalities defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 Each criterion is defined to either maximise or minimise a PB function.
 Section \ref{impl.blo} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
@@ -193,7 +193,7 @@ In this example, components $a$ and $b$ are the only components with licence $l_
 This means that an iff assignment includes either $a$ or $b$ it must also include $l_1$, i.e. $l_1 \Leftrightarrow a \vee b$.
 To ensure this constraint is satisfied, the formula $I$ is defined to include and expansion into the SAT constraints of $l_1 \Leftrightarrow a \vee b$ ($\{\neg l_1, a , b\}$, $\{\neg a , l_1\}$ 
 and $\{b , \neg l_1\}$).
-A PB function $f$ is defined using the literals $\langle l_1,\ldots,l_n\rangle$ and integers $\langle 1_1,\ldots,1_n\rangle$.
+A PB function $f$ is constructed using the literals $\langle l_1,\ldots,l_n\rangle$ and integers $\langle 1_1,\ldots,1_n\rangle$.
 The criterion to minimise the number of licences is defined as $\langle f, > , I \rangle$.
 
 \modelimpl uses a list of PB criteria ordered by lexicographic preference to find an optimal solution.
@@ -229,8 +229,8 @@ where no other solution $P'$ to $F$ exists such that $P'$ is lexicographically g
 
 This means that given a \modelimpl problem that consists of:
 \begin{itemize}
-  \item a tuple of PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$
-  \item a SAT+PB formula $F$
+  \item A tuple of PB criteria $\langle \mathfrak{crit}_1,\ldots,\mathfrak{crit}_n \rangle$.
+  \item A SAT+PB formula $F$.
 \end{itemize}
 A solution to \modelimpl problem is the optimal solution to $F$ w.r.t. to its PB criteria.
 
@@ -290,7 +290,7 @@ by mapping each criterion $crit_{i}$ to a PB criterion $\mathfrak{crit}_i$.
 A criterion $\langle rank_{\alpha} ,\leq \rangle$ maps to a PB criteria $\langle f, R , I \rangle$ iff:
 \begin{itemize}
   \item $R$ equals the strict order of $\leq$, i.e. if $\leq$, $R$ is $<$ and if $\geq$, $R$ is $>$.
-  \item given a solution $P$ to formula $I$, and $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$. 
+  \item Given a solution $P$ to formula $I$, and $P$ maps to the component system $\beta$, $f(P) = rank_{\alpha}(\beta)$. 
 \end{itemize} 
 
 To map an evolution preference order to the PB criteria,
@@ -298,8 +298,8 @@ it must be defined with the lexicographically composed criteria.
 To map a \modelname criterion to a PB criterion, it must satisfy the above constraints.
 This means that:
 \begin{itemize}
-  \item not all evolution preference orders can be described with lexicographically ordered PB criteria
-  \item not all \modelname criteria can be mapped to PB criteria
+  \item Not all evolution preference orders can be described with lexicographically ordered PB criteria.
+  \item Not all \modelname criteria can be mapped to PB criteria.
 \end{itemize} 
 Therefore, the mapping from evolution preference orders to PB criteria is a partial mapping.
 
@@ -354,13 +354,13 @@ Simple definitions of criteria to minimise change can often have negative effect
 For example, the most direct measurement of change of a component system is the measurement of the total changed components.
 This is defined as a \modelname criterion:
 \begin{defs}
-	The \textbf{changed components} criteria is defined as $crit_{changec} = \langle rank^{changec}_{\alpha}, \leq \rangle$,
-	where $rank^{changec}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
+	The \textbf{changed components} criteria is defined as $crit_{compsChanged} = \langle rank^{compsChanged}_{\alpha}, \leq \rangle$,
+	where $rank^{compsChanged}_{\alpha}(\beta) = |\alpha \Delta \beta|$.
 \end{defs}
 That is, the number of components in the symmetric difference between component systems is the minimised with this criterion.
 This criterion's measurements are a coarse representation of the risks of changing a system.
 For example, a component being replaced by another version of itself is intuitively less risky than it being replaced with an entirely different component.  
-Yet using the $crit_{changec}$ criterion, these would be seen as equivalent changes.
+Yet using the $crit_{compsChanged}$ criterion, these would be seen as equivalent changes.
 
 To define a change criterion that takes into account changing between components of the same name, is less risky, a components name can be considered.
 For this purpose the function $V$ is defined:
@@ -394,7 +394,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \centering
 \begin{tabular}{c | c | c}
 \textbf{MOF name} 		& \textbf{\modelname criterion} & \textbf{PB criterion} \\
-\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{changed} \rangle$ \\
+\texttt{-changed} 	& $crit_{change} = \langle rank^{change}_{\alpha}, \leq \rangle$ & $\langle f_{change}, <, I_{change} \rangle$ \\
 \texttt{-removed} 	& $crit_{removed} = \langle rank^{removed}_{\alpha}, \leq \rangle$ & $\langle f_{removed}, <, I_{removed} \rangle$ \\
 \texttt{-new} 	& $crit_{new} = \langle rank^{new}_{\alpha}, \leq \rangle$ & $\langle f_{new}, <, I_{new} \rangle$ \\
 \end{tabular}
@@ -402,7 +402,7 @@ A full description of the mapping is presented in appendix \ref{apx.critmapping}
 \label{impl.ccritmapping}
 \end{table}
 
-\subsection{Out-of-date criteria}
+\subsection{Out-of-date Criteria}
 When changing a component system it is a good idea to select more recent versions of components, as they keep the system from becoming out-of-date.
 However, it is a difficult task to define an appropriate measurement of how out-of-date a component system is.
 This difficulty comes from two properties of component versions must be considered:
@@ -467,7 +467,7 @@ The mapping between this criterion, MOF and the PB criteria is presented in tabl
 \label{impl.mcritmapping}
 \end{table}
 
-\section{Solving a \modelimpl problem}
+\section{Solving a \modelimpl Problem}
 \label{impl.algorithms}
 The efficient solving of \modelimpl problems will allow the efficient resolving of \modelname instances.
 This section describes the lexicographic-iterative-strengthening-algorithm (LIS) to solve \modelimpl problems.
@@ -476,7 +476,7 @@ and the iterative strengthening algorithm \citep{calistri1994iterative, le2010sa
 This section also describes how a \modelname instance is resolved by mapping to \modelimpl problems.
 The algorithms presented in this section are described to give an overview of how \modelimpl problems are solved.
 
-\subsection{Davis-Putnam-Logemann-Loveland algorithm for SAT Solvers}
+\subsection{Davis-Putnam-Logemann-Loveland Algorithm for SAT Solvers}
 %%%A successful algorithm for solving SAT problems is the DPLL algorithm, here we describe it in overview
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm \citep{Davis1960, davis1962machine} is a complete (meaning it will find a solution if one exists), 
 backtracking-based search algorithm for solving SAT and SAT+PB problems.
@@ -1000,7 +1000,7 @@ The virtual system has slightly more updated packages over the month,
 this could be attributed to the increased size of the system, or an increase in package maintenance of Ubuntu from 2009 to 2011. 
 
 \section{Summary}
-This chapter described the \modelimpl problem and how it mapped to the evolution steps from a \modelname instance.
+This chapter described how the evolution steps from a \modelname instance can be mapped to \modelimpl problems.
 The algorithms used to solve a \modelimpl problem where also discussed.
 The implementation GJSolver was presented.
 GJSolver takes a CUDF* document, parses it to a \modelname instance, and resolves it by mapping it to \modelimpl problems and solving them.

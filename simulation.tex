@@ -70,7 +70,7 @@ The set of questions used to identify the user were:
 \end{itemize}
 These can be used to categorise the type of user and weigh their answers for credibility based on their self rated experience.
 
-The set of questions that asked about the use of package mangers were:
+The set of questions that asked about the use of package managers were:
 \begin{itemize}
   \item After you install a new system, what are your first interactions with the package manager?
   \item Describe your day to day interactions with the package manager?
@@ -108,7 +108,7 @@ This also shows that most users upgrade their system daily, and many install pac
 Additionally, this shows that users do not often remove packages. 
 
 \subsection{Progressive vs. Conservative Users}
-One goal of this survey was to identify motivations of user's to change their systems.
+One goal of this survey was to identify motivations of users to change their systems.
 Based on the responses the users attitudes towards changing their systems are affected by the following risks:
 \begin{itemize}
   \item the potential risk of changing the system and introducing new problems.
@@ -118,7 +118,7 @@ The behaviours of these users can be described with two user stereotypes, \textb
 These terms come from the domain of politics where conservatism philosophy that emphasises minimal and gradual change in society,
 which is contrasted by progressivism philosophy that promotes change and reform \citep{oed2010}.
 
-Most users in the survey are partially motivated by both risks, e.g. a users response that express a slight conservative attitude:
+Most users in the survey are partially motivated by both risks, e.g. a user's response that express a slight conservative attitude:
 \begin{quotation}
 ``In production I rarely remove packages ([it is] easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
@@ -169,7 +169,7 @@ This section presents the variables and assumptions of \usermodel, and how an in
 The \usermodel entity consists of the following variables: 
 \begin{itemize}
   \item $u$ is the probability a user requests to upgrade the system per day.
-  \item $i$ is the probability a user requests to install per day.
+  \item $i$ is the probability a user requests to install any component per day.
   \item $U$ is the MOF criteria used to select an optimal system for an upgrade request.
   \item $I$ is the MOF criteria used to select an optimal system for an install request.
 \end{itemize}
@@ -234,7 +234,7 @@ Such a document describes the realistic evolution of an Ubuntu system.
 The main loop iterates over the 365 days in which the simulation occurs.
 Each day the ``user'' randomly selects to upgrade their system and/or install a component.
 
-The function \texttt{random-probability()} is defined to return a random value between 0 and 1.
+The function \texttt{random-probability()} is defined to return a uniformly distributed random value between 0 and 1.
 This function is used to randomly select what requests the user will make on a given day.
 
 If a user requests to upgrade their system, the upgrade request is added to the CUDF template at time initial time $t_0$ plus the number of elapsed days.
@@ -256,9 +256,9 @@ The discussion over the validity of the resulting CUDF* documents is presented i
 In order to create CUDF* documents from \usermodel instances, data about the Ubuntu system must be collected and converted into useful formats.
 The collected data and their sources are:
 \begin{enumerate}
-  \item the set of Ubuntu packages and the times they became available, collected from the Ubuntu repository.
-  \item the initial component system Ubuntu 9.10 collected from a virtual install.
-  \item the probabilities different component names will be selected to be installed, from the \texttt{app-install-data} package and weighted using the Ubuntu popularity contest.
+  \item The set of Ubuntu packages and the times they became available, collected from the Ubuntu repository.
+  \item The initial component system Ubuntu 9.10 collected from a virtual install.
+  \item The probabilities different component names will be selected to be installed, from the \texttt{app-install-data} package and weighted using the Ubuntu popularity contest.
 \end{enumerate}
 
 This section describes the data collection and conversion to create \usermodel.
@@ -331,11 +331,11 @@ the probability a package is selected to be installed is estimated.
 \label{sim.modelvalidation}
 The validation of \usermodel has been accomplished through:
 \begin{itemize}
-  \item discussions with project supervisors and other stakeholders.
-  \item comparing \usermodel to the responses from the user survey.
-  \item compare generated CUDF* documents with \texttt{apt-get} logs collected from 19 
+  \item Discussions with project supervisors and other stakeholders.
+  \item Comparing \usermodel to the responses from the user survey.
+  \item Compare generated CUDF* documents with \texttt{apt-get} logs collected from 19 
   respondents of the survey\footnote{Comparing these logs to the resulting simulated systems is described in section \ref{impl.validation}}.
-  \item creating a virtual Ubuntu 11.10 system to study its perspective of the Ubuntu repository changing over the month of November 2011.
+  \item Creating a virtual Ubuntu 11.10 system to study its perspective of the Ubuntu repository changing over the month of November 2011.
 \end{itemize}
 
 Using these methods differences between the simulation and the reality of CSE can be identified and discussed.
@@ -348,9 +348,9 @@ This section discusses these differences and their impacts on the validity of \u
 \label{sim.randomness}
 When generating a CUDF* document, each simulated day there are three points of randomness in \usermodel:
 \begin{enumerate}
-  \item the probability a user requests upgrade their system, the $u$ variable.
-  \item the probability a user requests to install a component, the $i$ variable.
-  \item if the user requests to install, what package is selected to be installed.
+  \item The probability a user requests upgrade their system, the $u$ variable.
+  \item The probability a user requests to install a component, the $i$ variable.
+  \item If the user requests to install, what package is selected to be installed.
 \end{enumerate}
 In reality, a user's request to upgrade the system or install a component are not random.
 These requests are reasoned about using gathered information, preferences and external constraints.
@@ -459,5 +459,5 @@ By exploring the differences to the reality of CSE the results from a simulation
 Although the \usermodel model can be used to create a description of the evolution of a component system, it may require significant calculation to find how exactly the component system evolves.
 The constraints of each request must be satisfied, and the optimal system w.r.t. the criteria must be found.
 The following chapter presents the mapping an instance of \modelname to a series of problems and the algorithms to solve such problems.
-These alogirhtm are implemented in GJSolver, which is the final piece required to simulate CSE.
+These algorithms are implemented in GJSolver, which is the final piece required to simulate CSE.
 

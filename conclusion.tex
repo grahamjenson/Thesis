@@ -1,11 +1,7 @@
 \chapter{Conclusion}
 \label{conclusion}
 %%%Answers to our initial questions
-There are an estimated 20 million Ubuntu GNU/Linux systems users\footnote{http://www.ubuntu.com/, accessed 16/5/2012}.
-These users are repeatedly making changes to their systems by installing new components and upgrading components to newer versions.
-This causes their systems to evolve over time.
-
-This research has investigated the evolution of such component systems using a developed simulation.
+This research has investigated the evolution of component systems using a developed simulation.
 To build this simulation, first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
 The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
 to describe a component system evolving through repetitive change and the user that requests the changes.
@@ -19,7 +15,7 @@ The experiments have provided empirical evidence for the discoveries:
   \item Upgrading a system causes the majority of change 
   and installing new components only adds to this change by increasing the number of components to be upgraded.
   \item Upgrading frequently during most of the year is unnecessary as it has little impact on the out-of-dateness of systems.
-  However, during periods where new component versions are released quickly, e.g. during Ubuntu releases, 
+  However, during periods where new component versions are released quickly, e.g.\ during Ubuntu releases, 
   it is important to upgrade frequently. 
   \item Regular updates cannot ensure that a component system stays up-to-date.
   This is in part due to the criteria used by \texttt{apt-get} that restricts adding new components when upgrading.
@@ -79,7 +75,7 @@ The largest area of future research is in the simulation of additional systems, 
 so they can be studied as they evolve. 
 Through such simulation the conclusions of this research can be shown to be either invariant between component systems 
 or to be Ubuntu-specific.
-The core hurdle of accomplishing this would be that much of the collected information in this study does not exist for other component models.
+The core hurdle of accomplishing this is that much of the collected information in this study does not exist for other component models.
 Component models like Eclipse do not have their history archived as precisely as Ubuntu.
 Information, like the Ubuntu repository, does not exist or does not contain the detailed information for other component models.
 Resources of information are available, but can be incomplete.

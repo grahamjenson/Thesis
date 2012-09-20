@@ -5,7 +5,7 @@
 In the previous chapter, component system evolution (CSE) was described as the continual alteration of a system of components by a composer.
 The described component models each defined constraints on this change to ensure the resulting system is valid.
 
-This chapter describes a model (\modelname) and syntax (CUDF*) used to describe the CSE process. 
+This chapter describes the model (\modelname) and syntax (CUDF*) used to describe the CSE process. 
 They also enable the discussion of CSE as they formally define terms and concepts used in this research.
 
 The model \modelname (\textbf{Co}mponent \textbf{Sy}stem \textbf{E}volution) aims for the qualities of a model described by \cite{Selic2003}:
@@ -59,11 +59,10 @@ The complete description of parsing a CUDF* document to an instance of \modelnam
 This section presents the \modelname model of component system evolution. 
 \modelname describes the evolution of a component system as a series of evolution steps.
 Each step tries to satisfy a user request for change along with the constraints that ensure the system is valid.
-The resulting component system that is selected optimal with respect to a preference order.
-
+The selected component system is optimal with respect to a preference order.
 
 \subsection{Evolution Problem}
-An evolution problem defines the set of valid component systems that can be evolved to.
+The solutions to an evolution problem make up the set of valid component systems that can be evolved to.
 To define this, first the basic elements of the model must be defined, such as components and constraints. 
 
 %%%What a component is
@@ -91,8 +90,9 @@ This definition is not included in this model, though it may be possible for it 
 Constraints are used to describe valid systems.
 \begin{defs}
 \label{formal.constraintdefs}
-A \textbf{constraint} is a set of component systems, e.g. $con$ is a constraint and $con \subseteq 2^{\mathbb{C}}$.
+A \textbf{constraint} $con$ is a set of component systems, i.e. $con \subseteq 2^{\mathbb{C}}$.
 \end{defs}
+Such constraints can be defined intentionally by specifying the necessary and sufficient conditions for a component system to be in a constraint.
 
 In most component models described in chapter \ref{background}, only specific types of constraints are used, these types are:
 \begin{enumerate}
@@ -258,7 +258,7 @@ the \textbf{evolution step} function  $\epsilon(\alpha_{t_{i-1}},\delta_{t_i} \c
   \item iff the evolution problem $\delta_{t_i} \cup \omega_{t_i}$ is unsatisfiable, $\alpha_{t_i}$ equals $\alpha_{t_{i-1}}$.
 \end{itemize}
 \end{defs}
-The evolution step function takes a previous system and changes it to satisfy a users request and system constraints with a preferable system.
+The evolution step function takes a previous system and changes it to satisfy a user's request and system constraints with a preferable system.
 If the evolution problem is unsatisfiable, the evolution step function does not change the system and returns the previous system $\alpha_{t_{i-1}}$.
 Such a situation occurs when the user requests a change that either conflicts with itself, or conflicts with the system constraints.
 For example, consider the situation where a user requested to install components $a$ and $b$, but $a$ and $b$ conflict with each other.
@@ -285,12 +285,12 @@ $=$ $\alpha_{t_n}$.
 This evolution function is the core definition in \modelname as it describes the evolution process of repeatedly changing a component system.
 An instance of \modelname will contain: 
 \begin{itemize}
-  \item a series of times $t_0,\ldots,t_n$.
-  \item sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$.
-  \item sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$.
-  \item sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
-  \item evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
-  \item initial system $\alpha_{t_0}$.
+  \item A series of times $t_0,\ldots,t_n$.
+  \item Sets of components $\mathbb{C}_{t_0},\ldots,\mathbb{C}_{t_n}$.
+  \item Sets of user requests $\delta_{t_1},\ldots,\delta_{t_n}$.
+  \item Sets of system constraints $\omega_{t_1},\ldots,\omega_{t_n}$.
+  \item Evolution preference orders $\prec_{\alpha_{t_0}},\ldots, \prec_{\alpha_{t_{n-1}}}$.
+  \item Initial system $\alpha_{t_0}$.
 \end{itemize}
 This is enough information to calculate the system from $\alpha_{t_1}$ to $\alpha_{t_n}$, also known as \textbf{resolving} a \modelname instance.
 
@@ -318,23 +318,23 @@ Let the evolution preference order select solutions with the minimum number of c
 i.e. $\beta \prec_{\alpha} \beta'$ iff $|\alpha \Delta \beta| > |\alpha \Delta \beta'|$.
 Further, let:
 \begin{itemize}
-  \item the times $0$, $1$ and $2$;
-  \item the set of components $\mathbb{C}_0 = \mathbb{C}_1 = \mathbb{C}_2 = \{a,b,c,d\}$;
-  \item the system at time $0$ be $\alpha_0 = \{\}$
-  \item a series of user requests be $\delta_1 = \{a\}$ and $ \delta_2 = \{c\}$
-  \item the set of constraints $\omega_1 = \omega_2 = \{a \rightarrow b \vee c, c \rightarrow d\}$
+  \item The times $0$, $1$ and $2$.
+  \item The set of components $\mathbb{C}_0 = \mathbb{C}_1 = \mathbb{C}_2 = \{a,b,c,d\}$.
+  \item The system at time $0$ be $\alpha_0 = \{\}$.
+  \item A series of user requests be $\delta_1 = \{a\}$ and $ \delta_2 = \{c\}$.
+  \item The set of constraints $\omega_1 = \omega_2 = \{a \rightarrow b \vee c, c \rightarrow d\}$.
 \end{itemize}
 
 Consider the component evolution from $\alpha_0$ to $\alpha_2$:
 \begin{itemize}
-  \item $\alpha_0 = \{\}$
+  \item $\alpha_0 = \{\}$.
   \item $\alpha_1 = \epsilon(\alpha_0,\delta_1 \cup \omega_1)$, given the preference order $\prec_{\alpha_0}$. $|\alpha_0 \Delta \{a,b\}| = 2$ is minimal, therefore $\alpha_1 = \{a,b\}$.
   \item $\alpha_2 = \epsilon(\alpha_1,\delta_2 \cup \omega_2)$, given the preference order $\prec_{\alpha_1}$. $|\alpha_1 \Delta \{a,b,c,d\}| = 4$ is minimal, therefore $\alpha_2 = \{a,b,c,d\}$.
 \end{itemize}
 
 Further, consider the component evolution directly from $\alpha_0$ to $\alpha_2$, where $\delta_2' = \delta_1 \cup \delta_2$:
 \begin{itemize}
-  \item $\alpha_0 = \{\}$
+  \item $\alpha_0 = \{\}$.
   \item $\alpha_2' = \epsilon(\alpha_0,\delta_2' \cup \omega_2)$, given the preference order $\prec_{\alpha_0}$. $|\alpha_0 \Delta \{a,c,d\}| = 3$ is minimal, therefore $\alpha_2' = \{a,c,d\}$.
 \end{itemize}
 
