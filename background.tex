@@ -70,7 +70,7 @@ In this publication, Lehman described a set of laws that characterise software e
 \end{enumerate}
 
 %%%These laws describe the fact that it is impossible to create a single satisfactory system, and an iterative approach is best to strive for continual satisfaction
-Both these studies from \cite{Lientz1980} and the laws from \citep{lehman1980} argue that
+Both the study from \cite{Lientz1980} and the laws from \citep{lehman1980} argue that
 the software engineer's objective of creating a satisfactory system is difficult, expensive, and not always achievable.
 They state that the continual evolution of a software system is necessary, and this evolution reduces quality, increases complexity, and is costly.
 
@@ -86,7 +86,7 @@ A piece of software is described as ``legacy'' if it cannot be maintained  (due 
 As a legacy system does not evolve, new user and technical requirements cannot be fulfilled, and the satisfaction with the system will decrease over time.
 This has led the problem of legacy software to be described as enduring \citep{Bennett2000}. 
 
-Software evolution is still seen at a young field \citep{Godfrey2008} as many open questions remain unanswered.
+Software evolution is still seen as a young field \citep{Godfrey2008}, as many open questions remain unanswered.
 Recent empirical studies that explore the cost of software evolution are summarised by \cite{Grubb2003}, 
 showing that the costs of software maintenance range from 49\% to 75\%, and that these costs have not fallen since the 1970's. 
 To lower the cost of software evolution, various methods and tools have been proposed.
@@ -114,8 +114,8 @@ Later, other benefits of constructing systems from modular components were ident
 
 The ``software component'' concept was soon picked up by other researchers such as \cite{Yourdon1976}, where they described their ideas on \textit{structured design} as:
 \begin{itemize}
-  \item the art of designing the components of a system and the interrelationship between those components in the best possible way.
-  \item the process of deciding which components are interconnected in which way to solve some well-specified problem.
+  \item The art of designing the components of a system and the interrelationship between those components in the best possible way.
+  \item The process of deciding which components are interconnected in which way to solve some well-specified problem.
 \end{itemize}
 \cite{Yourdon1976} list the goals of structured design as efficiency, maintainability, modifiability, generality, flexibility, and utility.
 These goals are aimed to be achieved by dividing the system into functional units that can be treated independently.
@@ -126,9 +126,9 @@ As the number of software component grew, a problem emerged of selecting the set
 This increases the effort required to use software components as each possible combination must be examined and ranked based on how well they match the composer's specifications.
 Current research into solutions to the selection problem asks the questions of:
 \begin{itemize}
-  \item how to describe a component and its attributes \citep{treinen2009common,Xinjuan2007}?
-  \item how to search for compositions that fit a set of requirements \citep{abate2011,Kwong2010,Treinen2009,DeAlmeida2004}?
-  \item how to rank a particular composition \citep{Chen2011,Aleti2009}?
+  \item How to describe a component and its attributes \citep{treinen2009common,Xinjuan2007}?
+  \item How to search for compositions that fit a set of requirements \citep{abate2011,Kwong2010,Treinen2009,DeAlmeida2004}?
+  \item How to rank a particular composition \citep{Chen2011,Aleti2009}?
 \end{itemize}
 
 The current state of CBSE is fractured, where there are many different component frameworks (some presented in section \ref{background.models}),
@@ -142,10 +142,10 @@ This problem is later described in section \ref{background.components}, where th
 The research into software components by \cite{McIlroy1969} coincided with his help in the development of the operating system Unix \citep{raymond2003art}. 
 McIlroy had significant impact not only on the implementation of Unix, where many of his ideas like pipes where included,
 but also on the Unix philosophy. 
-The Unix philosophy is summarised by McIlroy as \citep{Salus1994}:
+McIlroy's Unix philosophy has been summarised as:
 \begin{quote}
-Write programs that do one thing and do it well. Write programs to work together. 
-Write programs to handle text streams, because that is a universal interface.
+``Write programs that do one thing and do it well. Write programs to work together. 
+Write programs to handle text streams, because that is a universal interface.'' \citep{Salus1994}
 \end{quote}
 
 This philosophy led to the first two rules (out of fifteen) of Unix \citep{raymond2003art}:
@@ -155,15 +155,16 @@ This philosophy led to the first two rules (out of fifteen) of Unix \citep{raymo
 \end{itemize} 
 
 To eliminate the perceived problems of the proprietary Unix system, in 1983 Richard Stallman created the GNU project \citep{stallman1985gnu} to implement a free Unix-like operating system.
-With a kernel developed by Linus Torvalds based on the MINIX operating system \citep{tanenbaum1989minix} , the GNU/Linux operating system \citep{torvalds2002just} was created.
-GNU/Linux is seen as a return to the original philosophy of Unix \citep{Gancarz2003} where the creation of small modular programs that interact is central.
+With a kernel developed by Linus Torvalds based on the MINIX operating system \citep{tanenbaum1989minix}, the GNU/Linux operating system \citep{torvalds2002just} was created.
+GNU/Linux is seen as a return to the original philosophy of Unix \citep{Gancarz2003}, where the creation of small modular programs that interact is central.
 Aligned with this philosophy, a distribution of GNU/Linux called Debian \citep{Barth2005} was announced in 1993.
 This release came with the Debian Manifesto \citep{murdock1994brief} 
 that stated that Debian would be constructed from high quality components (or packages) which can be maintained by experts.
 
 Initially, a significant amount of technical expertise was required to change the composition of packages in a Debian system.
 Each package had a set of constraints that described the systems that it would be functional in
-and whenever a change was made these constraints where required to be satisfied.  
+and whenever a change was made, 
+these constraints where required to be satisfied.  
 Not only was satisfying these constraints difficult, but selecting an appropriate system was also a problem (due to the selection problem discussed earlier in section \ref{back.CBSE}).
 For example, installing a new package required satisfying all its constraints, and if there were multiple systems that satisfied these constraints, one would have to be chosen.
 
@@ -171,7 +172,7 @@ With the release of the application \texttt{apt-get} in the late 1990's, the nec
 A user could request \texttt{apt-get} to change their system, and it would find, select then change to a new composition that satisfies the request and component constraints.
 This automated the search for a satisfactory solution, solving the problem which had restricted the evolution Debian systems prior to \texttt{apt-get}'s release.
 The \texttt{apt-get} package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
-\footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/} 
+\footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/ accessed accessed 12/9/2012} 
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
 Such lowering of the technical knowledge required to become a composer of a component system has had other effects that are discussed in the next section.
 
@@ -220,7 +221,7 @@ Discussions on types of evolutionary changes with comparisons to other domains a
 and empirically explored by \cite{vasa2007patterns}.
 
 \subsection{Component System Evolution}
-A component system is changed when its composer alters the systems composition of components.
+A component system is changed when its composer alters the system's composition of components.
 The system evolves over time as these changes are repeatedly made.
 As described above in \citep{IsoIec2006}, these changes could be adaptive, perfective, corrective or preventive.
 However, unlike the changes in software evolution or component evolution, CSE can only make architectural changes by adding or removing components that already exist.
@@ -232,7 +233,7 @@ It would be very difficult for a non-technical user to alter a composition witho
 In this research such functionality is called  \textbf{Component Dependency Resolution} (CDR).
 CDR helps the composer alter their system by satisfying their requests for change with valid compositions.
 Additionally, the returned compositions satisfy some preferences.
-For example, a user wants to install a new text-editor component into their system, and the selected text editor has a dependency on a spell-checker.
+For example, suppose a user wants to install a new text-editor component into their system, and the selected text editor has a dependency on a spell-checker.
 A preference to be up-to-date means that the most recent version of components should be selected.
 A system that provides CDR functionality would try to find an up-to-date composition that has a text-editor and a spell-checker.
 
@@ -287,34 +288,34 @@ A discussion between two researchers in component software, Bertrand Meyer and C
 They converse across the articles \cite{Meyer1999,Szyperski2000a, Szyperski2000, Meyer2000}, discussing their definitions of what a software component is and the importance of its features.
 
 %%%Szyperski's definition
-Szyperski defines components in \citep{Szyperski2002} as having three characteristic properties:
+Szyperski defines a component \citep{Szyperski2002} as having three characteristic properties:
 \begin{enumerate}
-  \item a unit of independent deployment
-  \item a unit of third party composition
-  \item has no externally observable state
+  \item Being a unit of independent deployment.
+  \item Being a unit of third party composition.
+  \item Having no externally observable state.
 \end{enumerate}
 
 %%%Meyers Definition
 Meyer's definition of software components is enumerated as one that:
 \begin{enumerate}
-  \item may be used by other software elements (clients)
-  \item may be used by clients without the intervention of the components developers
-  \item includes a specification of all dependencies (hardware and software platform, versions, other components)
-  \item includes a precise specification of the functionality it offers
-  \item is usable solely on the basis of that specification
-  \item is composable with other components
-  \item can be integrated into a system quickly and smoothly
+  \item May be used by other software elements (clients).
+  \item May be used by clients without the intervention of the components developers.
+  \item Includes a specification of all dependencies (hardware and software platform, versions, other components).
+  \item Includes a precise specification of the functionality it offers.
+  \item Is usable solely on the basis of that specification.
+  \item Is composable with other components.
+  \item Can be integrated into a system quickly and smoothly.
 \end{enumerate}
 
 %%%Using a component model
 Others, like \citep{heineman2001component}, have stated that components must conform to a component model: 
 \begin{quotation}
-A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.
+``A software component is a software element that conforms to a component model and can be independently deployed and composed without modification according to a composition standard.''
 \end{quotation}
 
 Furthermore, they define a component model as:
 \begin{quotation}
-A component model defines a set of standards for component implementation, naming, interoperability, customization, composition, evolution, and deployment.
+``A component model defines a set of standards for component implementation, naming, interoperability, customization, composition, evolution, and deployment.''
 \end{quotation}
 
 %%%Other differences, architectural/implementation
@@ -327,10 +328,7 @@ This effort highlights the difficulty in creating an exact definition of a softw
 %%%It is difficult to define a natural concept such as component with a set of fixed enumerable features.
 The problems encountered when trying to precisely define a software component may stem from the fact that ``component'' is a broad concept.
 The problem, as observed from the area of formal concept analysis \citep{Ganter1999} by \citep{Szyperski2002}, is that it is impossible to
-
-\begin{quotation} 
 ``enumerate a fixed agreeable set of features that is necessary and sufficient for a natural concept such as component.''
-\end{quotation}
 
 %%%Our egotistical view of components is defined with relation to Component Dependency Resolution.
 However, a definition can be found, not by feature enumeration but through stating the intention for the concept
@@ -346,8 +344,8 @@ This definition specifies the type of components and component models this resea
 In this thesis a software component is a unit of independent deployment, and third party composition,
 and a component model must:
 \begin{enumerate}
-  \item require the explicit definition of component constraints on compositions where they are valid 
-  \item include mechanisms in which to programmatically change a component system
+  \item Require the explicit definition of component constraints on compositions where they are valid. 
+  \item Include mechanisms in which to programmatically change a component system.
 \end{enumerate}
 
 To allow CDR functionality to alter a component system, the component constraints must be explicitly defined and computer readable,
@@ -397,6 +395,7 @@ To show how the bundle meta-data describes constraints of a component,
 an example is presented in figure \ref{osgibundle} where a text editor bundle depends on a spell checker.
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 Bundle-Name: TextEditor
 Bundle-Vendor: Graham Jenson
@@ -407,6 +406,7 @@ Export-Package: nz.geek.textEditor;version="0.0.1.alpha"
 Require-Bundle: nz.geek.fonts
 Import-Package: nz.geek.spellchecker;version>"0.0.1"
 \end{alltt}
+\end{framed}
   \caption{Example of OSGi Meta-data}
   \label{osgibundle}
 \end{center}
@@ -423,7 +423,7 @@ This bundle meta-data only contains information necessary for the execution of a
 However, for the component to be functional the service layer of OSGi is used.
 
 The service layer is defined in the core OSGi specification \citep{osgicore2007}, however its definition does not describe any meta-data format.
-To fill this gap, a number of frameworks have emerged that define service constraint meta-data, e.g
+To fill this gap, a number of frameworks have emerged that define service constraint meta-data, e.g.
 Spring Dynamic Modules\footnote{http://www.springsource.org/osgi accessed 6/3/2012}.
 OSGi's compendium specification \citep{osgicompendium2007} also defines a service layer meta-data format called Declarative Services (DS).
 To show how the DS meta-data can be used to express constraints on the service layer,
@@ -431,6 +431,7 @@ an example is presented in figure \ref{dsmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <?xml version="1.0"?>
 <component name="textEditor">
@@ -446,6 +447,7 @@ an example is presented in figure \ref{dsmetadata}.
         policy="dynamic"/>
 </component>
 \end{alltt}
+\end{framed}
   \caption{Example of OSGi Declarative Services meta-data}
   \label{dsmetadata}
 \end{center}
@@ -475,12 +477,14 @@ These methods can be used from an implemented console, allowing a user to direct
 
 \subsubsection{OSGi Bundle Repostiory}
 %%%The OBR proposed by Peter Kriens and Richard Hall, is a meta data format for OSGi bundle resolution
-To implement CDR functionality for OSGi Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006} proposed the OSGi Bundle Repository (OBR).
+To implement CDR functionality for OSGi,
+ Peter Kriens and Richard S. Hall in RFC-0112 \citep{the_osgi_alliance_rfc-0112_2006} proposed the OSGi Bundle Repository (OBR).
 OBR is an XML format that describes OSGi components, and also an application with CDR functionality.
 To show how OBR describes component constraints, an example of an OBR document is presented in figure \ref{obrmetadata}.
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <repository name='OBR REP' time='123'> 
  <resource version='0.0.1' name='nz.geek.textEditor' 
@@ -501,6 +505,7 @@ To show how OBR describes component constraints, an example of an OBR document i
 
 </repository>
 \end{alltt}
+\end{framed}
   \caption{Example of OSGi Bundle Repository meta-data}
   \label{obrmetadata}
 \end{center}
@@ -526,8 +531,8 @@ The method used by the Apache OBR\footnote{http://felix.apache.org/site/apache-f
 to select a system is described on its help page as:
 
 \begin{quotation}
-OBR might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
-In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.
+``OBR might have to install new bundles during an update to satisfy either new dependencies or updated dependencies that can no longer be satisfied by existing local bundles. 
+In response to this type of scenario, the OBR deployment algorithm tries to favor updating existing bundles, if possible, as opposed to installing new bundles to satisfy dependencies.''
 \end{quotation}
 
 This shows that when upgrading a system, not installing new bundles is preferred.
@@ -543,6 +548,7 @@ To show how plugin meta data is used to define constraints, an example is presen
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <?xml version="1.0"?>
 <plugin
@@ -564,6 +570,7 @@ To show how plugin meta data is used to define constraints, an example is presen
         schema="spellchecker.exsd"/>
 </plugin>
 \end{alltt}
+\end{framed}
   \caption{Example of an Eclipse Plugin plugin.xml meta-data file}
   \label{eclipseplugin}
 \end{center}
@@ -577,6 +584,7 @@ The schema of an extension point, as shown in figure \ref{eclipseextensionschema
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <schema xmlns="http://www.w3.org/2001/XMLSchema">
  <element name="spellchecker">
@@ -592,12 +600,13 @@ The schema of an extension point, as shown in figure \ref{eclipseextensionschema
  </element>
 </schema>
 \end{alltt}
+\end{framed}
   \caption{Example of an Eclipse Plugin extension point schema file}
   \label{eclipseextensionschema}
 \end{center}
 \end{figure}
 
-In this description, this extension point requires a string that describes a java class that implements \texttt{nz.geek.ISpellChecker}.
+In this description, this extension point requires a string that describes a Java class that implements \texttt{nz.geek.ISpellChecker}.
 This is the only requirement for this extension point, but other parameters of types, e.g. Boolean, integer, can be defined.
 
 \subsubsection{Eclipse Change}
@@ -623,10 +632,10 @@ Eclipse P2 is mainly accessed through the Eclipse user interface, where the user
 Some of the preferences used by Eclipse P2 to change the system are described in \citep{le_berre_dependency_2009} and \citep{leBerre2010}.
 These are to:
 \begin{enumerate}
-  \item minimise the amount of components installed that have no dependency to them 
-  \item minimise the removal of already installed components
-  \item minimise the age of the installed components
-  \item minimise changing an installed component if they are unrelated to the request being made
+  \item Minimise the amount of components installed that have no dependency to them. 
+  \item Minimise the removal of already installed components.
+  \item Minimise the age of the installed components.
+  \item Minimise changing an installed component if they are unrelated to the request being made.
 \end{enumerate} 
 
 These criteria are used to select a system if multiple possible systems are available. 
@@ -641,6 +650,7 @@ To show how Fractal meta-data can describe component constraints, an example is 
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE definition PUBLIC 
@@ -655,6 +665,7 @@ To show how Fractal meta-data can describe component constraints, an example is 
   <content class="nz.geek.textEditorImpl"/>
 </definition>
 \end{alltt}
+\end{framed}
   \caption{Example of a simple Fractal ADL file}
   \label{fractalmetadata}
 \end{center}
@@ -668,6 +679,7 @@ An example of the definition of a hierarchical component can be seen in figure \
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE definition PUBLIC 
@@ -695,6 +707,7 @@ An example of the definition of a hierarchical component can be seen in figure \
    server="spellCheckerComponent.spellChecker"/>
 </definition>
 \end{alltt}
+\end{framed}
   \caption{Example of a simple Fractal ADL file}
   \label{fractalrecursve}
 \end{center}
@@ -744,6 +757,7 @@ To show how the Maven Project Object Model (POM) meta-data file is used to descr
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -764,6 +778,7 @@ To show how the Maven Project Object Model (POM) meta-data file is used to descr
   </dependencies>
 </project>
 \end{alltt}
+\end{framed}
   \caption{Example of a Maven POM file}
   \label{mavenmetadata}
 \end{center}
@@ -790,12 +805,14 @@ To show how this control file defines such constraints, two examples are present
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 Package: textEditorPackage
 Version: 0.0.1.alpha
 Depends: spellChecker
 Conflicts: otherTextEditorPackage
 \end{alltt}
+\end{framed}
   \caption[Debian Control file for Text Editor]{Example of a Debian Control File for Text Editor}
   \label{debianmetadatate}
 \end{center}
@@ -803,11 +820,13 @@ Conflicts: otherTextEditorPackage
 
 \begin{figure}[htp]
 \begin{center}
+\begin{framed}
 \begin{alltt}
 Package: spellCheckerPackage
 Version: 1.0.0
 Provides: spellChecker
 \end{alltt}
+\end{framed}
   \caption{Example of a Debian Control File for Spell Checker}
   \label{debianmetadatasc}
 \end{center}
@@ -830,8 +849,8 @@ The application \texttt{dpkg} is the command line tool use to modify a Debian pa
 
 The commands to modify a Debian package system are:
 \begin{itemize}
-  \item to add a package: \texttt{dpkg --install <package file>}
-  \item to remove a package: \texttt{dpkg --remove <package>}
+  \item To add a package: \texttt{dpkg --install <package file>}.
+  \item To remove a package: \texttt{dpkg --remove <package>}.
 \end{itemize}
 
 These commands define the atomic actions to change a Debian system.
@@ -845,8 +864,8 @@ The \texttt{apt-get} application is a command line tool, which provides the nece
 
 \texttt{apt-get} follows some basic criteria when altering the system, for example when upgrading:
 \begin{itemize}
-  \item under no circumstances will \texttt{apt-get} remove an already installed package.
-  \item under no circumstances will \texttt{apt-get} install a new package.
+  \item Under no circumstances will \texttt{apt-get} remove an already installed package.
+  \item Under no circumstances will \texttt{apt-get} install a new package.
 \end{itemize}
 Note: \texttt{apt-get} defines removing, installing and upgrading separately, e.g. upgrading a package named \texttt{text-editor} is not defined by  \texttt{apt-get} as removing then installing a new package.
 
@@ -854,9 +873,9 @@ Another application that extends \texttt{apt-get}'s functionality is \texttt{apt
 This application adds a basic user interface to \texttt{apt-get} and also extends functionality in aspects like locating and removing redundant packages.
 Aptitude allows some of its criteria to be user defined, for example when the flag \verb+--safe-resolver+ is used:
 \begin{itemize}
-  \item it attempts to preserve as many of your choices as possible.
-  \item it will never remove a package
-  \item it will never install a version of a package other than the package's default candidate version.
+  \item It attempts to preserve as many of your choices as possible.
+  \item It will never remove a package.
+  \item It will never install a version of a package other than the package's default candidate version.
 \end{itemize}
 
 \subsection{SOFA 2.0}
@@ -868,6 +887,7 @@ To show how SOFA meta-data describes constraints an example is presented in figu
 
 \begin{figure}[htp] 
 \begin{center}
+\begin{framed}
 \begin{alltt}
 <?xml version="1.0"?>
 <frame name="nz.geek.textEditor">
@@ -879,15 +899,14 @@ To show how SOFA meta-data describes constraints an example is presented in figu
   <provides name="spellChecker" itf-type="sofatype://nz.geek.spellChecker"/>
 </frame>
 \end{alltt}
+\end{framed}
   \caption{Example of a SOFA ADL Files}
   \label{SOFAmetadata}
 \end{center}
 \end{figure}
 
 This meta-data describes two components, a text editor and a spell checker, using the tag \texttt{frame}.
-The sub elements \texttt{requires} and \texttt{provides} describes the component constraints through an externally defined interface with the name-space \texttt{sofatype://nz.geek.spellChecker}.
-This interface defined using an Architecture Definition Language (ADL), is added to a repository to be re-used. 
-
+The sub elements \texttt{requires} and \texttt{provides} describe the component constraints through an externally defined interface with the name-space \texttt{sofatype://nz.geek.spellChecker}.
 
 \subsubsection{SOFA Change}
 SOFA 2.0 is an extension of the SOFA framework, with new services including dynamic reconfiguration for dynamic evolution of an architecture at run-time. 
@@ -908,10 +927,8 @@ These patterns are further described in \citep{Hnetynka2006}.
 %%%CUDF model created for compeition
 Many component models share similar properties including:
 \begin{itemize}
-  \item a component name
-  \item a component version
-  \item a description of what the component provides
-  \item a description of what the component requires
+  \item Each component defined with a name and version.
+  \item Each component describing what the component provides and requires.
 \end{itemize} 
 
 By abstracting these common elements into a single model, the description of how a component system is changed can become component model independent.
@@ -929,6 +946,7 @@ To show how a CUDF document describes a changing component system, an example is
 
 \begin{figure}[htp] 
 \begin{center}
+\begin{framed}
 \begin{alltt}
 package: textEditor
 version: 1
@@ -940,8 +958,8 @@ provides: spellCheckerService
 
 request:
 install:textEditor
-
 \end{alltt}
+\end{framed}
   \caption{Example of a CUDF file}
   \label{CUDFmetadata}
 \end{center}
@@ -967,15 +985,14 @@ This means that they are all component models w.r.t. the definition of component
 
 The constraints in these models fall into two groups:
 \begin{enumerate}
-  \item \textit{dependencies}, where one component requires another component or what it provides.
-  \item \textit{conflicts}, where one component conflicts with another component or what it provides. 
+  \item \textit{Dependencies}, where one component requires another component or what it provides.
+  \item \textit{Conflicts}, where one component conflicts with another component or what it provides. 
 \end{enumerate} 
 Typically these constraints are between pre-defined types in the component model, e.g. a service or a package.
 However, OBR, Maven, and SOFA allowed the definition of a type of dependency. 
 All component constraints are defined in meta-data files in either XML, or key/value pair format.
 The constraints in these models have broadly similar semantics, though a different vocabulary.
-The comparison between these models is then mostly linking together vocabulary.
-This comparison is summarised in the tables  \ref{background.comparisonrel} and \ref{background.comparisonmeta}.  
+A comparison of this vocabulary is summarised in the tables  \ref{background.comparisonrel} and \ref{background.comparisonmeta}.  
 
 \begin{table}[h!]
 \begin{tabular}{|l || c | c | c | }
@@ -1051,7 +1068,8 @@ This similarity may mean that the results from a simulation of Ubuntu may relate
 \section{Summary}
 In this chapter, the concepts related to CSE are explored.
 The domains of software evolution, CBSE and component systems are described and the important concepts, such as software component, are defined.
-Various component models are described, and the similarities between them are discussed.
-In the next chapter the concepts discussed in this chapter are formally defined. 
+Various component models are described, and it was shown that there exist no fundamental differences between these models.
+Therefore, a single model can be used to describe the evolution of component systems conforming to these various models. 
+In the next chapter a model that formally defines the concepts discussed in this chapter is presented. 
 This is the first step towards creating a simulation of CSE.
 
