@@ -5,12 +5,10 @@ Therefore, if you can't get them together again, there must be a reason. By all 
 {\textit{IBM maintenance manual, 1925}}
 
 In the previous chapter, CUDF* documents were used to describe the evolution of component systems through a user's repeated requests to change.
-However, such a document can be used to describe unlikely situations,
-e.g. a user requesting to install the same component every second for a century.
-Given that a goal of this research is study CSE in a practical context,
+Given that a goal of this research is to simulate the evolution of component systems,
 it is necessary to model \textit{realistic} users. 
 For this purpose the \usermodel (\textbf{Sim}ulated \textbf{User}) model was developed.
-This model describes how a user would realistically change their component system,
+This model describes how a user would change systems,
 and it can be used to create CUDF* documents.
 These relationships are described in figure \ref{sim.modeldiagram}.
 
@@ -61,6 +59,7 @@ The results from this survey are used to describe and categorise the motivations
 \subsection{Questions}
 %%%The goals of the survey:
 The survey consisted of two groups of questions: questions that identified the type of user and questions that described their interactions with package managers.
+These were asked in order to understand the user and how and why they changed their systems.
 The set of questions used to identify the user were:
 \begin{itemize}
   \item How experienced with package managers are you (based on scale of 1 to 5 where 1 is no experience and 5 is highly experienced)? 
@@ -117,7 +116,7 @@ The behaviours of these users can be described with two user stereotypes, \textb
 These terms come from the domain of politics where conservatism philosophy that emphasises minimal and gradual change in society,
 which is contrasted by progressivism philosophy that promotes change and reform \citep{oed2010}.
 
-Most users in the survey are partially motivated by both risks, e.g. a user's response that express a slight conservative attitude:
+Most users in the survey are partially motivated by both risks, e.g. a user's response that expresses a slight conservative attitude:
 \begin{quotation}
 ``In production I rarely remove packages ([it is] easier to leave software as-is than risk breaking stuff).''
 \end{quotation}
@@ -196,10 +195,10 @@ The Ubuntu system has 6 monthly releases, therefore the simulation will be over 
 The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
 Using this as the set of packages because it is the default choice of newly installed Ubuntu systems.
 
-Typically a user would not select a specific version of a package to be installed but let the package manager install the most recent version.
-Additionally, a user would select packages for a purpose, to fulfil some requirement of their system.
-Therefore, it is assumed that a user would more likely select some packages over others to be installed into their systems.
-This assumes that all users will equally likely install the same packages, which is incorrect.
+Typically a user would not select a specific version of a package to be installed but select the package name and let the package manager install the most recent version.
+Additionally, a user would select a package name to install a package for a purpose, to fulfil some requirement of their system.
+As different users have different requirements, a user would more likely select some packages names over others.
+However, this model assumes that all users will equally likely install the same packages, which is incorrect.
 The impact on the validity of \usermodel caused by such assumptions is further discussed in section \ref{sim.modelvalidation}.
 
 \subsection{CUDF* Document Creation}
@@ -215,9 +214,9 @@ Given this template and a \usermodel instance the process to create a CUDF* docu
 \begin{alltt}
 createCUDF*(template, \( u\), \( i\), \( U\), \( I\)):
  for \(day\) in 1 to 365:
-  if random-probability() \( u\):
+  if random-probability() > \( u\):
     add upgrade request to template at time \(t\sb{0}+day\) using criteria \(U\)
-  if random-probability() \( i\):  
+  if random-probability() > \( i\):  
    component = weighted selection without replacement from component names  
    add request to install component name at time \(t\sb{0}+day+10 minutes\) 
                                                       using criteria \(I\)
@@ -257,7 +256,8 @@ The collected data and their sources are:
 \begin{enumerate}
   \item The set of Ubuntu packages and the times they became available, collected from the Ubuntu repository.
   \item The initial component system Ubuntu 9.10 collected from a virtual install.
-  \item The probabilities different component names will be selected to be installed, from the \texttt{app-install-data} package and weighted using the Ubuntu popularity contest.
+  \item The probabilities different component names will be selected to be installed, from the \texttt{app-install-data} package and weighted using 
+  the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}.
 \end{enumerate}
 
 This section describes the data collection and conversion to create \usermodel.
@@ -309,9 +309,9 @@ To define the probability a user will select a component to install, the problem
 \end{enumerate}
 There are many packages in the Ubuntu repository that a user would not likely select for install.
 Packages that provide libraries, background daemons, interfaces between services are usually installed because other packages depend on them, not because a user selected to install them.
-By answering the first question a set of packages can be found that a user may install.
-Further, by looking at current systems and what packages they have installed, the probability that these packages are selected to be installed can be estimated.
-These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest\footnote{http://popcon.ubuntu.com/ accessed 6/3/2012}.
+What packages would a user select to install and how likely they will be selected are therefore important questions.
+By looking at current systems and what packages they have installed, the probability that these packages are selected to be installed can be estimated.
+These questions are answered using data from the package \texttt{app-install-package} and the Ubuntu popularity contest.
 
 The package \texttt{app-install-package} contains a list of 2399 packages\footnote{as of May 24th 2011} with meta-data like icons and descriptions.
 This data is used by other applications, like the Ubuntu Software Center, to provide a list of packages the user may wish to install.

@@ -153,6 +153,11 @@ and 30 users of each type were simulated, the chance for a request to fail is ju
 The chance for a hard failure to occur is extremely low in this simulation.
 Due to the rarity of these hard failures, the specific reasons for hard failures are not further explored.
 
+An interesting failure occurred when the situation arose that installing the package \texttt{chromium-browser} required two versions of the package \texttt{libc6} to be installed. 
+This lead to the following upgrade request to be unsatisfiable, and the following install request to remove \texttt{chromium-browser} and upgrade to the newest version of \texttt{libc6}.
+This instance, although rare, shows the case that at some points the hard constraint that Debian enforces to have only one version of each component installed,
+can restrict the user.
+
 \subsubsection{Soft Failures}
 Soft failures are called ``soft'' because the request that causes them succeeds, however the search failed to finish.
 This occurs when the time-limit of two minutes is reached, and the any-time algorithm is interrupted.
@@ -176,12 +181,6 @@ Given that only 8 such failures occurred, this is seen as a minor impact on the 
 These failures may be reduced or removed by increasing the time before the algorithm is interrupted, or by using more powerful hardware to perform the simulations.
 In all other experiments detrimental soft failures are searched for, however none were found.
 
-\subsubsection{Multi-component Failure}
-%%%The multi component fialure
-An interesting failure occurred when the situation arose that installing the package \texttt{chromium-browser} required two versions of the package \texttt{libc6} to be installed. 
-This lead to the following upgrade request to be unsatisfiable, and the following install request to remove \texttt{chromium-browser} and upgrade to the newest version of \texttt{libc6}.
-This instance, although rare, shows the case that at some points the hard constraint that Debian enforces to have only one version of each component installed,
-can restrict the user.
 
 \subsection{Upgrade Probability Effects}
 The effect of a user upgrading their system can be measured by altering the probability they upgrade.
@@ -516,8 +515,8 @@ The progressive users names are prefixed  with ``Pro. Upgrade'' where the users 
 The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc} and table \ref{exp.tblq6uttd}.
 \begin{figure}[htp]
 \begin{center}
-  \includegraphics[width=\textwidth]{plots/q6usersuttd}
-  \caption{The UTTDpC for the simulated ``realistic'' users}
+  \includegraphics[height=.95\textheight]{plots/q6usersuttd}
+  \caption{The UTTDpC for the simulated ``realistic'' users. Top: the \texttt{apt-get} criteria users. Bottom: the progressive users.}
   \label{exp.q6uttdpc}
 \end{center}
 \end{figure}
@@ -548,8 +547,8 @@ These results show that using the progressive criteria has the most benefit for 
 The total changes of these users are presented in figure \ref{exp.q6userchange} and table \ref{exp.tblq6change}.
 \begin{figure}[htp]
 \begin{center}
-  \includegraphics[width=\textwidth]{plots/q6userchange}
-  \caption{The mean total change for the simulated ``realistic'' users.}
+  \includegraphics[height=.95\textheight]{plots/q6userchange}
+  \caption{The mean total change for the simulated ``realistic'' users.  Top: the \texttt{apt-get} criteria users. Bottom: the progressive users.}
   \label{exp.q6userchange}
 \end{center}
 \end{figure}
@@ -615,7 +614,7 @@ These experiments simulated users using the \texttt{apt-get} criteria  to alter 
 These consequences are summarised as:
 \begin{itemize}
 	\item A system will always become more out-of-date partially due to the criteria of \texttt{apt-get} stopping the installation of new packages 
-	to enable the upgrading of installed components.  
+	to enable the upgrading of components.  
 	\item The majority of change during evolution is caused by a user upgrading.
 	Installing new components increases the amount of change when upgrading.
 	\item Systems become out-of-date at the rate at which components evolve. Components evolve at a higher rate during release cycles.

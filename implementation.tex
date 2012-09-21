@@ -730,7 +730,7 @@ This algorithm, once completed, returns the set of component systems $\alpha_{t_
 
 \section{GJSolver}
 \label{impl.gjsolver}
-GJSolver\footnote{named after the author Graham Jenson and located at https://github.com/grahamjenson/ComponentSystemEvolutionSimulation/tree/master/GJSolver} 
+GJSolver\footnote{\raggedright{named after the author Graham Jenson and located at} https://github.com/grahamjenson/ComponentSystemEvolutionSimulation/tree/master/GJSolver} 
 is the implementation of the process from a CUDF* document\footnote{in practicality it takes a compressed format, as many CUDF* documents replicate information} to a resolved \modelname instance.
 GJSolver grew through the course of this research to satisfy the need for an implementation to study CSE.
 This implementation takes a CUDF* document, parses it to an instance of \modelname, which is then resolved by \modelimpl.
@@ -927,7 +927,7 @@ This section discusses the validation of the simulation comparing its output to:
 Both of these comparisons are against systems that use \texttt{apt-get} to alter their systems.
 To accurately compare the evolution these systems to the simulated systems, the criteria used by \texttt{apt-get} to upgrade and install systems must be defined in MOF.
 
-To upgrade a system the \texttt{apt-get} manual\footnote{http://linux.die.net/man/8/apt-get} states:
+To upgrade a system the \texttt{apt-get} manual\footnote{http://linux.die.net/man/8/apt-get} states the following:
 \begin{quotation}
 upgrade is used to install the newest versions of all packages currently installed on the system 
 [\ldots] 
