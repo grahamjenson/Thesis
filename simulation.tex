@@ -215,11 +215,10 @@ Given this template and a \usermodel instance the process to create a CUDF* docu
 createCUDF*(template, \( u\), \( i\), \( U\), \( I\)):
  for \(day\) in 1 to 365:
   if random-probability() > \( u\):
-    add upgrade request to template at time \(t\sb{0}+day\) using criteria \(U\)
+    addUpgradeRequest(template,\(t\sb{0}+day\),\(U\))
   if random-probability() > \( i\):  
-   component = weighted selection without replacement from component names  
-   add request to install component name at time \(t\sb{0}+day+10 minutes\) 
-                                                      using criteria \(I\)
+   cn = weighted selection without replacement from component names  
+   addInstallRequest(template, cn, \(t\sb{0}+day+10 minutes\),\(I\))
 \end{alltt}
   \caption{The process to create a CUDF* document from a \usermodel instance.}
   \label{sim.CUDF*}
@@ -235,7 +234,8 @@ Each day the ``user'' randomly selects to upgrade their system and/or install a 
 The function \texttt{random-probability()} is defined to return a uniformly distributed random value between 0 and 1.
 This function is used to randomly select what requests the user will make on a given day.
 
-If a user requests to upgrade their system, the upgrade request is added to the CUDF template at time initial time $t_0$ plus the number of elapsed days.
+If a user requests to upgrade their system, 
+the function \texttt{addUpgradeRequest} adds an upgrade request to the CUDF template at time initial time $t_0$ plus the number of elapsed days.
 This request uses the MOF criteria $U$ to find an optimal system.
 If the user requests to install a component, a component to be installed must first be selected.
 This selection is: 
@@ -243,7 +243,7 @@ This selection is:
   \item \textit{Weighted}: names with a higher weight are more likely to be requested to be installed.
   \item \textit{Without replacement}: a user cannot select to install the same component name more than once.
 \end{itemize} 
-The request to install the selected component is then added to the template ten minutes after the initial time $t_0$ plus the number of elapsed days.
+The function \texttt{addInstallRequest} adds an install request to the CUDF template ten minutes after the initial time $t_0$ plus the number of elapsed days.
 By adding ten minutes it ensures if the user requests to upgrade the installation request will be after the system is upgraded.
 The install request will use the criteria $I$ from the user model.
 

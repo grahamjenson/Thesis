@@ -7,8 +7,8 @@ In this model, each evolution step alters the component system to satisfy a user
 Calculation of all the systems that occur as a result of these requests is described as \textbf{resolving} a \modelname instance.
 
 Resolving a \modelname instance can require significant computational effort due to the complexity of finding a satisfactory system for each request.
-Therefore, an efficient problem representation and algorithm are required.
-To resolve a \modelname instance, each evolution step can be mapped to a Boolean Lexicographic Optimization (\modelimpl) problem \citep{marque2011blex}.
+Therefore efficient problem representations and algorithms are required.
+One way to resolve a \modelname instance is to map each evolution step to a Boolean Lexicographic Optimization (\modelimpl) problem \citep{marque2011blex}.
 \modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to the lexicographic order the criteria are in.
 The constraints are clauses and linear inequalities defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 Each criterion is defined to either maximise or minimise a PB function.
@@ -623,7 +623,7 @@ Given a set of literals $M$, and a criterion $\langle f, R, I \rangle$,
 the function \texttt{strengthen} returns a formula $J$ consisting of a single pseudo-Boolean constraint $\langle f,R,f(M) \rangle$, i.e. $ J = \{ \langle f,R,f(M) \rangle \}$.
 \end{defs}
 That is, \texttt{strengthen} returns a formula $J$,
-that ensures any solution $P$, to the formula $F \cup J$, must have a better ( w.r.t. $R$) value of $f(P)$ than the previously best solutions value of $f(M)$.
+that ensures any solution $P$, to the formula $F \cup J$, must have a better (w.r.t. $R$) value of $f(P)$ than the previously best solutions value of $f(M)$.
 
 The next steps are then to add the formula $J$ to $F$, then search for a new solution using \texttt{DPLL}.
 
