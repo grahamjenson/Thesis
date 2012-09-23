@@ -244,7 +244,7 @@ This selection is:
   \item \textit{Without replacement}: a user cannot select to install the same component name more than once.
 \end{itemize} 
 The function \texttt{addInstallRequest} adds an install request to the CUDF template ten minutes after the initial time $t_0$ plus the number of elapsed days.
-By adding ten minutes it ensures if the user requests to upgrade the installation request will be after the system is upgraded.
+Adding ten minutes ensures that if a user selects to upgrade and install a component, then the installation request will occur after the upgrade request.
 The install request will use the criteria $I$ from the user model.
 
 The discussion over the validity of the resulting CUDF* documents is presented in section \ref{sim.modelvalidation}.
