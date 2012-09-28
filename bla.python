@@ -1,0 +1,22 @@
+#!/usr/bin/python
+import os, shutil
+files = os.listdir("frames")
+files = sorted(files)
+day = 86400
+firstday = int(files[0].split(".")[0])
+
+files.reverse()
+
+def finddate(time):
+	for f in files:
+		if time >= int(f.split(".")[0]):
+			return f
+
+days = map(lambda x: x*day+firstday, range(550))
+files = map(lambda x: finddate(x), days)
+i = 1
+for f in files:
+	path = os.path.join("frames",f)
+	to = os.path.join("newframes","%03d.jpg" % i)
+	shutil.copyfile(path,to)
+	i += 1
