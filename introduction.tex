@@ -17,7 +17,7 @@ these themes are still relevant today and this research explores each of them in
 A \textbf{component system} can be created by composing together \textbf{software component}s \citep{Szyperski2002}.
 A software component is an encapsulated unit that requires functionality supplied by other components, in order to provide its own functionality. 
 A component system is valid only if every contained component has all its required functionality provided by another component.
-For example, given a text-editor component requires spell-checker functionality, 
+For example, given that a text-editor component requires spell-checker functionality, 
 a valid system that includes the text-editor must also include a component that provides spell-checker functionality.
 
 
@@ -32,7 +32,7 @@ Additional complexity arises when changing a component system,
 as there may be more than one way to change the system.
 Furthermore, different component systems may have different properties and one system may be preferable to another.
 Therefore, when changing a component system the resulting system should be valid and preferable.  
-For example, given a text-editor component is being added to a component system and two components provide spell-checker functionality, 
+For example, when a text-editor component is being added to a component system and two components provide spell-checker functionality, 
 a component system with either spell-checker component is valid, however the component system selected should be preferable to the other.
 
 These complex and technical aspects of component system change can be automated. 
@@ -47,7 +47,7 @@ This gradual change is the \textbf{component system evolution} (CSE) process.
 The mechanisms by which the systems are changed will effect the system as it evolves,
 particularly the criteria by which preferable component systems are selected.
 However, what exactly are the effects these mechanisms have on an evolving system is yet to be answered. 
-This research aims to provide answers to this questions by looking at component systems, the mechanisms that change them, and CSE.
+This research aims to provide answers to these questions by looking at component systems, the mechanisms that change them, and CSE.
 
 \section{Motivation}
 %%%Why research this?
@@ -186,7 +186,7 @@ the problem is described (chapter \ref{background}), the models are presented an
 the implementation and validation of the simulation are described (chapter \ref{implementation}), and the experiments and their results are discussed (chapter \ref{experiments}).  
 
 Chapter \ref{background} explores the backgrounds of CSE and its related domains.
-This aims to put CSE in historical context and to give a suitable definitions to the elements of CSE.
+This aims to put CSE in historical context and to give suitable definitions to the elements of CSE.
 
 Chapter \ref{formal} presents the \modelname model and the CUDF* language that describe the formal aspects of the evolution of component systems.
 \modelname is used to describe the evolution of a component system and CUDF* is used as the language to serialise \modelname instances.

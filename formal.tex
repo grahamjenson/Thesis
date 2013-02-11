@@ -85,7 +85,7 @@ A \textbf{component system} is a finite subset of components, e.g. $\alpha$ is a
 The characters $\alpha,\beta,\gamma$ are used to denote component systems\footnote{In hierarchical component models, such as Fractal \citep{Quma2006}, 
 a component system would also be a component.
 That is, a component system could have elements that are themselves component systems.
-This definition is not included in this model, though it may be possible for it to be modified to include it if required.}.
+This definition is not included in this model, though it may be possible for it to be modified to include it in the future.}.
 
 Constraints are used to describe valid systems.
 \begin{defs}
@@ -119,7 +119,7 @@ The vocabulary used when discussing constraints is as follows:
 
 Based on the definitions presented in this section, the following example illustrates how an evolution problem can be described and solved.
 Assume the evolution problem $EP$ is defined as the set of two constraints $con_1$ and $con_2$, i.e. $EP = \{con_1,con_2\}$.
-The constraints $con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which is defined as the set of all component system with $b$ in them.
+The constraint $con_1$ is $b$ (constraint type \ref{formal.keepconstraint}), which is defined as the set of all component systems with $b$ in them.
 The constraint $con_2$ is $a \rightarrow c$ (constraint type \ref{formal.dependencyconstraint}), is defined as the set of all component systems where if $a$ is included, then $c$ is included.
 The component systems that satisfy both $con_1$ and $con_2$ are solutions to $EP$.
 Some of these solutions are $\{b\}$, $\{a,b,c\}$ and $\{a,b,c,d\}$.
@@ -158,7 +158,7 @@ The set of \textbf{user requests} $\Delta$ is the set of all constraints, where 
 \begin{enumerate}
   \item an \textbf{installation} request of constraint type \ref{formal.keepconstraint}.
   \item a \textbf{remove} request of constraint type \ref{formal.removeconstraint}.
-  \item an \textbf{*grade}\footnote{This referrers to either request an upgrade or a downgrade} request of constraint type \ref{formal.upgradeconstraint}.
+  \item a \textbf{*grade}\footnote{This referrers to either request an upgrade or a downgrade} request of constraint type \ref{formal.upgradeconstraint}.
 \end{enumerate}
 \end{defs}
 
@@ -166,7 +166,7 @@ Consider the examples of:
 \begin{itemize}
   \item an installation request $a \vee b$ is a request by the user to install component $a$ or $b$ into the system.
   \item a remove request $\neg a$ is a request by the user to remove component $a$ from the system.
-  \item an *grade request $a + b = 1$ is a request by the user to include either $a$ or $b$, but not both.
+  \item a *grade request $a + b = 1$ is a request by the user to include either $a$ or $b$, but not both.
 \end{itemize} 
 
 The *grade request uses the ``exactly one'' constraint (type \ref{formal.upgradeconstraint}) to represent both downgrade and upgrade requests from the user.
@@ -191,7 +191,7 @@ Consider the examples of:
 The evolution of a component system happens over time.
 This concept of ``time'' must be introduced to the model.
 \begin{defs}
-The set $T$ is the set of times, which is a strict total ordered under $<_{time}$, where times $t_i$ and $t_{i+1}$ in $T$ implies $t_i <_{time} t_{i+1}$
+The set $T$ is the set of all times. $T$ is a strict total ordered under $<_{time}$, where times $t_i$ and $t_{i+1}$ in $T$ implies $t_i <_{time} t_{i+1}$
 \end{defs}
 
 At any time, there exists only a finite set of components. 
@@ -431,7 +431,7 @@ Mancoosi is a research project committed to the improvement of the process of ev
 A contribution of Mancoosi was to hold the MISC that compared solvers of CUDF problems.
 MISC was held to encourage researchers and practitioners into researching change made to component systems.
 
-An issues faced by Mancoosi when organising MISC was that no common format existed to describe evolution problems.
+An issue faced by Mancoosi when organising MISC was that no common format existed to describe evolution problems.
 To address this issue, the CUDF language \citep{treinen2009common} was defined.
 This language allows the abstraction of evolution problems and the benchmarking of applications that find their solutions. 
 
@@ -465,7 +465,7 @@ As shown in figure \ref{formal:cudfstruct}, a CUDF document is separated into th
 \label{formal:cudfstruct}
 \end{figure}
 
-Every stanza begins with a key of its type (\verb+preamble+, \verb+package+, \verb+request+), followed by several lines ending in a empty line.
+Every stanza begins with a key of its type (\verb+preamble+, \verb+package+, \verb+request+), followed by several lines ending in an empty line.
 Each line in a stanza defines a property using a key/value pair separated by the delimiter ``:''.
 This structure is presented in figure \ref{formal.cudfstanza}
 
@@ -484,7 +484,7 @@ This structure is presented in figure \ref{formal.cudfstanza}
 
 \subsubsection{Package Description}
 The package description stanza starts with the \verb+package+ key followed by the value of package name, a non-empty string.
-The package description stanzas define the set components $\mathbb{C}_{t_1}$, the set of system constraints $\omega_{t_1}$, and the component system $\alpha_{t_{0}}$.
+The package description stanzas define the set of components $\mathbb{C}_{t_1}$, the set of system constraints $\omega_{t_1}$, and the component system $\alpha_{t_{0}}$.
 The only mandatory property of this stanza is defined with the key \verb+version:+ whose value is a positive integer representing the version of the package.
 The pair $\langle name, version \rangle$ of a package is unique, there can exist at most one package description for a given name and version.
 
@@ -507,7 +507,7 @@ Some relevant properties for a package are defined by the keys:
   The value is a list of lists of \textbf{package formula}, first separated by the delimiter ``,'' then delimiter ``|''.
   It is a conjunction of disjunctions (conjunctive normal form), with each formula defining a set of packages.
   A package is defined using a name of either a package or feature $n$ and optionally an operator and version of the form  $n = v$, $n$ != $v$, $n > v$, $n < v$, $n >= v$, or $n <= v$.
-  For example, \verb+depends: n , m | o < 10+ means the package depends on a packages (or features) with ``name \verb+n+'',
+  For example, \verb+depends: n , m | o < 10+ means the package depends on packages (or features) with ``name \verb+n+'',
    and  packages (or features) with ``(name \verb+m+ OR name \verb+o+ of version less than \verb+10+)''.  
   \item \verb+conflicts+: the value of this property is mapped to a set of conflict constraints, as defined in section \ref{formal.constraints}.
   The value is a list of \textbf{package formula} as defined above separated by the delimiter ``,''.
@@ -528,6 +528,7 @@ depends: spellCheckerService
   \label{formal.cudfpdstanza}
 \end{center}
 \end{figure}
+
 This package description stanza describes a package \texttt{textEditor} that is version \texttt{1}.
 This package is installed in the initial system, and depends on a package or feature named \texttt{spellCheckerService}. 
 
@@ -597,9 +598,9 @@ In this example, a component of name \verb+n+ and with version greater than 2 is
 and components of name \verb+o+ are requested to be upgraded.
 
 %%%Upgrading with multiple packages
-The CUDF* request to upgrade a component is the most complex request due to the following requirements:
+The CUDF request to upgrade a component is the most complex request due to the following requirements:
 \begin{enumerate}
-  \item exactly one component can be installed with  the selected name can be installed.
+  \item exactly one component with  the selected name can be installed.
   \item exactly one component's version must be greater than, or equal to, the currently installed greatest version of a component with that name.
 \end{enumerate}
 For example, if a system has components $a_1 = \langle n,1 \rangle$ and $a_2 = \langle n,2 \rangle$ installed and it is requested to upgrade components with name $n$.
@@ -795,7 +796,7 @@ A full description of the process of parsing a CUDF* document to a \modelname in
 \subsection{CUDF* Example}
 \label{formal.cudfstarexample}
 An example of a CUDF* document is presented in figure \ref{formal.CUDFstarEXAMPLE} that is similar to the example presented in \ref{formal.CUDFEXAMPLE}.
-This example is designed to to demonstrate the differences between CUDF, MOF and CUDF*.
+This example is designed to demonstrate the differences between CUDF, MOF and CUDF*.
 
 \begin{figure}[htp] 
 \begin{center}
@@ -894,7 +895,7 @@ This example demonstrates how a CUDF* document can be used to describe the evolu
 
 \section{Summary}
 This chapter described the \modelname model and the CUDF* language. 
-These are used to describe the evolution of a component systems as the repeated requested change made to the system by a user.
+These are used to describe the evolution of a component systems as a series of change requests made to the system by a user.
 These changes are subject to constraints that must be satisfied in order to result in a valid system.
 These describe the evolution of a system and not the user that requests changes to the system.
 The following chapter defines the \usermodel model that describes the user, their system, and the changes they make.

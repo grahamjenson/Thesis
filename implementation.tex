@@ -9,8 +9,8 @@ Calculation of all the systems that occur as a result of these requests is descr
 Resolving a \modelname instance can require significant computational effort due to the complexity of finding a satisfactory system for each request.
 Therefore efficient problem representations and algorithms are required.
 One way to resolve a \modelname instance is to map each evolution step to a Boolean Lexicographic Optimization (\modelimpl) problem \citep{marque2011blex}.
-\modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to the lexicographic order the criteria are in.
-The constraints are clauses and linear inequalities defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
+\modelimpl problems consist of finding an assignment to Boolean variables that satisfies a set of constraints and is optimal with respect to lexicographically ordered criteria.
+The constraints can be clauses and linear inequalities defined using a SAT formula extended with pseudo-Boolean (PB) constraints (SAT+PB) \citep{dixon2004automating}.
 Each criterion is defined to either maximise or minimise a PB function.
 Section \ref{impl.blo} describes the \modelimpl problem and its mapping to an evolution step from a \modelname instance.
 These relationships are presented in figure \ref{impl.modelsatdiagram}.
@@ -110,7 +110,7 @@ A SAT problem in CNF is defined as:
     \item A clause $\mathcal{C}$ is \textbf{satisfied} by a set of literals $P$ if there exists a literal in $\mathcal{C}$ that is also in $P$.
     \item A \textbf{solution} to a formula $F$ is a consistent set of literals $P$, such that for every clause $\mathcal{C}$ in $F$, $\mathcal{C}$ is satisfied by $P$.
     \item A \textbf{partial solution} to $F$ is a subset of any solution, i.e. given $P$ is a solution, $P'$ is a partial solution iff $P' \subseteq P$.
-    \item A SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the instance of the SAT problem is \textbf{unsatisfiable}. 
+    \item A SAT problem is \textbf{satisfiable} if there exists a set of literals $P$ that is a solution to $F$, otherwise the SAT problem is \textbf{unsatisfiable}. 
 \end{enumerate}
 \end{defs}
 
@@ -123,7 +123,7 @@ However, $\{a, \neg b, b\}$ is not a solution because it is not consistent, and 
 A typical extension of the SAT problem is the inclusion of pseudo-Boolean constraints \citep{dixon2004automating} into SAT formula.
 This extends the SAT problem to a SAT+PB problem.
 Such an extension allows the a direct mapping of constraints from an evolution problem.
-For example, an \textit{Exactly One}(\ref{formal.constrainttypes}) constraint $a + b + c = 1$ could  be represented four SAT clauses 
+For example, an \textit{Exactly One}(\ref{formal.constrainttypes}) constraint $a + b + c = 1$ could  be represented by four SAT clauses 
 ($\{a,b,c\}$,$\{\neg a, \neg b\}$,$\{\neg a,\neg c\}$),$\{\neg b,\neg c\}$) or one PB constraint.
 Allowing PB constraints has been shown to increase the efficiency of finding a satisfiable solution \citep{dixon2004automating}.
 Additionally, satisfying PB constraints may only require minor amendments to existing algorithms (some such amendments are described by \cite{Sheini2006}).
@@ -151,7 +151,8 @@ This constraint will be satisfied by the set of literals $P_1 = \{ x_1, \neg x_2
 but not with the set of literals $P_2 = \{ x_1,  x_2 \}$ as $f(P_2) = 1$  and $ 1 \not > 2$.
 
 A SAT problem can be extended to include pseudo-Boolean constraints by first including definitions \ref{impl.PBfunction} and \ref{impl.PBConstraint}. 
-Secondly, by modifying the definition \ref{impl.defSAT}, specifically what a SAT formula can contain and what a solution to a SAT problem is:
+Secondly, by modifying definition \ref{impl.defSAT}. 
+Specifically, what a SAT formula can contain and what a solution to a SAT problem is:
 \textit{
 \begin{enumerate}[\tab $1'$.]
 \setcounter{enumi}{4}
@@ -176,7 +177,7 @@ However, $\{\neg a, b, c\}$ is not a solution because $f(\{\neg a, b, c\}) \not 
 \subsection{Boolean Lexicographic Optimization}
 \label{impl.lexsatproblem}
 In order to create a \modelimpl problem, some criteria used to define what properties an optimal solution have are required.
-A pseudo-Boolean criterion is defined to try either maximise of minimise the value of a PB function.
+A pseudo-Boolean criterion is defined to either maximise of minimise the value of a PB function.
 By composing such criteria together into a list in order of lexicographic preference, an optimal solution to a \modelimpl problem can be defined.
 
 \begin{defs}
@@ -568,7 +569,7 @@ Some of these improvements are:
 The higher up the tree the search ``jumps'' to, the more of the search space is reduced.
 \item  More efficient unit-propagation through watched literals \citep{Madigan2001,Moskewicz2001}.
 \end{itemize}
-These advancements make current SAT solvers very efficient.
+These advancements have significantly increased the efficiency of current SAT solvers.
 
 \subsection{Iterative Strengthening}
 The iterative strengthening algorithm  \citep{calistri1994iterative, le2010sat4j} 

@@ -95,7 +95,7 @@ This normalisation means that the install variable $i$ has little effect on the 
 
 The next effect measured is how much change each simulated system went through during evolution.
 To measure change the ``change'' function as described in section \ref{impl.criteria} is used.
-The total change, i.e. the sum of all change a system has to a date, is presented in figure \ref{exp.q1achange}.
+The total change, i.e. the sum of all change a system has to date, is presented in figure \ref{exp.q1achange}.
 \begin{figure}[htp]
 \begin{center}
   \includegraphics[width=\textwidth]{plots/q1achange}
@@ -145,7 +145,7 @@ The validity of this aspect of the simulation is discussed in section \ref{sim.m
 
 \subsubsection{Hard Failures}
 %%%Hard failures
-Hard failures where observed to occur in 12 of the ``Always Install'', 12 of the ``Always Upgrade\&Install'' users, and never in the ``Always Upgrade'' user.
+Hard failures where observed to occur in 12 of the ``Always Install'' users, 12 of the ``Always Upgrade\&Install'' users, and never in the ``Always Upgrade'' user.
 Only 40 requests hard failed over these 24 simulated users with hard failures.
 All hard failures, except those that are multi-component failures, were failed install requests.
 Given each ``Always Install'' user has 365 requests and each ``Always Upgrade\&Install" user has 730 requests, 
@@ -168,7 +168,7 @@ After looking at the results returned by these 900 requests,
 only 8 were determined to be detrimental to the simulation.
 Each of these 8 requests caused more than 100 components in the system to be removed in order to be satisfied.
 This is due to the criterion \texttt{-removed} not being fully optimised before being interrupted.
-There are three interesting points that were observed with these 8 requests:
+There are two interesting points that were observed with these 8 requests:
 \begin{enumerate}
   \item seven of them occurred during the Ubuntu 10.04 release month of April 2010. The remainder of the 892 soft failures are evenly distributed over the year.
   \item five times the component that was requested to be installed was removed by the following requests.
@@ -236,7 +236,7 @@ The total change of these users is presented in figure \ref{exp.q1bchange}.
   \label{exp.q1bchange}
 \end{center}
 \end{figure}
-This figure shows that upgrading is causes significantly more change in the system than installing.
+This figure shows that upgrading causes significantly more change in the system than installing.
 The total change of a ``Upgrade once a month" user has a greater total change than a ``Always Install'' user.
 
 This figure also shows that upgrading less frequently requires less change. 
@@ -253,7 +253,7 @@ Additionally, as a user installs more components this will likely increase the a
 
 By updating less frequently the change caused by rapid releasing the components is reduced.
 However, this reduction is by chance alone.
-For example, if a user upgrade once a month then they will likely miss many of the rapid releases that happened during the month.
+For example, if a user upgrades once a month then they will likely miss many of the rapid releases that happened during the month.
 A user that upgrades during such a release will have a component (potentially with bugs) until they upgrade again in a month.
 
 To actively reduce this type of change, a novel criterion is presented in section \ref{exp.q3}.
@@ -311,7 +311,7 @@ Progressive Always Upgrade				& 1 			 	& 1				& 0\\ \hline
 \label{exp.tblq4ausers}
 \end{table}
 This user has the upgrade criteria $U$ assigned to \texttt{-removed,-uptodatedistance,-new}.
-It is compared to the ``Always Upgrade'' user that is the same except it's upgrade criteria $U$ is assigned \texttt{-removed,-new,-uptodatedistance}.
+It is compared to the ``Always Upgrade'' user that is the same except its upgrade criteria $U$ is assigned \texttt{-removed,-new,-uptodatedistance}.
 
 Figure \ref{exp.q4auttdperc} presents the UTTDpC of these users.
 \begin{figure}[htp]
@@ -323,7 +323,7 @@ Figure \ref{exp.q4auttdperc} presents the UTTDpC of these users.
 \end{figure}
 
 This figure shows that the progressive criteria reduces the out-of-dateness of the systems.
-The final UTTDpC for the ``Always Upgrade'' user 0.72 compared to the 0.48 of the ``Progressive Always Upgrade'' user.
+The final UTTDpC for the ``Always Upgrade'' user is 0.72 compared to 0.48 of the ``Progressive Always Upgrade'' user.
 That is, a user who upgrades with the progressive criteira will have a system that is 24\% less out-of-date.
 
 The UTTDpC of these systems is most differentiated during the release of Ubuntu 10.04.
@@ -336,7 +336,7 @@ This additional change comes from the 90 new components that the progressive cha
 These new components are also upgraded 258 times throughout the year.
 The total additional change when using a progressive user is therefore 348 changes over a year.  
 
-When a user upgrades their system with the progressive upgrade criteria at the end of the year there system is 24\% less out-of-date at the cost of an additional 348 changes.
+When a user upgrades their system with the progressive upgrade criteria at the end of the year their system is 24\% less out-of-date at the cost of an additional 348 changes.
 Users that prefer to have an up-to-date system may favour this criteria over the \texttt{apt-get} criteria. 
 This criteria is further simulated in section \ref{exp.realuserssim}.
 
@@ -452,7 +452,7 @@ The results from the simulation of these users is then discussed and analysed.
 As previously discussed in chapter \ref{simulation}, during the conducted survey users where asked to submit their \texttt{apt-get} logs.
 Nineteen logs were submitted from users using \texttt{apt-get} on either Debian or Ubuntu systems.
 The length of time these logs record range over a period between 23 and 277 days long. 
-In section \ref{impl.validation} these logs were used to validate the simulations output.
+In section \ref{impl.validation} these logs were used to validate the simulation's output.
 This section describes how these logs are parsed to measure the probability a user upgrades and installs a component.
 Through using the k-means clustering algorithm, four general users are extracted and described.
 
@@ -473,7 +473,7 @@ End-Date: 2010-12-21 11:33:03
 \end{figure}
 
 These logs describe the changes made to the system by \texttt{apt-get}, and not necessarily what the user requested to cause the change.
-However, using the constraints that \texttt{apt-get} employs to make changes, the user request can be extracted.
+However, using the constraints that \texttt{apt-get} employs to make changes, the user request can be calculated.
 These constraints are:
 \begin{itemize}
   \item \texttt{apt-get} will never install or remove a component if the system is upgraded.
@@ -510,7 +510,7 @@ Low Change 	(LC)			& 0.186			& 0.086 	\\ \hline
 \label{exp.q4}
 Above some realistic users are created by extracting information from user submitted logs.
 These users are simulated using the \texttt{apt-get} upgrade criteria \texttt{-removed,-new,-uptodatedistance} and the progressive upgrade criteria \texttt{-removed,-uptodatedistance,-new}.
-The progressive users names are prefixed  with ``Pro. Upgrade'' where the users using the \texttt{apt-get} criteria are not changed.
+The progressive users' names are prefixed  with ``Pro. Upgrade'' where the users using the \texttt{apt-get} criteria are not changed.
 
 The UTTDpC of these users are presented in figure \ref{exp.q6uttdpc} and table \ref{exp.tblq6uttd}.
 \begin{figure}[htp]
@@ -536,7 +536,7 @@ Low Change 	(LC)			& 0.773				& 0.620 			& 24\%   \\ \hline
 \end{table}
 
 This figure shows that using the \texttt{apt-get} upgrade criteria results in a system that after a year of simulation is about 0.8 UTTDpC out of date for all users. 
-The only noticeable difference between these users is that ``High Install'' users systems take longer to become up-to-date after the Ubuntu 10.04 release.
+The only noticeable difference between these users is that ``High Install'' users' systems take longer to become up-to-date after the Ubuntu 10.04 release.
 
 
 The users ``Pro. Upgrade High Install'' and ``Pro. Upgrade High Update'' benefit the most from using the progressive upgrade criteria.
@@ -647,7 +647,7 @@ The cost of using the unstable criterion was the system remains out-of-date by t
 However, through using the unstable criterion waiting a week for components to become stable all 23 instances of this unnecessary change were removed.
 
 \subsection{Real Users}
-To simulate realistic users the probability a user upgrades and installed were extracted from user's submitted logs.
+To simulate realistic users the probability a user upgrades and installs were extracted from user's submitted logs.
 Using the k-means algorithm four stereotypes of user were created; `High Install'', ``High Upgrade'', ``Medium Change'' and ``Low change''.
 These users were simulated using the \texttt{apt-get} criteria and the progressive criteria, and the lowered change from using the unstable criterion was estimated.
 This has shown that the greatest benefits for using the progressive criteria and the unstable criterion is for the ``High Install'' and ``High Upgrade'' users.

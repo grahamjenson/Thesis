@@ -88,7 +88,7 @@ These package managers provide similar functionality to \texttt{apt-get}, a comp
 The mean of the respondents self-ranked experience was 3.9/5.
 While this can be considered a subjective measure, it is expected that the respondents were confident in their answers. 
 
-The respondents answers to the questions about the types and the frequency of interactions with their package managers have been summarised in table \ref{strat.tblaction}.
+The respondents' answers to the questions about the types and the frequency of interactions with their package managers have been summarised in table \ref{strat.tblaction}.
 \begin{table}[htp]
 \centering
 \begin{tabular}{| l | c | c | c | c |} \hline
@@ -106,11 +106,11 @@ This also shows that most users upgrade their system daily, and many install pac
 Additionally, this shows that users do not often remove packages. 
 
 \subsection{Progressive vs. Conservative Users}
-One goal of this survey was to identify motivations of users to change their systems.
+One goal of this survey was to identify motivations of users' to change their systems.
 Based on the responses the users attitudes towards changing their systems are affected by the following risks:
 \begin{itemize}
   \item the potential risk of changing the system and introducing new problems.
-  \item the potential risk of becoming out-of-date and having less functionality and old problems persist.
+  \item the potential risk of becoming out-of-date, having less functionality, and having old problems persist.
 \end{itemize}
 The behaviours of these users can be described with two user stereotypes, \textbf{conservative} and \textbf{progressive}.
 These terms come from the domain of politics where conservatism philosophy that emphasises minimal and gradual change in society,
@@ -137,7 +137,7 @@ For example, a user responded in the survey with an extreme progressive attitude
 using packages which perform the same function, but have different dependencies, since it's less likely to have multiple packages break at the same time. 
 If something is rather buggy for me, I tend to update on a more frequent basis to check for the next stable point to jump into.''
 \end{quotation}
-This user has not fully tested components in their system (described as unstable packages).
+This user has components in their system that have not been thoroughly tested (described as unstable packages).
 To lower the risk that such packages have on the function of the system, this user has redundant functionality installed.
 This way the user tries to ensure that potential problems will not be too severe.
 The system of this user will never be out-of-date, but will be changed frequently.
@@ -176,7 +176,7 @@ An instance of \usermodel is an assignment to these variables.
 The variable $u$ is the probability per day that a user will upgrade their system, and the variable $i$ is the probability a user will request to install a component.
 The reason for selecting the ``per day'' resolution came from the user survey responses where typically the most frequent a user interacted with a package manager was daily.
 The $I$ and $U$ criteria to install a component and upgrade a system are represented in MOF.
-These criteria can be based on package manager criteria from currently applications like \texttt{apt-get} or on novel criteria.
+These criteria can be based on package manager criteria from currently installed applications like \texttt{apt-get} or on novel criteria.
 
 The assumptions made in the \usermodel model are:
 \begin{itemize}
@@ -195,7 +195,8 @@ The Ubuntu system has 6 monthly releases, therefore the simulation will be over 
 The Ubuntu central repository is the core location for where packages are distributed to Ubuntu systems.
 Using this as the set of packages because it is the default choice of newly installed Ubuntu systems.
 
-Typically a user would not select a specific version of a package to be installed but select the package name and let the package manager install the most recent version.
+Typically a user would not select a specific version of a package to be installed 
+but select the package name and let the package manager install the most preferred version (typically the most recent version).
 Additionally, a user would select a package name to install a package for a purpose, to fulfil some requirement of their system.
 As different users have different requirements, a user would more likely select some packages names over others.
 However, this model assumes that all users will equally likely install the same packages, which is incorrect.
@@ -266,7 +267,7 @@ This section describes the data collection and conversion to create \usermodel.
 The Ubuntu repository located at \texttt{http://archive.ubuntu.com/} is the default location that Ubuntu packages are distributed from.
 This repository contains a history of all packages that have ever been included with the precise minute that the package was uploaded.
 
-To collect these packages and information from the repository first the repositories web site was parsed and all the packages were downloaded.
+To collect these packages and information from the repository first the repository's web site was parsed and all the packages were downloaded.
 These Debian/Ubuntu packages are compressed with meta-information, code and binary files.
 
 Second, each package was decompressed and the main meta-data file, the \textit{control} file, was extracted.
@@ -347,8 +348,8 @@ This section discusses these differences and their impacts on the validity of \u
 \label{sim.randomness}
 When generating a CUDF* document, each simulated day there are three points of randomness in \usermodel:
 \begin{enumerate}
-  \item The probability $u$ a user requests to upgrade their system.
-  \item The probability $i$ a user requests to install a component.
+  \item The probability a user requests to upgrade their system, $u$.
+  \item The probability a user requests to install a component, $i$.
   \item If the user requests to install, what package is selected to be installed.
 \end{enumerate}
 In reality, a user's request to upgrade the system or install a component are not random.
@@ -363,14 +364,14 @@ For example, a user who upgrades their system each work day (Monday to Friday) w
 Describing such a user with \usermodel and then generating a CUDF* document may create a situation where they will upgrade their system on a Saturday.
 This is because users will not randomly select days to request changes, they have constraints (like the work week) and preferences that are not expressed in this model.
 
-The most significant randomness in \usermodel comes from the selection of a components to be installed.
+The most significant randomness in \usermodel comes from the selection of components to be installed.
 This randomness causes many differences to the reality of CSE:
 \begin{itemize}
-  \item A real user would typically not randomly select a component to be installed. a user would likely research a component before deciding to install.
+  \item A real user would typically not randomly select a component to be installed. A user would likely research a component before deciding to install.
   \item Each user would have different preferences of which components to install, e.g. a software developer will prefer components to aid in software development.
   \item Installing one package may change the preference of installing another, e.g. installing of browser \texttt{firefox} would decrease the probability to install another browser such as \texttt{chromium}.
 \end{itemize}
-To address these issues would require a more data to be collected (or created) and the modifications would make \usermodel significantly more complex.
+To address these issues would require a more data to be collected and the modifications would make \usermodel significantly more complex.
 The reduced effort and cost during data collection and the simplicity of the model was decided to take priority in this matter.
 
 To mitigate the randomness in \usermodel many CUDF* documents will be created from a single \usermodel instance, then simulated.
@@ -416,7 +417,7 @@ For this reason, a user requesting to install many components on a single day is
 
 In reality, a user often requests to install packages that are not included in the list from the \texttt{app-install-data} package. 
 An example of this extracted from the user logs is \texttt{apt-get install build-essential}\footnote{\texttt{build-essential} contains tools to build Debian packages},
-this package cannot be installed during the simulation as it is no int the list from  \texttt{app-install-data}.
+this package cannot be installed during the simulation as it is not in the list from  \texttt{app-install-data}.
 Much effort that went into creating \usermodel was directed at finding a list of the most commonly installed packages.
 However, the core problem is that there exists very little information on what packages users commonly request to be installed.
 This problem is seen as a possible future research that is described in chapter \ref{conclusion}. 
@@ -438,7 +439,7 @@ It is also made up of packages that are have not yet been validated and put into
 This causes the mean amount of packages that have a new version added to the repository to be much higher in the \usermodel repository,
 126 packages per day compared to the virtual systems view of 37 packages per day.
 
-The most dramatic difference though is the amount of removed packages from the ``view''.
+The most significant difference though is the amount of removed packages from the ``view''.
 The mean amount of packages removed per day from the view of the Ubuntu repository is eight, where the \usermodel repository never removes a package.
 This removal of packages reduces the complexity of the problem, 
 though it also means that a real Ubuntu system may not have all information available when satisfying user requests. 
@@ -449,7 +450,7 @@ This lack of data lead to the decision that all components should be used.
 
 \section{Summary}
 This chapter presented the \usermodel model which is used to describe how a realistic user requests changes to their system.
-This model was partially created from a survey, whose results where presented and discussed.
+This model was partially created from a survey, whose results were presented and discussed.
 The variables that make up the \usermodel and the process used to create CUDF* documents were then described.
 The data that was used to create the \usermodel was then described with the processes to collect and convert it.
 The validation of \usermodel was then described, and the differences to the reality of CSE discussed.
@@ -457,6 +458,6 @@ By exploring the differences to the reality of CSE the results from a simulation
 
 Although the \usermodel model can be used to create a description of the evolution of a component system, it may require significant calculation to find how exactly the component system evolves.
 The constraints of each request must be satisfied, and the optimal system w.r.t. the criteria must be found.
-The following chapter presents the mapping an instance of \modelname to a series of problems and the algorithms to solve such problems.
+The following chapter presents the mapping of an instance of \modelname to a series of problems and the algorithms to solve such problems.
 These algorithms are implemented in GJSolver, which is the final piece required to simulate CSE.
 
