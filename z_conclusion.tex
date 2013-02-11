@@ -1,0 +1,119 @@
+\chapter{Conclusion}
+\label{conclusion}
+%%%Answers to our initial questions
+This research has investigated the evolution of component systems using a developed simulation.
+To build this simulation, first the background of software evolution, component-based software engineering and component systems were explored (chapter \ref{background}).
+The models \modelname (chapter \ref{formal}) and \usermodel (chapter \ref{simulation}) were then developed 
+to describe a component system evolving through repetitive change and the user that requests the changes.
+GJSolver (chapter \ref{implementation}) was then created to calculate the exact changes made to a system during evolution.
+The verification and validation of these artifacts were discussed, in accordance with the methodology \citep{Law2005}.
+
+Experiments were defined that use these artifacts to simulate the evolution of many different systems.
+The primary focus of these experiments was to measure and reduce the out-of-dateness and changes made to the systems during evolution.
+The experiments have provided empirical evidence:
+\begin{itemize}
+  \item Upgrading a system causes the majority of change 
+  and installing new components only adds to this change by increasing the number of components to be upgraded.
+  \item Upgrading frequently (i.e. once a day) is unnecessary as it has little impact on the out-of-dateness of systems.
+  However, during periods where new component versions are released quickly, e.g.\ during Ubuntu releases, 
+  it is important to upgrade frequently. 
+  \item Regular updates cannot ensure that a component system stays up-to-date.
+  This is in part due to the criteria used by \texttt{apt-get} that restricts adding new components when upgrading.
+  \item Frequently upgrading a system may cause additional change 
+  when many versions of a component are released quickly, forcing it to be upgraded multiple times.
+\end{itemize} 
+
+This research also provides empirical evidence and quantitative measurements of the benefit of reuse, especially during CSE.
+The main benefit during CSE is the reduced change due to lowering the amount of components to be installed,
+that in turn lowers the amount of components that are upgraded.
+Reuse was estimated to save 650 changes on a system during the year. 
+
+To reduce the out-of-dateness of systems during evolution, the progressive criteria was proposed.
+This criteria allows new components to be installed to enable the upgrading of components.
+This alteration was shown to be most effective for users that upgrade frequently.
+It was shown to decrease the out-of-dateness of a system by as much as 49\% at the cost of increasing change by 34\%.
+For users that prefer up-to-date systems, this trade-off might be favourable for their system.
+
+To reduce the change made to a system during CSE the unstable criterion was proposed.
+This criterion waits for a period of days for a component to cease releasing newer version and become stable.
+By using this criterion and waiting a week for a component to become stable before upgrading it, it was estimated to save some types of users more than 30 changes over a year.
+These changes could introduce bugs into the system and are seen as unnecessary. 
+Using this criterion comes at the cost of the system always being out-of-date by the number of days that are waited for components to become stable.
+For users that prefer to reduce change to their systems, this may be a tolerable trade-off.
+
+The remainder of this chapter will examine the proposed thesis in chapter \ref{introduction},
+the potential future research,
+and provide a closing remark.
+\section{Thesis Validation}
+This research started with the thesis:
+\begin{quote}
+\textit{It is possible to reduce the negative effects of component system evolution by altering the mechanisms by which systems are changed.} 
+\end{quote}
+
+The steps taken to validate this thesis were:
+\begin{itemize}
+  \item To develop a reproducible and controllable environment in which to measure the effects of CSE.
+  \item To use this environment to study how systems evolve.
+  \item To alter the mechanisms by which systems are changed and study their impact on CSE.
+  \item To demonstrate a reduction on change and out-of-dateness using such alterations.
+\end{itemize}
+
+To address these steps:
+\begin{itemize}
+  \item A simulation was developed.
+  \item It was used to study CSE through simulating the evolution of many Ubuntu systems.
+  \item The novel unstable criterion and progressive criteria were proposed and their impacts on CSE studied.
+  \item The unstable criterion and progressive criteria were then simulated to approximate the evolution of real component systems
+  and they were demonstrated to reduce change and out-of-dateness.
+\end{itemize}  
+
+It is therefore possible to conclude that the thesis is supported.
+ 
+\section{Future Research}
+\label{conclusion.futurework}
+The largest area of future research is in the simulation of additional systems, such as Eclipse, 
+so they can be studied as they evolve. 
+Through such simulation the conclusions of this research can be shown to be either invariant between component systems 
+or to be Ubuntu-specific.
+The core hurdle of accomplishing this is that much of the collected information in this study does not exist for other component models.
+Component models like Eclipse do not have their history archived as precisely as Ubuntu.
+Information, like the Ubuntu repository, does not exist or does not contain the detailed information for other component models.
+Resources of information are available, but can be incomplete.
+For example, the Usage Data Collector\footnote{http://www.eclipse.org/epp/usagedata/faq.php} for the Eclipse project (similar to the Ubuntu Popcon) collected information on popular Eclipse components. 
+However, this project was shut down as it was deemed not to have a significant return on investment. 
+
+Another area of research involves altering and extending the \modelname and \usermodel models to more precisely describe CSE.
+An aspect of CSE that is not included in \modelname is that a component system may only view a certain subset of components that exist.
+This is described in section \ref{sim.modelvalidation} as the view Ubuntu has of its repository.
+The \usermodel has many aspects that could be added to make the simulated users closer to reality.
+Constraints such as only upgrading during the work week, 
+or additional types of request like removal of components that are no longer required, could create more valid simulations.
+
+The development of criteria that use other properties of components, 
+could be used to more accurately represent the user's preferences.
+Such properties could be collected from additional sources, 
+e.g. component meta-data, component contracts \citep{Watkins1999}, repositories \citep{Guo2000}, 
+composition testing \citep{XuejieZhang2008}.
+These could be used to create criteria that optimise for size, reliability, licence, even validity.
+Such criteria could be simulated and their effect, positive or negative, 
+could be measured using the simulation developed in this research.
+
+%%%Further stufy of the interaction between users and their component systems. We found it hard to find information, maybe some research would be interesting,
+%%%which we could include to make the simulations more valid.
+The part of the simulation that has the most room for improvement is the selection of the requests made by the user.
+This is when they select to upgrade, when they select to install, and what components they select to install.
+By studying real users changing their systems, either through collecting more \texttt{apt-get} logs or through direct observation,
+a more valid simulation could be created.
+
+%%%Integration with MPM then test on real systems the implications of this research
+Comparing the results from the simulations to the evolution of real systems would be able to validate the conclusions drawn from the simulation.
+This could be accomplished using the MPM solver \citep{abate2011} from Mancoosi.
+This solver has already been proposed for the modification of real systems.
+Through modification or extension of MPM, the proposed criteria could be used to evolve real Ubuntu systems.
+Such a study would require significant resources, but its results and conclusions would be worthwhile as they could provide a direct benefit to a very large number of users.
+
+\section{Closing Remark}
+This research has given an understanding of how component systems evolve and can be used to provide users and developers with insights into the effects of their choices.
+Additionally, this research has proposed two novel ways to reduce negative effects during CSE and the tools in with which to measure the effectiveness of these techniques.
+This research, therefore, has the potential of impacting the millions of Ubuntu and Eclipse systems that are currently evolving.
+
