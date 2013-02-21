@@ -107,7 +107,9 @@
         \addcontentsline{toc}{chapter}{#1}}
   
 \def\afterpreface{
-        \pagenumbering{arabic}}
-
+        \pagenumbering{arabic}
+        \oddsidemargin 0truemm \evensidemargin 14.6truemm 
+        }
+		
 
 

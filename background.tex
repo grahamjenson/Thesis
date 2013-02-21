@@ -90,7 +90,7 @@ Recent empirical studies that explore the cost of software evolution are summari
 showing that the costs of software maintenance range from 49\% to 75\%, and that these costs have not fallen since the 1970's. 
 To lower the cost of software evolution, various methods and tools have been proposed.
 For example, agile software development methodologies \citep{beck2001manifesto} are defined to encourage rapid and flexible responses to change,
-and refactoring tools \citep{fowler1999refactoring} have been developed to restructure code to decrease complexity and increase maintainability. 
+and refactoring tools \citep{fowler1999refactoring, Murphy-Hill2008} have been developed to restructure code to decrease complexity and increase maintainability. 
 Another way of lowering costs of the software evolution process is to create systems from encapsulated units called \textit{software components} \citep{Szyperski2002}.
 
 Current explorations of the history, and state-of-the-art, of software evolution are presented by \cite{Bennett2000}, \cite{Lehman2003}, and \cite{Godfrey2008}.
@@ -170,8 +170,7 @@ For example, installing a new package required satisfying all its constraints, a
 With the release of the application \texttt{apt-get} in the late 1990's, the necessary technical knowledge to compose or change a Debian system was significantly reduced.
 A user could request \texttt{apt-get} to change their system, and it would find, select then change to a new composition that satisfies the request and component constraints.
 This automated the search for a satisfactory solution, solving the problem which had restricted the evolution of Debian systems prior to \texttt{apt-get}'s release.
-The \texttt{apt-get} package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' 
-\footnote{http://ianmurdock.com/solaris/how-package-management-changed-everything/ accessed accessed 12/9/2012} 
+The \texttt{apt-get} package manager and similar applications have been called the ``single biggest advancement Linux has brought to the industry'' \citep{Murdock2007}
 because it has made it ``far easier to push new innovations out into the marketplace and generally evolve the OS''.
 Such lowering of the technical knowledge required to become a composer of a component system has had other effects that are discussed in the next section.
 

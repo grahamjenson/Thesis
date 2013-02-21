@@ -25,6 +25,12 @@ To address this issue, the CUDF* language was developed as a combination and ext
 A CUDF* document can be parsed to create an instance of \modelname, thus fully describe the evolution of a component system.
 
 The relationships between the models presented in this chapter are described in figure \ref{formal.modeldiagram}.
+This figure (and figures \ref{sim.modeldiagram}, \ref{impl.modelsatdiagram} and \ref{impl.modelofgjsolver}) 
+are intended to show a simple overview of the relationships between the presented models.
+To interpret this figure; each box is a model, \texttt{extends} is to mean inclusion and extension of semantics, 
+\texttt{instantiates} means that a model is an instance of a higher model (also denoted with the prefix \texttt{:}),
+and \texttt{parsed to} describes a model transformation.
+
 \begin{figure}[htp]
 \begin{center}
 \digraph[scale=.5]{formalmodeldiagram}{
